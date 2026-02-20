@@ -34,7 +34,7 @@
             align-items: center;
             height: 80px;
             border-bottom: 3px solid var(--neon-mor);
-            position: sticky; /* Masaüstünde sabit */
+            position: sticky; /* Masaüstünde sabit kalması için */
             top: 0;
             z-index: 1000;
         }
@@ -65,9 +65,9 @@
         .card-body { padding: 25px; }
         .card-body h3 { color: var(--neon-mor); margin-bottom: 12px; font-size: 20px; font-weight: 700; }
         .card-body p { color: var(--gri-yazi); font-size: 14px; line-height: 1.6; }
-        .card-link { display: inline-block; margin-top: 18px; color: var(--yazi-beyaz); text-decoration: none; font-weight: bold; font-size: 13px; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; transition: 0.3s; }
+        .card-link { display: inline-block; margin-top: 18px; color: var(--yazi-beyaz); text-decoration: none; font-weight: bold; font-size: 13px; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
 
-        /* --- FOOTER --- */
+        /* --- FOOTER (SS UYUMLU) --- */
         footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
@@ -76,7 +76,8 @@
         .social-icons a { width: 45px; height: 45px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; border: 1px solid #222; }
         .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
         .footer-column ul { list-style: none; }
-        .footer-column ul li a { color: var(--yazi-beyaz); text-decoration: none; font-size: 15px; }
+        .footer-column ul li { margin-bottom: 12px; }
+        .footer-column ul li a { color: var(--yazi-beyaz); text-decoration: none; font-size: 15px; transition: 0.3s; }
         .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
         .contact-item i { color: var(--neon-mor); font-size: 16px; width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 14px; }
@@ -88,32 +89,31 @@
                 padding: 15px 5%;
                 flex-direction: column; /* Logo üstte, Menü altta */
                 gap: 15px;
-                position: sticky; /* Mobilde sabit kalmasını sağlar */
+                position: sticky; /* Mobilde sabit kalma */
                 top: 0;
             }
             .logo { font-size: 22px; }
             nav { width: 100%; }
             nav ul { 
                 gap: 10px; 
-                flex-wrap: nowrap; /* Tek satıra zorlar */
-                justify-content: space-between; /* Ekrana yayar */
+                flex-wrap: nowrap; 
+                justify-content: space-between; 
                 width: 100%;
             }
             nav ul li a { font-size: 10px; white-space: nowrap; }
-            .nav-btn { 
-                padding: 6px 12px; 
-                font-size: 10px !important; 
-                border-radius: 4px;
-            }
+            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
             .hero { height: 60vh; background-attachment: scroll; }
             .container { padding: 40px 5%; }
             .section-title { font-size: 22px; }
 
-            /* Footer Mobil Düzeni */
+            /* Footer Mobil 3x2 Standart Düzeni */
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
-            .footer-brand { grid-column: span 2; text-align: center; }
+            .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #1a1a1a; padding-bottom: 30px; }
+            .footer-brand p { max-width: 100%; }
             .social-icons { justify-content: center; }
+            .footer-column { text-align: left; }
+            .contact-item { justify-content: flex-start; font-size: 13px; }
         }
     </style>
 </head>
@@ -140,5 +140,82 @@
         </div>
     </div>
 
-    </body>
+    <section class="container">
+        <h2 class="section-title">GÜNCEL DUYURULAR</h2>
+        <div class="grid-layout">
+            <div class="card">
+                <div class="card-img">OBB E-SPOR</div>
+                <div class="card-body">
+                    <h3>YENİ SEZON BAŞLIYOR</h3>
+                    <p>Ordu'nun en rekabetçi e-spor liginde 3. sezon heyecanı çok yakında başlıyor. Hazırlıklarınızı tamamlayın.</p>
+                    <a href="#" class="card-link">DETAYLARI GÖR</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-img">VALORANT</div>
+                <div class="card-body">
+                    <h3>TOPLULUK TURNUVASI</h3>
+                    <p>Ödül havuzu 10.000 TL olan Valorant Topluluk Turnuvası için kayıtlar açıldı. Takımını kur ve katıl!</p>
+                    <a href="kayit.html" class="card-link">ŞİMDİ KAYDOL</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-img">TOPLULUK</div>
+                <div class="card-body">
+                    <h3>DISCORD'A KATILIN</h3>
+                    <p>Takım arkadaşı bulmak, antrenman maçları düzenlemek ve yetkililerle iletişim kurmak için Discord'dayız.</p>
+                    <a href="#" class="card-link">SUNUCUYA GİT</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h2>OBB <span style="color:white">E-SPOR</span></h2>
+                <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#"><i class="fa-brands fa-discord"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h3>HIZLI MENÜ</h3>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="tournaments.html">Turnuvalar</a></li>
+                    <li><a href="canli.html">Canlı Yayınlar</a></li>
+                    <li><a href="kayit.html">Kayıt Ol</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>İLETİŞİM</h3>
+                <div class="contact-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>info@obbesports.com</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Ordu, Türkiye</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fa-solid fa-headset"></i>
+                    <span>7/24 Destek Ekibi</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
+        </div>
+    </footer>
+
+</body>
 </html>
