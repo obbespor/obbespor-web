@@ -1,128 +1,71 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kayıt Ol | OBB E-SPOR</title>
-    <link rel="stylesheet" href="auth-style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
-</head>
-<body>
+/* --- KAYIT SAYFASI MOBİL UYUMLULUK --- */
+@media (max-width: 992px) {
+    /* Yanlardaki karakter görsellerini mobilde gizle */
+    .auth-side-image {
+        display: none;
+    }
 
-    <header>
-        <a href="OBB.ESPOR.html" class="logo">OBB <span>E-SPOR</span></a>
-        <nav>
-            <ul>
-                <li><a href="index.html">ANA SAYFA</a></li>
-                <li><a href="tournaments.html">TURNUVALAR</a></li>
-                <li><a href="canli.html">CANLI</a></li>
-                <li><a href="kayit.html" class="nav-btn">KATIL</a></li>
-            </ul>
-        </nav>
-    </header>
+    /* Ana düzeni tek sütuna çek */
+    .main-layout {
+        display: block;
+        width: 100%;
+    }
 
-    <div class="auth-wrapper">
-        <div class="main-layout">
-            
-            <div class="auth-side-image left">
-                <img src="img/obb jett.jpg" alt="OBB Karakter">
-            </div>
+    .auth-wrapper {
+        padding: 20px;
+        min-height: auto;
+    }
 
-            <div class="auth-card">
-                <div class="auth-header">
-                    <a href="OBB.ESPOR.html" class="back-link">← Ana Sayfa</a>
-                    <h1>ARENAYA <span class="purple-neon">KATIL</span></h1>
-                    <p>Profilini oluştur, rekabete dahil ol.</p>
-                </div>
+    .auth-card {
+        width: 100%;
+        max-width: 450px;
+        margin: 40px auto;
+        padding: 30px 20px;
+    }
 
-                <form id="registerForm">
-                    <div class="input-group">
-                        <label>Kullanıcı Adı</label>
-                        <input type="text" id="username" placeholder="gamer123" required>
-                    </div>
+    .auth-header h1 {
+        font-size: 1.8rem;
+    }
+}
 
-                    <div class="input-group">
-                        <label>E-posta</label>
-                        <input type="email" id="email" placeholder="ornek@mail.com" required>
-                    </div>
+@media (max-width: 768px) {
+    /* Üst menü (Nav) düzenlemesi */
+    header {
+        flex-direction: column;
+        padding: 15px;
+        height: auto;
+        gap: 15px;
+        background-color: #000;
+        border-bottom: 2px solid #601dc2;
+    }
 
-                    <div class="input-group">
-                        <label>Telefon</label>
-                        <input type="tel" id="phone" placeholder="05XX XXX XX XX" required>
-                    </div>
+    header nav ul {
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 
-                    <div class="input-group">
-                        <label>Şifre</label>
-                        <input type="password" id="password" placeholder="••••••••" required minlength="6">
-                    </div>
+    header nav ul li a {
+        font-size: 12px;
+    }
 
-                    <button type="submit" class="register-btn" id="submitBtn">HESABI OLUŞTUR</button>
-                </form>
-                <div id="responseMessage" class="message"></div>
-            </div>
+    .auth-card {
+        margin: 20px auto;
+        border: 1px solid #333;
+    }
+    
+    /* Input gruplarını mobilde biraz daha rahatlat */
+    .input-group label {
+        font-size: 13px;
+    }
+    
+    input {
+        padding: 12px;
+        font-size: 14px;
+    }
 
-            <div class="auth-side-image right">
-                <img src="img/obbchamber.jpg" alt="OBB Karakter" style="transform: scaleX(-1);">
-            </div>
-
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script>
-        // 1. Supabase Yapılandırması (Kendi bilgilerinle doldur)
-        const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
-        const SUPABASE_KEY = 'AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2aHR6bnhyZXR4Z29mbmJjYmtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0ODY4NjksImV4cCI6MjA4NzA2Mjg2OX0.nJbnU1WNk5lSVogBqY0Jwp8-6JhbIURkw6Buf2WfXzU';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        const registerForm = document.getElementById('registerForm');
-        const messageDiv = document.getElementById('responseMessage');
-        const submitBtn = document.getElementById('submitBtn');
-
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Form verilerini al
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const username = document.getElementById('username').value;
-            const phone = document.getElementById('phone').value;
-
-            // Butonu kilitle ve mesajı göster
-            submitBtn.disabled = true;
-            submitBtn.innerText = "İŞLENİYOR...";
-            messageDiv.innerText = "Kayıt işlemi başlatıldı...";
-            messageDiv.style.color = "#aaa";
-
-            // 2. Supabase Auth signUp Kullanımı
-            const { data, error } = await _supabase.auth.signUp({
-                email: email,
-                password: password,
-                options: {
-                    data: {
-                        display_name: username,
-                        phone_number: phone
-                    }
-                }
-            });
-
-            if (error) {
-                messageDiv.innerText = "Hata: " + error.message;
-                messageDiv.style.color = "#ff4d4d";
-                submitBtn.disabled = false;
-                submitBtn.innerText = "HESABI OLUŞTUR";
-            } else {
-                messageDiv.innerText = "BAŞARILI! Arenaya hoş geldin. (E-posta onayını kapattıysan giriş yapabilirsin)";
-                messageDiv.style.color = "#00ffcc";
-                registerForm.reset();
-                submitBtn.innerText = "KAYIT TAMAMLANDI";
-                
-                // İstersen başarılı kayıttan sonra ana sayfaya yönlendirebilirsin:
-                // setTimeout(() => { window.location.href = "OBB.ESPOR.html"; }, 2000);
-            }
-        });
-    </script>
-</body>
-
-</html>
+    .register-btn {
+        padding: 15px;
+        font-size: 14px;
+    }
+}
