@@ -16,17 +16,21 @@
             --gri-yazi: #a0a0a0;
         }
 
+        /* Beyazlığı ve taşmayı önleyen temel ayarlar */
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { background-color: var(--ana-siyah); scroll-behavior: smooth; }
+        
         body {
             background: radial-gradient(circle at top, #1a052d 0%, #050505 100%);
             background-attachment: fixed;
             color: var(--yazi-beyaz);
             font-family: 'Poppins', sans-serif;
             overflow-x: hidden;
+            padding-top: 80px; /* Header için boşluk */
         }
 
-        /* --- HEADER (SABİTLENMİŞ YAPI) --- */
-        header.main-nav {
+        /* --- AKILLI HEADER (KUSURSUZ YAPI) --- */
+        header {
             background-color: var(--nav-bg);
             padding: 0 10%; 
             display: flex;
@@ -34,11 +38,17 @@
             align-items: center;
             height: 80px;
             border-bottom: 3px solid var(--neon-mor);
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            width: 100%;
             z-index: 1000;
+            transition: transform 0.4s ease-in-out;
             box-shadow: 0 0 25px rgba(96, 29, 194, 0.3);
         }
+
+        header.nav-hidden { transform: translateY(-110%); }
+
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); }
         
@@ -58,7 +68,7 @@
         }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- CANLI YAYIN 3x2 IZGARA --- */
+        /* --- CANLI YAYIN İÇERİK --- */
         .main-content { padding: 60px 10%; }
         .section-title {
             text-align: center;
@@ -71,8 +81,7 @@
 
         .streams-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* MASAÜSTÜNDE 3 SÜTUN */
-            grid-template-rows: auto auto; /* 2 SATIR */
+            grid-template-columns: repeat(3, 1fr);
             gap: 25px;
             width: 100%;
             max-width: 1400px;
@@ -118,7 +127,7 @@
         }
         .btn-kick:hover { box-shadow: 0 0 20px rgba(96, 29, 194, 0.4); background: #7a2df2; }
 
-        /* --- FOOTER (SABİTLENMİŞ YAPI) --- */
+        /* --- FOOTER (ANA SAYFA İLE AYNI) --- */
         footer {
             background-color: var(--nav-bg);
             border-top: 2px solid var(--neon-mor);
@@ -126,8 +135,8 @@
             margin-top: 80px;
         }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
-        .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; }
-        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
+        .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
+        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; line-height: 1.6; }
         
         .footer-socials { display: flex; gap: 15px; }
         .footer-socials a {
@@ -140,33 +149,53 @@
         .footer-section ul { list-style: none; }
         .footer-section ul li { margin-bottom: 12px; }
         .footer-section ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
-        .footer-section ul li a:hover { color: var(--neon-mor); padding-left: 5px; }
+        .footer-section ul li a:hover { color: var(--neon-mor); }
 
-        .contact-info li { color: var(--gri-yazi); font-size: 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 12px; list-style: none; }
+        .contact-info li { color: var(--gri-yazi); font-size: 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
         .contact-info i { color: var(--neon-mor); width: 20px; text-align: center; }
 
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* --- MOBİL UYUMLULUK --- */
+        /* --- MOBİL UYUMLULUK (BİREBİR AYNI) --- */
         @media (max-width: 1100px) {
-            .streams-grid { grid-template-columns: repeat(2, 1fr); } /* Orta ekranlarda 2'li */
+            .streams-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (max-width: 768px) {
-            header.main-nav { height: auto; padding: 20px 5%; flex-direction: column; gap: 15px; }
-            nav ul { gap: 10px; flex-wrap: wrap; justify-content: center; }
-            .main-content { padding: 40px 5%; }
-            .streams-grid { grid-template-columns: 1fr; } /* Mobilde tekli */
+            header { height: auto; padding: 15px 5%; flex-direction: column; gap: 12px; top: 0; }
+            body { padding-top: 130px; } 
+            
+            .logo { font-size: 24px; text-align: center; width: 100%; }
+            nav { width: 100%; }
+            nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 10px; white-space: nowrap; }
+            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
-            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
-            .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
-            .footer-socials { justify-content: center; }
+            .main-content { padding: 40px 5%; }
+            .streams-grid { grid-template-columns: 1fr; }
+
+            /* Footer Mobil Görünümü */
+            footer { padding: 60px 5% 30px; }
+            .footer-grid { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 40px; }
+            .footer-brand h2 { font-size: 32px; text-decoration: underline; text-underline-offset: 12px; text-decoration-color: var(--neon-mor); border-bottom: none; display: block; margin-bottom: 25px; }
+            .footer-socials { justify-content: center; gap: 20px; }
+            
+            /* Menü ve İletişim yan yana */
+            .footer-links-wrapper { 
+                display: grid; 
+                grid-template-columns: 1fr 1fr; 
+                width: 100%; 
+                gap: 20px; 
+                text-align: left;
+                border-top: 1px solid #1a1a1a;
+                padding-top: 40px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header class="main-nav">
+    <header id="mainHeader">
         <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
         <nav>
             <ul>
@@ -274,30 +303,32 @@
                 <h2>OBB <span style="color:white">E-SPOR</span></h2>
                 <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
                 <div class="footer-socials">
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-x-twitter"></i></a>
-                    <a href="#"><i class="fab fa-discord"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#"><i class="fa-brands fa-discord"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
                 </div>
             </div>
 
-            <div class="footer-section">
-                <h3>Hızlı Menü</h3>
-                <ul>
-                    <li><a href="index.html">Ana Sayfa</a></li>
-                    <li><a href="tournaments.html">Turnuvalar</a></li>
-                    <li><a href="canli.html">Canlı Yayınlar</a></li>
-                    <li><a href="kayit.html">Kayıt Ol</a></li>
-                </ul>
-            </div>
+            <div class="footer-links-wrapper">
+                <div class="footer-section">
+                    <h3>HIZLI MENÜ</h3>
+                    <ul>
+                        <li><a href="index.html">Ana Sayfa</a></li>
+                        <li><a href="tournaments.html">Turnuvalar</a></li>
+                        <li><a href="canli.html">Canlı Yayınlar</a></li>
+                        <li><a href="kayit.html">Kayıt Ol</a></li>
+                    </ul>
+                </div>
 
-            <div class="footer-section">
-                <h3>İletişim</h3>
-                <ul class="contact-info">
-                    <li><i class="fas fa-envelope"></i> info@obbesports.com</li>
-                    <li><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
-                    <li><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
-                </ul>
+                <div class="footer-section">
+                    <h3>İLETİŞİM</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-envelope"></i> info@obbesports.com</li>
+                        <li><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
+                        <li><i class="fas fa-headset"></i> 7/24 Destek</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -306,5 +337,19 @@
         </div>
     </footer>
 
+    <script>
+        let lastScrollTop = 0;
+        const header = document.getElementById("mainHeader");
+
+        window.addEventListener("scroll", function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                header.classList.add("nav-hidden");
+            } else {
+                header.classList.remove("nav-hidden");
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+        }, false);
+    </script>
 </body>
 </html>
