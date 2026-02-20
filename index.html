@@ -15,7 +15,6 @@
             --gri-yazi: #a0a0a0;
         }
 
-        /* Temel Ayarlar */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; overflow-x: hidden; }
         body {
@@ -26,7 +25,7 @@
             line-height: 1.6;
         }
 
-        /* --- MASAÜSTÜ HEADER --- */
+        /* --- HEADER (Desktop Default) --- */
         header {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -53,77 +52,90 @@
             color: white !important; 
             background: transparent; 
             transition: 0.3s;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
         }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- HERO SECTION --- */
-        .hero {
-            height: 80vh; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: relative; 
-            background: url('img/banner deneme.jpg') center/cover fixed;
-        }
+        /* --- HERO & CONTENT --- */
+        .hero { height: 75vh; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; background: url('img/banner deneme.jpg') center/cover fixed; }
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1; }
         .hero-content { position: relative; z-index: 2; padding: 0 20px; }
-        .hero h1 { font-size: clamp(2rem, 5vw, 4rem); font-weight: 900; margin-bottom: 10px; }
+        .hero h1 { font-size: clamp(2rem, 5vw, 4rem); font-weight: 900; }
         .purple-neon { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
-        .main-btn {
-            background-color: var(--neon-mor); color: white; border: none; padding: 16px 45px;
-            font-weight: bold; cursor: pointer; margin-top: 25px; transition: 0.3s; border-radius: 8px;
-        }
 
-        /* --- DUYURULAR --- */
-        .container { padding: 80px 10%; }
+        .container { padding: 60px 10%; }
         .section-title { margin-bottom: 40px; border-left: 5px solid var(--neon-mor); padding-left: 15px; font-size: 28px; font-weight: 900; }
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .card { background-color: #0a0a0a; border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.3s; }
-        .card:hover { border-color: var(--neon-mor); transform: translateY(-8px); box-shadow: 0 0 20px rgba(96, 29, 194, 0.3); }
+        .card:hover { border-color: var(--neon-mor); transform: translateY(-8px); }
         .card-img { height: 180px; background: linear-gradient(45deg, #1a052d, var(--neon-mor)); display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: 900; }
         .card-body { padding: 25px; }
-        .card-body h3 { color: var(--neon-mor); margin-bottom: 10px; }
-        .card-link { display: inline-block; margin-top: 15px; color: white; font-weight: bold; text-decoration: none; border-bottom: 2px solid var(--neon-mor); }
 
-        /* --- MASAÜSTÜ FOOTER (SS'DEKİ YAPI) --- */
+        /* --- FOOTER (Desktop Default) --- */
         footer {
             background-color: var(--nav-bg);
             border-top: 2px solid var(--neon-mor);
             padding: 80px 10% 40px;
-            margin-top: 80px;
+            margin-top: 100px;
         }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
-        .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; }
-        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
-        .social-icons { display: flex; gap: 15px; }
-        .social-icons a { width: 45px; height: 45px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; }
-        .social-icons a:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
+        .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
+        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; line-height: 1.6; }
         
-        .footer-column h3 { font-size: 20px; color: var(--neon-mor); margin-bottom: 25px; }
+        .social-icons { display: flex; gap: 15px; }
+        .social-icons a { width: 45px; height: 45px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; border: 1px solid #222; }
+        .social-icons a:hover { background: var(--neon-mor); border-color: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
+
+        .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
         .footer-column ul { list-style: none; }
-        .footer-column ul li { margin-bottom: 15px; }
-        .footer-column ul li a { color: white; text-decoration: none; transition: 0.3s; }
+        .footer-column ul li { margin-bottom: 12px; }
+        .footer-column ul li a { color: var(--yazi-beyaz); text-decoration: none; font-size: 15px; transition: 0.3s; }
         .footer-column ul li a:hover { color: var(--neon-mor); }
 
-        .contact-item { display: flex; align-items: center; gap: 15px; color: var(--gri-yazi); margin-bottom: 15px; }
-        .contact-item i { color: var(--neon-mor); font-size: 18px; width: 20px; text-align: center; }
-        .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #444; font-size: 14px; }
+        .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
+        .contact-item i { color: var(--neon-mor); font-size: 16px; width: 20px; text-align: center; }
 
-        /* --- MOBİL UYUMLULUK (Sadece Gereken Yerler) --- */
+        .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 14px; }
+
+        /* --- MOBİL OPTİMİZASYON (768px altı) --- */
         @media (max-width: 768px) {
-            header { padding: 0 5%; height: auto; flex-direction: column; padding: 15px 0; }
-            nav ul { margin-top: 10px; gap: 10px; flex-wrap: wrap; justify-content: center; }
-            nav ul li a { font-size: 12px; }
-            .hero { height: 60vh; background-attachment: scroll; }
+            header { 
+                height: auto; 
+                padding: 15px 5%; 
+                flex-direction: column; 
+                gap: 15px; 
+            }
+            .logo { font-size: 22px; }
+            nav ul { gap: 10px; flex-wrap: wrap; justify-content: center; }
+            nav ul li a { font-size: 11px; }
+            .nav-btn { padding: 5px 12px; font-size: 11px; }
 
-            /* Footer Mobilde 2 Sütun */
-            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
-            .footer-brand { grid-column: span 2; text-align: center; }
-            .footer-brand p { max-width: 100%; }
+            /* Footer Mobil Düzen (SS'deki gibi) */
+            footer { padding: 50px 5% 30px; }
+            .footer-grid { 
+                grid-template-columns: 1fr 1fr; /* Alt kısmı ikiye böler */
+                gap: 30px; 
+            }
+            .footer-brand { 
+                grid-column: span 2; /* Üst başlık kısmı tam genişlik */
+                text-align: center; 
+                border-bottom: 1px solid #1a1a1a;
+                padding-bottom: 30px;
+            }
+            .footer-brand h2 { font-size: 24px; }
+            .footer-brand p { max-width: 100%; margin-bottom: 20px; font-size: 14px; }
             .social-icons { justify-content: center; }
-            .footer-column { text-align: left; }
-            .contact-item { font-size: 13px; }
+            
+            .footer-column { 
+                text-align: left; /* Menü ve İletişim yan yana */
+            }
+            .footer-column h3 { font-size: 16px; margin-bottom: 20px; }
+            .footer-column ul li a, .contact-item { font-size: 13px; }
+            .contact-item { justify-content: flex-start; }
+            
+            .footer-bottom { font-size: 11px; }
         }
     </style>
 </head>
@@ -145,40 +157,9 @@
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1>ZAFER <span class="purple-neon">MOR</span> IŞIKTA PARLAR</h1>
-            <p>En iyi oyuncular, en karanlık arenalarda yetişir.</p>
-            <button class="main-btn">ŞİMDİ OYNA</button>
+            <p>En iyi oyuncular burada yetişir.</p>
         </div>
     </div>
-
-    <section class="container">
-        <h2 class="section-title">DUYURULAR</h2>
-        <div class="grid-layout">
-            <div class="card">
-                <div class="card-img">OBB E-SPOR</div>
-                <div class="card-body">
-                    <h3>ARENA AÇILIYOR</h3>
-                    <p>Ordu'nun en büyük e-spor merkezi kapılarını açıyor.</p>
-                    <a href="#" class="card-link">DETAYLAR</a>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-img">TURNUVA</div>
-                <div class="card-body">
-                    <h3>VALORANT CUP</h3>
-                    <p>Büyük ödüllü turnuva kayıtları başladı!</p>
-                    <a href="kayit.html" class="card-link">KAYIT OL</a>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-img">SOSYAL</div>
-                <div class="card-body">
-                    <h3>TOPLULUĞA KATIL</h3>
-                    <p>Discord kanalımızda yerini al, takım arkadaşı bul.</p>
-                    <a href="#" class="card-link">TAKİP ET</a>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <footer>
         <div class="footer-grid">
@@ -196,10 +177,10 @@
             <div class="footer-column">
                 <h3>HIZLI MENÜ</h3>
                 <ul>
-                    <li><a href="index.html">Ana Sayfa</a></li>
-                    <li><a href="tournaments.html">Turnuvalar</a></li>
-                    <li><a href="canli.html">Canlı Yayınlar</a></li>
-                    <li><a href="kayit.html">Kayıt Ol</a></li>
+                    <li><a href="#">Ana Sayfa</a></li>
+                    <li><a href="#">Turnuvalar</a></li>
+                    <li><a href="#">Canlı Yayınlar</a></li>
+                    <li><a href="#">Kayıt Ol</a></li>
                 </ul>
             </div>
 
@@ -211,7 +192,7 @@
                 </div>
                 <div class="contact-item">
                     <i class="fa-solid fa-location-dot"></i>
-                    <span>Ordu, Türkiye</span>
+                    <span>İstanbul, Türkiye</span>
                 </div>
                 <div class="contact-item">
                     <i class="fa-solid fa-headset"></i>
@@ -219,6 +200,7 @@
                 </div>
             </div>
         </div>
+
         <div class="footer-bottom">
             <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
         </div>
