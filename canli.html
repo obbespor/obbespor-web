@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canlı Yayın Ekibi | OBB E-SPOR</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --ana-siyah: #050505;
+            --nav-bg: #0a0a0c;
+            --neon-mor: #601dc2; 
+            --yazi-beyaz: #ffffff;
+            --gri-yazi: #a0a0a0;
+        }
+
+        body {
+            background-color: var(--ana-siyah);
+            color: var(--yazi-beyaz);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* --- SENİN ÖZEL HEADER YAPIN --- */
+        header {
+            background-color: var(--nav-bg);
+            padding: 15px 5%; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--neon-mor);
+            width: 100%;
+            box-sizing: border-box;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+
+        .logo span { color: var(--neon-mor); }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center; 
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: var(--neon-mor);
+        }
+
+        .nav-btn {
+            border: 2px solid var(--neon-mor); 
+            padding: 8px 20px;
+            border-radius: 5px;
+            color: white !important;
+            background: transparent;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--neon-mor); 
+            color: white !important;
+            box-shadow: 0 0 15px var(--neon-mor); 
+            transform: translateY(-2px);
+        }
+
+        /* --- 3x2 PENCERE DÜZENİ --- */
+        .main-content {
+            padding: 40px 2%;
+        }
+
+        .section-title {
+            text-align: center;
+            color: var(--neon-mor);
+            font-size: 2rem;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        .streams-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #111111;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #222;
+            transition: 0.3s ease;
+        }
+
+        .card:hover { border-color: var(--neon-mor); transform: translateY(-5px); }
+
+        .video-box { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+        .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        .card-footer {
+            padding: 12px 15px;
+            background: #18181b;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .name { font-weight: 600; font-size: 0.95rem; }
+
+        .social-links { display: flex; gap: 10px; }
+        .social-links a { color: var(--gri-yazi); font-size: 1rem; transition: 0.3s; }
+        .social-links a:hover { color: var(--neon-mor); }
+
+        .btn-kick {
+            display: block;
+            background-color: var(--neon-mor);
+            color: white;
+            text-decoration: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        @media (max-width: 1024px) { .streams-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 700px) { .streams-grid { grid-template-columns: 1fr; } nav { display: none; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="#" class="logo">OBB <span>E-SPOR</span></a>
+    <nav>
+        <ul>
+            <li><a href="OBB.ESPOR.html">ANA SAYFA</a></li>
+            <li><a href="tournaments.html">TURNUVALAR</a></li>
+            <li><a href="canli.html">CANLI</a></li>
+            <li><a href="kayit.html" class="nav-btn">KATIL</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="main-content">
+    <h2 class="section-title">EKİP CANLI YAYINDA</h2>
+
+    <div class="streams-grid">
+        <div class="card">
+            <div class="video-box"><iframe src="https://player.kick.com/xqc?muted=true"></iframe></div>
+            <div class="card-footer">
+                <div class="footer-top"><span class="name">OYUNCU 1</span><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a></div></div>
+                <a href="https://kick.com/xqc" target="_blank" class="btn-kick">KICK'TE AÇ</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="video-box"><iframe src="https://player.kick.com/westcol?muted=true"></iframe></div>
+            <div class="card-footer">
+                <div class="footer-top"><span class="name">OYUNCU 2</span><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a></div></div>
+                <a href="https://kick.com/westcol" target="_blank" class="btn-kick">KICK'TE AÇ</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="video-box"><iframe src="https://player.kick.com/heelmike?muted=true"></iframe></div>
+            <div class="card-footer">
+                <div class="footer-top"><span class="name">OYUNCU 3</span><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a></div></div>
+                <a href="https://kick.com/heelmike" target="_blank" class="btn-kick">KICK'TE AÇ</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="video-box"><iframe src="https://player.kick.com/KULLANICI_4?muted=true"></iframe></div>
+            <div class="card-footer">
+                <div class="footer-top"><span class="name">OYUNCU 4</span><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a></div></div>
+                <a href="#" class="btn-kick">KICK'TE AÇ</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="video-box"><iframe src="https://player.kick.com/KULLANICI_5?muted=true"></iframe></div>
+            <div class="card-footer">
+                <div class="footer-top"><span class="name">OYUNCU 5</span><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a></div></div>
+                <a href="#" class="btn-kick">KICK'TE AÇ</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="video-box"><iframe src="https://player.kick.com/KULLANICI_6?muted=true"></iframe></div>
+            <div class="card-footer">
+                <div class="footer-top"><span class="name">OYUNCU 6</span><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a></div></div>
+                <a href="#" class="btn-kick">KICK'TE AÇ</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

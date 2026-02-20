@@ -1,0 +1,212 @@
+/* 1. SIFIRLAMA VE SABİTLEME (Boyut farkını önlemek için) */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    overflow-y: scroll; /* Kaydırma çubuğunun sayfayı itmesini engeller */
+}
+
+body {
+    background-color: #000000;
+    color: white;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    line-height: 1.6;
+}
+
+/* 2. GÜNCEL NAVİGASYON (Ana sayfa ile birebir aynı) */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10%; /* Yan boşlukları sabitledik */
+    height: 80px;   /* Yüksekliği sabitledik */
+    background-color: #000000;
+    border-bottom: 3px solid #601dc2;
+    box-shadow: 0 0 20px rgba(96, 29, 194, 0.3);
+    position: sticky; /* Sayfa kayarken menü üstte kalır */
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 24px;
+    letter-spacing: 2px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.logo span {
+    color: #601dc2;
+}
+
+/* NAVIGASYON SIFIRLAMA VE HİZALAMA */
+nav ul {
+    list-style: none;
+    display: flex;
+    align-items: center; /* Dikeyde tüm butonları aynı hizaya çeker */
+    gap: 15px;
+}
+
+/* Menü Butonları Genel */
+nav ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+nav ul li a:hover {
+    color: #601dc2;
+}
+
+/* İŞTE O ESKİ GÜZEL KATIL BUTONU */
+.nav-btn {
+    border: 2px solid #601dc2; /* Mor çerçeve */
+    padding: 8px 20px;
+    border-radius: 5px;
+    color: white !important;
+    background: transparent;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.nav-btn:hover {
+    background-color: #601dc2; /* Üstüne gelince içi doluyor */
+    color: white !important;
+    box-shadow: 0 0 15px #601dc2; /* Mor parlama efekti */
+    transform: translateY(-2px);
+}
+
+.t-header-banner {
+    text-align: center;
+    padding: 80px 20px;
+    background: linear-gradient(135deg, #000000 0%, #23083e 50%, #000000 100%);
+    border-bottom: 1px solid rgba(96, 29, 194, 0.3);
+}
+
+.purple-text { 
+    color: #601dc2; 
+    text-shadow: 0 0 15px #601dc2; 
+}
+
+/* 4. TURNUVA LİSTESİ VE FİLTRELER */
+.t-container { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    padding: 40px 10%; /* Nav ile aynı hizada olması için %10 */
+}
+
+.filters { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 30px; 
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background: #111;
+    border: 1px solid #333;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.filter-btn.active, .filter-btn:hover {
+    background: #601dc2;
+    border-color: #601dc2;
+}
+
+/* 5. GENİŞ TURNUVA KARTLARI */
+.t-list-grid { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+}
+
+    .t-wide-card {
+    background: linear-gradient(145deg, #0a0a0a, #23083e);
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(35, 8, 62, 0.5);
+    border: 1px solid #222;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    transition: 0.3s;
+}
+
+.t-wide-card:hover {
+    border-color: #601dc2;
+    background: #141414;
+    transform: translateX(5px); /* Hafif sağa kayma efekti */
+}
+
+.t-image {
+    width: 80px;
+    height: 80px;
+    background: #601dc2;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0; /* Resmin ezilmesini önler */
+}
+
+.t-details { 
+    flex: 1; 
+    padding: 0 30px; 
+}
+
+.tag {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.live { background: #ff0044; box-shadow: 0 0 10px #ff0044; } 
+.open { background: #601dc2; }
+
+.t-meta { 
+    margin-top: 10px; 
+    display: flex; 
+    gap: 20px; 
+    color: #888; 
+    font-size: 14px; 
+}
+
+/* 6. BUTONLAR */
+.view-btn, .register-btn {
+    padding: 12px 25px;
+    border-radius: 5px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    min-width: 120px;
+}
+
+.view-btn { background: white; color: black; }
+.register-btn { background: #601dc2; color: white; }
+
+.view-btn:hover, .register-btn:hover { 
+    opacity: 0.9; 
+    transform: scale(1.05); 
+}
