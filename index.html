@@ -24,136 +24,107 @@
             overflow-x: hidden;
         }
 
-        /* --- HEADER --- */
+        /* --- OPTİMİZE EDİLMİŞ HEADER --- */
         header {
             background-color: var(--nav-bg);
-            padding: 0 10%; 
+            padding: 0 5%; 
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 80px;
-            border-bottom: 3px solid var(--neon-mor);
+            height: 70px; /* Biraz daha daraltıldı */
+            border-bottom: 2px solid var(--neon-mor);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
-        .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
+        .logo { font-size: 20px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; }
         .logo span { color: var(--neon-mor); }
-        nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
-        nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
-        nav ul li a:hover { color: var(--neon-mor); }
-        .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; }
-        .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
+        
+        nav ul { list-style: none; display: flex; align-items: center; gap: 15px; }
+        nav ul li a { color: white; text-decoration: none; font-size: 13px; font-weight: bold; transition: 0.3s; }
+        
+        .nav-btn { 
+            border: 1px solid var(--neon-mor); 
+            padding: 6px 15px; 
+            border-radius: 4px; 
+            color: white !important; 
+            background: transparent; 
+            font-size: 12px;
+        }
 
         /* --- HERO & CONTENT --- */
-        .hero { height: 70vh; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; background: url('img/banner deneme.jpg') center/cover fixed; }
-        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); }
-        .hero-content { position: relative; z-index: 2; }
-        .hero h1 { font-size: 3.5rem; font-weight: 900; }
-        .purple-neon { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
-        .container { padding: 60px 10%; }
-        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .card { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; padding: 20px; transition: 0.3s; }
-        .card:hover { border-color: var(--neon-mor); transform: translateY(-5px); }
+        .hero { height: 60vh; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; background: url('img/banner deneme.jpg') center/cover; }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); }
+        .hero-content { position: relative; z-index: 2; padding: 0 20px; }
+        .hero h1 { font-size: 2.5rem; font-weight: 900; line-height: 1.1; }
+        .purple-neon { color: var(--neon-mor); text-shadow: 0 0 10px var(--neon-mor); }
 
-        /* --- FOOTER (GÖRSELDEKİ BİREBİR YAPI) --- */
+        .container { padding: 40px 5%; }
+        .section-title { margin-bottom: 30px; border-left: 4px solid var(--neon-mor); padding-left: 12px; font-size: 22px; }
+        
+        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid #222; border-radius: 12px; padding: 20px; }
+
+        /* --- KOMPAKT FOOTER --- */
         footer {
             background-color: var(--nav-bg);
             border-top: 2px solid var(--neon-mor);
-            padding: 80px 10% 40px;
-            margin-top: 100px;
+            padding: 40px 5% 20px;
+            margin-top: 60px;
         }
 
         .footer-grid {
             display: grid;
             grid-template-columns: 1.5fr 1fr 1fr;
-            gap: 50px;
-            margin-bottom: 50px;
+            gap: 30px;
+            margin-bottom: 30px;
         }
 
-        /* OBB E-SPOR Sütunu */
-        .footer-brand h2 {
-            font-size: 28px;
-            font-weight: 900;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            border-bottom: 2px solid var(--neon-mor);
-            display: inline-block;
-        }
-        .footer-brand p {
-            color: var(--gri-yazi);
-            font-size: 15px;
-            max-width: 350px;
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-        .social-icons { display: flex; gap: 15px; }
+        .footer-brand h2 { font-size: 22px; margin-bottom: 15px; }
+        .footer-brand p { color: var(--gri-yazi); font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
+        
+        .social-icons { display: flex; gap: 10px; }
         .social-icons a {
-            width: 45px;
-            height: 45px;
-            background: #111;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            transition: 0.3s;
-        }
-        .social-icons a:hover {
-            background: var(--neon-mor);
-            transform: translateY(-3px);
-            box-shadow: 0 0 15px var(--neon-mor);
+            width: 35px; height: 35px; background: #111; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; text-decoration: none; font-size: 15px;
         }
 
-        /* Başlıklar */
-        .footer-column h3 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--neon-mor);
-            margin-bottom: 25px;
-            text-transform: uppercase;
-        }
-
-        /* Linkler ve İletişim */
+        .footer-column h3 { font-size: 16px; color: var(--neon-mor); margin-bottom: 15px; }
         .footer-column ul { list-style: none; }
-        .footer-column ul li { margin-bottom: 15px; }
-        .footer-column ul li a {
-            color: var(--yazi-beyaz);
-            text-decoration: none;
-            font-size: 15px;
-            transition: 0.3s;
-        }
-        .footer-column ul li a:hover { color: var(--neon-mor); }
+        .footer-column ul li { margin-bottom: 10px; }
+        .footer-column ul li a { color: var(--yazi-beyaz); text-decoration: none; font-size: 13px; }
 
-        /* İletişim İkonlu Satırlar */
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: var(--gri-yazi);
-            font-size: 15px;
-            margin-bottom: 15px;
-        }
-        .contact-item i { color: var(--neon-mor); font-size: 18px; width: 20px; text-align: center; }
+        .contact-item { display: flex; align-items: center; gap: 10px; color: var(--gri-yazi); font-size: 13px; margin-bottom: 10px; }
+        .contact-item i { color: var(--neon-mor); width: 15px; text-align: center; }
 
-        /* Alt Telif Yazısı */
-        .footer-bottom {
-            text-align: center;
-            border-top: 1px solid #1a1a1a;
-            padding-top: 30px;
-            color: #444;
-            font-size: 14px;
-        }
+        .footer-bottom { text-align: center; border-top: 1px solid #111; padding-top: 20px; color: #444; font-size: 12px; }
 
-        /* MOBİL UYUMLULUK */
-        @media (max-width: 992px) {
-            .footer-grid { grid-template-columns: 1fr; text-align: center; gap: 40px; }
-            .footer-brand p { margin: 0 auto 25px; }
+        /* --- MOBİL ÖZEL DÜZENLEME --- */
+        @media (max-width: 768px) {
+            header { height: auto; padding: 15px 5%; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 10px; }
+            nav ul { gap: 8px; }
+            nav ul li a { font-size: 11px; }
+            .logo { width: 100%; text-align: center; margin-bottom: 5px; font-size: 18px; }
+
+            /* Footer mobilde 2 satır/sütun yapısı */
+            .footer-grid {
+                grid-template-columns: 1fr 1fr; /* Yan yana iki sütun */
+                gap: 20px;
+            }
+
+            .footer-brand {
+                grid-column: span 2; /* Logo ve açıklama en üstte tam genişlik kaplasın */
+                text-align: center;
+                border-bottom: 1px solid #111;
+                padding-bottom: 20px;
+            }
+            .footer-brand p { max-width: 100%; }
             .social-icons { justify-content: center; }
-            .contact-item { justify-content: center; }
-            header { flex-direction: column; height: auto; padding: 20px; gap: 15px; }
+
+            .footer-column { text-align: left; padding-top: 10px; }
+            .footer-column:last-child { text-align: right; } /* İletişim kısmını sağa yasla */
+            .contact-item { justify-content: flex-end; }
         }
     </style>
 </head>
@@ -175,39 +146,28 @@
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1>ZAFER <span class="purple-neon">MOR</span> IŞIKTA PARLAR</h1>
-            <p>En iyi oyuncular, en karanlık arenalarda yetişir.</p>
+            <p>En iyi oyuncular burada yetişir.</p>
         </div>
     </div>
-
-    <section class="container">
-        <h2 class="section-title">DUYURULAR</h2>
-        <div class="grid-layout">
-            <div class="card"><h3>OBB E-SPOR</h3><p>Yeni sezon duyuruları burada yer alacak.</p></div>
-            <div class="card"><h3>TURNUVALAR</h3><p>Aktif turnuvaları kaçırma!</p></div>
-            <div class="card"><h3>SOSYAL MEDYA</h3><p>Topluluğumuza katıl.</p></div>
-        </div>
-    </section>
 
     <footer>
         <div class="footer-grid">
             <div class="footer-brand">
                 <h2>OBB <span style="color:white">E-SPOR</span></h2>
-                <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
+                <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, ödülleri topla.</p>
                 <div class="social-icons">
                     <a href="#"><i class="fa-brands fa-instagram"></i></a>
                     <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
                     <a href="#"><i class="fa-brands fa-discord"></i></a>
-                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
                 </div>
             </div>
 
             <div class="footer-column">
-                <h3>HIZLI MENÜ</h3>
+                <h3>MENÜ</h3>
                 <ul>
                     <li><a href="#">Ana Sayfa</a></li>
                     <li><a href="#">Turnuvalar</a></li>
-                    <li><a href="#">Canlı Yayınlar</a></li>
-                    <li><a href="#">Kayıt Ol</a></li>
+                    <li><a href="#">Canlı</a></li>
                 </ul>
             </div>
 
@@ -215,21 +175,17 @@
                 <h3>İLETİŞİM</h3>
                 <div class="contact-item">
                     <i class="fa-solid fa-envelope"></i>
-                    <span>info@obbesports.com</span>
-                </div>
-                <div class="contact-item">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <span>İstanbul, Türkiye</span>
+                    <span>info@obb.com</span>
                 </div>
                 <div class="contact-item">
                     <i class="fa-solid fa-headset"></i>
-                    <span>7/24 Destek Ekibi</span>
+                    <span>Destek</span>
                 </div>
             </div>
         </div>
 
         <div class="footer-bottom">
-            <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
+            <p>&copy; 2026 OBB E-SPOR.</p>
         </div>
     </footer>
 
