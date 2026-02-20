@@ -209,4 +209,96 @@ nav ul li a:hover {
 .view-btn:hover, .register-btn:hover { 
     opacity: 0.9; 
     transform: scale(1.05); 
+
+}
+/* --- TURNUVALAR MOBİL UYUMLULUK (768px ve altı) --- */
+@media (max-width: 768px) {
+    
+    /* Navigasyon Ayarı */
+    nav {
+        padding: 0 5%;
+        flex-direction: column;
+        height: auto;
+        padding-bottom: 15px;
+    }
+
+    .logo {
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    nav ul {
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    nav ul li a {
+        font-size: 12px;
+    }
+
+    /* Banner Alanı */
+    .t-header-banner {
+        padding: 50px 20px;
+    }
+
+    .t-header-banner h1 {
+        font-size: 1.6rem;
+    }
+
+    /* Konteynır ve Filtreler */
+    .t-container {
+        padding: 20px 5%;
+    }
+
+    .filters {
+        justify-content: center;
+    }
+
+    .filter-btn {
+        padding: 8px 15px;
+        font-size: 12px;
+    }
+
+    /* TURNUVA KARTLARI (Kritik Değişim) */
+    .t-wide-card {
+        flex-direction: column; /* Mobilde her şey alt alta */
+        text-align: center;
+        padding: 25px 15px;
+    }
+
+    .t-image {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 15px;
+        font-size: 24px;
+    }
+
+    .t-details {
+        padding: 0;
+        margin-bottom: 20px;
+    }
+
+    .t-meta {
+        flex-direction: column; /* Ödül ve Kayıt bilgisi alt alta */
+        gap: 5px;
+        align-items: center;
+    }
+
+    .t-action {
+        width: 100%;
+    }
+
+    .view-btn, .register-btn {
+        width: 100%; /* Buton telefon ekranını kaplasın */
+        padding: 15px;
+    }
+}
+
+/* Çok Küçük Telefonlar İçin (480px altı) */
+@media (max-width: 480px) {
+    .nav-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
 }
