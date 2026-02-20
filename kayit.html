@@ -180,19 +180,29 @@
         font-size: 10px;
     }
 }
+      /* TÜM SAYFALARDAKİ HEADER'I SABİTLEYEN KOD */
+header, nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10% !important; /* Yan boşlukları zorla sabitle */
+    height: 80px !important;    /* Yüksekliği zorla sabitle */
+    background-color: #000000;
+    border-bottom: 3px solid #601dc2;
+    box-shadow: 0 0 20px rgba(96, 29, 194, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
-        /* --- HEADER --- */
-        header {
-            background-color: var(--nav-bg);
-            padding: 0 10%; 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 80px;
-            border-bottom: 3px solid var(--neon-mor);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+
+/* Mobilde bozulmaması için (Media Query içine ekle) */
+@media (max-width: 768px) {
+    header, nav {
+        height: auto !important; /* Mobilde mecbur uzamalı */
+        padding: 15px 5% !important;
+        flex-direction: column;
+    }
+}
         }
 
         .logo {
@@ -485,6 +495,7 @@
 </footer>
 </body>
 </html>
+
 
 
 
