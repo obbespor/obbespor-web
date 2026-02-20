@@ -26,7 +26,7 @@
             padding-top: 80px;
         }
 
-        /* --- AKILLI HEADER (ESKİ HALİNE GETİRİLDİ) --- */
+        /* --- AKILLI HEADER --- */
         header {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -76,7 +76,7 @@
         .card-link { display: inline-block; margin-top: 18px; color: var(--yazi-beyaz); text-decoration: none; font-weight: bold; font-size: 13px; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; transition: 0.3s; }
         .card-link:hover { color: var(--neon-mor); }
 
-        /* --- FOOTER (BEĞENDİĞİN YAPI) --- */
+        /* --- FOOTER (KORUNAN MODERN YAPI) --- */
         footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
         
@@ -97,16 +97,19 @@
         .contact-item i { color: var(--neon-mor); font-size: 16px; width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 14px; }
 
-        /* --- MOBİL ÖZEL AYARLAR --- */
+        /* --- MOBİL ÖZEL AYARLAR (GÖRSELE GÖRE HEADER VE FOOTER) --- */
         @media (max-width: 768px) {
-            header { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
-            body { padding-top: 125px; } 
+            /* Mobil Header Düzenlemesi */
+            header { height: auto; padding: 20px 5%; flex-direction: column; gap: 15px; }
+            body { padding-top: 130px; } 
             
-            nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
-            nav ul li a { font-size: 10px; white-space: nowrap; }
-            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
+            .logo { font-size: 26px; text-align: center; width: 100%; }
+            nav { width: 100%; }
+            nav ul { gap: 8px; flex-wrap: nowrap; justify-content: space-between; width: 100%; align-items: center; }
+            nav ul li a { font-size: 11px; white-space: nowrap; font-weight: 800; }
+            .nav-btn { padding: 6px 14px; font-size: 11px !important; border-radius: 4px; }
 
-            /* Footer Mobil - Yeni Modern Düzen */
+            /* Mobil Footer Düzenlemesi */
             footer { padding: 60px 5% 30px; }
             .footer-grid { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 40px; }
             
@@ -130,7 +133,8 @@
                 border-top: 1px solid #1a1a1a;
                 padding-top: 40px;
             }
-            .footer-column h3 { font-size: 18px; }
+            .footer-column h3 { font-size: 18px; margin-bottom: 15px; }
+            .footer-column ul li a { font-size: 14px; }
             .contact-item { font-size: 13px; justify-content: flex-start; }
             .footer-bottom { margin-top: 20px; font-size: 12px; }
         }
@@ -166,11 +170,29 @@
                 <div class="card-img">OBB E-SPOR</div>
                 <div class="card-body">
                     <h3>YENİ SEZON BAŞLIYOR</h3>
-                    <p>Ordu'nun en rekabetçi e-spor liginde 3. sezon heyecanı çok yakında başlıyor.</p>
+                    <p>Ordu'nun en rekabetçi e-spor liginde 3. sezon heyecanı çok yakında başlıyor. Hazırlıklarınızı tamamlayın.</p>
                     <a href="#" class="card-link">DETAYLARI GÖR</a>
                 </div>
             </div>
+
+            <div class="card">
+                <div class="card-img">VALORANT</div>
+                <div class="card-body">
+                    <h3>TOPLULUK TURNUVASI</h3>
+                    <p>Ödül havuzu 10.000 TL olan Valorant Topluluk Turnuvası için kayıtlar açıldı. Takımını kur ve katıl!</p>
+                    <a href="kayit.html" class="card-link">ŞİMDİ KAYDOL</a>
+                </div>
             </div>
+
+            <div class="card">
+                <div class="card-img">TOPLULUK</div>
+                <div class="card-body">
+                    <h3>DISCORD'A KATILIN</h3>
+                    <p>Takım arkadaşı bulmak, antrenman maçları düzenlemek ve yetkililerle iletişim kurmak için Discord'dayız.</p>
+                    <a href="#" class="card-link">SUNUCUYA GİT</a>
+                </div>
+            </div>
+        </div>
     </section>
 
     <footer>
@@ -213,6 +235,7 @@
     <script>
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
+
         window.addEventListener("scroll", function() {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             if (scrollTop > lastScrollTop && scrollTop > 100) {
