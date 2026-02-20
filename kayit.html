@@ -32,24 +32,24 @@
             justify-content: space-between;
             align-items: center;
             height: 80px;
-            border-bottom: 3px solid var(--neon-mor);
+            border-bottom: 2px solid var(--neon-mor);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
-        .logo { font-size: 20px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; }
+        .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; }
         .logo span { color: var(--neon-mor); }
         
-        nav ul { list-style: none; display: flex; align-items: center; gap: 12px; }
-        nav ul li a { color: white; text-decoration: none; font-size: 12px; font-weight: bold; transition: 0.3s; }
+        nav ul { list-style: none; display: flex; align-items: center; gap: 15px; }
+        nav ul li a { color: white; text-decoration: none; font-size: 13px; font-weight: bold; }
         
         .nav-btn { 
-            border: 2px solid var(--neon-mor); 
-            padding: 6px 15px; 
+            border: 1px solid var(--neon-mor); 
+            padding: 8px 18px; 
             border-radius: 5px; 
             color: white !important;
             background: transparent;
-            font-size: 12px !important;
+            font-size: 13px !important;
         }
 
         /* --- KAYIT ALANI --- */
@@ -62,7 +62,6 @@
             background: radial-gradient(circle at center, #1a052d 0%, #050505 100%);
         }
         .main-layout { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 1600px; gap: 40px; }
-        
         .auth-side-image { flex: 1; display: flex; justify-content: center; }
         .auth-side-image img { width: 100%; max-width: 450px; border-radius: 20px; filter: drop-shadow(0 0 30px rgba(96, 29, 194, 0.4)); }
         
@@ -72,20 +71,20 @@
         }
         .auth-header { text-align: center; margin-bottom: 25px; }
         .auth-header h1 { font-size: 1.8rem; font-weight: 900; }
-        .purple-neon { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
+        .purple-neon { color: var(--neon-mor); }
 
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; margin-bottom: 5px; font-size: 13px; color: var(--gri-yazi); }
         .input-group input {
             width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px;
-            color: white; outline: none; transition: 0.3s;
+            color: white; outline: none;
         }
         .register-btn {
             width: 100%; padding: 15px; background: var(--neon-mor); color: white; border: none;
             border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase;
         }
 
-        /* --- 3x2 FOOTER YAPISI (GÖRSELDEKİ STANDART) --- */
+        /* --- 3x2 FOOTER YAPISI (STANDARTLARA DÖNÜŞ) --- */
         .main-footer {
             background-color: #000000;
             border-top: 1px solid var(--neon-mor);
@@ -93,61 +92,66 @@
         }
         .footer-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 Sütun */
-            gap: 30px;
-            max-width: 1200px;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
-        /* Üst Satır: Marka (Tüm sütunları kaplar) */
-        .footer-brand-row {
-            grid-column: span 3;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .footer-brand-row h2 {
-            color: #ffffff;
+        .footer-brand-col h2 {
+            color: var(--neon-mor);
             font-size: 26px;
             font-weight: 900;
-            text-transform: uppercase;
-            display: inline-block;
-            position: relative;
+            text-decoration: underline;
+            text-underline-offset: 8px;
+            margin-bottom: 20px;
         }
-        .footer-brand-row h2::after {
-            content: ''; display: block; width: 100%; height: 3px; background-color: var(--neon-mor); margin-top: 5px;
-        }
-        .footer-desc { color: #ffffff; font-size: 14px; margin: 15px auto; max-width: 400px; line-height: 1.5; }
+        .footer-desc { color: #ffffff; font-size: 14px; margin-bottom: 20px; max-width: 380px; line-height: 1.6; }
         
-        .footer-socials { display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; }
+        .footer-socials { display: flex; gap: 12px; }
         .footer-socials a {
-            width: 40px; height: 40px; background: #1a1a1a; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; color: white; text-decoration: none;
+            width: 42px; height: 42px; background: #111111; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s;
         }
 
-        /* Alt Satır: Menü ve İletişim */
-        .footer-menu-col { grid-column: span 1.5; text-align: left; padding-left: 10%; }
-        .footer-contact-col { grid-column: span 1.5; text-align: left; padding-left: 5%; }
-
-        .footer-section h3 { color: var(--neon-mor); font-size: 16px; margin-bottom: 20px; text-transform: uppercase; }
+        .footer-section h3 { color: var(--neon-mor); font-size: 17px; margin-bottom: 20px; text-transform: uppercase; }
         .footer-links, .contact-info { list-style: none; }
-        .footer-links li, .contact-info li { margin-bottom: 12px; font-size: 14px; color: #ffffff; }
-        .footer-links li a { color: #ffffff; text-decoration: none; }
-        .contact-info li { display: flex; align-items: center; gap: 10px; }
-        .contact-info i { color: var(--neon-mor); width: 18px; }
+        .footer-links li, .contact-info li { margin-bottom: 15px; font-size: 15px; color: #ffffff; }
+        .footer-links li a { color: #ffffff; text-decoration: none; transition: 0.2s; }
+        .footer-links li a:hover { color: var(--neon-mor); }
+        
+        .contact-info li { display: flex; align-items: center; gap: 12px; }
+        .contact-info i { color: var(--neon-mor); font-size: 16px; }
 
-        .footer-bottom { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #111; color: #444; font-size: 11px; }
+        .footer-bottom { text-align: center; margin-top: 50px; padding-top: 20px; color: #333; font-size: 12px; }
 
-        /* --- RESPONSIVE ÇÖZÜMLER --- */
-        @media (max-width: 1024px) {
-            .auth-side-image { display: none; }
-        }
-
+        /* --- MOBİL 3x2 VE HEADER DÜZENİ --- */
         @media (max-width: 768px) {
-            .footer-container { grid-template-columns: 1fr 1fr; } /* Mobilde Menü ve İletişim yan yana */
-            .footer-brand-row { grid-column: span 2; }
-            .footer-menu-col, .footer-contact-col { grid-column: span 1; padding-left: 0; }
-            header.main-nav { height: 70px; }
-            .logo { font-size: 16px; }
+            header.main-nav { padding: 0 4%; height: 75px; }
+            .logo { font-size: 18px; }
+            nav ul { gap: 8px; }
+            nav ul li a { font-size: 10px; }
+            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
+
+            .auth-side-image { display: none; }
+            
+            /* Footer 3x2 Düzeni */
+            .footer-container { 
+                grid-template-columns: 1fr 1fr; /* Alt kısım 2 sütun */
+                gap: 20px;
+            }
+            .footer-brand-col { 
+                grid-column: span 2; /* Marka en üstte tek başına */
+                text-align: center;
+                margin-bottom: 10px;
+            }
+            .footer-brand-col h2 { font-size: 24px; text-align: center; }
+            .footer-desc { margin: 15px auto; text-align: center; }
+            .footer-socials { justify-content: center; }
+            
+            .footer-section { text-align: left; }
+            .contact-info li { justify-content: flex-start; font-size: 13px; }
+            .footer-links li { font-size: 13px; }
         }
     </style>
 </head>
@@ -167,7 +171,7 @@
 
     <div class="auth-wrapper">
         <div class="main-layout">
-            <div class="auth-side-image"><img src="img/obb jett.jpg" alt="OBB Jett"></div>
+            <div class="auth-side-image"><img src="img/obb jett.jpg" alt="Jett"></div>
             <div class="auth-card">
                 <div class="auth-header">
                     <h1>ARENAYA <span class="purple-neon">KATIL</span></h1>
@@ -177,7 +181,7 @@
                     <div class="input-group"><label>E-posta</label><input type="email" id="email" placeholder="ornek@mail.com" required></div>
                     <div class="input-group"><label>Telefon</label><input type="tel" id="phone" placeholder="05XX XXX XX XX" required></div>
                     <div class="input-group"><label>Şifre</label><input type="password" id="password" placeholder="••••••••" required minlength="6"></div>
-                    <button type="submit" class="register-btn" id="submitBtn">HESABI OLUŞTUR</button>
+                    <button type="submit" class="register-btn">HESABI OLUŞTUR</button>
                 </form>
             </div>
             <div class="auth-side-image"><img src="img/obbchamber.jpg" alt="Chamber"></div>
@@ -186,7 +190,7 @@
 
     <footer class="main-footer">
         <div class="footer-container">
-            <div class="footer-brand-row">
+            <div class="footer-brand-col">
                 <h2>OBB E-SPOR</h2>
                 <p class="footer-desc">Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
                 <div class="footer-socials">
@@ -197,22 +201,22 @@
                 </div>
             </div>
 
-            <div class="footer-section footer-menu-col">
+            <div class="footer-section">
                 <h3>HIZLI MENÜ</h3>
                 <ul class="footer-links">
                     <li><a href="index.html">Ana Sayfa</a></li>
                     <li><a href="tournaments.html">Turnuvalar</a></li>
-                    <li><a href="canli.html">Canlı</a></li>
+                    <li><a href="canli.html">Canlı Yayınlar</a></li>
                     <li><a href="kayit.html">Kayıt Ol</a></li>
                 </ul>
             </div>
 
-            <div class="footer-section footer-contact-col">
+            <div class="footer-section">
                 <h3>İLETİŞİM</h3>
                 <ul class="contact-info">
                     <li><i class="fas fa-envelope"></i> info@obbesports.com</li>
                     <li><i class="fas fa-location-dot"></i> İstanbul, Türkiye</li>
-                    <li><i class="fas fa-headset"></i> 7/24 Destek</li>
+                    <li><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
                 </ul>
             </div>
         </div>
