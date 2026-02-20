@@ -1,4 +1,204 @@
-<div class="streams-grid">
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canlı Yayın Ekibi | OBB E-SPOR</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --ana-siyah: #050505;
+            --nav-bg: #0a0a0c;
+            --neon-mor: #601dc2; 
+            --yazi-beyaz: #ffffff;
+            --gri-yazi: #a0a0a0;
+        }
+
+        body {
+            background-color: var(--ana-siyah);
+            color: var(--yazi-beyaz);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background-color: var(--nav-bg);
+            padding: 15px 5%; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--neon-mor);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+
+        .logo span { color: var(--neon-mor); }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center; 
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        nav ul li a:hover { color: var(--neon-mor); }
+
+        .nav-btn {
+            border: 2px solid var(--neon-mor); 
+            padding: 6px 15px;
+            border-radius: 5px;
+            color: white !important;
+            background: transparent;
+            text-decoration: none;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            padding: 40px 5%;
+        }
+
+        .section-title {
+            text-align: center;
+            color: var(--neon-mor);
+            font-size: 2rem;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        .streams-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 25px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #111111;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #222;
+            transition: 0.3s ease;
+        }
+
+        .card:hover { border-color: var(--neon-mor); transform: translateY(-5px); }
+
+        .video-box { 
+            position: relative; 
+            padding-bottom: 56.25%; 
+            height: 0; 
+            background: #000; 
+        }
+
+        .video-box iframe { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+        }
+
+        .card-footer { 
+            padding: 15px; 
+            background: #18181b; 
+        }
+
+        .footer-top { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 12px; 
+        }
+
+        .name { font-weight: 600; font-size: 1rem; color: #fff; }
+
+        .social-links { display: flex; gap: 12px; }
+        .social-links a { color: var(--gri-yazi); font-size: 1.1rem; transition: 0.3s; }
+        .social-links a:hover { color: var(--neon-mor); }
+
+        .btn-kick {
+            display: block;
+            background-color: var(--neon-mor);
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        /* --- RESPONSIVE (MOBİL) --- */
+        @media (max-width: 1100px) {
+            .streams-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            nav ul {
+                justify-content: center;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .streams-grid {
+                grid-template-columns: 1fr; /* Mobilde tek sıra */
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
+    <nav>
+        <ul>
+            <li><a href="index.html">ANA SAYFA</a></li>
+            <li><a href="tournaments.html">TURNUVALAR</a></li>
+            <li><a href="canli.html">CANLI</a></li>
+            <li><a href="kayit.html" class="nav-btn">KATIL</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="main-content">
+    <h2 class="section-title">EKİP CANLI YAYINDA</h2>
+
+    <div class="streams-grid">
         <div class="card">
             <div class="video-box"><iframe src="https://player.kick.com/xqc?muted=true"></iframe></div>
             <div class="card-footer">
@@ -42,7 +242,7 @@
         </div>
 
         <div class="card">
-            <div class="video-box"><iframe src="https://player.kick.com/KULLANICI_4?muted=true"></iframe></div>
+            <div class="video-box"><iframe src="https://player.kick.com/adinross?muted=true"></iframe></div>
             <div class="card-footer">
                 <div class="footer-top">
                     <span class="name">OYUNCU 4</span>
@@ -51,12 +251,12 @@
                         <a href="#"><i class="fab fa-x-twitter"></i></a>
                     </div>
                 </div>
-                <a href="#" class="btn-kick">KICK'TE AÇ</a>
+                <a href="https://kick.com/adinross" target="_blank" class="btn-kick">KICK'TE AÇ</a>
             </div>
         </div>
 
         <div class="card">
-            <div class="video-box"><iframe src="https://player.kick.com/KULLANICI_5?muted=true"></iframe></div>
+            <div class="video-box"><iframe src="https://player.kick.com/stacy?muted=true"></iframe></div>
             <div class="card-footer">
                 <div class="footer-top">
                     <span class="name">OYUNCU 5</span>
@@ -65,12 +265,12 @@
                         <a href="#"><i class="fab fa-x-twitter"></i></a>
                     </div>
                 </div>
-                <a href="#" class="btn-kick">KICK'TE AÇ</a>
+                <a href="https://kick.com/stacy" target="_blank" class="btn-kick">KICK'TE AÇ</a>
             </div>
         </div>
 
         <div class="card">
-            <div class="video-box"><iframe src="https://player.kick.com/KULLANICI_6?muted=true"></iframe></div>
+            <div class="video-box"><iframe src="https://player.kick.com/trainwreckstv?muted=true"></iframe></div>
             <div class="card-footer">
                 <div class="footer-top">
                     <span class="name">OYUNCU 6</span>
@@ -79,7 +279,12 @@
                         <a href="#"><i class="fab fa-x-twitter"></i></a>
                     </div>
                 </div>
-                <a href="#" class="btn-kick">KICK'TE AÇ</a>
+                <a href="https://kick.com/trainwreckstv" target="_blank" class="btn-kick">KICK'TE AÇ</a>
             </div>
         </div>
+
     </div>
+</div>
+
+</body>
+</html>
