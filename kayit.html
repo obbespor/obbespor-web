@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kayıt Ol | OBB E-SPOR</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -15,17 +15,21 @@
             --gri-yazi: #a0a0a0;
         }
 
+        /* Beyazlığı ve taşmayı önleyen temel ayarlar */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; overflow-x: hidden; }
+        html { background-color: var(--ana-siyah); scroll-behavior: smooth; }
+        
         body {
             background: radial-gradient(circle at top, #1a052d 0%, #050505 100%);
             background-attachment: fixed;
             color: var(--yazi-beyaz);
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 80px; /* Header payı */
         }
 
-        /* --- HEADER (SABİT STANDART) --- */
+        /* --- AKILLI HEADER (STANDART YAPI) --- */
         header {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -34,19 +38,37 @@
             align-items: center;
             height: 80px;
             border-bottom: 3px solid var(--neon-mor);
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            width: 100%;
             z-index: 1000;
+            transition: transform 0.4s ease-in-out;
+            box-shadow: 0 0 25px rgba(96, 29, 194, 0.3);
         }
+
+        header.nav-hidden { transform: translateY(-110%); }
+
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); }
+        
         nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
         nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
         nav ul li a:hover { color: var(--neon-mor); }
-        .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; font-weight: bold; }
+        
+        .nav-btn { 
+            border: 2px solid var(--neon-mor); 
+            padding: 8px 20px; 
+            border-radius: 5px; 
+            color: white !important; 
+            background: transparent; 
+            transition: 0.3s;
+            text-decoration: none;
+            font-weight: bold;
+        }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- KAYIT FORMU VE BÜYÜTÜLMÜŞ GÖRSELLER --- */
+        /* --- KAYIT FORMU VE GÖRSELLER --- */
         .auth-wrapper {
             min-height: calc(100vh - 160px);
             display: flex;
@@ -54,11 +76,9 @@
             justify-content: center;
             padding: 40px 20px;
         }
-        /* Layout genişliği görseller için 1600px'e çıkarıldı */
         .main-layout { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 1600px; gap: 20px; }
         
         .auth-side-image { flex: 1.2; display: flex; justify-content: center; }
-        /* Görsel boyutu 400px'den 520px'e yükseltildi */
         .auth-side-image img { 
             width: 100%; 
             max-width: 520px; 
@@ -95,57 +115,73 @@
         }
         .register-btn:hover { transform: scale(1.02); box-shadow: 0 0 20px var(--neon-mor); }
 
-        /* --- FOOTER (STANDART 3x2 MOBİL DESTEKLİ) --- */
-        footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
+        /* --- FOOTER (ANA SAYFA İLE AYNI) --- */
+        footer {
+            background-color: var(--nav-bg);
+            border-top: 2px solid var(--neon-mor);
+            padding: 80px 10% 40px;
+            margin-top: 80px;
+        }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
-        
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
         .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; line-height: 1.6; }
         
         .social-icons { display: flex; gap: 15px; }
-        .social-icons a { width: 45px; height: 45px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; border: 1px solid #222; }
-        .social-icons a:hover { background: var(--neon-mor); border-color: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
+        .social-icons a {
+            width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s;
+        }
+        .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); border-color: var(--neon-mor); }
 
-        .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
+        .footer-column h3 { font-size: 20px; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
         .footer-column ul { list-style: none; }
         .footer-column ul li { margin-bottom: 12px; }
-        .footer-column ul li a { color: var(--yazi-beyaz); text-decoration: none; font-size: 15px; transition: 0.3s; }
+        .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
         .footer-column ul li a:hover { color: var(--neon-mor); }
 
-        .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
-        .contact-item i { color: var(--neon-mor); font-size: 16px; width: 20px; text-align: center; }
-        .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 14px; }
+        .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 14px; margin-bottom: 12px; }
+        .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
 
-        /* --- RESPONSIVE AYARLAR --- */
-        @media (max-width: 1200px) {
-            .auth-side-image img { max-width: 380px; }
-        }
+        .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
+        /* --- MOBİL UYUMLULUK (BİREBİR AYNI) --- */
         @media (max-width: 1024px) {
             .auth-side-image { display: none; }
-            .auth-card { flex: 1; width: 100%; }
         }
 
         @media (max-width: 768px) {
-            header { height: auto; padding: 20px 5%; flex-direction: row; justify-content: space-between; }
-            .logo { font-size: 18px; }
-            nav ul { gap: 8px; }
-            nav ul li a { font-size: 10px; }
+            header { height: auto; padding: 15px 5%; flex-direction: column; gap: 12px; top: 0; }
+            body { padding-top: 130px; } 
+            
+            .logo { font-size: 24px; text-align: center; width: 100%; }
+            nav { width: 100%; }
+            nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 10px; white-space: nowrap; }
             .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
-            /* Footer Mobil 3x2 */
-            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
-            .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #1a1a1a; padding-bottom: 30px; }
-            .footer-brand p { max-width: 100%; }
-            .social-icons { justify-content: center; }
-            .footer-column { text-align: left; }
-            .contact-item { justify-content: flex-start; font-size: 13px; }
+            .auth-card { padding: 30px 20px; }
+
+            /* Footer Mobil Görünümü */
+            footer { padding: 60px 5% 30px; }
+            .footer-grid { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 40px; }
+            .footer-brand h2 { font-size: 32px; text-decoration: underline; text-underline-offset: 12px; text-decoration-color: var(--neon-mor); border-bottom: none; display: block; margin-bottom: 25px; }
+            .social-icons { justify-content: center; gap: 20px; }
+            
+            .footer-links-wrapper { 
+                display: grid; 
+                grid-template-columns: 1fr 1fr; 
+                width: 100%; 
+                gap: 20px; 
+                text-align: left;
+                border-top: 1px solid #1a1a1a;
+                padding-top: 40px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header>
+    <header id="mainHeader">
         <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
         <nav>
             <ul>
@@ -204,29 +240,22 @@
                 </div>
             </div>
 
-            <div class="footer-column">
-                <h3>HIZLI MENÜ</h3>
-                <ul>
-                    <li><a href="index.html">Ana Sayfa</a></li>
-                    <li><a href="tournaments.html">Turnuvalar</a></li>
-                    <li><a href="canli.html">Canlı Yayınlar</a></li>
-                    <li><a href="kayit.html">Kayıt Ol</a></li>
-                </ul>
-            </div>
+            <div class="footer-links-wrapper">
+                <div class="footer-column">
+                    <h3>HIZLI MENÜ</h3>
+                    <ul>
+                        <li><a href="index.html">Ana Sayfa</a></li>
+                        <li><a href="tournaments.html">Turnuvalar</a></li>
+                        <li><a href="canli.html">Canlı Yayınlar</a></li>
+                        <li><a href="kayit.html">Kayıt Ol</a></li>
+                    </ul>
+                </div>
 
-            <div class="footer-column">
-                <h3>İLETİŞİM</h3>
-                <div class="contact-item">
-                    <i class="fa-solid fa-envelope"></i>
-                    <span>info@obbesports.com</span>
-                </div>
-                <div class="contact-item">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <span>Ordu, Türkiye</span>
-                </div>
-                <div class="contact-item">
-                    <i class="fa-solid fa-headset"></i>
-                    <span>7/24 Destek Ekibi</span>
+                <div class="footer-column">
+                    <h3>İLETİŞİM</h3>
+                    <div class="contact-item"><i class="fa-solid fa-envelope"></i> <span>info@obbesports.com</span></div>
+                    <div class="contact-item"><i class="fa-solid fa-location-dot"></i> <span>Ordu, Türkiye</span></div>
+                    <div class="contact-item"><i class="fa-solid fa-headset"></i> <span>7/24 Destek</span></div>
                 </div>
             </div>
         </div>
@@ -236,5 +265,20 @@
         </div>
     </footer>
 
+    <script>
+        // Akıllı Scroll Header
+        let lastScrollTop = 0;
+        const header = document.getElementById("mainHeader");
+
+        window.addEventListener("scroll", function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                header.classList.add("nav-hidden");
+            } else {
+                header.classList.remove("nav-hidden");
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+        }, false);
+    </script>
 </body>
 </html>
