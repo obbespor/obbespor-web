@@ -22,7 +22,131 @@
             padding: 0;
             overflow-x: hidden;
         }
+/* --- FOOTER TASARIMI --- */
+.main-footer {
+    background-color: #080808;
+    border-top: 2px solid #601dc2;
+    padding: 60px 0 20px 0;
+    margin-top: 50px;
+}
 
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5%;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr; /* 3 Sütunlu yapı */
+    gap: 40px;
+}
+
+.footer-section h3 {
+    color: #601dc2;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-desc {
+    color: #a0a0a0;
+    font-size: 14px;
+    margin: 20px 0;
+    line-height: 1.6;
+    max-width: 300px;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 12px;
+}
+
+.footer-section ul li a {
+    color: #a0a0a0;
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 14px;
+}
+
+.footer-section ul li a:hover {
+    color: #601dc2;
+    padding-left: 5px;
+}
+
+.footer-socials {
+    display: flex;
+    gap: 15px;
+}
+
+.footer-socials a {
+    width: 40px;
+    height: 40px;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.footer-socials a:hover {
+    background: #601dc2;
+    transform: translateY(-3px);
+    box-shadow: 0 0 15px #601dc2;
+}
+
+.contact-info li {
+    color: #a0a0a0;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.contact-info i {
+    color: #601dc2;
+    width: 20px;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #1a1a1a;
+    color: #555;
+    font-size: 12px;
+}
+
+/* --- FOOTER MOBİL UYUMLULUK --- */
+@media (max-width: 768px) {
+    .footer-container {
+        grid-template-columns: 1fr; /* Mobilde her şey tek sütun */
+        text-align: center;
+        gap: 30px;
+    }
+
+    .footer-desc {
+        margin: 20px auto;
+    }
+
+    .footer-socials {
+        justify-content: center;
+    }
+
+    .contact-info li {
+        justify-content: center;
+    }
+
+    .footer-section ul li a:hover {
+        padding-left: 0; /* Mobilde kayma efektini kapat */
+    }
+}
         /* --- HEADER --- */
         header {
             background-color: var(--nav-bg);
@@ -325,4 +449,5 @@
 
 </body>
 </html>
+
 
