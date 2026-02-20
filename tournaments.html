@@ -25,10 +25,10 @@
             color: var(--yazi-beyaz);
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
-            padding-top: 80px; /* Header fixed olduğu için eklendi */
+            padding-top: 80px; /* Akıllı Header için */
         }
 
-        /* --- 2. AKILLI HEADER (ENTEGRE EDİLEN YAPI) --- */
+        /* --- 2. AKILLI HEADER (KORUNAN YAPI) --- */
         header.main-nav {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -37,7 +37,7 @@
             align-items: center;
             height: 80px;
             border-bottom: 3px solid var(--neon-mor);
-            position: fixed; /* Akıllı takip için fixed */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -45,7 +45,6 @@
             transition: transform 0.4s ease-in-out;
         }
 
-        /* Gizleme sınıfı */
         header.main-nav.nav-hidden {
             transform: translateY(-110%);
         }
@@ -107,6 +106,7 @@
         .live { background: #ff0044; box-shadow: 0 0 10px #ff0044; }
         .open { background: var(--neon-mor); }
         .t-meta { margin-top: 15px; display: flex; gap: 25px; color: var(--gri-yazi); font-size: 14px; }
+        .t-meta strong { color: white; }
 
         .view-btn, .register-btn {
             padding: 12px 30px; border-radius: 6px; border: none;
@@ -115,7 +115,7 @@
         .view-btn { background: white; color: black; }
         .register-btn { background: var(--neon-mor); color: white; }
 
-        /* --- 5. FOOTER --- */
+        /* --- 5. FOOTER (ORİJİNAL CLASS VE STİLLER GERİ GELDİ) --- */
         footer {
             background-color: var(--nav-bg);
             border-top: 2px solid var(--neon-mor);
@@ -123,18 +123,30 @@
             margin-top: 100px;
         }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
-        .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; }
-        .footer-socials { display: flex; gap: 15px; }
-        .footer-socials a {
+        
+        .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
+        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
+        
+        .social-icons { display: flex; gap: 15px; }
+        .social-icons a {
             width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s;
         }
-        .footer-section h3 { font-size: 20px; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
+        .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
+
+        .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
+        .footer-column ul { list-style: none; }
+        .footer-column ul li { margin-bottom: 12px; }
+        .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
+        .footer-column ul li a:hover { color: var(--neon-mor); }
+
+        .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
+        .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
+
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* --- 6. MOBİL UYUMLULUK (HEADER VE FOOTER GÜNCELLENDİ) --- */
+        /* --- 6. MOBİL UYUMLULUK --- */
         @media (max-width: 768px) {
-            /* Mobil Header Düzeni */
             header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
             body { padding-top: 125px; }
             nav { width: 100%; }
@@ -148,11 +160,11 @@
             .t-meta { justify-content: center; flex-direction: column; gap: 8px; }
             .view-btn, .register-btn { width: 100%; }
 
-            /* Mobil Footer Düzeni */
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
             .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
-            .footer-socials { justify-content: center; }
-            .footer-section { text-align: left; }
+            .footer-brand p { max-width: 100%; }
+            .social-icons { justify-content: center; }
+            .footer-column { text-align: left; }
         }
     </style>
 </head>
@@ -223,7 +235,7 @@
             <div class="footer-brand">
                 <h2>OBB <span style="color:white">E-SPOR</span></h2>
                 <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
-                <div class="footer-socials">
+                <div class="social-icons">
                     <a href="#"><i class="fab fa-instagram"></i></a>
                     <a href="#"><i class="fab fa-x-twitter"></i></a>
                     <a href="#"><i class="fab fa-discord"></i></a>
@@ -231,7 +243,7 @@
                 </div>
             </div>
 
-            <div class="footer-section">
+            <div class="footer-column">
                 <h3>Hızlı Menü</h3>
                 <ul>
                     <li><a href="index.html">Ana Sayfa</a></li>
@@ -241,12 +253,12 @@
                 </ul>
             </div>
 
-            <div class="footer-section">
+            <div class="footer-column">
                 <h3>İletişim</h3>
-                <ul class="contact-info">
-                    <li style="list-style: none; color: var(--gri-yazi); font-size: 14px; margin-bottom: 12px;"><i class="fas fa-envelope" style="color: var(--neon-mor); margin-right: 10px;"></i> info@obbesports.com</li>
-                    <li style="list-style: none; color: var(--gri-yazi); font-size: 14px; margin-bottom: 12px;"><i class="fas fa-location-dot" style="color: var(--neon-mor); margin-right: 10px;"></i> Ordu, Türkiye</li>
-                    <li style="list-style: none; color: var(--gri-yazi); font-size: 14px; margin-bottom: 12px;"><i class="fas fa-headset" style="color: var(--neon-mor); margin-right: 10px;"></i> 7/24 Destek Ekibi</li>
+                <ul>
+                    <li class="contact-item"><i class="fas fa-envelope"></i> info@obbesports.com</li>
+                    <li class="contact-item"><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
+                    <li class="contact-item"><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
                 </ul>
             </div>
         </div>
@@ -261,12 +273,9 @@
 
         window.addEventListener("scroll", function() {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
             if (scrollTop > lastScrollTop && scrollTop > 100) {
-                // Aşağı kaydırırken gizle
                 header.classList.add("nav-hidden");
             } else {
-                // Yukarı kaydırırken göster
                 header.classList.remove("nav-hidden");
             }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
