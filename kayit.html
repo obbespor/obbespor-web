@@ -1,71 +1,287 @@
-/* --- KAYIT SAYFASI MOBİL UYUMLULUK --- */
-@media (max-width: 992px) {
-    /* Yanlardaki karakter görsellerini mobilde gizle */
-    .auth-side-image {
-        display: none;
-    }
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol | OBB E-SPOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ana-siyah: #050505;
+            --nav-bg: #000000;
+            --neon-mor: #601dc2; 
+            --yazi-beyaz: #ffffff;
+            --gri-yazi: #a0a0a0;
+        }
 
-    /* Ana düzeni tek sütuna çek */
-    .main-layout {
-        display: block;
-        width: 100%;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .auth-wrapper {
-        padding: 20px;
-        min-height: auto;
-    }
+        body {
+            background-color: var(--ana-siyah);
+            color: var(--yazi-beyaz);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
 
-    .auth-card {
-        width: 100%;
-        max-width: 450px;
-        margin: 40px auto;
-        padding: 30px 20px;
-    }
+        /* --- HEADER (DİĞER SAYFALARLA UYUMLU) --- */
+        header {
+            background-color: var(--nav-bg);
+            padding: 15px 10%; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--neon-mor);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-    .auth-header h1 {
-        font-size: 1.8rem;
-    }
-}
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
 
-@media (max-width: 768px) {
-    /* Üst menü (Nav) düzenlemesi */
-    header {
-        flex-direction: column;
-        padding: 15px;
-        height: auto;
-        gap: 15px;
-        background-color: #000;
-        border-bottom: 2px solid #601dc2;
-    }
+        .logo span { color: var(--neon-mor); }
 
-    header nav ul {
-        gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
+        nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center; 
+            gap: 15px;
+        }
 
-    header nav ul li a {
-        font-size: 12px;
-    }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
 
-    .auth-card {
-        margin: 20px auto;
-        border: 1px solid #333;
-    }
-    
-    /* Input gruplarını mobilde biraz daha rahatlat */
-    .input-group label {
-        font-size: 13px;
-    }
-    
-    input {
-        padding: 12px;
-        font-size: 14px;
-    }
+        nav ul li a:hover { color: var(--neon-mor); }
 
-    .register-btn {
-        padding: 15px;
-        font-size: 14px;
-    }
-}
+        .nav-btn {
+            border: 2px solid var(--neon-mor); 
+            padding: 8px 20px;
+            border-radius: 5px;
+            color: white !important;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--neon-mor);
+            box-shadow: 0 0 15px var(--neon-mor);
+        }
+
+        /* --- KAYIT FORMU DÜZENİ --- */
+        .auth-wrapper {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            background: radial-gradient(circle at center, #1a052d 0%, #050505 100%);
+        }
+
+        .main-layout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 1400px;
+            gap: 50px;
+        }
+
+        .auth-side-image {
+            flex: 1;
+            max-width: 350px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .auth-side-image img {
+            width: 100%;
+            border-radius: 20px;
+            filter: drop-shadow(0 0 20px rgba(96, 29, 194, 0.4));
+        }
+
+        .auth-card {
+            flex: 1;
+            background: rgba(15, 15, 15, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #222;
+            max-width: 500px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            color: var(--gri-yazi);
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .auth-header h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .purple-neon {
+            color: var(--neon-mor);
+            text-shadow: 0 0 10px var(--neon-mor);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--gri-yazi);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--neon-mor);
+            box-shadow: 0 0 10px rgba(96, 29, 194, 0.3);
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--neon-mor);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .register-btn:hover {
+            filter: brightness(1.2);
+            transform: translateY(-2px);
+        }
+
+        .message {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* --- MOBİL UYUMLULUK --- */
+        @media (max-width: 992px) {
+            .auth-side-image { display: none; } /* Resimleri mobilde gizle */
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 15px;
+                gap: 15px;
+            }
+            nav ul {
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .auth-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="logo">OBB <span>E-SPOR</span></a>
+        <nav>
+            <ul>
+                <li><a href="/">ANA SAYFA</a></li>
+                <li><a href="tournaments.html">TURNUVALAR</a></li>
+                <li><a href="canli.html">CANLI</a></li>
+                <li><a href="kayit.html" class="nav-btn">KATIL</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="auth-wrapper">
+        <div class="main-layout">
+            
+            <div class="auth-side-image">
+                <img src="img/obb jett.jpg" alt="OBB Jett">
+            </div>
+
+            <div class="auth-card">
+                <div class="auth-header">
+                    <a href="/" class="back-link">← Ana Sayfa</a>
+                    <h1>ARENAYA <span class="purple-neon">KATIL</span></h1>
+                    <p>Profilini oluştur, rekabete dahil ol.</p>
+                </div>
+
+                <form id="registerForm">
+                    <div class="input-group">
+                        <label>Kullanıcı Adı</label>
+                        <input type="text" id="username" placeholder="gamer123" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>E-posta</label>
+                        <input type="email" id="email" placeholder="ornek@mail.com" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Telefon</label>
+                        <input type="tel" id="phone" placeholder="05XX XXX XX XX" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Şifre</label>
+                        <input type="password" id="password" placeholder="••••••••" required minlength="6">
+                    </div>
+
+                    <button type="submit" class="register-btn" id="submitBtn">HESABI OLUŞTUR</button>
+                </form>
+                <div id="responseMessage" class="message"></div>
+            </div>
+
+            <div class="auth-side-image">
+                <img src="img/obbchamber.jpg" alt="OBB Chamber" style="transform: scaleX(-1);">
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://zvhtznxretxgof
