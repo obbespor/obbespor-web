@@ -23,7 +23,6 @@
             overflow-x: hidden;
         }
 
-        /* --- SENİN ÖZEL HEADER YAPIN --- */
         header {
             background-color: var(--nav-bg);
             padding: 15px 5%; 
@@ -39,7 +38,7 @@
         }
 
         .logo {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             font-weight: 800;
             color: white;
             text-decoration: none;
@@ -65,41 +64,31 @@
             transition: 0.3s;
         }
 
-        nav ul li a:hover {
-            color: var(--neon-mor);
-        }
+        nav ul li a:hover { color: var(--neon-mor); }
 
         .nav-btn {
             border: 2px solid var(--neon-mor); 
-            padding: 8px 20px;
+            padding: 6px 15px;
             border-radius: 5px;
             color: white !important;
             background: transparent;
             transition: all 0.3s ease;
-            display: inline-block;
             text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
         }
 
-        .nav-btn:hover {
-            background-color: var(--neon-mor); 
-            color: white !important;
-            box-shadow: 0 0 15px var(--neon-mor); 
-            transform: translateY(-2px);
-        }
-
-        /* --- 3x2 PENCERE DÜZENİ --- */
+        /* --- İÇERİK DÜZENİ --- */
         .main-content {
-            padding: 40px 2%;
+            padding: 30px 5%;
         }
 
         .section-title {
             text-align: center;
             color: var(--neon-mor);
-            font-size: 2rem;
-            margin-bottom: 40px;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
             text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(96, 29, 194, 0.5);
         }
 
         .streams-grid {
@@ -124,22 +113,12 @@
         .video-box { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
         .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-        .card-footer {
-            padding: 12px 15px;
-            background: #18181b;
-        }
-
-        .footer-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .name { font-weight: 600; font-size: 0.95rem; }
+        .card-footer { padding: 12px 15px; background: #18181b; }
+        .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .name { font-weight: 600; font-size: 0.95rem; color: #fff; }
 
         .social-links { display: flex; gap: 10px; }
-        .social-links a { color: var(--gri-yazi); font-size: 1rem; transition: 0.3s; }
+        .social-links a { color: var(--gri-yazi); font-size: 1.1rem; transition: 0.3s; }
         .social-links a:hover { color: var(--neon-mor); }
 
         .btn-kick {
@@ -147,21 +126,48 @@
             background-color: var(--neon-mor);
             color: white;
             text-decoration: none;
-            padding: 8px;
+            padding: 10px;
             border-radius: 6px;
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             text-align: center;
+            transition: 0.3s;
+        }
+        .btn-kick:hover { filter: brightness(1.2); }
+
+        /* --- MOBİL DOKUNUŞLAR --- */
+        @media (max-width: 1100px) {
+            .streams-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
-        @media (max-width: 1024px) { .streams-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 700px) { .streams-grid { grid-template-columns: 1fr; } nav { display: none; } }
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column; /* Mobilde logo ve menü alt alta */
+                gap: 15px;
+                padding: 15px 2%;
+            }
+            
+            nav ul {
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .streams-grid {
+                grid-template-columns: 1fr; /* Mobilde yayınlar tek sıra */
+                gap: 25px;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+            }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <a href="#" class="logo">OBB <span>E-SPOR</span></a>
+    <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
     <nav>
         <ul>
             <li><a href="index.html">ANA SAYFA</a></li>
@@ -179,7 +185,13 @@
         <div class="card">
             <div class="video-box"><iframe src="https://player.kick.com/xqc?muted=true"></iframe></div>
             <div class="card-footer">
-                <div class="footer-top"><span class="name">OYUNCU 1</span><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a></div></div>
+                <div class="footer-top">
+                    <span class="name">OYUNCU 1</span>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-x-twitter"></i></a>
+                    </div>
+                </div>
                 <a href="https://kick.com/xqc" target="_blank" class="btn-kick">KICK'TE AÇ</a>
             </div>
         </div>
@@ -187,7 +199,13 @@
         <div class="card">
             <div class="video-box"><iframe src="https://player.kick.com/westcol?muted=true"></iframe></div>
             <div class="card-footer">
-                <div class="footer-top"><span class="name">OYUNCU 2</span><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a></div></div>
+                <div class="footer-top">
+                    <span class="name">OYUNCU 2</span>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-x-twitter"></i></a>
+                    </div>
+                </div>
                 <a href="https://kick.com/westcol" target="_blank" class="btn-kick">KICK'TE AÇ</a>
             </div>
         </div>
@@ -195,37 +213,19 @@
         <div class="card">
             <div class="video-box"><iframe src="https://player.kick.com/heelmike?muted=true"></iframe></div>
             <div class="card-footer">
-                <div class="footer-top"><span class="name">OYUNCU 3</span><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a></div></div>
+                <div class="footer-top">
+                    <span class="name">OYUNCU 3</span>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-x-twitter"></i></a>
+                    </div>
+                </div>
                 <a href="https://kick.com/heelmike" target="_blank" class="btn-kick">KICK'TE AÇ</a>
             </div>
         </div>
 
-        <div class="card">
-            <div class="video-box"><iframe src="https://player.kick.com/KULLANICI_4?muted=true"></iframe></div>
-            <div class="card-footer">
-                <div class="footer-top"><span class="name">OYUNCU 4</span><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a></div></div>
-                <a href="#" class="btn-kick">KICK'TE AÇ</a>
-            </div>
         </div>
-
-        <div class="card">
-            <div class="video-box"><iframe src="https://player.kick.com/KULLANICI_5?muted=true"></iframe></div>
-            <div class="card-footer">
-                <div class="footer-top"><span class="name">OYUNCU 5</span><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a></div></div>
-                <a href="#" class="btn-kick">KICK'TE AÇ</a>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="video-box"><iframe src="https://player.kick.com/KULLANICI_6?muted=true"></iframe></div>
-            <div class="card-footer">
-                <div class="footer-top"><span class="name">OYUNCU 6</span><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a></div></div>
-                <a href="#" class="btn-kick">KICK'TE AÇ</a>
-            </div>
-        </div>
-    </div>
 </div>
 
 </body>
-
 </html>
