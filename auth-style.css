@@ -1,1 +1,291 @@
+:root {
+    --ana-siyah: #050505;
+    --nav-bg: #0a0a0c;
+    --neon-mor: #601dc2;
+    --neon-turkuaz: #00ffcc;
+    --yazi-beyaz: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--ana-siyah);
+    color: var(--yazi-beyaz);
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+}
+
+/* --- HEADER --- */
+header {
+    background-color: var(--nav-bg);
+    padding: 15px 5%; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--neon-mor);
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: white;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.logo span { color: var(--neon-mor); }
+
+nav ul { list-style: none; display: flex; gap: 20px; align-items: center; }
+nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
+nav ul li a:hover { color: var(--neon-mor); }
+
+.nav-btn {
+    border: 2px solid var(--neon-mor); 
+    padding: 8px 20px;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
+
+/* --- LAYOUT --- */
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at center, #1a0b2e 0%, #050505 100%);
+    padding-top: 80px;
+}
+
+/* YENİ GENİŞ YAPI */
+.main-layout {
+    display: flex;
+    align-items: center;
+    justify-content: space-around; /* Karakterleri yanlara iter */
+    width: 100%;
+    max-width: 100%; /* Ekranın tamamını kullan */
+    padding: 0 20px;
+}
+
+/* --- FORM KARTI (Glassmorphism) --- */
+.auth-card {
+    background: rgba(15, 15, 18, 0.8);
+    backdrop-filter: blur(15px);
+    padding: 40px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 420px;
+    border: 1px solid rgba(96, 29, 194, 0.3);
+    box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    z-index: 5;
+}
+
+.auth-header { text-align: center; margin-bottom: 25px; }
+.purple-neon { color: var(--neon-turkuaz); text-shadow: 0 0 10px var(--neon-turkuaz); }
+
+
+/* YENİ DEV BOYUTLU KOD */
+.auth-side-image img {
+    width: 100%;
+    max-width: 700px; /* Boyutu buradan daha da artırabilirsin */
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 40px rgba(96, 29, 194, 0.6)); /* Daha güçlü parlama */
+    animation: float 5s ease-in-out infinite;
+}
+
+
+/* YENİ BÜYÜTÜLMÜŞ KOD */
+.auth-side-image {
+    flex: 1.5; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: visible; /* Karakterin parlaması taşmasın */
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+/* --- INPUTLAR --- */
+.input-group { margin-bottom: 15px; }
+.input-group label { display: block; margin-bottom: 5px; color: #888; font-size: 0.8rem; text-transform: uppercase; }
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: white;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    border-color: var(--neon-mor);
+    box-shadow: 0 0 10px var(--neon-mor);
+    outline: none;
+}
+
+.register-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--neon-mor);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.register-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 25px var(--neon-mor);
+}
+
+.back-link { color: #666; text-decoration: none; font-size: 12px; display: block; margin-bottom: 10px; }
+
+/* MOBİL UYUMLULUK */
+@media (max-width: 1100px) {
+    .auth-side-image { display: none; }
+    .auth-card { margin: 20px; }
+
+}
+/* --- FOOTER TASARIMI --- */
+.main-footer {
+    background-color: #080808;
+    border-top: 2px solid #601dc2;
+    padding: 60px 0 20px 0;
+    margin-top: 50px;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5%;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr; /* 3 Sütunlu yapı */
+    gap: 40px;
+}
+
+.footer-section h3 {
+    color: #601dc2;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-desc {
+    color: #a0a0a0;
+    font-size: 14px;
+    margin: 20px 0;
+    line-height: 1.6;
+    max-width: 300px;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 12px;
+}
+
+.footer-section ul li a {
+    color: #a0a0a0;
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 14px;
+}
+
+.footer-section ul li a:hover {
+    color: #601dc2;
+    padding-left: 5px;
+}
+
+.footer-socials {
+    display: flex;
+    gap: 15px;
+}
+
+.footer-socials a {
+    width: 40px;
+    height: 40px;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.footer-socials a:hover {
+    background: #601dc2;
+    transform: translateY(-3px);
+    box-shadow: 0 0 15px #601dc2;
+}
+
+.contact-info li {
+    color: #a0a0a0;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.contact-info i {
+    color: #601dc2;
+    width: 20px;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #1a1a1a;
+    color: #555;
+    font-size: 12px;
+}
+
+/* --- FOOTER MOBİL UYUMLULUK --- */
+@media (max-width: 768px) {
+    .footer-container {
+        grid-template-columns: 1fr; /* Mobilde her şey tek sütun */
+        text-align: center;
+        gap: 30px;
+    }
+
+    .footer-desc {
+        margin: 20px auto;
+    }
+
+    .footer-socials {
+        justify-content: center;
+    }
+
+    .contact-info li {
+        justify-content: center;
+    }
+
+    .footer-section ul li a:hover {
+        padding-left: 0; /* Mobilde kayma efektini kapat */
+    }
+}
 
