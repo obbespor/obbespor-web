@@ -23,7 +23,7 @@
             color: var(--yazi-beyaz);
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
-            padding-top: 80px; /* Header fixed olduğu için içerik kaymasın */
+            padding-top: 80px;
         }
 
         /* --- AKILLI HEADER CSS --- */
@@ -61,7 +61,7 @@
         .main-btn { background: var(--neon-mor); color: white; border: none; padding: 15px 40px; border-radius: 8px; font-weight: 900; margin-top: 20px; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
         .main-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--neon-mor); }
 
-        /* --- DUYURULAR (GERİ EKLENDİ VE DÜZELTİLDİ) --- */
+        /* --- DUYURULAR --- */
         .container { padding: 80px 10%; }
         .section-title { margin-bottom: 40px; border-left: 5px solid var(--neon-mor); padding-left: 15px; font-size: 28px; font-weight: 900; text-transform: uppercase; }
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
@@ -76,7 +76,7 @@
         .card-link { display: inline-block; margin-top: 18px; color: var(--yazi-beyaz); text-decoration: none; font-weight: bold; font-size: 13px; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; transition: 0.3s; }
         .card-link:hover { color: var(--neon-mor); }
 
-        /* --- FOOTER (SS UYUMLU - DÜZELTİLDİ) --- */
+        /* --- FOOTER --- */
         footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
         
@@ -97,22 +97,27 @@
         .contact-item i { color: var(--neon-mor); font-size: 16px; width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 14px; }
 
-        /* --- MOBİL ÖZEL AYARLAR --- */
+        /* --- MOBİL ÖZEL AYARLAR (EKRAN GÖRÜNTÜSÜNE GÖRE GÜNCELLENDİ) --- */
         @media (max-width: 768px) {
             header { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
             body { padding-top: 125px; } 
-            .logo { font-size: 22px; }
-            nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
-            nav ul li a { font-size: 10px; white-space: nowrap; }
-            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
+            .logo { font-size: 22px; width: 100%; text-align: center; }
+            nav { width: 100%; }
+            nav ul { gap: 5px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 11px; white-space: nowrap; font-weight: 700; text-transform: uppercase; }
+            .nav-btn { padding: 6px 12px; font-size: 11px !important; }
 
-            /* Footer Mobil Düzeni */
-            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
-            .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #1a1a1a; padding-bottom: 30px; }
-            .footer-brand p { max-width: 100%; }
-            .social-icons { justify-content: center; }
-            .footer-column { text-align: left; }
-            .contact-item { justify-content: flex-start; font-size: 13px; }
+            /* Footer Mobil Düzeni (Paylaşılan görsele göre) */
+            .footer-grid { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 40px; }
+            .footer-brand h2 { font-size: 32px; border-bottom: 3px solid var(--neon-mor); padding-bottom: 5px; margin-bottom: 25px; text-decoration: underline; text-underline-offset: 8px; text-decoration-color: var(--neon-mor); border-bottom: none; }
+            .footer-brand p { font-size: 14px; max-width: 100%; margin-bottom: 30px; }
+            .social-icons { justify-content: center; margin-bottom: 10px; }
+            
+            .footer-column { width: 100%; }
+            .footer-column h3 { font-size: 22px; margin-bottom: 20px; }
+            .contact-item { justify-content: center; font-size: 14px; margin-bottom: 20px; }
+            
+            .footer-bottom { font-size: 12px; padding-top: 20px; }
         }
     </style>
 </head>
@@ -174,7 +179,7 @@
     <footer>
         <div class="footer-grid">
             <div class="footer-brand">
-                <h2>OBB <span style="color:white">E-SPOR</span></h2>
+                <h2 style="color: var(--neon-mor); text-decoration: underline; text-underline-offset: 10px;">OBB <span style="color:white">E-SPOR</span></h2>
                 <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
                 <div class="social-icons">
                     <a href="#"><i class="fa-brands fa-instagram"></i></a>
