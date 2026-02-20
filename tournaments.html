@@ -25,9 +25,10 @@
             color: var(--yazi-beyaz);
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
+            padding-top: 80px; /* Header fixed olduğu için eklendi */
         }
 
-        /* --- 2. HEADER / NAV (KAYDETTİĞİMİZ YAPI) --- */
+        /* --- 2. AKILLI HEADER (ENTEGRE EDİLEN YAPI) --- */
         header.main-nav {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -36,10 +37,19 @@
             align-items: center;
             height: 80px;
             border-bottom: 3px solid var(--neon-mor);
-            position: sticky;
+            position: fixed; /* Akıllı takip için fixed */
             top: 0;
+            left: 0;
+            width: 100%;
             z-index: 1000;
+            transition: transform 0.4s ease-in-out;
         }
+
+        /* Gizleme sınıfı */
+        header.main-nav.nav-hidden {
+            transform: translateY(-110%);
+        }
+
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); }
         
@@ -71,7 +81,6 @@
 
         /* --- 4. TURNUVA LİSTESİ --- */
         .t-container { max-width: 1200px; margin: 0 auto; padding: 60px 10%; }
-        
         .filters { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
         .filter-btn {
             background: #111; border: 1px solid #333; color: white;
@@ -80,7 +89,6 @@
         .filter-btn.active, .filter-btn:hover { background: var(--neon-mor); border-color: var(--neon-mor); }
 
         .t-list-grid { display: flex; flex-direction: column; gap: 25px; }
-        
         .t-wide-card {
             background: linear-gradient(145deg, #0a0a0a, #16072b);
             border: 1px solid #222; border-radius: 15px;
@@ -95,13 +103,10 @@
         }
         .t-details { flex: 1; padding: 0 40px; }
         .t-details h2 { font-size: 22px; margin-bottom: 5px; color: #fff; }
-        
         .tag { font-size: 11px; padding: 4px 10px; border-radius: 5px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
         .live { background: #ff0044; box-shadow: 0 0 10px #ff0044; }
         .open { background: var(--neon-mor); }
-
         .t-meta { margin-top: 15px; display: flex; gap: 25px; color: var(--gri-yazi); font-size: 14px; }
-        .t-meta strong { color: white; }
 
         .view-btn, .register-btn {
             padding: 12px 30px; border-radius: 6px; border: none;
@@ -110,7 +115,7 @@
         .view-btn { background: white; color: black; }
         .register-btn { background: var(--neon-mor); color: white; }
 
-        /* --- 5. FOOTER (KAYDEDİLEN VE MOBİL OPTİMİZE) --- */
+        /* --- 5. FOOTER --- */
         footer {
             background-color: var(--nav-bg);
             border-top: 2px solid var(--neon-mor);
@@ -118,33 +123,24 @@
             margin-top: 100px;
         }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
-        
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; }
-        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
-        
         .footer-socials { display: flex; gap: 15px; }
         .footer-socials a {
             width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s;
         }
-        .footer-socials a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
-
         .footer-section h3 { font-size: 20px; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
-        .footer-section ul { list-style: none; }
-        .footer-section ul li { margin-bottom: 12px; }
-        .footer-section ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
-        .footer-section ul li a:hover { color: var(--neon-mor); }
-
-        .contact-info li { color: var(--gri-yazi); font-size: 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-        .contact-info i { color: var(--neon-mor); width: 20px; text-align: center; }
-
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* --- 6. MOBİL UYUMLULUK --- */
+        /* --- 6. MOBİL UYUMLULUK (HEADER VE FOOTER GÜNCELLENDİ) --- */
         @media (max-width: 768px) {
-            header.main-nav { height: auto; padding: 20px 5%; flex-direction: column; gap: 15px; }
-            nav ul { gap: 10px; flex-wrap: wrap; justify-content: center; }
-            nav ul li a { font-size: 11px; }
+            /* Mobil Header Düzeni */
+            header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
+            body { padding-top: 125px; }
+            nav { width: 100%; }
+            nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 10px; white-space: nowrap; }
+            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
             .t-container { padding: 40px 5%; }
             .t-wide-card { flex-direction: column; text-align: center; padding: 30px 20px; }
@@ -152,10 +148,9 @@
             .t-meta { justify-content: center; flex-direction: column; gap: 8px; }
             .view-btn, .register-btn { width: 100%; }
 
-            /* Mobilde 2 sütunlu footer düzeni */
+            /* Mobil Footer Düzeni */
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
             .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
-            .footer-brand p { max-width: 100%; }
             .footer-socials { justify-content: center; }
             .footer-section { text-align: left; }
         }
@@ -163,7 +158,7 @@
 </head>
 <body>
 
-    <header class="main-nav">
+    <header class="main-nav" id="mainHeader">
         <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
         <nav>
             <ul>
@@ -249,9 +244,9 @@
             <div class="footer-section">
                 <h3>İletişim</h3>
                 <ul class="contact-info">
-                    <li><i class="fas fa-envelope"></i> info@obbesports.com</li>
-                    <li><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
-                    <li><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
+                    <li style="list-style: none; color: var(--gri-yazi); font-size: 14px; margin-bottom: 12px;"><i class="fas fa-envelope" style="color: var(--neon-mor); margin-right: 10px;"></i> info@obbesports.com</li>
+                    <li style="list-style: none; color: var(--gri-yazi); font-size: 14px; margin-bottom: 12px;"><i class="fas fa-location-dot" style="color: var(--neon-mor); margin-right: 10px;"></i> Ordu, Türkiye</li>
+                    <li style="list-style: none; color: var(--gri-yazi); font-size: 14px; margin-bottom: 12px;"><i class="fas fa-headset" style="color: var(--neon-mor); margin-right: 10px;"></i> 7/24 Destek Ekibi</li>
                 </ul>
             </div>
         </div>
@@ -259,6 +254,24 @@
             <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
         </div>
     </footer>
+
+    <script>
+        let lastScrollTop = 0;
+        const header = document.getElementById("mainHeader");
+
+        window.addEventListener("scroll", function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                // Aşağı kaydırırken gizle
+                header.classList.add("nav-hidden");
+            } else {
+                // Yukarı kaydırırken göster
+                header.classList.remove("nav-hidden");
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+        }, false);
+    </script>
 
 </body>
 </html>
