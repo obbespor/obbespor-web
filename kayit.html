@@ -27,13 +27,14 @@
             overflow-x: hidden;
         }
 
-        /* --- HEADER (DİĞER SAYFALARLA UYUMLU) --- */
+        /* --- HEADER --- */
         header {
             background-color: var(--nav-bg);
-            padding: 15px 10%; 
+            padding: 0 10%; 
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 80px;
             border-bottom: 3px solid var(--neon-mor);
             position: sticky;
             top: 0;
@@ -82,13 +83,13 @@
             box-shadow: 0 0 15px var(--neon-mor);
         }
 
-        /* --- KAYIT FORMU DÜZENİ --- */
+        /* --- KAYIT FORMU VE DEV GÖRSELLER --- */
         .auth-wrapper {
             min-height: calc(100vh - 80px);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px 20px;
+            padding: 20px;
             background: radial-gradient(circle at center, #1a052d 0%, #050505 100%);
         }
 
@@ -97,71 +98,53 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            max-width: 1400px;
-            gap: 50px;
+            max-width: 1800px; /* Ekranı daha geniş kullanması için artırıldı */
+            gap: 20px;
         }
 
         .auth-side-image {
-            flex: 1;
-            max-width: 350px;
+            flex: 2; /* Görsellere daha fazla alan tanıdık */
             display: flex;
             justify-content: center;
+            align-items: center;
         }
 
         .auth-side-image img {
             width: 100%;
+            max-width: 550px; /* Görselleri burada devleştirdik */
+            height: auto;
             border-radius: 20px;
-            filter: drop-shadow(0 0 20px rgba(96, 29, 194, 0.4));
+            filter: drop-shadow(0 0 30px rgba(96, 29, 194, 0.5));
+            transition: transform 0.5s ease;
+        }
+
+        .auth-side-image img:hover {
+            transform: scale(1.02);
         }
 
         .auth-card {
-            flex: 1;
-            background: rgba(15, 15, 15, 0.9);
+            flex: 1.5;
+            background: rgba(10, 10, 10, 0.95);
             padding: 40px;
             border-radius: 20px;
             border: 1px solid #222;
+            min-width: 400px;
             max-width: 500px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            z-index: 2;
         }
 
-        .auth-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        /* --- FORM İÇERİĞİ --- */
+        .auth-header { text-align: center; margin-bottom: 30px; }
+        .back-link { color: var(--gri-yazi); text-decoration: none; font-size: 14px; display: block; margin-bottom: 10px; }
+        .auth-header h1 { font-size: 2.2rem; font-weight: 900; margin-bottom: 10px; }
+        .purple-neon { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
 
-        .back-link {
-            color: var(--gri-yazi);
-            text-decoration: none;
-            font-size: 14px;
-            display: block;
-            margin-bottom: 15px;
-        }
-
-        .auth-header h1 {
-            font-size: 2rem;
-            font-weight: 900;
-            margin-bottom: 10px;
-        }
-
-        .purple-neon {
-            color: var(--neon-mor);
-            text-shadow: 0 0 10px var(--neon-mor);
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: var(--gri-yazi);
-        }
-
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--gri-yazi); }
         .input-group input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 14px 15px;
             background: #000;
             border: 1px solid #333;
             border-radius: 8px;
@@ -169,15 +152,11 @@
             outline: none;
             transition: 0.3s;
         }
-
-        .input-group input:focus {
-            border-color: var(--neon-mor);
-            box-shadow: 0 0 10px rgba(96, 29, 194, 0.3);
-        }
+        .input-group input:focus { border-color: var(--neon-mor); box-shadow: 0 0 10px rgba(96, 29, 194, 0.3); }
 
         .register-btn {
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             background: var(--neon-mor);
             color: white;
             border: none;
@@ -186,38 +165,29 @@
             font-size: 16px;
             cursor: pointer;
             transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .register-btn:hover {
-            filter: brightness(1.2);
-            transform: translateY(-2px);
-        }
-
-        .message {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 14px;
-        }
+        .register-btn:hover { filter: brightness(1.2); box-shadow: 0 0 20px var(--neon-mor); }
+        .message { margin-top: 20px; text-align: center; font-size: 14px; }
 
         /* --- MOBİL UYUMLULUK --- */
-        @media (max-width: 992px) {
+        @media (max-width: 1200px) {
+            .auth-side-image img { max-width: 400px; } /* Orta ekranlarda biraz küçül */
+        }
+
+        @media (max-width: 1024px) {
             .auth-side-image { display: none; } /* Resimleri mobilde gizle */
+            .main-layout { display: block; }
+            .auth-card { margin: 0 auto; min-width: 100%; }
         }
 
         @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                padding: 15px;
-                gap: 15px;
-            }
-            nav ul {
-                gap: 10px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .auth-card {
-                padding: 30px 20px;
-            }
+            header { flex-direction: column; padding: 15px; height: auto; gap: 15px; }
+            nav ul { gap: 10px; flex-wrap: wrap; justify-content: center; }
+            .auth-card { padding: 30px 20px; }
+            .auth-header h1 { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -284,4 +254,43 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = 'https://zvhtznxretxgof
+        // Supabase bağlantısı korunuyor
+        const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
+        const SUPABASE_KEY = 'AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2aHR6bnhyZXR4Z29mbmJjYmtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0ODY4NjksImV4cCI6MjA4NzA2Mjg2OX0.nJbnU1WNk5lSVogBqY0Jwp8-6JhbIURkw6Buf2WfXzU';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const registerForm = document.getElementById('registerForm');
+        const messageDiv = document.getElementById('responseMessage');
+        const submitBtn = document.getElementById('submitBtn');
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.innerText = "İŞLENİYOR...";
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const username = document.getElementById('username').value;
+            const phone = document.getElementById('phone').value;
+
+            const { data, error } = await _supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: { data: { display_name: username, phone_number: phone } }
+            });
+
+            if (error) {
+                messageDiv.innerText = "Hata: " + error.message;
+                messageDiv.style.color = "#ff4d4d";
+                submitBtn.disabled = false;
+                submitBtn.innerText = "HESABI OLUŞTUR";
+            } else {
+                messageDiv.innerText = "BAŞARILI! E-postanı kontrol et.";
+                messageDiv.style.color = "#00ffcc";
+                registerForm.reset();
+                submitBtn.innerText = "KAYIT TAMAMLANDI";
+            }
+        });
+    </script>
+</body>
+</html>
