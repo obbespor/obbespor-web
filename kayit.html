@@ -25,7 +25,7 @@
             line-height: 1.6;
         }
 
-        /* --- HEADER (ANA SAYFA İLE AYNI) --- */
+        /* --- HEADER (SABİT STANDART) --- */
         header {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -46,7 +46,7 @@
         .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; font-weight: bold; }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- KAYIT FORMU ÖZEL ALANI --- */
+        /* --- KAYIT FORMU VE BÜYÜTÜLMÜŞ GÖRSELLER --- */
         .auth-wrapper {
             min-height: calc(100vh - 160px);
             display: flex;
@@ -54,22 +54,26 @@
             justify-content: center;
             padding: 40px 20px;
         }
-        .main-layout { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 1400px; gap: 40px; }
+        /* Layout genişliği görseller için 1600px'e çıkarıldı */
+        .main-layout { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 1600px; gap: 20px; }
         
-        .auth-side-image { flex: 1; display: flex; justify-content: center; }
+        .auth-side-image { flex: 1.2; display: flex; justify-content: center; }
+        /* Görsel boyutu 400px'den 520px'e yükseltildi */
         .auth-side-image img { 
-            width: 100%; max-width: 400px; border-radius: 20px; 
-            filter: drop-shadow(0 0 20px rgba(96, 29, 194, 0.3));
+            width: 100%; 
+            max-width: 520px; 
+            border-radius: 20px; 
+            filter: drop-shadow(0 0 30px rgba(96, 29, 194, 0.4));
             animation: float 4s ease-in-out infinite;
         }
         
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
+            50% { transform: translateY(-20px); }
         }
 
         .auth-card {
-            flex: 1.2; background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222;
+            flex: 1; background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222;
             max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); z-index: 5;
         }
         .auth-header { text-align: center; margin-bottom: 25px; }
@@ -91,7 +95,7 @@
         }
         .register-btn:hover { transform: scale(1.02); box-shadow: 0 0 20px var(--neon-mor); }
 
-        /* --- FOOTER (ANA SAYFA İLE AYNI & MOBİL 3x2 DESTEKLİ) --- */
+        /* --- FOOTER (STANDART 3x2 MOBİL DESTEKLİ) --- */
         footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
         
@@ -112,20 +116,24 @@
         .contact-item i { color: var(--neon-mor); font-size: 16px; width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 14px; }
 
-        /* --- MOBİL UYUMLULUK --- */
+        /* --- RESPONSIVE AYARLAR --- */
+        @media (max-width: 1200px) {
+            .auth-side-image img { max-width: 380px; }
+        }
+
         @media (max-width: 1024px) {
             .auth-side-image { display: none; }
             .auth-card { flex: 1; width: 100%; }
         }
 
         @media (max-width: 768px) {
-            header { height: auto; padding: 20px 5%; flex-direction: row; justify-content: space-between; gap: 10px; }
+            header { height: auto; padding: 20px 5%; flex-direction: row; justify-content: space-between; }
             .logo { font-size: 18px; }
-            nav ul { gap: 10px; }
-            nav ul li a { font-size: 11px; }
-            .nav-btn { padding: 6px 12px; font-size: 11px !important; }
+            nav ul { gap: 8px; }
+            nav ul li a { font-size: 10px; }
+            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
-            /* Footer Mobil 3x2 Düzeni */
+            /* Footer Mobil 3x2 */
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
             .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #1a1a1a; padding-bottom: 30px; }
             .footer-brand p { max-width: 100%; }
@@ -230,4 +238,3 @@
 
 </body>
 </html>
-
