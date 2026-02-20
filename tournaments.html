@@ -1,113 +1,95 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Turnuvalar | OBB-ESPOR</title>
-    <link rel="stylesheet" href="/turnuva-style.css">
-</head>
-<body>
+    <title>Turnuvalar | OBB E-SPOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* 1. DEĞİŞKENLER VE SIFIRLAMA */
+        :root {
+            --ana-siyah: #000000;
+            --nav-bg: #000000;
+            --neon-mor: #601dc2; 
+            --yazi-beyaz: #ffffff;
+            --gri-yazi: #a0a0a0;
+        }
 
-  <nav>
-        <div class="logo">OBB  <span>E-SPOR</span></div>
-        <ul>
-            <li><a href="index.html" class="nav-button">ANA SAYFA</a></li>
-            <li><a href="tournaments.html" class="nav-button">TURNUVALAR</a></li>
-            <li><a href="canli.html" class="nav-button">CANLI</a></li>
-            <li><a href="kayit.html" class="nav-btn">KATIL</a></li>
-        </ul>
-    </nav>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { overflow-y: scroll; }
+        body {
+            background: radial-gradient(circle at top, #1a052d 0%, #000000 100%);
+            background-attachment: fixed;
+            color: var(--yazi-beyaz);
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+        }
 
-    <header class="t-header-banner">
-        <h1>AKTİF <span class="purple-text">TURNUVALAR</span></h1>
-        <p>Rekabete katıl, ödülleri topla ve adını duyur.</p>
-    </header>
+        /* 2. HEADER / NAV (KAYDEDİLEN YAPI) */
+        header.main-nav {
+            background-color: var(--nav-bg);
+            padding: 0 10%; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            border-bottom: 3px solid var(--neon-mor);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
+        .logo span { color: var(--neon-mor); }
+        
+        nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
+        nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
+        nav ul li a:hover { color: var(--neon-mor); }
+        
+        .nav-btn { 
+            border: 2px solid var(--neon-mor); 
+            padding: 8px 20px; 
+            border-radius: 5px; 
+            color: white !important; 
+            background: transparent; 
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-    <main class="t-container">
-        <div class="filters">
-            <button class="filter-btn active">Hepsi</button>
-            <button class="filter-btn">FPS</button>
-            <button class="filter-btn">MOBA</button>
-            <button class="filter-btn">Battle Royale</button>
-        </div>
+        /* 3. TURNUVA BANNER */
+        .t-header-banner {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(35,8,62,0.8) 50%, rgba(0,0,0,1) 100%);
+            border-bottom: 1px solid rgba(96, 29, 194, 0.3);
+        }
+        .t-header-banner h1 { font-size: 3rem; font-weight: 900; }
+        .purple-text { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
 
-        <div class="t-list-grid">
-            <div class="t-wide-card">
-                <div class="t-image">VOLT</div>
-                <div class="t-details">
-                    <span class="tag live">CANLI</span>
-                    <h2>VALORANT: ELITE SERIES</h2>
-                    <p>Haftalık profesyonel lig müsabakaları.</p>
-                    <div class="t-meta">
-                        <span><strong>Ödül:</strong> ₺20.000</span>
-                        <span><strong>Kayıtlı:</strong> 32/32</span>
-                    </div>
-                </div>
-                <div class="t-action">
-                    <button class="view-btn">Maçları İzle</button>
-                </div>
-            </div>
+        /* 4. İÇERİK ALANI VE KARTLAR */
+        .t-container { max-width: 1200px; margin: 0 auto; padding: 60px 10%; }
+        
+        .filters { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .filter-btn {
+            background: #111; border: 1px solid #333; color: white;
+            padding: 10px 25px; border-radius: 25px; cursor: pointer; transition: 0.3s; font-weight: bold;
+        }
+        .filter-btn.active, .filter-btn:hover { background: var(--neon-mor); border-color: var(--neon-mor); }
 
-            <div class="t-wide-card">
-                <div class="t-image lol">LOL</div>
-                <div class="t-details">
-                    <span class="tag open">BAŞVURU AÇIK</span>
-                    <h2>LOL: VADİ USTALARI</h2>
-                    <p>5v5 Takım turnuvası. Tüm seviyelere açık.</p>
-                    <div class="t-meta">
-                        <span><strong>Ödül:</strong> ₺15.000</span>
-                        <span><strong>Kayıtlı:</strong> 12/24</span>
-                    </div>
-                </div>
-                <div class="t-action">
-                    <button class="register-btn">Kayıt Ol</button>
-                </div>
-            </div>
-        </div>
-    </main>
-<footer class="main-footer">
-    <div class="footer-container">
-        <div class="footer-section">
-            <a href="/" class="logo">OBB <span>E-SPOR</span></a>
-            <p class="footer-desc">Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
-            <div class="footer-socials">
-                <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-                <a href="#" target="_blank"><i class="fab fa-x-twitter"></i></a>
-                <a href="#" target="_blank"><i class="fab fa-discord"></i></a>
-                <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
-            </div>
-        </div>
+        .t-list-grid { display: flex; flex-direction: column; gap: 25px; }
+        
+        .t-wide-card {
+            background: linear-gradient(145deg, #0a0a0a, #16072b);
+            border: 1px solid #222; border-radius: 15px;
+            display: flex; align-items: center; padding: 25px; transition: 0.3s;
+        }
+        .t-wide-card:hover { border-color: var(--neon-mor); transform: translateX(10px); box-shadow: 0 0 20px rgba(96,29,194,0.2); }
 
-        <div class="footer-section">
-            <h3>Hızlı Menü</h3>
-            <ul>
-                <li><a href="/">Ana Sayfa</a></li>
-                <li><a href="tournaments.html">Turnuvalar</a></li>
-                <li><a href="canli.html">Canlı Yayınlar</a></li>
-                <li><a href="kayit.html">Kayıt Ol</a></li>
-            </ul>
-        </div>
-
-        <div class="footer-section">
-            <h3>İletişim</h3>
-            <ul class="contact-info">
-                <li><i class="fas fa-envelope"></i> info@obbesports.com</li>
-                <li><i class="fas fa-location-dot"></i> İstanbul, Türkiye</li>
-                <li><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="footer-bottom">
-        <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
-    </div>
-</footer>
-</body>
-
-</html>
-
-
-
-
-
+        .t-image {
+            width: 100px; height: 100px; background: var(--neon-mor);
+            border-radius: 12px; display: flex; align-items: center;
+            justify-content: center; font-weight: 900; font-size: 20px; flex-shrink: 0;
+        }
+        .t-details { flex: 1; padding: 0 40px; }
+        .t
