@@ -171,3 +171,72 @@ nav ul li a:hover {
     text-decoration: underline;
     font-size: 12px;
 }
+/* --- MOBİL UYUMLULUK AYARLARI (768px ve altı) --- */
+@media (max-width: 768px) {
+    
+    /* Navigasyon (Menü) Ayarı */
+    nav {
+        padding: 0 5%; /* Kenar boşluklarını azalttık */
+        flex-direction: column; /* Logo ve menüyü alt alta getirdik */
+        height: auto;
+        padding-bottom: 15px;
+    }
+
+    .logo {
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    nav ul {
+        gap: 10px;
+        flex-wrap: wrap; /* Menü elemanları sığmazsa alt satıra geçer */
+        justify-content: center;
+    }
+
+    nav ul li a {
+        font-size: 12px; /* Yazıları biraz küçülttük */
+    }
+
+    /* Hero (Banner) Bölümü */
+    .hero {
+        height: 60vh; /* Mobilde çok devasa durmaması için boyunu kısalttık */
+        background-attachment: scroll; /* Mobilde sabit arka plan performansı düşürür, normale çektik */
+    }
+
+    .hero-content h1 {
+        font-size: 1.8rem; /* Başlığı mobilde küçülttük */
+        padding: 0 10px;
+    }
+
+    .hero-content p {
+        font-size: 14px;
+        padding: 0 20px;
+    }
+
+    /* İçerik Alanı */
+    .container {
+        padding: 30px 5%; /* Mobilde yan boşlukları azalttık */
+    }
+
+    .grid-layout {
+        grid-template-columns: 1fr; /* Kartları yan yana değil, tek sütun (alt alta) yaptık */
+        gap: 20px;
+    }
+
+    .card-img {
+        height: 150px; /* Kart görsellerini biraz küçülttük */
+    }
+}
+
+/* Küçük telefonlar için ekstra dokunuş (480px ve altı) */
+@media (max-width: 480px) {
+    .nav-btn {
+        padding: 5px 12px;
+        font-size: 11px;
+    }
+    
+    .main-btn {
+        padding: 12px 30px;
+        font-size: 14px;
+    }
+}
