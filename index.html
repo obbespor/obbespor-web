@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OBB E-SPOR | E-Spor Arena</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* --- GENEL STİLLER --- */
+        :root {
+            --ana-siyah: #050505;
+            --nav-bg: #000000;
+            --neon-mor: #601dc2; 
+            --yazi-beyaz: #ffffff;
+            --gri-yazi: #a0a0a0;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -18,23 +26,22 @@
         }
 
         body {
-            background: radial-gradient(circle at top, #23083e 0%, #000000 100%);
+            background: radial-gradient(circle at top, #1a052d 0%, #050505 100%);
             background-attachment: fixed;
-            color: white;
-            font-family: 'Segoe UI', sans-serif;
+            color: var(--yazi-beyaz);
+            font-family: 'Poppins', sans-serif;
             line-height: 1.6;
         }
 
-        /* --- NAVİGASYON (HEADER) --- */
-        nav {
+        /* --- HEADER & NAV --- */
+        header {
+            background-color: var(--nav-bg);
+            padding: 0 10%; 
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 10%;
             height: 80px;
-            background-color: rgba(0, 0, 0, 0.9);
-            border-bottom: 3px solid #601dc2;
-            box-shadow: 0 5px 20px rgba(35, 8, 62, 0.8);
+            border-bottom: 3px solid var(--neon-mor);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -42,13 +49,14 @@
 
         .logo {
             font-size: 24px;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            text-transform: uppercase;
             letter-spacing: 2px;
-            font-weight: bold;
         }
 
-        .logo span {
-            color: #601dc2;
-        }
+        .logo span { color: var(--neon-mor); }
 
         nav ul {
             list-style: none;
@@ -65,27 +73,26 @@
             transition: 0.3s;
         }
 
-        nav ul li a:hover {
-            color: #601dc2;
-        }
+        nav ul li a:hover { color: var(--neon-mor); }
 
         .nav-btn {
-            border: 2px solid #601dc2; 
+            border: 2px solid var(--neon-mor); 
             padding: 8px 20px;
             border-radius: 5px;
             color: white !important;
             background: transparent;
             transition: all 0.3s ease;
-            display: inline-block;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
         }
 
         .nav-btn:hover {
-            background-color: #601dc2; 
-            box-shadow: 0 0 15px #601dc2; 
-            transform: translateY(-2px);
+            background: var(--neon-mor);
+            box-shadow: 0 0 15px var(--neon-mor);
         }
 
-        /* --- HERO BÖLÜMÜ --- */
+        /* --- HERO --- */
         .hero {
             height: 80vh; 
             display: flex;
@@ -117,42 +124,44 @@
 
         .hero h1 {
             font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 900;
             margin-bottom: 10px;
         }
 
-        .highlight {
-            color: #601dc2;
-            text-shadow: 0 0 15px #601dc2;
+        .purple-neon {
+            color: var(--neon-mor);
+            text-shadow: 0 0 15px var(--neon-mor);
         }
 
         .main-btn {
-            background-color: #601dc2;
+            background-color: var(--neon-mor);
             color: white;
             border: none;
-            padding: 15px 40px;
+            padding: 16px 45px;
             font-weight: bold;
+            font-size: 16px;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 25px;
             transition: 0.3s;
-            border-radius: 5px;
+            border-radius: 8px;
+            text-transform: uppercase;
         }
 
         .main-btn:hover {
-            background-color: #4a1596;
+            filter: brightness(1.2);
+            box-shadow: 0 0 20px var(--neon-mor);
             transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(96, 29, 194, 0.6);
         }
 
-        /* --- İÇERİK (DUYURULAR) --- */
-        .container {
-            padding: 80px 10%;
-        }
+        /* --- DUYURULAR --- */
+        .container { padding: 80px 10%; }
 
         .section-title {
             margin-bottom: 40px;
-            border-left: 5px solid #601dc2;
+            border-left: 5px solid var(--neon-mor);
             padding-left: 15px;
             font-size: 28px;
+            font-weight: 900;
         }
 
         .grid-layout {
@@ -162,139 +171,126 @@
         }
 
         .card {
-            background-color: #111;
+            background-color: #0a0a0a;
             border: 1px solid #222;
-            border-radius: 10px;
+            border-radius: 15px;
             overflow: hidden;
             transition: 0.3s;
-            display: flex;
-            flex-direction: column;
         }
 
         .card:hover {
-            border-color: #601dc2;
-            box-shadow: 0 0 15px rgba(96, 29, 194, 0.4);
-            transform: translateY(-5px);
+            border-color: var(--neon-mor);
+            box-shadow: 0 0 20px rgba(96, 29, 194, 0.3);
+            transform: translateY(-8px);
         }
 
         .card-img {
-            height: 200px;
-            background: #601dc2;
+            height: 180px;
+            background: linear-gradient(45deg, #1a052d, var(--neon-mor));
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 20px;
-            font-weight: bold;
-            opacity: 0.9;
-            text-transform: uppercase;
+            font-weight: 900;
+            color: white;
         }
 
-        .card-body {
-            padding: 25px;
-        }
-
-        .card-body h3 {
-            color: #601dc2;
-            margin-bottom: 12px;
-        }
+        .card-body { padding: 25px; }
+        .card-body h3 { color: var(--neon-mor); margin-bottom: 10px; font-weight: 700; }
+        .card-body p { color: var(--gri-yazi); font-size: 14px; }
 
         .card-link {
             display: inline-block;
             margin-top: 15px;
-            color: white;
+            color: var(--yazi-beyaz);
             text-decoration: none;
-            font-size: 13px;
             font-weight: bold;
-            border-bottom: 1px solid #601dc2;
+            font-size: 13px;
+            border-bottom: 2px solid var(--neon-mor);
             padding-bottom: 2px;
             transition: 0.3s;
         }
+        .card-link:hover { color: var(--neon-mor); }
 
-        .card-link:hover {
-            color: #601dc2;
-        }
-
-        /* --- FOOTER --- */
+        /* --- FOOTER (İSTEDİĞİN YAPI) --- */
         footer {
-            background-color: #000;
-            border-top: 3px solid #601dc2;
-            padding: 50px 10% 20px;
-            margin-top: 50px;
+            background-color: var(--nav-bg);
+            border-top: 3px solid var(--neon-mor);
+            padding: 60px 10% 30px;
+            margin-top: 80px;
         }
 
         .footer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 40px;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
-        .footer-about h3 { color: #601dc2; margin-bottom: 15px; }
-        .footer-links h3 { color: #601dc2; margin-bottom: 15px; }
+        .footer-about h3 { font-weight: 900; margin-bottom: 20px; font-size: 22px; }
+        .footer-about h3 span { color: var(--neon-mor); }
+        .footer-about p { color: var(--gri-yazi); font-size: 14px; line-height: 1.8; }
+
+        .footer-links h3 {
+            color: var(--yazi-beyaz);
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            position: relative;
+        }
+
         .footer-links ul { list-style: none; }
-        .footer-links ul li { margin-bottom: 8px; }
-        .footer-links ul li a { color: #ccc; text-decoration: none; transition: 0.3s; font-size: 14px; }
-        .footer-links ul li a:hover { color: #601dc2; padding-left: 5px; }
+        .footer-links ul li { margin-bottom: 12px; }
+        .footer-links ul li a {
+            color: var(--gri-yazi);
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--neon-mor);
+            padding-left: 8px;
+        }
 
         .footer-bottom {
             text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid #222;
-            font-size: 12px;
-            color: #666;
+            padding-top: 30px;
+            border-top: 1px solid #1a1a1a;
+            font-size: 13px;
+            color: #555;
         }
 
-        /* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
+        /* --- MOBİL UYUMLULUK --- */
         @media (max-width: 768px) {
-            nav {
-                padding: 0 5%;
-                height: auto;
-                flex-direction: column;
-                padding: 15px 0;
-            }
-
-            nav ul {
-                margin-top: 15px;
-                gap: 10px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            nav ul li a {
-                font-size: 12px;
-            }
-
-            .hero {
-                height: 60vh;
-                background-attachment: scroll; /* Mobilde performans için */
-            }
-
-            .container {
-                padding: 40px 5%;
-            }
-
-            .grid-layout {
-                grid-template-columns: 1fr; /* Mobilde kartlar tam genişlik */
-            }
+            header { flex-direction: column; height: auto; padding: 20px; gap: 15px; }
+            nav ul { gap: 10px; flex-wrap: wrap; justify-content: center; }
+            .hero { height: 60vh; }
+            .hero h1 { font-size: 2rem; }
+            .container { padding: 40px 5%; }
+            .footer-grid { text-align: center; }
+            .footer-links ul li a:hover { padding-left: 0; }
         }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="logo">OBB <span>E-SPOR</span></div>
-        <ul>
-            <li><a href="index.html">ANA SAYFA</a></li>
-            <li><a href="tournaments.html">TURNUVALAR</a></li>
-            <li><a href="canli.html">CANLI</a></li>
-            <li><a href="kayit.html" class="nav-btn">KATIL</a></li>
-        </ul>
-    </nav>
+    <header>
+        <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
+        <nav>
+            <ul>
+                <li><a href="index.html">ANA SAYFA</a></li>
+                <li><a href="tournaments.html">TURNUVALAR</a></li>
+                <li><a href="canli.html">CANLI</a></li>
+                <li><a href="kayit.html" class="nav-btn">KATIL</a></li>
+            </ul>
+        </nav>
+    </header>
 
     <header class="hero">
         <div class="hero-overlay"></div> 
         <div class="hero-content">
-            <h1>ZAFER <span class="highlight">MOR</span> IŞIKTA PARLAR</h1>
+            <h1>ZAFER <span class="purple-neon">MOR</span> IŞIKTA PARLAR</h1>
             <p>En iyi oyuncular, en karanlık arenalarda yetişir.</p>
             <button class="main-btn">ŞİMDİ OYNA</button>
         </div>
@@ -303,34 +299,32 @@
     <section class="container">
         <h2 class="section-title">DUYURULAR</h2>
         <div class="grid-layout">
-            
             <div class="card">
                 <div class="card-img">OBB E-SPOR</div>
                 <div class="card-body">
-                    <h3>OBB E-SPOR BAŞLIYOR</h3>
-                    <p>Ordu E-spora yeni bir soluk getiriyor. Profesyonel arena seni bekliyor.</p>
-                    <a href="#" class="card-link">DETAYLARI GÖR</a>
+                    <h3>ARENA AÇILIYOR</h3>
+                    <p>Ordu'nun en büyük e-spor merkezi kapılarını açıyor. Profesyonel ekipmanlarla tanışın.</p>
+                    <a href="#" class="card-link">DETAYLAR</a>
                 </div>
             </div>
 
             <div class="card">
-                <div class="card-img">TURNUVA</div>
+                <div class="card-img">VALORANT</div>
                 <div class="card-body">
-                    <h3>TOPLULUK TURNUVASI</h3>
-                    <p>Ödüllü turnuvamız çok yakında Ordu'da. Takımını kur ve yerini al!</p>
-                    <a href="#" class="card-link">DETAYLARI GÖR</a>
+                    <h3>VALORANT TURNUVASI</h3>
+                    <p>Büyük ödüllü Valorant topluluk turnuvası için kayıtlar başladı. Takımını hemen kur!</p>
+                    <a href="kayit.html" class="card-link">KAYIT OL</a>
                 </div>
             </div>
 
             <div class="card">
-                <div class="card-img">SOSYAL MEDYA</div>
+                <div class="card-img">TOPLULUK</div>
                 <div class="card-body">
-                    <h3>BİZİ TAKİP EDİN</h3>
-                    <p>Turnuva ve Minigame duyuruları için sosyal medya hesaplarımızı takip etmeyi unutmayın.</p>
+                    <h3>SOSYAL MEDYA</h3>
+                    <p>Gelişmeleri kaçırmamak için bizi Discord ve Instagram'dan takip edin.</p>
                     <a href="#" class="card-link">TAKİP ET</a>
                 </div>
             </div>
-
         </div>
     </section>
 
@@ -338,26 +332,30 @@
         <div class="footer-grid">
             <div class="footer-about">
                 <h3>OBB <span>E-SPOR</span></h3>
-                <p>Ordu Büyükşehir Belediyesi tarafından gençlerin dijital dünyada yerini alması için kurulan e-spor platformudur.</p>
+                <p>Ordu Büyükşehir Belediyesi'nin katkılarıyla genç sporcuları bir araya getiren, rekabet ve centilmenliği odak noktasına alan yeni nesil e-spor platformu.</p>
             </div>
+            
             <div class="footer-links">
-                <h3>Hızlı Menü</h3>
+                <h3>Hızlı Erişim</h3>
                 <ul>
                     <li><a href="index.html">Ana Sayfa</a></li>
                     <li><a href="tournaments.html">Turnuvalar</a></li>
-                    <li><a href="#">Sıralama</a></li>
+                    <li><a href="canli.html">Canlı Yayınlar</a></li>
+                    <li><a href="kayit.html">Kayıt Ol</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h3>Kurumsal</h3>
+                <ul>
+                    <li><a href="#">Hakkımızda</a></li>
+                    <li><a href="#">Kullanım Şartları</a></li>
+                    <li><a href="#">Gizlilik Sözleşmesi</a></li>
                     <li><a href="#">İletişim</a></li>
                 </ul>
             </div>
-            <div class="footer-links">
-                <h3>Destek</h3>
-                <ul>
-                    <li><a href="#">Kurallar</a></li>
-                    <li><a href="#">SSS</a></li>
-                    <li><a href="#">Gizlilik Politikası</a></li>
-                </ul>
-            </div>
         </div>
+
         <div class="footer-bottom">
             <p>&copy; 2026 OBB E-SPOR. Tüm hakları saklıdır. Ordu Büyükşehir Belediyesi</p>
         </div>
@@ -365,4 +363,3 @@
 
 </body>
 </html>
-
