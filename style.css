@@ -341,27 +341,55 @@ nav ul li a:hover {
     font-size: 12px;
 }
 
-/* --- FOOTER MOBİL UYUMLULUK --- */
+/* --- MOBİL İÇİN KOMPAKT FOOTER (768px ve altı) --- */
 @media (max-width: 768px) {
+    .main-footer {
+        padding: 40px 0 20px 0;
+    }
+
     .footer-container {
-        grid-template-columns: 1fr; /* Mobilde her şey tek sütun */
+        /* Sütunları yan yana 2'li hale getirir (Logo tam genişlik, diğerleri yan yana) */
+        grid-template-columns: 1fr 1fr; 
+        gap: 20px;
+        text-align: left; /* Merkezi görünümden kurtulup daha modern bir sola yaslı yapı */
+    }
+
+    /* Logo kısmını en üste ve tam genişlik yapalım */
+    .footer-section:first-child {
+        grid-column: span 2;
         text-align: center;
-        gap: 30px;
+        border-bottom: 1px solid #222;
+        padding-bottom: 20px;
+        margin-bottom: 10px;
     }
 
     .footer-desc {
-        margin: 20px auto;
+        margin: 15px auto;
+        font-size: 13px;
+        max-width: 100%;
     }
 
     .footer-socials {
         justify-content: center;
     }
 
-    .contact-info li {
-        justify-content: center;
+    /* Başlıkları ve linkleri küçültelim */
+    .footer-section h3 {
+        font-size: 1rem;
+        margin-bottom: 15px;
     }
 
-    .footer-section ul li a:hover {
-        padding-left: 0; /* Mobilde kayma efektini kapat */
+    .footer-section ul li {
+        margin-bottom: 8px;
+    }
+
+    .footer-section ul li a, 
+    .contact-info li {
+        font-size: 12px;
+    }
+
+    .footer-bottom {
+        margin-top: 30px;
+        font-size: 10px;
     }
 }
