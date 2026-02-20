@@ -26,7 +26,7 @@
             padding-top: 80px;
         }
 
-        /* --- AKILLI HEADER CSS --- */
+        /* --- AKILLI HEADER (ESKİ HALİNE GETİRİLDİ) --- */
         header {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -76,7 +76,7 @@
         .card-link { display: inline-block; margin-top: 18px; color: var(--yazi-beyaz); text-decoration: none; font-weight: bold; font-size: 13px; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; transition: 0.3s; }
         .card-link:hover { color: var(--neon-mor); }
 
-        /* --- FOOTER (MASAÜSTÜ AYARLARI KORUNDU) --- */
+        /* --- FOOTER (BEĞENDİĞİN YAPI) --- */
         footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
         
@@ -97,7 +97,7 @@
         .contact-item i { color: var(--neon-mor); font-size: 16px; width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 14px; }
 
-        /* --- MOBİL GÖRÜNÜM (YENİ DÜZENLEME) --- */
+        /* --- MOBİL ÖZEL AYARLAR --- */
         @media (max-width: 768px) {
             header { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
             body { padding-top: 125px; } 
@@ -106,44 +106,33 @@
             nav ul li a { font-size: 10px; white-space: nowrap; }
             .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
-            /* Footer Mobil - Görsele Göre Modernizasyon */
+            /* Footer Mobil - Yeni Modern Düzen */
             footer { padding: 60px 5% 30px; }
             .footer-grid { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 40px; }
             
-            .footer-brand { width: 100%; order: 1; }
             .footer-brand h2 { 
                 font-size: 32px; 
-                border-bottom: 3px solid var(--neon-mor); 
-                padding-bottom: 8px; 
-                margin-bottom: 25px;
-                display: block; /* Tam genişlikte ortalamak için */
                 text-decoration: underline;
                 text-underline-offset: 12px;
                 text-decoration-color: var(--neon-mor);
                 border-bottom: none;
+                display: block;
+                margin-bottom: 25px;
             }
-            .footer-brand p { max-width: 100%; font-size: 14px; margin: 0 auto 30px; }
             .social-icons { justify-content: center; gap: 20px; }
-            .social-icons a { width: 50px; height: 50px; }
-
-            /* Menü ve İletişimi yan yana getiren alt grid */
+            
             .footer-links-container { 
                 display: grid; 
                 grid-template-columns: 1fr 1fr; 
                 width: 100%; 
                 gap: 20px; 
                 text-align: left;
-                order: 2;
                 border-top: 1px solid #1a1a1a;
                 padding-top: 40px;
             }
-            
-            .footer-column { margin: 0; }
-            .footer-column h3 { font-size: 18px; margin-bottom: 20px; }
-            .footer-column ul li a { font-size: 14px; }
+            .footer-column h3 { font-size: 18px; }
             .contact-item { font-size: 13px; justify-content: flex-start; }
-            
-            .footer-bottom { order: 3; margin-top: 20px; font-size: 12px; }
+            .footer-bottom { margin-top: 20px; font-size: 12px; }
         }
     </style>
 </head>
@@ -177,29 +166,11 @@
                 <div class="card-img">OBB E-SPOR</div>
                 <div class="card-body">
                     <h3>YENİ SEZON BAŞLIYOR</h3>
-                    <p>Ordu'nun en rekabetçi e-spor liginde 3. sezon heyecanı çok yakında başlıyor. Hazırlıklarınızı tamamlayın.</p>
+                    <p>Ordu'nun en rekabetçi e-spor liginde 3. sezon heyecanı çok yakında başlıyor.</p>
                     <a href="#" class="card-link">DETAYLARI GÖR</a>
                 </div>
             </div>
-
-            <div class="card">
-                <div class="card-img">VALORANT</div>
-                <div class="card-body">
-                    <h3>TOPLULUK TURNUVASI</h3>
-                    <p>Ödül havuzu 10.000 TL olan Valorant Topluluk Turnuvası için kayıtlar açıldı. Takımını kur ve katıl!</p>
-                    <a href="kayit.html" class="card-link">ŞİMDİ KAYDOL</a>
-                </div>
             </div>
-
-            <div class="card">
-                <div class="card-img">TOPLULUK</div>
-                <div class="card-body">
-                    <h3>DISCORD'A KATILIN</h3>
-                    <p>Takım arkadaşı bulmak, antrenman maçları düzenlemek ve yetkililerle iletişim kurmak için Discord'dayız.</p>
-                    <a href="#" class="card-link">SUNUCUYA GİT</a>
-                </div>
-            </div>
-        </div>
     </section>
 
     <footer>
@@ -228,22 +199,12 @@
 
                 <div class="footer-column">
                     <h3>İLETİŞİM</h3>
-                    <div class="contact-item">
-                        <i class="fa-solid fa-envelope"></i>
-                        <span>info@obbesports.com</span>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <span>Ordu, Türkiye</span>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fa-solid fa-headset"></i>
-                        <span>7/24 Destek Ekibi</span>
-                    </div>
+                    <div class="contact-item"><i class="fa-solid fa-envelope"></i> <span>info@obbesports.com</span></div>
+                    <div class="contact-item"><i class="fa-solid fa-location-dot"></i> <span>Ordu, Türkiye</span></div>
+                    <div class="contact-item"><i class="fa-solid fa-headset"></i> <span>7/24 Destek Ekibi</span></div>
                 </div>
             </div>
         </div>
-
         <div class="footer-bottom">
             <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
         </div>
@@ -252,7 +213,6 @@
     <script>
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
-
         window.addEventListener("scroll", function() {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             if (scrollTop > lastScrollTop && scrollTop > 100) {
