@@ -36,4 +36,287 @@
             padding: 0 5% !important;
             height: 80px !important;
             display: flex;
-            justify-content: space-between
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--neon-mor) !important;
+            box-shadow: 0 0 25px rgba(96, 29, 194, 0.4);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 22px !important;
+            font-weight: 900 !important;
+            color: white !important;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px !important;
+        }
+
+        .logo span { 
+            color: var(--neon-mor) !important; 
+            text-shadow: 0 0 10px var(--neon-mor);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center; 
+            gap: 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .nav-btn {
+            border: 2px solid var(--neon-mor); 
+            padding: 8px 15px;
+            border-radius: 5px;
+            color: white !important;
+            font-size: 11px !important;
+        }
+
+        /* --- 3x2 PENCERE DÜZENİ (MASAÜSTÜ) --- */
+        .main-content {
+            padding: 40px 3%;
+        }
+
+        .section-title {
+            text-align: center;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .section-title span { color: var(--neon-mor); }
+
+        .streams-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Masaüstünde 3 sütun */
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #111111;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #222;
+        }
+
+        .video-box { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+        .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        .card-footer { padding: 15px; background: #0d0d0d; }
+        .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .name { font-weight: 700; font-size: 0.9rem; color: #fff; }
+
+        .social-links { display: flex; gap: 10px; }
+        .social-links a { color: var(--gri-yazi); font-size: 1rem; }
+
+        .btn-kick {
+            display: block;
+            background-color: var(--neon-mor);
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        /* --- FOOTER --- */
+        .main-footer {
+            background-color: #080808;
+            border-top: 2px solid var(--neon-mor);
+            padding: 40px 0 20px 0;
+            margin-top: 60px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1.5fr;
+            gap: 30px;
+        }
+
+        .footer-section h3 { color: var(--neon-mor); font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; }
+        .footer-desc { color: var(--gri-yazi); font-size: 13px; line-height: 1.5; margin: 15px 0; }
+        .footer-socials { display: flex; gap: 12px; }
+        .footer-socials a {
+            width: 35px; height: 35px; background: #111; border: 1px solid #222; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white; text-decoration: none;
+        }
+
+        .footer-bottom { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #1a1a1a; color: #555; font-size: 11px; }
+
+        /* --- TELEFON VE TABLET ENTEGRASYONU --- */
+        @media (max-width: 992px) {
+            .streams-grid { grid-template-columns: repeat(2, 1fr); } /* Tabletlerde 2'li */
+        }
+
+        @media (max-width: 600px) {
+            header { height: 70px !important; }
+            .logo { font-size: 18px !important; }
+            nav ul { gap: 8px; }
+            nav ul li a { font-size: 10px; }
+            .nav-btn { padding: 6px 10px; }
+            
+            .streams-grid { grid-template-columns: 1fr; } /* Telefonlarda pencereler üst üste (En sağlıklı mobil görünüm) */
+            .section-title { font-size: 1.4rem; margin-bottom: 20px; }
+            
+            .footer-container { grid-template-columns: 1fr; text-align: center; }
+            .footer-socials { justify-content: center; }
+            .footer-desc { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
+    <nav>
+        <ul>
+            <li><a href="index.html">ANA SAYFA</a></li>
+            <li><a href="tournaments.html">TURNUVALAR</a></li>
+            <li><a href="canli.html">CANLI</a></li>
+            <li><a href="kayit.html" class="nav-btn">KATIL</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="main-content">
+    <h2 class="section-title">EKİP <span>CANLI YAYINDA</span></h2>
+
+    <div class="streams-grid">
+        <div class="card">
+            <div class="video-box"><iframe src="https://player.kick.com/xqc?muted=true" allowfullscreen></iframe></div>
+            <div class="card-footer">
+                <div class="footer-top">
+                    <span class="name">OYUNCU 1</span>
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                    </div>
+                </div>
+                <a href="https://kick.com/xqc" target="_blank" class="btn-kick">KICK'TE İZLE</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="video-box"><iframe src="https://player.kick.com/westcol?muted=true" allowfullscreen></iframe></div>
+            <div class="card-footer">
+                <div class="footer-top">
+                    <span class="name">OYUNCU 2</span>
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                    </div>
+                </div>
+                <a href="https://kick.com/westcol" target="_blank" class="btn-kick">KICK'TE İZLE</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="video-box"><iframe src="https://player.kick.com/heelmike?muted=true" allowfullscreen></iframe></div>
+            <div class="card-footer">
+                <div class="footer-top">
+                    <span class="name">OYUNCU 3</span>
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                    </div>
+                </div>
+                <a href="https://kick.com/heelmike" target="_blank" class="btn-kick">KICK'TE İZLE</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="video-box"><iframe src="https://player.kick.com/adinross?muted=true" allowfullscreen></iframe></div>
+            <div class="card-footer">
+                <div class="footer-top">
+                    <span class="name">OYUNCU 4</span>
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                    </div>
+                </div>
+                <a href="https://kick.com/adinross" target="_blank" class="btn-kick">KICK'TE İZLE</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="video-box"><iframe src="https://player.kick.com/stacy?muted=true" allowfullscreen></iframe></div>
+            <div class="card-footer">
+                <div class="footer-top">
+                    <span class="name">OYUNCU 5</span>
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                    </div>
+                </div>
+                <a href="https://kick.com/stacy" target="_blank" class="btn-kick">KICK'TE İZLE</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="video-box"><iframe src="https://player.kick.com/trainwreckstv?muted=true" allowfullscreen></iframe></div>
+            <div class="card-footer">
+                <div class="footer-top">
+                    <span class="name">OYUNCU 6</span>
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                    </div>
+                </div>
+                <a href="https://kick.com/trainwreckstv" target="_blank" class="btn-kick">KICK'TE İZLE</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="main-footer">
+    <div class="footer-container">
+        <div class="footer-section">
+            <a href="index.html" class="logo" style="font-size: 18px !important;">OBB <span>E-SPOR</span></a>
+            <p class="footer-desc">Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
+            <div class="footer-socials">
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-discord"></i></a>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h3>Hızlı Menü</h3>
+            <ul style="list-style: none; font-size: 13px; color: #a0a0a0;">
+                <li style="margin-bottom: 8px;"><a href="index.html" style="color: inherit; text-decoration: none;">Ana Sayfa</a></li>
+                <li style="margin-bottom: 8px;"><a href="tournaments.html" style="color: inherit; text-decoration: none;">Turnuvalar</a></li>
+                <li><a href="canli.html" style="color: inherit; text-decoration: none;">Canlı</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>İletişim</h3>
+            <p style="font-size: 13px; color: #a0a0a0;"><i class="fas fa-envelope" style="color: #601dc2;"></i> info@obbesports.com</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
+    </div>
+</footer>
+
+</body>
+</html>
