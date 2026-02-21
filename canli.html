@@ -172,6 +172,7 @@
             .streams-grid { grid-template-columns: 1fr; }
         }
 /* --- YENİ PRO OYUNCU MENÜSÜ --- */
+/* --- PRO OYUNCU MENÜSÜ VE SABİTLEME FİXİ --- */
 .user-dropdown {
     position: relative;
     display: inline-block;
@@ -180,7 +181,7 @@
 .dropdown-trigger {
     background: rgba(96, 29, 194, 0.1);
     border: 1px solid var(--neon-mor);
-    padding: 8px 15px;
+    padding: 8px 18px;
     border-radius: 50px;
     color: white;
     cursor: pointer;
@@ -189,6 +190,7 @@
     gap: 10px;
     transition: 0.3s;
     font-family: 'Poppins', sans-serif;
+    z-index: 1001;
 }
 
 .dropdown-trigger:hover {
@@ -204,24 +206,38 @@
 
 .arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
 
-/* Açılır Pencere Tasarımı */
+/* Menü İçeriği */
 .dropdown-content {
     display: none;
     position: absolute;
     right: 0;
-    top: 120%;
+    /* Butona tam sıfırladık, aradaki boşluk kapandı */
+    top: 100%; 
     background: #0d0d0d;
-    min-width: 190px;
+    min-width: 200px;
     border: 1px solid var(--neon-mor);
     border-radius: 12px;
-    overflow: hidden;
+    padding: 5px 0;
     z-index: 9999;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+    animation: menuFadeIn 0.2s ease-out;
+}
+
+/* KAPANMA SORUNUNU ÇÖZEN GÖRÜNMEZ KÖPRÜ */
+/* Fare butondan menüye geçerken bu alan üzerinden geçtiği için menü açık kalır */
+.dropdown-content::before {
+    content: "";
+    position: absolute;
+    top: -20px; 
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background: transparent;
 }
 
 .dropdown-content a {
     color: #fff;
-    padding: 12px 18px;
+    padding: 12px 20px;
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -231,37 +247,38 @@
     transition: 0.2s;
 }
 
-.dropdown-content a i { 
-    color: var(--neon-mor); 
-    width: 20px; 
-    text-align: center;
-}
+.dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
 
 .dropdown-content a:hover { 
     background: rgba(96, 29, 194, 0.2); 
     color: var(--neon-mor); 
+    padding-left: 25px; /* Şık bir kayma efekti */
 }
 
-/* Hover ile Menüyü Aç */
+/* Hover Kontrolleri */
 .user-dropdown:hover .dropdown-content { display: block; }
 .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
 
-/* Çıkış Linki İçin Özel Renk */
-.logout-link { border-top: 1px solid rgba(255,255,255,0.05); }
+.logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
 .logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
 
-/* --- MOBİL ÇÖZÜM --- */
+/* Animasyon */
+@keyframes menuFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- MOBİL UYUMLULUK --- */
 @media (max-width: 768px) {
-    .user-name-text { display: none; } /* Mobilde ismi gizleyerek header'ı ferahlatır */
-    .dropdown-trigger { padding: 10px; border-radius: 50%; } /* Mobilde ikonik yuvarlak buton */
+    .user-name-text, .arrow-icon { display: none; } 
+    .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
     .dropdown-content { 
         position: fixed; 
-        right: 10px; 
-        top: 70px; 
+        right: 15px; 
+        top: 75px; 
         width: 180px; 
     }
 }
-
 .logout-minimal-btn:hover {
     transform: scale(1.2);
     color: #ff0000;
@@ -424,6 +441,7 @@
 <script src="auth.js"></script>
 </body>
 </html>
+
 
 
 
