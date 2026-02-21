@@ -53,7 +53,7 @@
         .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; font-weight: bold; }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- HERO & İÇERİK --- */
+        /* --- HERO --- */
         .hero { height: 75vh; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; background: url('img/banner deneme.jpg') center/cover fixed; }
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1; }
         .hero-content { position: relative; z-index: 2; padding: 0 20px; }
@@ -62,6 +62,7 @@
         .main-btn { background: var(--neon-mor); color: white; border: none; padding: 15px 40px; border-radius: 8px; font-weight: 900; margin-top: 20px; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
         .main-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--neon-mor); }
 
+        /* --- DUYURULAR --- */
         .container { padding: 80px 10%; }
         .section-title { margin-bottom: 40px; border-left: 5px solid var(--neon-mor); padding-left: 15px; font-size: 28px; font-weight: 900; text-transform: uppercase; }
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
@@ -73,63 +74,53 @@
         .card-body p { color: var(--gri-yazi); font-size: 14px; line-height: 1.6; }
         .card-link { display: inline-block; margin-top: 18px; color: var(--yazi-beyaz); text-decoration: none; font-weight: bold; font-size: 13px; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; transition: 0.3s; }
 
-        /* --- FOOTER ANA STİLLER --- */
+        /* --- FOOTER (TURNUVALAR SAYFASINDAN ALINAN YAPI) --- */
         footer {
             background-color: var(--nav-bg);
             border-top: 2px solid var(--neon-mor);
             padding: 80px 10% 40px;
-            margin-top: 50px;
+            margin-top: 100px;
         }
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 50px;
-        }
+        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+        
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
         .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
         
         .social-icons { display: flex; gap: 15px; }
-        .social-icons a { width: 45px; height: 45px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; border: 1px solid #222; }
-        .social-icons a:hover { background: var(--neon-mor); border-color: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
+        .social-icons a {
+            width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s;
+        }
+        .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
 
         .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
         .footer-column ul { list-style: none; }
         .footer-column ul li { margin-bottom: 12px; }
-        .footer-column ul li a { color: var(--yazi-beyaz); text-decoration: none; font-size: 15px; transition: 0.3s; }
+        .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
         .footer-column ul li a:hover { color: var(--neon-mor); }
 
         .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
-        .contact-item i { color: var(--neon-mor); font-size: 16px; width: 20px; text-align: center; }
+        .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
 
-        .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 14px; }
+        .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* --- MOBİL ÖZEL AYARLAR (İSTEDİĞİN GÖRÜNTÜ BURADA) --- */
+        /* --- MOBİL UYUMLULUK --- */
         @media (max-width: 768px) {
-            header { height: auto; padding: 15px 5%; flex-direction: column; gap: 12px; }
-            body { padding-top: 130px; }
-            
-            .footer-grid {
-                grid-template-columns: 1fr; /* Marka tam genişlik */
-                gap: 30px;
-            }
+            header { height: auto; padding: 15px 5%; flex-direction: column; gap: 12px; top: 0; }
+            body { padding-top: 130px; } 
+            .logo { font-size: 24px; text-align: center; width: 100%; }
+            nav { width: 100%; }
+            nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 10px; white-space: nowrap; }
+            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
-            /* Alt kısımdaki menü ve iletişimi yan yana getiren sarmalayıcı */
-            .mobile-footer-row {
-                display: grid;
-                grid-template-columns: 1fr 1fr; /* %50 - %50 yan yana */
-                gap: 20px;
-                width: 100%;
-            }
-
-            .footer-brand { text-align: left; border-bottom: 1px solid #222; padding-bottom: 20px; }
-            .footer-brand p { max-width: 100%; font-size: 14px; }
-            
-            .footer-column h3 { font-size: 16px; margin-bottom: 15px; }
-            .footer-column ul li a, .contact-item { font-size: 13px; }
-            
+            /* Footer Mobil Düzeltmesi */
+            .footer-grid { grid-template-columns: 1fr; gap: 40px; }
+            .footer-brand { text-align: left; padding-bottom: 20px; border-bottom: 1px solid #111; }
+            .footer-brand p { max-width: 100%; }
             .social-icons { justify-content: flex-start; }
-            footer { padding: 40px 8% 20px; }
+            .footer-column { text-align: left; }
+            footer { padding: 60px 8% 30px; }
         }
     </style>
 </head>
@@ -192,33 +183,32 @@
                 <h2>OBB <span style="color:white">E-SPOR</span></h2>
                 <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
                 <div class="social-icons">
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-                    <a href="#"><i class="fa-brands fa-discord"></i></a>
-                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
 
-            <div class="mobile-footer-row">
-                <div class="footer-column">
-                    <h3>HIZLI MENÜ</h3>
-                    <ul>
-                        <li><a href="index.html">Ana Sayfa</a></li>
-                        <li><a href="tournaments.html">Turnuvalar</a></li>
-                        <li><a href="canli.html">Canlı</a></li>
-                        <li><a href="kayit.html">Kayıt Ol</a></li>
-                    </ul>
-                </div>
+            <div class="footer-column">
+                <h3>HIZLI MENÜ</h3>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="tournaments.html">Turnuvalar</a></li>
+                    <li><a href="canli.html">Canlı Yayınlar</a></li>
+                    <li><a href="kayit.html">Kayıt Ol</a></li>
+                </ul>
+            </div>
 
-                <div class="footer-column">
-                    <h3>İLETİŞİM</h3>
-                    <div class="contact-item"><i class="fa-solid fa-envelope"></i> <span>info@obbesports.com</span></div>
-                    <div class="contact-item"><i class="fa-solid fa-location-dot"></i> <span>Ordu, Türkiye</span></div>
-                    <div class="contact-item"><i class="fa-solid fa-headset"></i> <span>7/24 Destek</span></div>
-                </div>
+            <div class="footer-column">
+                <h3>İLETİŞİM</h3>
+                <ul>
+                    <li class="contact-item"><i class="fas fa-envelope"></i> info@obbesports.com</li>
+                    <li class="contact-item"><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
+                    <li class="contact-item"><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
+                </ul>
             </div>
         </div>
-
         <div class="footer-bottom">
             <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
         </div>
