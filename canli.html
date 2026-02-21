@@ -16,7 +16,7 @@
             --gri-yazi: #a0a0a0;
         }
 
-        /* Temel Ayarlar */
+        /* --- TEMEL AYARLAR --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { background-color: var(--ana-siyah); scroll-behavior: smooth; }
         
@@ -68,7 +68,7 @@
         }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- İÇERİK --- */
+        /* --- İÇERİK (CANLI YAYIN KARTLARI) --- */
         .main-content { padding: 60px 10%; }
         .section-title {
             text-align: center;
@@ -127,19 +127,27 @@
         }
         .btn-kick:hover { box-shadow: 0 0 20px rgba(96, 29, 194, 0.4); background: #7a2df2; }
 
-        /* --- FOOTER (GÜNCELLENMİŞ YAPI) --- */
+        /* --- FOOTER (GÜNCELLENMİŞ MASAÜSTÜ & MOBİL YAPI) --- */
         footer {
             background-color: var(--nav-bg);
             border-top: 2px solid var(--neon-mor);
             padding: 80px 10% 40px;
             margin-top: 80px;
         }
+        
         .footer-grid { 
-            display: grid; 
-            grid-template-columns: 1.5fr 1fr 1fr; 
+            display: flex; 
+            justify-content: space-between; /* Sol ve sağı iki uçta tutar */
+            align-items: flex-start;
             gap: 50px; 
             margin-bottom: 50px; 
         }
+
+        .footer-links-wrapper {
+            display: flex;
+            gap: 100px; /* Menü ve iletişim bloğu arasındaki boşluk */
+        }
+
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
         .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; line-height: 1.6; }
         
@@ -164,9 +172,11 @@
         /* --- MOBİL UYUMLULUK --- */
         @media (max-width: 1100px) {
             .streams-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-links-wrapper { gap: 50px; } /* Tablette aralığı daralt */
         }
 
         @media (max-width: 768px) {
+            /* Header Mobil */
             header { height: auto; padding: 15px 5%; flex-direction: column; gap: 12px; top: 0; }
             body { padding-top: 130px; } 
             
@@ -176,24 +186,29 @@
             nav ul li a { font-size: 10px; white-space: nowrap; }
             .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
+            /* İçerik Mobil */
             .main-content { padding: 40px 5%; }
             .streams-grid { grid-template-columns: 1fr; }
 
-            /* Footer Mobil Düzen */
+            /* Footer Mobil */
             footer { padding: 60px 5% 30px; }
-            .footer-grid { 
-                grid-template-columns: 1fr 1fr; 
-                gap: 30px; 
-            }
-            .footer-brand { 
-                grid-column: span 2; 
-                text-align: center; 
-                margin-bottom: 20px;
-            }
+            .footer-grid { flex-direction: column; align-items: center; text-align: center; gap: 30px; }
             .footer-brand h2 { font-size: 32px; border-bottom: none; text-decoration: underline; text-underline-offset: 10px; text-decoration-color: var(--neon-mor); }
             .footer-brand p { max-width: 100%; margin: 20px auto; }
             .footer-socials { justify-content: center; }
-            .footer-section { text-align: left; }
+            
+            /* Menü ve İletişim yan yana (Mobil ızgara) */
+            .footer-links-wrapper { 
+                display: grid; 
+                grid-template-columns: 1fr 1fr; 
+                width: 100%; 
+                gap: 20px; 
+                text-align: left;
+                border-top: 1px solid #1a1a1a;
+                padding-top: 40px;
+                margin-top: 10px;
+            }
+            .footer-section h3 { font-size: 16px; margin-bottom: 15px; }
         }
     </style>
 </head>
@@ -247,6 +262,7 @@
 
     <footer>
         <div class="footer-grid">
+            
             <div class="footer-brand">
                 <h2>OBB <span style="color:white">E-SPOR</span></h2>
                 <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
@@ -258,24 +274,27 @@
                 </div>
             </div>
 
-            <div class="footer-section">
-                <h3>HIZLI MENÜ</h3>
-                <ul>
-                    <li><a href="index.html">Ana Sayfa</a></li>
-                    <li><a href="tournaments.html">Turnuvalar</a></li>
-                    <li><a href="canli.html">Canlı Yayınlar</a></li>
-                    <li><a href="kayit.html">Kayıt Ol</a></li>
-                </ul>
-            </div>
+            <div class="footer-links-wrapper">
+                <div class="footer-section">
+                    <h3>HIZLI MENÜ</h3>
+                    <ul>
+                        <li><a href="index.html">Ana Sayfa</a></li>
+                        <li><a href="tournaments.html">Turnuvalar</a></li>
+                        <li><a href="canli.html">Canlı Yayınlar</a></li>
+                        <li><a href="kayit.html">Kayıt Ol</a></li>
+                    </ul>
+                </div>
 
-            <div class="footer-section">
-                <h3>İLETİŞİM</h3>
-                <ul class="contact-info">
-                    <li><i class="fas fa-envelope"></i> info@obbesports.com</li>
-                    <li><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
-                    <li><i class="fas fa-headset"></i> 7/24 Destek</li>
-                </ul>
+                <div class="footer-section">
+                    <h3>İLETİŞİM</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-envelope"></i> info@obbesports.com</li>
+                        <li><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
+                        <li><i class="fas fa-headset"></i> 7/24 Destek</li>
+                    </ul>
+                </div>
             </div>
+            
         </div>
 
         <div class="footer-bottom">
