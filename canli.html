@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
+        /* --- 1. TEMEL AYARLAR --- */
         :root {
-            --ana-siyah: #050505;
+            --ana-siyah: #000000;
             --nav-bg: #000000;
             --neon-mor: #601dc2; 
             --yazi-beyaz: #ffffff;
@@ -17,21 +18,19 @@
             --input-bg: #0d0d0d;
         }
 
-        /* --- TEMEL AYARLAR (DEĞİŞMEDİ) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { background-color: var(--ana-siyah); scroll-behavior: smooth; }
-        
+        html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
         body {
-            background: radial-gradient(circle at top, #1a052d 0%, #050505 100%);
+            background: radial-gradient(circle at top, #1a052d 0%, #000000 100%);
             background-attachment: fixed;
             color: var(--yazi-beyaz);
             font-family: 'Poppins', sans-serif;
-            overflow-x: hidden;
+            line-height: 1.6;
             padding-top: 80px;
         }
 
-        /* --- HEADER (İSKELET KORUNDU) --- */
-        header {
+        /* --- 2. AKILLI HEADER (KORUNAN YAPI) --- */
+        header.main-nav {
             background-color: var(--nav-bg);
             padding: 0 10%; 
             display: flex;
@@ -42,17 +41,30 @@
             position: fixed;
             top: 0; left: 0; width: 100%;
             z-index: 1000;
-            transition: transform 0.4s;
-            box-shadow: 0 0 25px rgba(96, 29, 194, 0.3);
+            transition: transform 0.4s ease-in-out;
         }
-        header.nav-hidden { transform: translateY(-110%); }
+        header.main-nav.nav-hidden { transform: translateY(-110%); }
+
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); }
+        
         nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
         nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
-        .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; font-weight: bold; text-decoration: none; }
+        nav ul li a:hover { color: var(--neon-mor); }
+        
+        .nav-btn { 
+            border: 2px solid var(--neon-mor); 
+            padding: 8px 20px; 
+            border-radius: 5px; 
+            color: white !important; 
+            background: transparent; 
+            transition: 0.3s;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- YENİ KAYIT SAYFASI TASARIMI (GÖRSELLERİNDEKİ GÖRÜNÜM) --- */
+        /* --- 3. KAYIT SAYFASI TASARIMI --- */
         .register-container {
             display: flex;
             justify-content: center;
@@ -62,7 +74,6 @@
             gap: 40px;
         }
 
-        /* Yan Görseller */
         .side-art {
             flex: 1;
             max-width: 400px;
@@ -79,7 +90,6 @@
         }
         .side-art img:hover { border-color: var(--neon-mor); transform: scale(1.02); }
 
-        /* Form Kutusu */
         .register-box {
             background: #000000;
             padding: 50px 40px;
@@ -91,16 +101,10 @@
             text-align: center;
         }
 
-        .register-box h1 {
-            font-size: 32px;
-            font-weight: 900;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
+        .register-box h1 { font-size: 32px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
         .register-box h1 span { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
         .register-box p { color: var(--gri-yazi); font-size: 14px; margin-bottom: 40px; }
 
-        /* Form Elemanları */
         .input-group { text-align: left; margin-bottom: 20px; }
         .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #ddd; }
         .input-group input {
@@ -134,37 +138,58 @@
         .login-link { margin-top: 25px; font-size: 13px; color: var(--gri-yazi); }
         .login-link a { color: var(--neon-mor); text-decoration: none; font-weight: bold; }
 
-        /* --- FOOTER (İSKELET KORUNDU) --- */
-        footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 60px; }
-        .footer-grid { display: flex; justify-content: space-between; gap: 50px; margin-bottom: 50px; }
-        .footer-links-wrapper { display: flex; gap: 100px; }
-        .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; }
-        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; line-height: 1.6; }
-        .footer-socials { display: flex; gap: 15px; margin-top: 20px; }
-        .footer-socials a { width: 45px; height: 45px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; transition: 0.3s; }
-        .footer-section h3 { font-size: 18px; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
-        .footer-section ul { list-style: none; }
-        .footer-section ul li { margin-bottom: 12px; }
-        .footer-section ul li a { color: white; text-decoration: none; font-size: 15px; }
-        .contact-info li { color: var(--gri-yazi); font-size: 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        /* --- 4. FOOTER (KORUNAN YAPI) --- */
+        footer {
+            background-color: var(--nav-bg);
+            border-top: 2px solid var(--neon-mor);
+            padding: 80px 10% 40px;
+            margin-top: 100px;
+        }
+        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+        
+        .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
+        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
+        
+        .social-icons { display: flex; gap: 15px; }
+        .social-icons a {
+            width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s;
+        }
+        .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
+
+        .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
+        .footer-column ul { list-style: none; }
+        .footer-column ul li { margin-bottom: 12px; }
+        .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
+        .footer-column ul li a:hover { color: var(--neon-mor); }
+
+        .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
+        .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
+
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* MOBİL UYUM */
+        /* --- 5. MOBİL UYUMLULUK --- */
         @media (max-width: 1000px) {
             .side-art { display: none; }
-            .footer-links-wrapper { gap: 40px; }
         }
         @media (max-width: 768px) {
-            header { flex-direction: column; height: auto; padding: 15px; }
-            body { padding-top: 130px; }
-            .footer-grid { flex-direction: column; text-align: center; }
-            .footer-links-wrapper { grid-template-columns: 1fr 1fr; display: grid; text-align: left; }
+            header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
+            body { padding-top: 125px; }
+            nav { width: 100%; }
+            nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 10px; white-space: nowrap; }
+            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
+
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+            .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
+            .social-icons { justify-content: center; }
+            footer { padding: 60px 8% 30px; }
         }
     </style>
 </head>
 <body>
 
-    <header id="mainHeader">
+    <header class="main-nav" id="mainHeader">
         <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
         <nav>
             <ul>
@@ -219,32 +244,31 @@
             <div class="footer-brand">
                 <h2>OBB <span style="color:white">E-SPOR</span></h2>
                 <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
-                <div class="footer-socials">
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-                    <a href="#"><i class="fa-brands fa-discord"></i></a>
-                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
 
-            <div class="footer-links-wrapper">
-                <div class="footer-section">
-                    <h3>HIZLI MENÜ</h3>
-                    <ul>
-                        <li><a href="index.html">Ana Sayfa</a></li>
-                        <li><a href="tournaments.html">Turnuvalar</a></li>
-                        <li><a href="canli.html">Canlı Yayınlar</a></li>
-                        <li><a href="kayit.html">Kayıt Ol</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>İLETİŞİM</h3>
-                    <ul class="contact-info">
-                        <li><i class="fas fa-envelope"></i> info@obbesports.com</li>
-                        <li><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
-                        <li><i class="fas fa-headset"></i> 7/24 Destek</li>
-                    </ul>
-                </div>
+            <div class="footer-column">
+                <h3>Hızlı Menü</h3>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="tournaments.html">Turnuvalar</a></li>
+                    <li><a href="canli.html">Canlı Yayınlar</a></li>
+                    <li><a href="kayit.html">Kayıt Ol</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>İletişim</h3>
+                <ul>
+                    <li class="contact-item"><i class="fas fa-envelope"></i> info@obbesports.com</li>
+                    <li class="contact-item"><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
+                    <li class="contact-item"><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
+                </ul>
             </div>
         </div>
         <div class="footer-bottom">
@@ -253,15 +277,17 @@
     </footer>
 
     <script>
-        // Header Scroll Efekti (İskelet Korundu)
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
         window.addEventListener("scroll", function() {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            if (scrollTop > lastScrollTop && scrollTop > 100) { header.classList.add("nav-hidden"); }
-            else { header.classList.remove("nav-hidden"); }
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                header.classList.add("nav-hidden");
+            } else {
+                header.classList.remove("nav-hidden");
+            }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
-        });
+        }, false);
     </script>
 </body>
 </html>
