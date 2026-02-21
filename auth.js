@@ -25,23 +25,24 @@ async function checkUserStatus() {
 
 // 3. Navbar'ı (Header) Güncelleyen Fonksiyon
 function updateNavbarWithUser(user) {
-    // Supabase'den gelen kullanıcı adı veya varsayılan isim
     const username = user.user_metadata.username || "OYUNCU";
-    
-    // Header'daki "KATIL" veya "GİRİŞ" butonunu hedef al
     const navBtn = document.querySelector('.nav-btn');
     
     if (navBtn) {
-        // Butonu modern bir karşılama alanına dönüştür
+        // ESKİ BASİT YAZI YERİNE PROFESYONEL DROPDOWN MENÜ GELİYOR
         navBtn.parentElement.innerHTML = `
-            <div class="user-welcome-area">
-                <div class="user-info">
-                    <span class="welcome-text">HOŞ GELDİN,</span>
-                    <span class="user-nickname">${username.toUpperCase()}</span>
-                </div>
-                <button onclick="logoutAction()" class="logout-minimal-btn" title="Güvenli Çıkış">
-                    <i class="fas fa-sign-out-alt"></i>
+            <div class="user-dropdown">
+                <button class="dropdown-trigger">
+                    <i class="fas fa-user-circle"></i>
+                    <span class="user-name-text">${username.toUpperCase()}</span>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
                 </button>
+                <div class="dropdown-content">
+                    <a href="profil.html"><i class="fas fa-user-cog"></i> Profilim</a>
+                    <a href="turnuvalarim.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
+                    <hr style="border-color: rgba(255,255,255,0.1); margin: 5px 0;">
+                    <a href="#" onclick="logoutAction()" class="logout-link"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</a>
+                </div>
             </div>
         `;
     }
