@@ -101,6 +101,50 @@
             footer { padding: 60px 8% 30px; }
             .auth-side-image { display: none; }
         }
+        /* --- HOŞ GELDİN ALANI STİLLERİ --- */
+.user-welcome-area {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(96, 29, 194, 0.15);
+    padding: 5px 15px;
+    border-radius: 50px;
+    border: 1px solid var(--neon-mor);
+    transition: 0.3s;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+}
+
+.welcome-text {
+    font-size: 8px;
+    color: var(--gri-yazi);
+    letter-spacing: 1px;
+}
+
+.user-nickname {
+    font-size: 13px;
+    color: #fff;
+    font-weight: 900;
+    text-shadow: 0 0 10px var(--neon-mor);
+}
+
+.logout-minimal-btn {
+    background: transparent;
+    border: none;
+    color: #ff4b4b;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.logout-minimal-btn:hover {
+    transform: scale(1.2);
+    color: #ff0000;
+}
     </style>
 </head>
 <body>
@@ -306,4 +350,5 @@
 <script src="auth.js"></script>
 </body>
 </html>
+
 
