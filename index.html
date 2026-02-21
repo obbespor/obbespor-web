@@ -74,7 +74,7 @@
         .card-body p { color: var(--gri-yazi); font-size: 14px; line-height: 1.6; }
         .card-link { display: inline-block; margin-top: 18px; color: var(--yazi-beyaz); text-decoration: none; font-weight: bold; font-size: 13px; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; transition: 0.3s; }
 
-        /* --- FOOTER MASAÜSTÜ GÜNCELLEME (İstediğin Görünüm) --- */
+        /* --- FOOTER ANA STİLLER --- */
         footer { 
             background-color: var(--nav-bg); 
             border-top: 2px solid var(--neon-mor); 
@@ -83,12 +83,12 @@
         }
         .footer-grid { 
             display: flex; 
-            justify-content: space-between; /* Öğeleri en sola ve en sağa yaslar */
+            justify-content: space-between; 
             align-items: flex-start;
             gap: 50px; 
             margin-bottom: 50px; 
         }
-        .footer-brand { flex: 1.5; } /* Marka alanı daha geniş */
+        .footer-brand { flex: 1.5; } 
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
         .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; line-height: 1.6; }
         .social-icons { display: flex; gap: 15px; }
@@ -102,14 +102,13 @@
         .footer-column ul li a { color: var(--yazi-beyaz); text-decoration: none; font-size: 15px; transition: 0.3s; }
         .footer-column ul li a:hover { color: var(--neon-mor); }
 
-        /* İletişimi Sağ Sütun Yapma */
         .footer-contact-col { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
         .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
         .contact-item i { color: var(--neon-mor); font-size: 16px; width: 20px; text-align: center; }
 
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 14px; }
 
-        /* --- MOBİL ÖZEL AYARLAR (DOKUNULMADI) --- */
+        /* --- MOBİL ÖZEL AYARLAR (BOZULMAYI ÖNLEYEN KISIM) --- */
         @media (max-width: 768px) {
             header { height: auto; padding: 15px 5%; flex-direction: column; gap: 12px; top: 0; }
             body { padding-top: 130px; } 
@@ -119,13 +118,26 @@
             nav ul li a { font-size: 10px; white-space: nowrap; }
             .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
-            /* Footer Mobil Tasarım (Kendi Ayarların) */
-            footer { padding: 60px 5% 30px; }
-            .footer-grid { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 40px; }
-            .footer-brand h2 { font-size: 32px; text-decoration: underline; text-underline-offset: 12px; text-decoration-color: var(--neon-mor); border-bottom: none; display: block; margin-bottom: 25px; }
-            .social-icons { justify-content: center; gap: 20px; }
-            .footer-links-container { display: grid; grid-template-columns: 1fr 1fr; width: 100%; gap: 20px; text-align: left; border-top: 1px solid #1a1a1a; padding-top: 40px; }
-            .footer-contact-col { align-items: center; } /* Mobilde ortalansın */
+            /* Footer Mobil - Sola Yaslı ve Alt Alta Düzen */
+            footer { padding: 50px 8% 30px; }
+            .footer-grid { 
+                flex-direction: column; /* Yan yana olan yapıyı alt alta getirir */
+                align-items: flex-start; /* Tüm içeriği sola yaslar */
+                gap: 35px; 
+                text-align: left;
+            }
+            .footer-brand { width: 100%; }
+            .footer-brand h2 { font-size: 24px; margin-bottom: 15px; }
+            .footer-brand p { font-size: 13px; max-width: 100%; }
+            
+            .social-icons { justify-content: flex-start; } /* İkonları sola yaslar */
+            
+            .footer-column, .footer-contact-col { width: 100%; }
+            .footer-column h3, .footer-contact-col h3 { font-size: 18px; margin-bottom: 15px; }
+            .footer-column ul li a, .contact-item { font-size: 14px; }
+            
+            .contact-item { justify-content: flex-start; } /* İletişim ikonlarını sola yaslar */
+            .footer-bottom { font-size: 11px; margin-top: 30px; }
         }
     </style>
 </head>
@@ -159,11 +171,10 @@
                 <div class="card-img">OBB E-SPOR</div>
                 <div class="card-body">
                     <h3>YENİ SEZON BAŞLIYOR</h3>
-                    <p>Ordu'nun en rekabetçi e-spor liginde 3. sezon heyecanı çok yakında başlıyor. Hazırlıklarınızı tamamlayın.</p>
+                    <p>Ordu'nun en rekabetçi e-spor liginde 3. sezon heyecanı çok yakında başlıyor.</p>
                     <a href="#" class="card-link">DETAYLARI GÖR</a>
                 </div>
             </div>
-
             <div class="card">
                 <div class="card-img">VALORANT</div>
                 <div class="card-body">
@@ -172,7 +183,6 @@
                     <a href="kayit.html" class="card-link">ŞİMDİ KAYDOL</a>
                 </div>
             </div>
-
             <div class="card">
                 <div class="card-img">TOPLULUK</div>
                 <div class="card-body">
@@ -223,7 +233,6 @@
     <script>
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
-
         window.addEventListener("scroll", function() {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             if (scrollTop > lastScrollTop && scrollTop > 100) {
