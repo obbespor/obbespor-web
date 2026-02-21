@@ -28,7 +28,7 @@
             padding-top: 80px;
         }
 
-        /* --- 2. AKILLI HEADER (BİREBİR INDEX YAPISI) --- */
+        /* --- 2. AKILLI HEADER (INDEX STANDARDI) --- */
         header.main-nav {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -77,7 +77,7 @@
 
         .streams-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 30px;
             width: 100%;
             max-width: 1400px;
@@ -123,7 +123,7 @@
         }
         .btn-kick:hover { box-shadow: 0 0 20px rgba(96, 29, 194, 0.4); transform: scale(1.02); }
 
-        /* --- 4. FOOTER (BİREBİR INDEX YAPISI) --- */
+        /* --- 4. FOOTER (INDEX STANDARDI) --- */
         footer {
             background-color: var(--nav-bg);
             border-top: 2px solid var(--neon-mor);
@@ -152,7 +152,7 @@
         .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* --- 5. MOBİL UYUMLULUK (BİREBİR INDEX KURALLARI) --- */
+        /* --- 5. MOBİL UYUMLULUK --- */
         @media (max-width: 768px) {
             header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
             body { padding-top: 125px; }
@@ -161,7 +161,6 @@
             nav ul li a { font-size: 10px; white-space: nowrap; }
             .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
-            /* Footer Yan Yana Mobil Düzeni */
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
             .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
             .footer-brand p { max-width: 100%; }
@@ -247,6 +246,34 @@
                     <a href="https://kick.com/adinross" target="_blank" class="btn-kick">KICK'TE İZLE</a>
                 </div>
             </div>
+
+            <div class="card">
+                <div class="video-box"><iframe src="https://player.kick.com/stacy?muted=true" allowfullscreen></iframe></div>
+                <div class="card-footer">
+                    <div class="footer-top">
+                        <span class="name">STACY</span>
+                        <div class="social-links">
+                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                        </div>
+                    </div>
+                    <a href="https://kick.com/stacy" target="_blank" class="btn-kick">KICK'TE İZLE</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="video-box"><iframe src="https://player.kick.com/trainwreckstv?muted=true" allowfullscreen></iframe></div>
+                <div class="card-footer">
+                    <div class="footer-top">
+                        <span class="name">TRAINWRECKS</span>
+                        <div class="social-links">
+                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                        </div>
+                    </div>
+                    <a href="https://kick.com/trainwreckstv" target="_blank" class="btn-kick">KICK'TE İZLE</a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -290,14 +317,10 @@
     <script>
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
-
         window.addEventListener("scroll", function() {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            if (scrollTop > lastScrollTop && scrollTop > 100) {
-                header.classList.add("nav-hidden");
-            } else {
-                header.classList.remove("nav-hidden");
-            }
+            if (scrollTop > lastScrollTop && scrollTop > 100) { header.classList.add("nav-hidden"); }
+            else { header.classList.remove("nav-hidden"); }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
     </script>
