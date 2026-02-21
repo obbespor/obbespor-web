@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kayıt Ol | OBB E-SPOR</title>
+    <title>Canlı Yayın Ekibi | OBB E-SPOR</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* --- 1. TEMEL AYARLAR --- */
         :root {
-            --ana-siyah: #000000;
+            --ana-siyah: #050505;
             --nav-bg: #000000;
             --neon-mor: #601dc2; 
             --yazi-beyaz: #ffffff;
             --gri-yazi: #a0a0a0;
-            --input-bg: #0d0d0d;
         }
 
+        /* Beyazlığı ve taşmayı önleyen temel ayarlar */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
+        html { background-color: var(--ana-siyah); scroll-behavior: smooth; }
+        
         body {
-            background: radial-gradient(circle at top, #1a052d 0%, #000000 100%);
+            background: radial-gradient(circle at top, #1a052d 0%, #050505 100%);
             background-attachment: fixed;
             color: var(--yazi-beyaz);
             font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            padding-top: 80px;
+            overflow-x: hidden;
+            padding-top: 80px; /* Header için boşluk */
         }
 
-        /* --- 2. AKILLI HEADER (KORUNAN YAPI) --- */
-        header.main-nav {
+        /* --- AKILLI HEADER (KUSURSUZ YAPI) --- */
+        header {
             background-color: var(--nav-bg);
             padding: 0 10%; 
             display: flex;
@@ -39,11 +39,15 @@
             height: 80px;
             border-bottom: 3px solid var(--neon-mor);
             position: fixed;
-            top: 0; left: 0; width: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
             z-index: 1000;
             transition: transform 0.4s ease-in-out;
+            box-shadow: 0 0 25px rgba(96, 29, 194, 0.3);
         }
-        header.main-nav.nav-hidden { transform: translateY(-110%); }
+
+        header.nav-hidden { transform: translateY(-110%); }
 
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); }
@@ -64,132 +68,134 @@
         }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- 3. KAYIT SAYFASI TASARIMI --- */
-        .register-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: calc(100vh - 160px);
-            padding: 40px 5%;
-            gap: 40px;
-        }
-
-        .side-art {
-            flex: 1;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .side-art img {
-            width: 100%;
-            border-radius: 20px;
-            border: 1px solid #222;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            transition: 0.3s;
-        }
-        .side-art img:hover { border-color: var(--neon-mor); transform: scale(1.02); }
-
-        .register-box {
-            background: #000000;
-            padding: 50px 40px;
-            border-radius: 25px;
-            width: 100%;
-            max-width: 500px;
-            border: 1px solid #1a1a1a;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        /* --- CANLI YAYIN İÇERİK --- */
+        .main-content { padding: 60px 10%; }
+        .section-title {
             text-align: center;
-        }
-
-        .register-box h1 { font-size: 32px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
-        .register-box h1 span { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
-        .register-box p { color: var(--gri-yazi); font-size: 14px; margin-bottom: 40px; }
-
-        .input-group { text-align: left; margin-bottom: 20px; }
-        .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #ddd; }
-        .input-group input {
-            width: 100%;
-            padding: 15px;
-            background: var(--input-bg);
-            border: 1px solid #222;
-            border-radius: 10px;
-            color: white;
-            font-family: inherit;
-            transition: 0.3s;
-        }
-        .input-group input:focus { border-color: var(--neon-mor); outline: none; box-shadow: 0 0 10px rgba(96, 29, 194, 0.2); }
-
-        .btn-register {
-            width: 100%;
-            padding: 16px;
-            background: var(--neon-mor);
-            color: white;
-            border: none;
-            border-radius: 10px;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
             font-weight: 900;
-            font-size: 16px;
-            cursor: pointer;
+            margin-bottom: 40px;
             text-transform: uppercase;
-            margin-top: 10px;
+        }
+        .section-title span { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
+
+        .streams-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #0d0d0d;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #222;
+            transition: 0.4s ease;
+        }
+        .card:hover { 
+            border-color: var(--neon-mor); 
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(96, 29, 194, 0.2);
+        }
+
+        .video-box { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+        .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        .card-footer { padding: 18px; background: #0d0d0d; }
+        .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .name { font-weight: 700; font-size: 0.95rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+
+        .social-links { display: flex; gap: 12px; }
+        .social-links a { color: var(--gri-yazi); font-size: 1.1rem; transition: 0.3s; }
+        .social-links a:hover { color: var(--neon-mor); }
+
+        .btn-kick {
+            display: block;
+            background-color: var(--neon-mor);
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 0.85rem;
+            text-align: center;
+            text-transform: uppercase;
             transition: 0.3s;
         }
-        .btn-register:hover { background: #7a2df2; box-shadow: 0 0 25px var(--neon-mor); transform: translateY(-2px); }
+        .btn-kick:hover { box-shadow: 0 0 20px rgba(96, 29, 194, 0.4); background: #7a2df2; }
 
-        .login-link { margin-top: 25px; font-size: 13px; color: var(--gri-yazi); }
-        .login-link a { color: var(--neon-mor); text-decoration: none; font-weight: bold; }
-
-        /* --- 4. FOOTER (KORUNAN YAPI) --- */
+        /* --- FOOTER (ANA SAYFA İLE AYNI) --- */
         footer {
             background-color: var(--nav-bg);
             border-top: 2px solid var(--neon-mor);
             padding: 80px 10% 40px;
-            margin-top: 100px;
+            margin-top: 80px;
         }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
-        
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
-        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
+        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; line-height: 1.6; }
         
-        .social-icons { display: flex; gap: 15px; }
-        .social-icons a {
+        .footer-socials { display: flex; gap: 15px; }
+        .footer-socials a {
             width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s;
         }
-        .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
+        .footer-socials a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
 
-        .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
-        .footer-column ul { list-style: none; }
-        .footer-column ul li { margin-bottom: 12px; }
-        .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
-        .footer-column ul li a:hover { color: var(--neon-mor); }
+        .footer-section h3 { font-size: 20px; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
+        .footer-section ul { list-style: none; }
+        .footer-section ul li { margin-bottom: 12px; }
+        .footer-section ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
+        .footer-section ul li a:hover { color: var(--neon-mor); }
 
-        .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
-        .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
+        .contact-info li { color: var(--gri-yazi); font-size: 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .contact-info i { color: var(--neon-mor); width: 20px; text-align: center; }
 
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* --- 5. MOBİL UYUMLULUK --- */
-        @media (max-width: 1000px) {
-            .side-art { display: none; }
+        /* --- MOBİL UYUMLULUK (BİREBİR AYNI) --- */
+        @media (max-width: 1100px) {
+            .streams-grid { grid-template-columns: repeat(2, 1fr); }
         }
+
         @media (max-width: 768px) {
-            header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
-            body { padding-top: 125px; }
+            header { height: auto; padding: 15px 5%; flex-direction: column; gap: 12px; top: 0; }
+            body { padding-top: 130px; } 
+            
+            .logo { font-size: 24px; text-align: center; width: 100%; }
             nav { width: 100%; }
             nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
             nav ul li a { font-size: 10px; white-space: nowrap; }
             .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
-            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
-            .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
-            .social-icons { justify-content: center; }
-            footer { padding: 60px 8% 30px; }
+            .main-content { padding: 40px 5%; }
+            .streams-grid { grid-template-columns: 1fr; }
+
+            /* Footer Mobil Görünümü */
+            footer { padding: 60px 5% 30px; }
+            .footer-grid { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 40px; }
+            .footer-brand h2 { font-size: 32px; text-decoration: underline; text-underline-offset: 12px; text-decoration-color: var(--neon-mor); border-bottom: none; display: block; margin-bottom: 25px; }
+            .footer-socials { justify-content: center; gap: 20px; }
+            
+            /* Menü ve İletişim yan yana */
+            .footer-links-wrapper { 
+                display: grid; 
+                grid-template-columns: 1fr 1fr; 
+                width: 100%; 
+                gap: 20px; 
+                text-align: left;
+                border-top: 1px solid #1a1a1a;
+                padding-top: 40px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header class="main-nav" id="mainHeader">
+    <header id="mainHeader">
         <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
         <nav>
             <ul>
@@ -201,41 +207,93 @@
         </nav>
     </header>
 
-    <div class="register-container">
-        <div class="side-art">
-            <img src="https://via.placeholder.com/400x250/1a052d/ffffff?text=OBB+ESPOR+ARENA" alt="Art 1">
-            <img src="https://via.placeholder.com/400x250/1a052d/ffffff?text=REKABETE+KATIL" alt="Art 2">
-        </div>
+    <div class="main-content">
+        <h2 class="section-title">EKİP <span>CANLI YAYINDA</span></h2>
 
-        <div class="register-box">
-            <h1>ARENAYA <span>KATIL</span></h1>
-            <p>Profilini oluştur ve rekabete dahil ol.</p>
-            
-            <form>
-                <div class="input-group">
-                    <label>Kullanıcı Adı</label>
-                    <input type="text" placeholder="gamer123">
+        <div class="streams-grid">
+            <div class="card">
+                <div class="video-box"><iframe src="https://player.kick.com/xqc?muted=true" allowfullscreen></iframe></div>
+                <div class="card-footer">
+                    <div class="footer-top">
+                        <span class="name">XQC</span>
+                        <div class="social-links">
+                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                        </div>
+                    </div>
+                    <a href="https://kick.com/xqc" target="_blank" class="btn-kick">KICK'TE İZLE</a>
                 </div>
-                <div class="input-group">
-                    <label>E-posta</label>
-                    <input type="email" placeholder="ornek@mail.com">
-                </div>
-                <div class="input-group">
-                    <label>Şifre</label>
-                    <input type="password" placeholder="********">
-                </div>
-                
-                <button type="submit" class="btn-register">HESABI OLUŞTUR</button>
-            </form>
-
-            <div class="login-link">
-                Zaten bir hesabın var mı? <a href="#">GİRİŞ YAP</a>
             </div>
-        </div>
 
-        <div class="side-art">
-            <img src="https://via.placeholder.com/400x250/1a052d/ffffff?text=EKİBİNİ+KUR" alt="Art 3">
-            <img src="https://via.placeholder.com/400x250/1a052d/ffffff?text=ÖDÜLLERİ+TOPLA" alt="Art 4">
+            <div class="card">
+                <div class="video-box"><iframe src="https://player.kick.com/westcol?muted=true" allowfullscreen></iframe></div>
+                <div class="card-footer">
+                    <div class="footer-top">
+                        <span class="name">WESTCOL</span>
+                        <div class="social-links">
+                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                        </div>
+                    </div>
+                    <a href="https://kick.com/westcol" target="_blank" class="btn-kick">KICK'TE İZLE</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="video-box"><iframe src="https://player.kick.com/heelmike?muted=true" allowfullscreen></iframe></div>
+                <div class="card-footer">
+                    <div class="footer-top">
+                        <span class="name">HEELMIKE</span>
+                        <div class="social-links">
+                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                        </div>
+                    </div>
+                    <a href="https://kick.com/heelmike" target="_blank" class="btn-kick">KICK'TE İZLE</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="video-box"><iframe src="https://player.kick.com/adinross?muted=true" allowfullscreen></iframe></div>
+                <div class="card-footer">
+                    <div class="footer-top">
+                        <span class="name">ADIN ROSS</span>
+                        <div class="social-links">
+                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                        </div>
+                    </div>
+                    <a href="https://kick.com/adinross" target="_blank" class="btn-kick">KICK'TE İZLE</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="video-box"><iframe src="https://player.kick.com/stacy?muted=true" allowfullscreen></iframe></div>
+                <div class="card-footer">
+                    <div class="footer-top">
+                        <span class="name">STACY</span>
+                        <div class="social-links">
+                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                        </div>
+                    </div>
+                    <a href="https://kick.com/stacy" target="_blank" class="btn-kick">KICK'TE İZLE</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="video-box"><iframe src="https://player.kick.com/trainwreckstv?muted=true" allowfullscreen></iframe></div>
+                <div class="card-footer">
+                    <div class="footer-top">
+                        <span class="name">TRAINWRECKS</span>
+                        <div class="social-links">
+                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                        </div>
+                    </div>
+                    <a href="https://kick.com/trainwreckstv" target="_blank" class="btn-kick">KICK'TE İZLE</a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -244,33 +302,36 @@
             <div class="footer-brand">
                 <h2>OBB <span style="color:white">E-SPOR</span></h2>
                 <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-x-twitter"></i></a>
-                    <a href="#"><i class="fab fa-discord"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
+                <div class="footer-socials">
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#"><i class="fa-brands fa-discord"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
                 </div>
             </div>
 
-            <div class="footer-column">
-                <h3>Hızlı Menü</h3>
-                <ul>
-                    <li><a href="index.html">Ana Sayfa</a></li>
-                    <li><a href="tournaments.html">Turnuvalar</a></li>
-                    <li><a href="canli.html">Canlı Yayınlar</a></li>
-                    <li><a href="kayit.html">Kayıt Ol</a></li>
-                </ul>
-            </div>
+            <div class="footer-links-wrapper">
+                <div class="footer-section">
+                    <h3>HIZLI MENÜ</h3>
+                    <ul>
+                        <li><a href="index.html">Ana Sayfa</a></li>
+                        <li><a href="tournaments.html">Turnuvalar</a></li>
+                        <li><a href="canli.html">Canlı Yayınlar</a></li>
+                        <li><a href="kayit.html">Kayıt Ol</a></li>
+                    </ul>
+                </div>
 
-            <div class="footer-column">
-                <h3>İletişim</h3>
-                <ul>
-                    <li class="contact-item"><i class="fas fa-envelope"></i> info@obbesports.com</li>
-                    <li class="contact-item"><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
-                    <li class="contact-item"><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
-                </ul>
+                <div class="footer-section">
+                    <h3>İLETİŞİM</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-envelope"></i> info@obbesports.com</li>
+                        <li><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
+                        <li><i class="fas fa-headset"></i> 7/24 Destek</li>
+                    </ul>
+                </div>
             </div>
         </div>
+
         <div class="footer-bottom">
             <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
         </div>
@@ -279,6 +340,7 @@
     <script>
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
+
         window.addEventListener("scroll", function() {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             if (scrollTop > lastScrollTop && scrollTop > 100) {
