@@ -17,7 +17,7 @@
 
         /* Beyazlığı önlemek için temel sıfırlama */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { background-color: var(--ana-siyah); } /* Sayfa yüklenirken beyazlık olmasın */
+        html { background-color: var(--ana-siyah); }
         
         body {
             background: radial-gradient(circle at top, #1a052d 0%, #050505 100%);
@@ -40,15 +40,11 @@
             height: 80px;
             border-bottom: 3px solid var(--neon-mor);
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
+            top: 0; left: 0; width: 100%;
             z-index: 1000;
             transition: transform 0.4s ease-in-out;
         }
-
         header.nav-hidden { transform: translateY(-110%); }
-
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); }
         nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
@@ -70,35 +66,50 @@
         .container { padding: 80px 10%; }
         .section-title { margin-bottom: 40px; border-left: 5px solid var(--neon-mor); padding-left: 15px; font-size: 28px; font-weight: 900; text-transform: uppercase; }
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        
         .card { background-color: #0a0a0a; border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.4s ease; }
         .card:hover { border-color: var(--neon-mor); transform: translateY(-10px); box-shadow: 0 10px 30px rgba(96, 29, 194, 0.2); }
-        
         .card-img { height: 200px; background: linear-gradient(45deg, #1a052d, var(--neon-mor)); display: flex; justify-content: center; align-items: center; font-size: 22px; font-weight: 900; color: white; letter-spacing: 1px; }
         .card-body { padding: 25px; }
         .card-body h3 { color: var(--neon-mor); margin-bottom: 12px; font-size: 20px; font-weight: 700; }
         .card-body p { color: var(--gri-yazi); font-size: 14px; line-height: 1.6; }
         .card-link { display: inline-block; margin-top: 18px; color: var(--yazi-beyaz); text-decoration: none; font-weight: bold; font-size: 13px; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; transition: 0.3s; }
-        .card-link:hover { color: var(--neon-mor); }
 
-        /* --- FOOTER --- */
-        footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
-        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+        /* --- FOOTER MASAÜSTÜ GÜNCELLEME (İstediğin Görünüm) --- */
+        footer { 
+            background-color: var(--nav-bg); 
+            border-top: 2px solid var(--neon-mor); 
+            padding: 80px 10% 40px; 
+            margin-top: 50px; 
+        }
+        .footer-grid { 
+            display: flex; 
+            justify-content: space-between; /* Öğeleri en sola ve en sağa yaslar */
+            align-items: flex-start;
+            gap: 50px; 
+            margin-bottom: 50px; 
+        }
+        .footer-brand { flex: 1.5; } /* Marka alanı daha geniş */
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
         .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; line-height: 1.6; }
         .social-icons { display: flex; gap: 15px; }
         .social-icons a { width: 45px; height: 45px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; border: 1px solid #222; }
         .social-icons a:hover { background: var(--neon-mor); border-color: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
+
+        .footer-column { flex: 1; }
         .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
         .footer-column ul { list-style: none; }
         .footer-column ul li { margin-bottom: 12px; }
         .footer-column ul li a { color: var(--yazi-beyaz); text-decoration: none; font-size: 15px; transition: 0.3s; }
         .footer-column ul li a:hover { color: var(--neon-mor); }
+
+        /* İletişimi Sağ Sütun Yapma */
+        .footer-contact-col { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
         .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
         .contact-item i { color: var(--neon-mor); font-size: 16px; width: 20px; text-align: center; }
+
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 14px; }
 
-        /* --- MOBİL ÖZEL AYARLAR (BOZULMADAN) --- */
+        /* --- MOBİL ÖZEL AYARLAR (DOKUNULMADI) --- */
         @media (max-width: 768px) {
             header { height: auto; padding: 15px 5%; flex-direction: column; gap: 12px; top: 0; }
             body { padding-top: 130px; } 
@@ -108,12 +119,13 @@
             nav ul li a { font-size: 10px; white-space: nowrap; }
             .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
-            /* Footer Mobil Modernizasyon */
+            /* Footer Mobil Tasarım (Kendi Ayarların) */
             footer { padding: 60px 5% 30px; }
             .footer-grid { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 40px; }
             .footer-brand h2 { font-size: 32px; text-decoration: underline; text-underline-offset: 12px; text-decoration-color: var(--neon-mor); border-bottom: none; display: block; margin-bottom: 25px; }
             .social-icons { justify-content: center; gap: 20px; }
             .footer-links-container { display: grid; grid-template-columns: 1fr 1fr; width: 100%; gap: 20px; text-align: left; border-top: 1px solid #1a1a1a; padding-top: 40px; }
+            .footer-contact-col { align-items: center; } /* Mobilde ortalansın */
         }
     </style>
 </head>
@@ -185,23 +197,21 @@
                 </div>
             </div>
 
-            <div class="footer-links-container">
-                <div class="footer-column">
-                    <h3>HIZLI MENÜ</h3>
-                    <ul>
-                        <li><a href="index.html">Ana Sayfa</a></li>
-                        <li><a href="tournaments.html">Turnuvalar</a></li>
-                        <li><a href="canli.html">Canlı</a></li>
-                        <li><a href="kayit.html">Kayıt Ol</a></li>
-                    </ul>
-                </div>
+            <div class="footer-column">
+                <h3>HIZLI MENÜ</h3>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="tournaments.html">Turnuvalar</a></li>
+                    <li><a href="canli.html">Canlı</a></li>
+                    <li><a href="kayit.html">Kayıt Ol</a></li>
+                </ul>
+            </div>
 
-                <div class="footer-column">
-                    <h3>İLETİŞİM</h3>
-                    <div class="contact-item"><i class="fa-solid fa-envelope"></i> <span>info@obbesports.com</span></div>
-                    <div class="contact-item"><i class="fa-solid fa-location-dot"></i> <span>Ordu, Türkiye</span></div>
-                    <div class="contact-item"><i class="fa-solid fa-headset"></i> <span>7/24 Destek</span></div>
-                </div>
+            <div class="footer-contact-col">
+                <h3>İLETİŞİM</h3>
+                <div class="contact-item"><i class="fa-solid fa-envelope"></i> <span>info@obbesports.com</span></div>
+                <div class="contact-item"><i class="fa-solid fa-location-dot"></i> <span>Ordu, Türkiye</span></div>
+                <div class="contact-item"><i class="fa-solid fa-headset"></i> <span>7/24 Destek</span></div>
             </div>
         </div>
 
@@ -225,4 +235,4 @@
         }, false);
     </script>
 </body>
-</html> 
+</html>
