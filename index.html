@@ -73,7 +73,7 @@
         .card-body p { color: var(--gri-yazi); font-size: 14px; }
         .card-link { display: inline-block; margin-top: 18px; color: white; text-decoration: none; font-weight: bold; border-bottom: 2px solid var(--neon-mor); transition: 0.3s; }
 
-        /* --- GÜNCELLENMİŞ ÖZGÜN FOOTER (KESİN ÇÖZÜM) --- */
+        /* --- FOOTER ANA STİLLER --- */
         .obb-footer {
             background-color: var(--nav-bg);
             border-top: 2px solid var(--neon-mor);
@@ -84,7 +84,6 @@
 
         .obb-f-wrapper {
             display: flex;
-            flex-wrap: wrap; /* Mobilde alta kayması için */
             justify-content: space-between;
             align-items: flex-start;
             max-width: 1300px;
@@ -146,19 +145,30 @@
             font-size: 14px;
         }
 
-        /* --- MOBİL UYUMLULUK AYARLARI --- */
+        /* --- MOBİL UYUMLULUK AYARLARI (Telefondaki görünümle birebir) --- */
         @media (max-width: 768px) {
-            header { height: auto; padding: 15px 5%; flex-direction: column; gap: 12px; }
-            body { padding-top: 140px; }
-            nav ul { gap: 10px; width: 100%; justify-content: center; }
-            nav ul li a { font-size: 11px; }
-            .nav-btn { padding: 5px 10px; font-size: 11px !important; }
+            header { height: auto; padding: 10px 5%; flex-direction: column; gap: 8px; }
+            body { padding-top: 130px; }
+            nav ul { gap: 12px; width: 100%; justify-content: center; }
+            nav ul li a { font-size: 10px; letter-spacing: 1px; }
+            .nav-btn { padding: 4px 12px; font-size: 10px !important; }
 
-            .obb-f-wrapper { flex-direction: column; align-items: center; text-align: center; }
+            .obb-footer { padding: 40px 8% 30px; text-align: left; } 
+            .obb-f-wrapper { flex-direction: column; align-items: flex-start; gap: 35px; }
+            
             .obb-f-col-main, .obb-f-col-side { width: 100%; min-width: unset; }
-            .obb-f-socials { justify-content: center; }
-            .obb-f-text { margin-left: auto; margin-right: auto; }
-            .obb-f-contact-item { justify-content: center; }
+
+            .obb-f-title { font-size: 22px; margin-bottom: 15px; }
+            .obb-f-text { font-size: 13px; line-height: 1.5; margin-bottom: 20px; max-width: 100%; }
+            
+            .obb-f-subtitle { font-size: 16px; margin-bottom: 15px; letter-spacing: 1px; }
+            .obb-f-links li a { font-size: 14px; }
+            .obb-f-contact-item { font-size: 13px; margin-bottom: 10px; justify-content: flex-start; }
+            
+            .obb-f-socials { justify-content: flex-start; gap: 12px; }
+            .obb-f-socials a { width: 38px; height: 38px; font-size: 16px; }
+
+            .obb-f-bottom { margin-top: 30px; padding-top: 20px; font-size: 11px; }
         }
     </style>
 </head>
