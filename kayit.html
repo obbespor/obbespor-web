@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* --- 1. TEMEL AYARLAR (INDEX'TEN ALINDI) --- */
+        /* --- 1. TEMEL AYARLAR (DEĞİŞMEDİ) --- */
         :root {
             --ana-siyah: #000000;
             --nav-bg: #000000;
@@ -27,7 +27,7 @@
             padding-top: 80px;
         }
 
-        /* --- 2. AKILLI HEADER (BİREBİR INDEX YAPISI) --- */
+        /* --- 2. HEADER --- */
         header.main-nav {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -42,100 +42,50 @@
             transition: transform 0.4s ease-in-out;
         }
         header.main-nav.nav-hidden { transform: translateY(-110%); }
-
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); }
-        
         nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
         nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
         nav ul li a:hover { color: var(--neon-mor); }
-        
-        .nav-btn { 
-            border: 2px solid var(--neon-mor); 
-            padding: 8px 20px; 
-            border-radius: 5px; 
-            color: white !important; 
-            background: transparent; 
-            transition: 0.3s;
-            text-decoration: none;
-            font-weight: bold;
-        }
+        .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; font-weight: bold; }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- 3. KAYIT SAYFASI ÖZEL (AUTH LAYOUT) --- */
-        .auth-wrapper {
-            min-height: calc(100vh - 160px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-        }
+        /* --- 3. AUTH LAYOUT --- */
+        .auth-wrapper { min-height: calc(100vh - 160px); display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
         .main-layout { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 1600px; gap: 20px; }
-        
         .auth-side-image { flex: 1.2; display: flex; justify-content: center; }
-        .auth-side-image img { 
-            width: 100%; max-width: 520px; border-radius: 20px; 
-            filter: drop-shadow(0 0 30px rgba(96, 29, 194, 0.4));
-            animation: float 4s ease-in-out infinite;
-        }
+        .auth-side-image img { width: 100%; max-width: 520px; border-radius: 20px; filter: drop-shadow(0 0 30px rgba(96, 29, 194, 0.4)); animation: float 4s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
-
-        .auth-card {
-            flex: 1; background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222;
-            max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); z-index: 5;
-            position: relative; overflow: hidden;
-        }
+        .auth-card { flex: 1; background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); z-index: 5; position: relative; overflow: hidden; }
         .auth-header { text-align: center; margin-bottom: 25px; }
         .auth-header h1 { font-size: 2rem; font-weight: 900; text-transform: uppercase; }
         .purple-neon { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
-
         .input-group { margin-bottom: 20px; }
         .input-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--gri-yazi); font-weight: bold; }
-        .input-group input {
-            width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px;
-            color: white; outline: none; transition: 0.3s;
-        }
+        .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; outline: none; transition: 0.3s; }
         .input-group input:focus { border-color: var(--neon-mor); }
-
-        .register-btn {
-            width: 100%; padding: 15px; background: var(--neon-mor); color: white; border: none;
-            border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase;
-            transition: 0.3s; margin-bottom: 20px;
-        }
+        .register-btn { width: 100%; padding: 15px; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-bottom: 20px; }
         .register-btn:hover { transform: scale(1.02); box-shadow: 0 0 20px var(--neon-mor); }
         .auth-toggle-area { text-align: center; border-top: 1px solid #222; padding-top: 20px; }
         .switch-btn { background: transparent; border: 1px solid #23083e; color: var(--neon-mor); padding: 8px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
 
-        /* --- 4. FOOTER (BİREBİR INDEX YAPISI) --- */
-        footer {
-            background-color: var(--nav-bg);
-            border-top: 2px solid var(--neon-mor);
-            padding: 80px 10% 40px;
-            margin-top: 100px;
-        }
+        /* --- 4. FOOTER --- */
+        footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 100px; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
-        
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
         .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
-        
         .social-icons { display: flex; gap: 15px; }
-        .social-icons a {
-            width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s;
-        }
+        .social-icons a { width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; }
         .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
-
         .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
         .footer-column ul { list-style: none; }
         .footer-column ul li { margin-bottom: 12px; }
         .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
         .footer-column ul li a:hover { color: var(--neon-mor); }
-
         .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
         .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* --- 5. MOBİL UYUMLULUK (BİREBİR INDEX KURALLARI) --- */
         @media (max-width: 768px) {
             header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
             body { padding-top: 125px; }
@@ -143,15 +93,12 @@
             nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
             nav ul li a { font-size: 10px; white-space: nowrap; }
             .nav-btn { padding: 6px 12px; font-size: 10px !important; }
-
-            /* Footer Yan Yana Mobil Düzeni */
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
             .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
             .footer-brand p { max-width: 100%; }
             .social-icons { justify-content: center; }
             .footer-column { text-align: left; }
             footer { padding: 60px 8% 30px; }
-
             .auth-side-image { display: none; }
         }
     </style>
@@ -183,15 +130,15 @@
                 <form id="authForm">
                     <div class="input-group" id="userGroup">
                         <label>Kullanıcı Adı</label>
-                        <input type="text" placeholder="gamer123" required>
+                        <input type="text" id="username" placeholder="gamer123">
                     </div>
                     <div class="input-group" id="emailGroup">
                         <label>E-posta</label>
-                        <input type="email" placeholder="ornek@mail.com" required>
+                        <input type="email" id="email" placeholder="ornek@mail.com" required>
                     </div>
                     <div class="input-group" id="phoneGroup">
                         <label>Telefon</label>
-                        <input type="tel" placeholder="05XX XXX XX XX">
+                        <input type="tel" id="phone" placeholder="05XX XXX XX XX">
                     </div>
                     <div class="input-group">
                         <label>Şifre</label>
@@ -219,7 +166,7 @@
         <div class="footer-grid">
             <div class="footer-brand">
                 <h2>OBB <span style="color:white">E-SPOR</span></h2>
-                <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
+                <p>Türkiye'nin en dinamik e-spor platformu.</p>
                 <div class="social-icons">
                     <a href="#"><i class="fab fa-instagram"></i></a>
                     <a href="#"><i class="fab fa-x-twitter"></i></a>
@@ -227,7 +174,6 @@
                     <a href="#"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
-
             <div class="footer-column">
                 <h3>Hızlı Menü</h3>
                 <ul>
@@ -237,22 +183,25 @@
                     <li><a href="kayit.html">Kayıt Ol</a></li>
                 </ul>
             </div>
-
             <div class="footer-column">
                 <h3>İletişim</h3>
                 <ul>
                     <li class="contact-item"><i class="fas fa-envelope"></i> info@obbesports.com</li>
                     <li class="contact-item"><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
-                    <li class="contact-item"><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
-        </div>
+        <div class="footer-bottom"><p>&copy; 2026 OBB E-SPOR.</p></div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // 1. Supabase Bağlantısı
+        const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // 2. Auth Toggle Fonksiyonu (Tasarımı yönetir)
         function toggleAuth() {
             const header = document.querySelector('#authHeader h1');
             const subtext = document.getElementById('authSubtext');
@@ -270,7 +219,6 @@
                 submitBtn.innerText = "GİRİŞ YAP";
                 switchBtn.innerText = "KAYIT OL";
                 toggleText.innerText = "Henüz bir hesabın yok mu?";
-                
                 userGroup.style.display = "none";
                 phoneGroup.style.display = "none";
                 confirmPassGroup.style.display = "none";
@@ -281,7 +229,6 @@
                 submitBtn.innerText = "HESABI OLUŞTUR";
                 switchBtn.innerText = "GİRİŞ YAP";
                 toggleText.innerText = "Zaten bir hesabın var mı?";
-                
                 userGroup.style.display = "block";
                 phoneGroup.style.display = "block";
                 confirmPassGroup.style.display = "block";
@@ -289,15 +236,70 @@
             }
         }
 
+        // 3. Form Gönderimi (Veritabanı İşlemi)
+        const authForm = document.getElementById('authForm');
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('mainPass').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const isRegister = submitBtn.innerText === "HESABI OLUŞTUR";
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "İŞLEM YAPILIYOR...";
+
+            if (isRegister) {
+                // Kayıt Olma
+                const confirmPass = document.getElementById('confirmPass').value;
+                if (password !== confirmPass) {
+                    alert("Şifreler uyuşmuyor!");
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "HESABI OLUŞTUR";
+                    return;
+                }
+
+                const { data, error } = await _supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            username: document.getElementById('username').value,
+                            phone: document.getElementById('phone').value
+                        }
+                    }
+                });
+
+                if (error) alert("Hata: " + error.message);
+                else alert("Kayıt başarılı! Lütfen e-postanı kontrol et.");
+
+            } else {
+                // Giriş Yapma
+                const { data, error } = await _supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+
+                if (error) alert("Giriş başarısız: " + error.message);
+                else {
+                    alert("Giriş yapıldı! Başarılar dileriz.");
+                    window.location.href = "index.html";
+                }
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.innerText = isRegister ? "HESABI OLUŞTUR" : "GİRİŞ YAP";
+        });
+
+        // Header Scroll Efekti
         let lastScrollTop = 0;
-        const header = document.getElementById("mainHeader");
+        const mainHeader = document.getElementById("mainHeader");
         window.addEventListener("scroll", function() {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            if (scrollTop > lastScrollTop && scrollTop > 100) { header.classList.add("nav-hidden"); }
-            else { header.classList.remove("nav-hidden"); }
+            if (scrollTop > lastScrollTop && scrollTop > 100) { mainHeader.classList.add("nav-hidden"); }
+            else { mainHeader.classList.remove("nav-hidden"); }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
     </script>
 </body>
 </html>
-
