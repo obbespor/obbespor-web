@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBB E-SPOR | E-Spor TEST</title>
+    <title>OBB E-SPOR | E-Spor Arena</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
@@ -15,9 +15,9 @@
             --gri-yazi: #a0a0a0;
         }
 
-        /* Temel Sıfırlama */
+        /* Beyazlığı önlemek için temel sıfırlama */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { background-color: var(--ana-siyah); scroll-behavior: smooth; }
+        html { background-color: var(--ana-siyah); } /* Sayfa yüklenirken beyazlık olmasın */
         
         body {
             background: radial-gradient(circle at top, #1a052d 0%, #050505 100%);
@@ -26,10 +26,11 @@
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
             padding-top: 80px;
+            width: 100%;
             overflow-x: hidden;
         }
 
-        /* --- HEADER --- */
+        /* --- AKILLI HEADER --- */
         header {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -39,126 +40,80 @@
             height: 80px;
             border-bottom: 3px solid var(--neon-mor);
             position: fixed;
-            top: 0; left: 0; width: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
             z-index: 1000;
-            transition: transform 0.4s ease;
+            transition: transform 0.4s ease-in-out;
         }
+
         header.nav-hidden { transform: translateY(-110%); }
+
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); }
         nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
         nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
         nav ul li a:hover { color: var(--neon-mor); }
-        .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; font-weight: bold; text-decoration: none; transition: 0.3s; }
+        .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; font-weight: bold; }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
         /* --- HERO --- */
         .hero { height: 75vh; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; background: url('img/banner deneme.jpg') center/cover fixed; }
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1; }
         .hero-content { position: relative; z-index: 2; padding: 0 20px; }
-        .hero h1 { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 900; line-height: 1.2; }
+        .hero h1 { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 900; }
         .purple-neon { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
-        .main-btn { background: var(--neon-mor); color: white; border: none; padding: 15px 40px; border-radius: 8px; font-weight: 900; margin-top: 25px; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        .main-btn { background: var(--neon-mor); color: white; border: none; padding: 15px 40px; border-radius: 8px; font-weight: 900; margin-top: 20px; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
         .main-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--neon-mor); }
 
         /* --- DUYURULAR --- */
         .container { padding: 80px 10%; }
         .section-title { margin-bottom: 40px; border-left: 5px solid var(--neon-mor); padding-left: 15px; font-size: 28px; font-weight: 900; text-transform: uppercase; }
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        
         .card { background-color: #0a0a0a; border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.4s ease; }
-        .card:hover { border-color: var(--neon-mor); transform: translateY(-10px); }
-        .card-img { height: 200px; background: linear-gradient(45deg, #1a052d, var(--neon-mor)); display: flex; justify-content: center; align-items: center; font-size: 22px; font-weight: 900; }
+        .card:hover { border-color: var(--neon-mor); transform: translateY(-10px); box-shadow: 0 10px 30px rgba(96, 29, 194, 0.2); }
+        
+        .card-img { height: 200px; background: linear-gradient(45deg, #1a052d, var(--neon-mor)); display: flex; justify-content: center; align-items: center; font-size: 22px; font-weight: 900; color: white; letter-spacing: 1px; }
         .card-body { padding: 25px; }
-        .card-body h3 { color: var(--neon-mor); margin-bottom: 12px; font-size: 20px; }
-        .card-body p { color: var(--gri-yazi); font-size: 14px; }
-        .card-link { display: inline-block; margin-top: 18px; color: white; text-decoration: none; font-weight: bold; border-bottom: 2px solid var(--neon-mor); transition: 0.3s; }
+        .card-body h3 { color: var(--neon-mor); margin-bottom: 12px; font-size: 20px; font-weight: 700; }
+        .card-body p { color: var(--gri-yazi); font-size: 14px; line-height: 1.6; }
+        .card-link { display: inline-block; margin-top: 18px; color: var(--yazi-beyaz); text-decoration: none; font-weight: bold; font-size: 13px; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; transition: 0.3s; }
+        .card-link:hover { color: var(--neon-mor); }
 
-        /* --- GÜNCELLENMİŞ ÖZGÜN FOOTER (KESİN ÇÖZÜM) --- */
-        .obb-footer {
-            background-color: var(--nav-bg);
-            border-top: 2px solid var(--neon-mor);
-            padding: 80px 10% 40px;
-            margin-top: 60px;
-            width: 100%;
-        }
+        /* --- FOOTER --- */
+        footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
+        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+        .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
+        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; line-height: 1.6; }
+        .social-icons { display: flex; gap: 15px; }
+        .social-icons a { width: 45px; height: 45px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; border: 1px solid #222; }
+        .social-icons a:hover { background: var(--neon-mor); border-color: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
+        .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
+        .footer-column ul { list-style: none; }
+        .footer-column ul li { margin-bottom: 12px; }
+        .footer-column ul li a { color: var(--yazi-beyaz); text-decoration: none; font-size: 15px; transition: 0.3s; }
+        .footer-column ul li a:hover { color: var(--neon-mor); }
+        .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
+        .contact-item i { color: var(--neon-mor); font-size: 16px; width: 20px; text-align: center; }
+        .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 14px; }
 
-        .obb-f-wrapper {
-            display: flex;
-            flex-wrap: wrap; /* Mobilde alta kayması için */
-            justify-content: space-between;
-            align-items: flex-start;
-            max-width: 1300px;
-            margin: 0 auto;
-            gap: 40px;
-        }
-
-        .obb-f-col-main { flex: 1.5; min-width: 280px; }
-        .obb-f-col-side { flex: 1; min-width: 200px; }
-
-        .obb-f-title {
-            font-size: 24px;
-            font-weight: 900;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--neon-mor);
-            display: inline-block;
-            text-transform: uppercase;
-        }
-
-        .obb-f-text {
-            color: var(--gri-yazi);
-            font-size: 15px;
-            margin-bottom: 30px;
-            max-width: 400px;
-        }
-
-        .obb-f-socials { display: flex; gap: 15px; }
-        .obb-f-socials a {
-            width: 42px; height: 42px;
-            background: #111;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: white; border: 1px solid #222; transition: 0.3s; text-decoration: none;
-        }
-        .obb-f-socials a:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); transform: translateY(-3px); }
-
-        .obb-f-subtitle {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--neon-mor);
-            margin-bottom: 25px;
-            text-transform: uppercase;
-        }
-
-        .obb-f-links { list-style: none; }
-        .obb-f-links li { margin-bottom: 12px; }
-        .obb-f-links li a { color: white; text-decoration: none; transition: 0.3s; font-size: 15px; }
-        .obb-f-links li a:hover { color: var(--neon-mor); padding-left: 5px; }
-
-        .obb-f-contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); margin-bottom: 15px; font-size: 15px; }
-        .obb-f-contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
-
-        .obb-f-bottom {
-            text-align: center;
-            border-top: 1px solid #1a1a1a;
-            padding-top: 30px;
-            margin-top: 50px;
-            color: #555;
-            font-size: 14px;
-        }
-
-        /* --- MOBİL UYUMLULUK AYARLARI --- */
+        /* --- MOBİL ÖZEL AYARLAR (BOZULMADAN) --- */
         @media (max-width: 768px) {
-            header { height: auto; padding: 15px 5%; flex-direction: column; gap: 12px; }
-            body { padding-top: 140px; }
-            nav ul { gap: 10px; width: 100%; justify-content: center; }
-            nav ul li a { font-size: 11px; }
-            .nav-btn { padding: 5px 10px; font-size: 11px !important; }
+            header { height: auto; padding: 15px 5%; flex-direction: column; gap: 12px; top: 0; }
+            body { padding-top: 130px; } 
+            .logo { font-size: 24px; text-align: center; width: 100%; }
+            nav { width: 100%; }
+            nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 10px; white-space: nowrap; }
+            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
-            .obb-f-wrapper { flex-direction: column; align-items: center; text-align: center; }
-            .obb-f-col-main, .obb-f-col-side { width: 100%; min-width: unset; }
-            .obb-f-socials { justify-content: center; }
-            .obb-f-text { margin-left: auto; margin-right: auto; }
-            .obb-f-contact-item { justify-content: center; }
+            /* Footer Mobil Modernizasyon */
+            footer { padding: 60px 5% 30px; }
+            .footer-grid { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 40px; }
+            .footer-brand h2 { font-size: 32px; text-decoration: underline; text-underline-offset: 12px; text-decoration-color: var(--neon-mor); border-bottom: none; display: block; margin-bottom: 25px; }
+            .social-icons { justify-content: center; gap: 20px; }
+            .footer-links-container { display: grid; grid-template-columns: 1fr 1fr; width: 100%; gap: 20px; text-align: left; border-top: 1px solid #1a1a1a; padding-top: 40px; }
         }
     </style>
 </head>
@@ -181,7 +136,7 @@
         <div class="hero-content">
             <h1>ZAFER <span class="purple-neon">MOR</span> IŞIKTA PARLAR</h1>
             <p>En iyi oyuncular burada yetişir.</p>
-            <button class="main-btn" onclick="location.href='kayit.html'">ARENAYA GİRİŞ YAP</button>
+            <button class="main-btn">ARENAYA GİRİŞ YAP</button>
         </div>
     </div>
 
@@ -192,18 +147,20 @@
                 <div class="card-img">OBB E-SPOR</div>
                 <div class="card-body">
                     <h3>YENİ SEZON BAŞLIYOR</h3>
-                    <p>Ordu'nun en rekabetçi e-spor liginde 3. sezon heyecanı çok yakında başlıyor.</p>
+                    <p>Ordu'nun en rekabetçi e-spor liginde 3. sezon heyecanı çok yakında başlıyor. Hazırlıklarınızı tamamlayın.</p>
                     <a href="#" class="card-link">DETAYLARI GÖR</a>
                 </div>
             </div>
+
             <div class="card">
                 <div class="card-img">VALORANT</div>
                 <div class="card-body">
                     <h3>TOPLULUK TURNUVASI</h3>
-                    <p>Ödül havuzu 10.000 TL olan Valorant turnuvası kayıtları açıldı.</p>
+                    <p>Ödül havuzu 10.000 TL olan Valorant Topluluk Turnuvası için kayıtlar açıldı.</p>
                     <a href="kayit.html" class="card-link">ŞİMDİ KAYDOL</a>
                 </div>
             </div>
+
             <div class="card">
                 <div class="card-img">TOPLULUK</div>
                 <div class="card-body">
@@ -215,12 +172,12 @@
         </div>
     </section>
 
-    <footer class="obb-footer">
-        <div class="obb-f-wrapper">
-            <div class="obb-f-col-main">
-                <h2 class="obb-f-title">OBB <span style="color:white">E-SPOR</span></h2>
-                <p class="obb-f-text">Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
-                <div class="obb-f-socials">
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h2>OBB <span style="color:white">E-SPOR</span></h2>
+                <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
+                <div class="social-icons">
                     <a href="#"><i class="fa-brands fa-instagram"></i></a>
                     <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
                     <a href="#"><i class="fa-brands fa-discord"></i></a>
@@ -228,25 +185,27 @@
                 </div>
             </div>
 
-            <div class="obb-f-col-side">
-                <h3 class="obb-f-subtitle">HIZLI MENÜ</h3>
-                <ul class="obb-f-links">
-                    <li><a href="index.html">Ana Sayfa</a></li>
-                    <li><a href="tournaments.html">Turnuvalar</a></li>
-                    <li><a href="canli.html">Canlı Yayınlar</a></li>
-                    <li><a href="kayit.html">Kayıt Ol</a></li>
-                </ul>
-            </div>
+            <div class="footer-links-container">
+                <div class="footer-column">
+                    <h3>HIZLI MENÜ</h3>
+                    <ul>
+                        <li><a href="index.html">Ana Sayfa</a></li>
+                        <li><a href="tournaments.html">Turnuvalar</a></li>
+                        <li><a href="canli.html">Canlı</a></li>
+                        <li><a href="kayit.html">Kayıt Ol</a></li>
+                    </ul>
+                </div>
 
-            <div class="obb-f-col-side">
-                <h3 class="obb-f-subtitle">İLETİŞİM</h3>
-                <div class="obb-f-contact-item"><i class="fa-solid fa-envelope"></i> <span>info@obbesports.com</span></div>
-                <div class="obb-f-contact-item"><i class="fa-solid fa-location-dot"></i> <span>Ordu, Türkiye</span></div>
-                <div class="obb-f-contact-item"><i class="fa-solid fa-headset"></i> <span>7/24 Destek Ekibi</span></div>
+                <div class="footer-column">
+                    <h3>İLETİŞİM</h3>
+                    <div class="contact-item"><i class="fa-solid fa-envelope"></i> <span>info@obbesports.com</span></div>
+                    <div class="contact-item"><i class="fa-solid fa-location-dot"></i> <span>Ordu, Türkiye</span></div>
+                    <div class="contact-item"><i class="fa-solid fa-headset"></i> <span>7/24 Destek</span></div>
+                </div>
             </div>
         </div>
 
-        <div class="obb-f-bottom">
+        <div class="footer-bottom">
             <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
         </div>
     </footer>
@@ -254,6 +213,7 @@
     <script>
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
+
         window.addEventListener("scroll", function() {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             if (scrollTop > lastScrollTop && scrollTop > 100) {
@@ -265,5 +225,4 @@
         }, false);
     </script>
 </body>
-</html>
-
+</html> 
