@@ -132,7 +132,11 @@
 
         /* FOOTER */
         footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 80px; }
-        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+        
+        /* Masaüstü Footer Düzenlemesi */
+        .footer-grid { display: grid; grid-template-columns: 1.5fr 2.5fr; gap: 50px; margin-bottom: 50px; }
+        .footer-links-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
         .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; line-height: 1.6; }
         .social-icons { display: flex; gap: 15px; }
@@ -146,12 +150,27 @@
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
         @media (max-width: 1024px) { .auth-side-image { display: none; } }
+        
+        /* Mobil Görünüm Optimizasyonları */
         @media (max-width: 768px) {
-            header { height: auto; padding: 15px 5%; flex-direction: column; gap: 12px; }
+            /* Mobil Header Düzenlemesi */
+            header { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; align-items: center; }
+            nav { width: 100%; }
+            nav ul { display: flex; justify-content: space-between; width: 100%; gap: 5px; }
+            nav ul li a { font-size: 12px; }
+            .nav-btn { padding: 6px 14px; font-size: 12px; }
+            
             body { padding-top: 130px; }
-            nav ul li a { font-size: 10px; }
+            
+            /* Mobil Footer Düzenlemesi (Değiştirilmedi, ortalandı) */
             .footer-grid { display: flex; flex-direction: column; text-align: center; }
             .footer-links-wrapper { display: grid; grid-template-columns: 1fr 1fr; text-align: left; }
+            .social-icons { justify-content: center; } 
+        }
+
+        @media (max-width: 480px) {
+            nav ul li a { font-size: 10px; }
+            .nav-btn { padding: 4px 10px; font-size: 10px; }
         }
     </style>
 </head>
