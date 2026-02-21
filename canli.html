@@ -171,44 +171,95 @@
             .main-content { padding: 40px 5%; }
             .streams-grid { grid-template-columns: 1fr; }
         }
-        /* --- HOŞ GELDİN ALANI STİLLERİ --- */
-.user-welcome-area {
+/* --- YENİ PRO OYUNCU MENÜSÜ --- */
+.user-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-trigger {
+    background: rgba(96, 29, 194, 0.1);
+    border: 1px solid var(--neon-mor);
+    padding: 8px 15px;
+    border-radius: 50px;
+    color: white;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 15px;
-    background: rgba(96, 29, 194, 0.15);
-    padding: 5px 15px;
-    border-radius: 50px;
-    border: 1px solid var(--neon-mor);
+    gap: 10px;
     transition: 0.3s;
+    font-family: 'Poppins', sans-serif;
 }
 
-.user-info {
-    display: flex;
-    flex-direction: column;
-    text-align: right;
+.dropdown-trigger:hover {
+    box-shadow: 0 0 15px rgba(96, 29, 194, 0.4);
+    background: rgba(96, 29, 194, 0.2);
 }
 
-.welcome-text {
-    font-size: 8px;
-    color: var(--gri-yazi);
+.user-name-text {
+    font-weight: 800;
+    font-size: 13px;
     letter-spacing: 1px;
 }
 
-.user-nickname {
-    font-size: 13px;
-    color: #fff;
-    font-weight: 900;
-    text-shadow: 0 0 10px var(--neon-mor);
+.arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
+
+/* Açılır Pencere Tasarımı */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 120%;
+    background: #0d0d0d;
+    min-width: 190px;
+    border: 1px solid var(--neon-mor);
+    border-radius: 12px;
+    overflow: hidden;
+    z-index: 9999;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.8);
 }
 
-.logout-minimal-btn {
-    background: transparent;
-    border: none;
-    color: #ff4b4b;
-    cursor: pointer;
-    font-size: 14px;
-    transition: 0.3s;
+.dropdown-content a {
+    color: #fff;
+    padding: 12px 18px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.dropdown-content a i { 
+    color: var(--neon-mor); 
+    width: 20px; 
+    text-align: center;
+}
+
+.dropdown-content a:hover { 
+    background: rgba(96, 29, 194, 0.2); 
+    color: var(--neon-mor); 
+}
+
+/* Hover ile Menüyü Aç */
+.user-dropdown:hover .dropdown-content { display: block; }
+.user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
+
+/* Çıkış Linki İçin Özel Renk */
+.logout-link { border-top: 1px solid rgba(255,255,255,0.05); }
+.logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
+
+/* --- MOBİL ÇÖZÜM --- */
+@media (max-width: 768px) {
+    .user-name-text { display: none; } /* Mobilde ismi gizleyerek header'ı ferahlatır */
+    .dropdown-trigger { padding: 10px; border-radius: 50%; } /* Mobilde ikonik yuvarlak buton */
+    .dropdown-content { 
+        position: fixed; 
+        right: 10px; 
+        top: 70px; 
+        width: 180px; 
+    }
 }
 
 .logout-minimal-btn:hover {
@@ -373,6 +424,7 @@
 <script src="auth.js"></script>
 </body>
 </html>
+
 
 
 
