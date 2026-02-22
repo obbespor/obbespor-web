@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-9VH0LHNCS3');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turnuvalarım | OBB E-SPOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* --- 1. TEMEL AYARLAR (BİREBİR AYNI) --- */
+        :root {
+            --ana-siyah: #000000;
+            --nav-bg: #000000;
+            --neon-mor: #601dc2; 
+            --yazi-beyaz: #ffffff;
+            --gri-yazi: #a0a0a0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
+        body {
+            background: radial-gradient(circle at top, #1a052d 0%, #000000 100%);
+            background-attachment: fixed;
+            color: var(--yazi-beyaz);
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            padding-top: 80px;
+        }
+
+        /* --- 2. HEADER (KORUNAN YAPI) --- */
+        header.main-nav {
+            background-color: var(--nav-bg);
+            padding: 0 10%; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            border-bottom: 3px solid var(--neon-mor);
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            z-index: 1000;
+            transition: transform 0.4s ease-in-out;
+        }
+        header.main-nav.nav-hidden { transform: translateY(-110%); }
+        .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
+        .logo span { color: var(--neon-mor); }
+        nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
+        nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
+        nav ul li a:hover { color: var(--neon-mor); }
+        .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; font-weight: bold; }
+        .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
+
+        /* --- 3. ÇOK YAKINDA ÖZEL ALAN --- */
+        .coming-soon-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .icon-box {
+            font-size: 80px;
+            color: var(--neon-mor);
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px var(--neon-mor);
+            animation: pulse 2s infinite;
+        }
+
+        .coming-soon-container h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            line-height: 1;
+        }
+
+        .coming-soon-container h1 span {
+            display: block;
+            color: var(--neon-mor);
+            text-shadow: 0 0 20px var(--neon-mor);
+        }
+
+        .coming-soon-container p {
+            color: var(--gri-yazi);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 20px 0 40px;
+        }
+
+        .status-badge {
+            background: rgba(96, 29, 194, 0.1);
+            border: 1px solid var(--neon-mor);
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        /* --- 4. FOOTER (KORUNAN YAPI) --- */
+        footer {
+            background-color: var(--nav-bg);
+            border-top: 2px solid var(--neon-mor);
+            padding: 80px 10% 40px;
+        }
+        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+        .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
+        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
+        .social-icons { display: flex; gap: 15px; }
+        .social-icons a { width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; }
+        .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
+        .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
+        .footer-column ul { list-style: none; }
+        .footer-column ul li { margin-bottom: 12px; }
+        .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
+        .footer-column ul li a:hover { color: var(--neon-mor); }
+        .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
+        .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
+        .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
+
+        /* --- MOBİL UYUMLULUK --- */
+        @media (max-width: 768px) {
+            header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
+            body { padding-top: 125px; }
+            nav { width: 100%; }
+            nav ul { gap: 10px; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 10px; }
+            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .footer-brand { grid-column: span 2; text-align: center; }
+            .social-icons { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-nav" id="mainHeader">
+        <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
+        <nav>
+            <ul>
+                <li><a href="index.html">ANA SAYFA</a></li>
+                <li><a href="tournaments.html">TURNUVALAR</a></li>
+                <li><a href="canli.html">CANLI</a></li>
+                <li><a href="kayit.html" class="nav-btn">KATIL</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="coming-soon-container">
+        <div class="status-badge">Sistem Geliştiriliyor</div>
+        <div class="icon-box">
+            <i class="fas fa-trophy"></i>
+        </div>
+        <h1>TURNUVALARIM <span>ÇOK YAKINDA</span></h1>
+        <p>Katıldığın turnuvaları, maç geçmişini ve takım istatistiklerini bu panelden takip edebileceksin. Hazırlanmaya devam et!</p>
+        <a href="tournaments.html" class="nav-btn" style="padding: 15px 35px;">GÜNCEL TURNUVALARA BAK</a>
+    </main>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h2>OBB <span style="color:white">E-SPOR</span></h2>
+                <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Hızlı Menü</h3>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="tournaments.html">Turnuvalar</a></li>
+                    <li><a href="canli.html">Canlı</a></li>
+                    <li><a href="kayit.html">Kayıt Ol</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>İletişim</h3>
+                <ul>
+                    <li class="contact-item"><i class="fas fa-envelope"></i> info@obbesports.com</li>
+                    <li class="contact-item"><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
+                    <li class="contact-item"><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Header Kaybolma Efekti
+        let lastScrollTop = 0;
+        const header = document.getElementById("mainHeader");
+        window.addEventListener("scroll", function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                header.classList.add("nav-hidden");
+            } else {
+                header.classList.remove("nav-hidden");
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+        }, false);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+</body>
+</html>
