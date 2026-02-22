@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
 <html lang="tr">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
@@ -123,7 +123,7 @@
         .view-btn { background: white; color: black; }
         .register-btn { background: var(--neon-mor); color: white; }
 
-        /* --- 5. FOOTER (ORİJİNAL CLASS VE STİLLER GERİ GELDİ) --- */
+        /* --- 5. FOOTER --- */
         footer {
             background-color: var(--nav-bg);
             border-top: 2px solid var(--neon-mor);
@@ -174,7 +174,7 @@
             .social-icons { justify-content: center; }
             .footer-column { text-align: left; }
         }
-     /* --- PRO OYUNCU MENÜSÜ VE SABİTLEME FİXİ --- */
+     /* --- PRO OYUNCU MENÜSÜ --- */
 .user-dropdown {
     position: relative;
     display: inline-block;
@@ -208,12 +208,10 @@
 
 .arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
 
-/* Menü İçeriği */
 .dropdown-content {
     display: none;
     position: absolute;
     right: 0;
-    /* Butona tam sıfırladık, aradaki boşluk kapandı */
     top: 100%; 
     background: #0d0d0d;
     min-width: 200px;
@@ -225,8 +223,6 @@
     animation: menuFadeIn 0.2s ease-out;
 }
 
-/* KAPANMA SORUNUNU ÇÖZEN GÖRÜNMEZ KÖPRÜ */
-/* Fare butondan menüye geçerken bu alan üzerinden geçtiği için menü açık kalır */
 .dropdown-content::before {
     content: "";
     position: absolute;
@@ -254,23 +250,20 @@
 .dropdown-content a:hover { 
     background: rgba(96, 29, 194, 0.2); 
     color: var(--neon-mor); 
-    padding-left: 25px; /* Şık bir kayma efekti */
+    padding-left: 25px;
 }
 
-/* Hover Kontrolleri */
 .user-dropdown:hover .dropdown-content { display: block; }
 .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
 
 .logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
 .logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
 
-/* Animasyon */
 @keyframes menuFadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- MOBİL UYUMLULUK --- */
 @media (max-width: 768px) {
     .user-name-text, .arrow-icon { display: none; } 
     .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
@@ -328,7 +321,7 @@
                     </div>
                 </div>
                 <div class="t-action">
-                    <button class="view-btn">ÇOK YAKINDA</button>
+                    <button class="view-btn" onclick="window.location.href='basvuru.html'">ÇOK YAKINDA</button>
                 </div>
             </div>
 
@@ -407,10 +400,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
