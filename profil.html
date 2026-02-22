@@ -308,45 +308,72 @@
 
         // --- 2. SUPABASE BAĞLANTISI VE KUSURSUZ İŞLEMLER ---
         
-        // EĞER auth.js İÇERİSİNDE 'supabase' DEĞİŞKENİNİ ZATEN TANIMLADIYSAN,
-        // aşağıdaki createClient kısmını silebilirsin. Aksi halde buraya bilgilerini gir.
-        const supabaseUrl = 'https://zvhtznxretxgofnbcbko.supabase.co';
-        const supabaseKey = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
-        // window.supabase kullanmamızın sebebi cdn ile içeri almış olmamız.
-        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+        // HATA ÇÖZÜMÜ 1: auth.js'den gelen global istemciyi kullanarak "Çoklu Instance" uyarısını engelliyoruz.
+        let supabaseClient;
+        if (window.supabaseClient || window.supabaseInstance) {
+            // Eğer auth.js içinde zaten tanımlı bir global değişken varsa onu kullan
+            supabaseClient = window.supabaseClient || window.supabaseInstance;
+        } else {
+            const supabaseUrl = 'https://zvhtznxretxgofnbcbko.supabase.co';
+            const supabaseKey = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
+            supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+            window.supabaseClient = supabaseClient; // İleride başka scriptler de bu instance'ı kullansın
+        }
 
         let currentUser = null;
 
-        // Sayfa yüklendiğinde kullanıcıyı kontrol et
+        // Sayfa yüklendiğinde kullanıcıyı kontrol et (HATA ÇÖZÜMÜ 2: Try-Catch eklendi)
         async function initProfile() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (user) {
-                currentUser = user;
-                loadProfileData();
-            } else {
-                document.getElementById('profileNameDisplay').innerText = "GİRİŞ YAPILMADI";
-                document.getElementById('userBio').innerText = "Profil bilgilerini görmek için lütfen giriş yapın.";
+            try {
+                const { data, error } = await supabaseClient.auth.getUser();
+                
+                if (error) {
+                    throw error; // Hata varsa catch bloğuna fırlat
+                }
+
+                if (data && data.user) {
+                    currentUser = data.user;
+                    await loadProfileData();
+                } else {
+                    document.getElementById('profileNameDisplay').innerText = "GİRİŞ YAPILMADI";
+                    document.getElementById('userBio').innerText = "Profil bilgilerini görmek için lütfen giriş yapın.";
+                }
+            } catch (error) {
+                console.error("Kimlik doğrulama hatası:", error.message);
+                // Eğer internet yoksa veya ağ hatası (ERR_NAME_NOT_RESOLVED) verirse sonsuz döngüde kalmasın:
+                document.getElementById('profileNameDisplay').innerText = "BAĞLANTI HATASI";
+                document.getElementById('userBio').innerText = "Sunucuya bağlanılamadı. Lütfen internetinizi kontrol edip sayfayı yenileyin.";
             }
         }
 
-        // Veritabanından verileri çekme
+        // Veritabanından verileri çekme (HATA ÇÖZÜMÜ 2: Try-Catch eklendi)
         async function loadProfileData() {
-            const { data, error } = await supabaseClient
-                .from('profiles')
-                .select('username, bio, avatar_url, banner_url, matches_played')
-                .eq('id', currentUser.id)
-                .single();
-            
-            if (data) {
-                if(data.username) document.getElementById('profileNameDisplay').innerText = data.username.toUpperCase();
-                if(data.bio) document.getElementById('userBio').innerText = data.bio;
-                if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
-                if(data.avatar_url) {
-                    const preview = document.getElementById('userAvatar');
-                    preview.src = data.avatar_url;
-                    preview.style.display = "block";
+            try {
+                const { data, error } = await supabaseClient
+                    .from('profiles')
+                    .select('username, bio, avatar_url, banner_url, matches_played')
+                    .eq('id', currentUser.id)
+                    .single();
+                
+                if (error) {
+                    throw error;
                 }
-                if(data.matches_played !== undefined) document.getElementById('matchCount').innerText = data.matches_played;
+                
+                if (data) {
+                    if(data.username) document.getElementById('profileNameDisplay').innerText = data.username.toUpperCase();
+                    if(data.bio) document.getElementById('userBio').innerText = data.bio;
+                    if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
+                    if(data.avatar_url) {
+                        const preview = document.getElementById('userAvatar');
+                        preview.src = data.avatar_url;
+                        preview.style.display = "block";
+                    }
+                    if(data.matches_played !== undefined) document.getElementById('matchCount').innerText = data.matches_played;
+                }
+            } catch (error) {
+                console.error("Veri çekme hatası:", error.message);
+                document.getElementById('profileNameDisplay').innerText = "PROFİL YÜKLENEMEDİ";
+                document.getElementById('userBio').innerText = "Kullanıcı verileriniz getirilirken bir sorun oluştu.";
             }
         }
 
