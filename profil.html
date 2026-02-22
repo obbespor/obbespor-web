@@ -37,7 +37,7 @@
             padding-top: 100px;
         }
 
-        /* --- 2. AKILLI HEADER (KOPYALANDI) --- */
+        /* --- 2. AKILLI HEADER --- */
         header.main-nav {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -72,7 +72,7 @@
         }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* Pro Oyuncu Menüsü Stilleri (auth.js ile eklendiği için hazırda bekler) */
+        /* Pro Oyuncu Menüsü Stilleri */
         .user-dropdown { position: relative; display: inline-block; }
         .dropdown-trigger {
             background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor);
@@ -103,7 +103,6 @@
         
         .profile-banner {
             height: 250px;
-            /* Yol Düzeltildi */
             background: url('img/banner+.jpg') center/cover no-repeat;
             border-radius: 20px 20px 0 0;
             position: relative; border: 1px solid #222;
@@ -156,7 +155,7 @@
         .banner-option { width: 100%; height: 120px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; object-fit: cover; transition: 0.3s; }
         .banner-option:hover { border-color: var(--neon-mor); transform: scale(1.02); }
 
-        /* --- 4. FOOTER (KOPYALANDI) --- */
+        /* --- 4. FOOTER --- */
         footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
@@ -173,9 +172,8 @@
         .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* --- 5. MOBİL UYUMLULUK (GENİŞLETİLDİ) --- */
+        /* --- 5. MOBİL UYUMLULUK --- */
         @media (max-width: 768px) {
-            /* Header Mobil */
             header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
             body { padding-top: 125px; }
             nav { width: 100%; }
@@ -185,13 +183,9 @@
             .user-name-text, .arrow-icon { display: none; } 
             .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
             .dropdown-content { position: fixed; right: 15px; top: 75px; width: 180px; }
-
-            /* Profil Mobil Uyumluluğu */
             .profile-card { padding: 0 20px 30px; }
-            .stats-grid { grid-template-columns: 1fr; gap: 15px; } /* İstatistikler alt alta gelsin */
-            .banner-grid { grid-template-columns: 1fr; } /* Seçim modalı tek sütun */
-            
-            /* Footer Mobil */
+            .stats-grid { grid-template-columns: 1fr; gap: 15px; } 
+            .banner-grid { grid-template-columns: 1fr; } 
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
             .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
             .footer-brand p { max-width: 100%; }
@@ -308,27 +302,29 @@
 
         // --- 2. SUPABASE BAĞLANTISI VE KUSURSUZ İŞLEMLER ---
         
-        // HATA ÇÖZÜMÜ 1: auth.js'den gelen global istemciyi kullanarak "Çoklu Instance" uyarısını engelliyoruz.
+        // ÇÖZÜM 1: Çift yükleme uyarısını (Multiple GoTrueClient) kaldırmak için zekice bir kontrol.
+        // Eğer auth.js dosyanız supabase'i çoktan ayağa kaldırdıysa, aynısını kullanıyoruz.
         let supabaseClient;
-        if (window.supabaseClient || window.supabaseInstance) {
-            // Eğer auth.js içinde zaten tanımlı bir global değişken varsa onu kullan
-            supabaseClient = window.supabaseClient || window.supabaseInstance;
+        if (window.supabaseClient) {
+            supabaseClient = window.supabaseClient;
         } else {
+            // DİKKAT: Sayfanda oluşan "ERR_NAME_NOT_RESOLVED" hatasının sebebi bu URL'nin ulaşılamaz olması. 
+            // Eğer projenin URL'si değiştiyse veya duraklatıldıysa Supabase'den girip bu URL'yi doğrulamalısın.
             const supabaseUrl = 'https://zvhtznxretxgofnbcbko.supabase.co';
             const supabaseKey = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
             supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-            window.supabaseClient = supabaseClient; // İleride başka scriptler de bu instance'ı kullansın
+            window.supabaseClient = supabaseClient; 
         }
 
         let currentUser = null;
 
-        // Sayfa yüklendiğinde kullanıcıyı kontrol et (HATA ÇÖZÜMÜ 2: Try-Catch eklendi)
+        // ÇÖZÜM 2: Sonsuz Dönmeyi (Loading) Engelleyen Hata Ayıklama (Try-Catch) 
         async function initProfile() {
             try {
                 const { data, error } = await supabaseClient.auth.getUser();
                 
                 if (error) {
-                    throw error; // Hata varsa catch bloğuna fırlat
+                    throw error; 
                 }
 
                 if (data && data.user) {
@@ -339,14 +335,13 @@
                     document.getElementById('userBio').innerText = "Profil bilgilerini görmek için lütfen giriş yapın.";
                 }
             } catch (error) {
-                console.error("Kimlik doğrulama hatası:", error.message);
-                // Eğer internet yoksa veya ağ hatası (ERR_NAME_NOT_RESOLVED) verirse sonsuz döngüde kalmasın:
+                console.warn("Kimlik doğrulama/Bağlantı sorunu yaşandı:", error.message);
                 document.getElementById('profileNameDisplay').innerText = "BAĞLANTI HATASI";
-                document.getElementById('userBio').innerText = "Sunucuya bağlanılamadı. Lütfen internetinizi kontrol edip sayfayı yenileyin.";
+                document.getElementById('userBio').innerText = "Sunucuya bağlanılamadı. Lütfen Supabase proje URL'sini veya internet bağlantını kontrol et.";
             }
         }
 
-        // Veritabanından verileri çekme (HATA ÇÖZÜMÜ 2: Try-Catch eklendi)
+        // Veritabanından verileri çekme (Toplam maç atlaması giderildi)
         async function loadProfileData() {
             try {
                 const { data, error } = await supabaseClient
@@ -368,16 +363,19 @@
                         preview.src = data.avatar_url;
                         preview.style.display = "block";
                     }
-                    if(data.matches_played !== undefined) document.getElementById('matchCount').innerText = data.matches_played;
+                    // Toplam Maç Kodu Eski ve Güvenli Haline Getirildi
+                    if(data.matches_played !== undefined && data.matches_played !== null) {
+                        document.getElementById('matchCount').innerText = data.matches_played;
+                    }
                 }
             } catch (error) {
-                console.error("Veri çekme hatası:", error.message);
-                document.getElementById('profileNameDisplay').innerText = "PROFİL YÜKLENEMEDİ";
-                document.getElementById('userBio').innerText = "Kullanıcı verileriniz getirilirken bir sorun oluştu.";
+                console.warn("Veri çekme işlemi başarısız:", error.message);
+                document.getElementById('profileNameDisplay').innerText = "BİLGİLER ALINAMADI";
+                document.getElementById('userBio').innerText = "Kullanıcı verileriniz getirilirken bağlantı sorunu oluştu.";
             }
         }
 
-        // --- BİYOGRAFİ GÜNCELLEME (Hata korumalı - Optimistic UI) ---
+        // --- BİYOGRAFİ GÜNCELLEME ---
         async function editBio() {
             if(!currentUser) return alert("Önce giriş yapmalısınız!");
             
@@ -388,10 +386,8 @@
             if (newBio !== null) {
                 const trimmedBio = newBio.trim();
                 
-                // Önce ekranda hemen güncelleyerek hızlı bir deneyim sunuyoruz
                 bioElement.innerText = trimmedBio || "Açıklama bulunmuyor."; 
                 
-                // Arka planda Supabase'e kaydet
                 const { error } = await supabaseClient
                     .from('profiles')
                     .update({ bio: trimmedBio })
@@ -399,17 +395,15 @@
                 
                 if(error) {
                     alert("Biyografi kaydedilirken bir hata oluştu: " + error.message);
-                    // Hata olursa ekranı eski haline geri döndür
                     bioElement.innerText = currentBio;
                 }
             }
         }
 
-        // --- KAPAK FOTOĞRAFI (BANNER) GÜNCELLEME ---
+        // --- KAPAK FOTOĞRAFI GÜNCELLEME ---
         function openBannerModal() {
             const grid = document.getElementById('bannerOptions');
             grid.innerHTML = ""; 
-            // Demo amaçlı 10 aynı fotoğrafı basıyor. Eğer farklı görsellerin varsa 'banner1.jpg', 'banner2.jpg' şeklinde güncelleyebilirsin.
             for(let i=1; i<=10; i++) {
                 const img = document.createElement('img');
                 img.src = 'img/banner+.jpg'; 
@@ -429,7 +423,7 @@
         }
         function closeBannerModal() { document.getElementById('bannerModal').style.display = "none"; }
 
-        // --- PROFİL FOTOĞRAFI YÜKLEME (Kusursuzlaştırma) ---
+        // --- PROFİL FOTOĞRAFI YÜKLEME ---
         document.getElementById('avatarUpload').addEventListener('change', async function(e) {
             if(!currentUser) return alert("Önce giriş yapmalısınız!");
             
@@ -437,12 +431,10 @@
             const preview = document.getElementById('userAvatar');
 
             if (file) {
-                // 2MB Sınırı
                 if (file.size / 1024 / 1024 > 2) {
                     return alert("Fotoğraf çok büyük! Maksimum 2MB yükleyebilirsin.");
                 }
 
-                // 1. Ekranda anında önizleme göster
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     preview.src = event.target.result;
@@ -451,26 +443,22 @@
                 reader.readAsDataURL(file);
 
                 try {
-                    // Dosya yolunu oluştur (Kullanıcının id'si altına kaydederek düzeni sağlarız)
                     const fileExt = file.name.split('.').pop();
                     const fileName = `avatar-${Date.now()}.${fileExt}`;
                     const filePath = `${currentUser.id}/${fileName}`; 
 
-                    // 2. Supabase Storage'a Yükle (upsert: true ile aynı isim çakışmalarını engelleriz)
                     const { error: uploadError } = await supabaseClient.storage
                         .from('avatars')
                         .upload(filePath, file, { cacheControl: '3600', upsert: true });
 
                     if (uploadError) throw uploadError;
 
-                    // 3. Dosyanın açık (public) URL'sini Supabase v2 yapısına uygun olarak çek
                     const { data } = supabaseClient.storage
                         .from('avatars')
                         .getPublicUrl(filePath);
 
                     const publicAvatarUrl = data.publicUrl;
 
-                    // 4. Veritabanındaki 'profiles' tablosuna kaydet
                     const { error: updateError } = await supabaseClient
                         .from('profiles')
                         .update({ avatar_url: publicAvatarUrl })
