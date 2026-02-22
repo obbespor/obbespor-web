@@ -9,7 +9,7 @@
       gtag('config', 'G-9VH0LHNCS3');
     </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Turnuvalarım | OBB E-SPOR</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -25,18 +25,20 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
+        html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
         body {
             background: radial-gradient(circle at top, #1a052d 0%, #000000 100%);
             background-attachment: fixed;
             color: var(--yazi-beyaz);
             font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            padding-top: 80px;
             display: flex;
             flex-direction: column;
-            padding-top: 80px;
+            min-height: 100vh;
         }
 
-        /* --- 2. HEADER & NAV --- */
+        /* --- 2. HEADER (KAYIT SAYFASIYLA AYNI) --- */
         header.main-nav {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -53,123 +55,82 @@
         header.main-nav.nav-hidden { transform: translateY(-110%); }
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); }
-        
         nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
         nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
         nav ul li a:hover { color: var(--neon-mor); }
-
-        /* Ortak Buton Tasarımı */
-        .nav-btn { 
-            border: 2px solid var(--neon-mor); 
-            padding: 8px 20px; 
-            border-radius: 5px; 
-            color: white !important; 
-            background: transparent; 
-            transition: 0.3s; 
-            text-decoration: none; 
-            font-weight: bold;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 42px; /* Buton yüksekliğini sabitledik */
-        }
+        .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; font-weight: bold; }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- DROPDOWN (NICKNAME BUTONU) DÜZELTMESİ --- */
-        .user-dropdown { position: relative; display: flex; align-items: center; }
-        
-        /* Nickname alanı butonu */
+        /* --- 3. PRO OYUNCU MENÜSÜ (DROPDOWN) --- */
+        .user-dropdown { position: relative; display: inline-block; }
         .dropdown-trigger {
+            background: rgba(96, 29, 194, 0.1);
+            border: 1px solid var(--neon-mor);
+            padding: 8px 18px;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 0 15px;
-            background: rgba(96, 29, 194, 0.1);
-            border: 1px solid var(--neon-mor);
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 13px;
-            height: 42px; /* Katıl butonu ile aynı yükseklik */
             transition: 0.3s;
+            z-index: 1001;
         }
-
-        .dropdown-trigger:hover {
-            background: rgba(96, 29, 194, 0.2);
-            border-color: var(--neon-mor);
-        }
-
-        /* Açılır Menü Listesi */
+        .user-name-text { font-weight: 800; font-size: 13px; letter-spacing: 1px; }
+        .arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
+        
         .dropdown-content {
             display: none;
             position: absolute;
             right: 0;
-            top: calc(100% + 10px);
-            background-color: #0d0d0d !important;
-            min-width: 180px;
+            top: 100%; 
+            background: #0d0d0d;
+            min-width: 200px;
             border: 1px solid var(--neon-mor);
-            border-radius: 8px;
-            padding: 8px 0 !important;
+            border-radius: 12px;
+            padding: 5px 0;
             z-index: 9999;
-            flex-direction: column !important;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+            animation: menuFadeIn 0.2s ease-out;
         }
-
+        .dropdown-content::before {
+            content: "";
+            position: absolute;
+            top: -20px; 
+            left: 0; width: 100%; height: 20px;
+            background: transparent;
+        }
         .dropdown-content a {
-            display: flex !important;
-            align-items: center !important;
-            padding: 12px 18px !important;
-            gap: 10px !important;
-            color: white !important;
-            text-decoration: none !important;
-            font-size: 13px !important;
+            color: #fff;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 500;
             transition: 0.2s;
-            width: 100% !important;
         }
-
-        .dropdown-content a:hover {
-            background: rgba(96, 29, 194, 0.2) !important;
-            color: var(--neon-mor) !important;
+        .dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
+        .dropdown-content a:hover { 
+            background: rgba(96, 29, 194, 0.2); 
+            color: var(--neon-mor); 
+            padding-left: 25px;
         }
+        .user-dropdown:hover .dropdown-content { display: block; }
+        .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
 
-        .user-dropdown:hover .dropdown-content { display: flex !important; }
-
-        /* --- 3. İÇERİK ALANI --- */
-        .coming-soon-container {
+        /* --- 4. İÇERİK ALANI (ORTA KISIM) --- */
+        .main-content {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
+            padding: 60px 20px;
+        }
+        .coming-soon-card {
             text-align: center;
-            padding: 40px 20px;
-        }
-        .icon-box {
-            font-size: 80px;
-            color: var(--neon-mor);
-            margin-bottom: 20px;
-            text-shadow: 0 0 30px var(--neon-mor);
-            animation: pulse 2s infinite;
-        }
-        .coming-soon-container h1 {
-            font-size: clamp(2.5rem, 8vw, 5rem);
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: -2px;
-            line-height: 1;
-        }
-        .coming-soon-container h1 span {
-            display: block;
-            color: var(--neon-mor);
-            text-shadow: 0 0 20px var(--neon-mor);
-        }
-        .coming-soon-container p {
-            color: var(--gri-yazi);
-            font-size: 18px;
-            max-width: 600px;
-            margin: 20px 0 40px;
+            max-width: 800px;
         }
         .status-badge {
             background: rgba(96, 29, 194, 0.1);
@@ -181,19 +142,40 @@
             letter-spacing: 2px;
             font-size: 14px;
             margin-bottom: 30px;
+            display: inline-block;
         }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
+        .icon-box {
+            font-size: 80px;
+            color: var(--neon-mor);
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px var(--neon-mor);
+            animation: pulse 2s infinite;
+        }
+        .coming-soon-card h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            line-height: 1;
+        }
+        .coming-soon-card h1 span {
+            display: block;
+            color: var(--neon-mor);
+            text-shadow: 0 0 20px var(--neon-mor);
+        }
+        .coming-soon-card p {
+            color: var(--gri-yazi);
+            font-size: 18px;
+            margin: 20px 0 40px;
         }
 
-        /* --- 4. FOOTER --- */
-        footer {
-            background-color: var(--nav-bg);
-            border-top: 2px solid var(--neon-mor);
-            padding: 80px 10% 40px;
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
         }
+
+        /* --- 5. FOOTER (KAYIT SAYFASIYLA AYNI) --- */
+        footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: auto; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
         .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
@@ -209,15 +191,26 @@
         .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
+        @keyframes menuFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* --- MOBİL UYUMLULUK --- */
         @media (max-width: 768px) {
             header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
-            body { padding-top: 150px; }
-            nav ul { gap: 10px; flex-wrap: wrap; justify-content: center; }
-            nav ul li a { font-size: 11px; }
-            .nav-btn, .dropdown-trigger { padding: 6px 12px; font-size: 11px; height: 35px; }
-            .footer-grid { grid-template-columns: 1fr; }
-            .footer-brand { text-align: center; }
+            body { padding-top: 135px; }
+            nav ul { gap: 10px; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 10px; white-space: nowrap; }
+            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
+            
+            .user-name-text, .arrow-icon { display: none; } 
+            .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
+            .dropdown-content { position: fixed; right: 15px; top: 75px; width: 180px; }
+
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+            .footer-brand { grid-column: span 2; text-align: center; }
+            .footer-brand p { max-width: 100%; }
             .social-icons { justify-content: center; }
         }
     </style>
@@ -231,28 +224,30 @@
                 <li><a href="index.html">ANA SAYFA</a></li>
                 <li><a href="tournaments.html">TURNUVALAR</a></li>
                 <li><a href="canli.html">CANLI</a></li>
-                <li id="auth-area">
+                <li id="auth-container">
                     <a href="kayit.html" class="nav-btn">KATIL</a>
                 </li>
             </ul>
         </nav>
     </header>
 
-    <main class="coming-soon-container">
-        <div class="status-badge">Sistem Geliştiriliyor</div>
-        <div class="icon-box">
-            <i class="fas fa-trophy"></i>
+    <main class="main-content">
+        <div class="coming-soon-card">
+            <div class="status-badge">Sistem Geliştiriliyor</div>
+            <div class="icon-box">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h1>TURNUVALARIM <span>ÇOK YAKINDA</span></h1>
+            <p>Katıldığın turnuvaları, maç geçmişini ve takım istatistiklerini bu panelden takip edebileceksin. Hazırlanmaya devam et!</p>
+            <a href="tournaments.html" class="nav-btn" style="padding: 15px 35px; font-size: 16px;">GÜNCEL TURNUVALARA BAK</a>
         </div>
-        <h1>TURNUVALARIM <span>ÇOK YAKINDA</span></h1>
-        <p>Katıldığın turnuvaları, maç geçmişini ve takım istatistiklerini bu panelden takip edebileceksin. Hazırlanmaya devam et!</p>
-        <a href="tournaments.html" class="nav-btn" style="padding: 0 35px; height: 55px; font-size: 16px;">GÜNCEL TURNUVALARA BAK</a>
     </main>
 
     <footer>
         <div class="footer-grid">
             <div class="footer-brand">
                 <h2>OBB <span style="color:white">E-SPOR</span></h2>
-                <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
+                <p>Türkiye'nin en dinamik e-spor platformu.</p>
                 <div class="social-icons">
                     <a href="#"><i class="fab fa-instagram"></i></a>
                     <a href="#"><i class="fab fa-x-twitter"></i></a>
@@ -274,7 +269,6 @@
                 <ul>
                     <li class="contact-item"><i class="fas fa-envelope"></i> info@obbesports.com</li>
                     <li class="contact-item"><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
-                    <li class="contact-item"><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
                 </ul>
             </div>
         </div>
@@ -283,21 +277,21 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // Header Scroll Efekti
         let lastScrollTop = 0;
-        const header = document.getElementById("mainHeader");
+        const mainHeader = document.getElementById("mainHeader");
         window.addEventListener("scroll", function() {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            if (scrollTop > lastScrollTop && scrollTop > 100) {
-                header.classList.add("nav-hidden");
-            } else {
-                header.classList.remove("nav-hidden");
+            if (scrollTop > lastScrollTop && scrollTop > 100) { 
+                mainHeader.classList.add("nav-hidden"); 
+            } else { 
+                mainHeader.classList.remove("nav-hidden"); 
             }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="auth.js"></script>
 </body>
 </html>
