@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-9VH0LHNCS3');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oyuncu Profili - Obbespor</title>
+    
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* SADECE PROFİL SAYFASINA ÖZEL CSS (Mevcut yapıyı bozmaz) */
+        body {
+            background-color: #0f0f13; /* Koyu e-spor teması arka planı */
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+        }
+
+        .profile-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Banner ve Avatar Alanı */
+        .profile-header {
+            background: linear-gradient(135deg, #2b1055, #7597de);
+            height: 250px;
+            border-radius: 15px 15px 0 0;
+            position: relative;
+        }
+
+        .profile-avatar-wrapper {
+            position: absolute;
+            bottom: -50px;
+            left: 40px;
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #1c1c24;
+            background-color: #2a2a35;
+            object-fit: cover;
+        }
+
+        .profile-user-info {
+            padding-bottom: 10px;
+        }
+
+        .profile-user-info h1 {
+            margin: 0;
+            font-size: 28px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .profile-tag {
+            background-color: #e53935; /* Kırmızı etiket */
+            color: white;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        /* Alt İçerik Alanı */
+        .profile-body {
+            background-color: #1c1c24;
+            border-radius: 0 0 15px 15px;
+            padding: 70px 40px 40px 40px; /* Avatar taşması için üstten boşluk */
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        /* Sol Taraf: İstatistikler */
+        .stats-card {
+            background-color: #262630;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .stats-card h3 {
+            margin-top: 0;
+            border-bottom: 2px solid #3d3d4d;
+            padding-bottom: 10px;
+            color: #a3a3b5;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #4caf50; /* Yeşil kazanç rengi */
+        }
+
+        /* Sağ Taraf: Geçmiş Maçlar / Biyografi */
+        .content-card {
+            background-color: #262630;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .content-card h3 {
+            margin-top: 0;
+            border-bottom: 2px solid #3d3d4d;
+            padding-bottom: 10px;
+            color: #a3a3b5;
+        }
+
+        .match-history {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .match-history li {
+            background-color: #1c1c24;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #e53935; /* Kayıp (Kırmızı) */
+        }
+
+        .match-history li.win {
+            border-left-color: #4caf50; /* Kazanç (Yeşil) */
+        }
+
+        /* Mobil Uyumluluk */
+        @media (max-width: 768px) {
+            .profile-body {
+                grid-template-columns: 1fr;
+            }
+            .profile-avatar-wrapper {
+                left: 50%;
+                transform: translateX(-50%);
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                bottom: -80px;
+            }
+            .profile-body {
+                padding-top: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        </header>
+
+    <main>
+        <div class="profile-container">
+            
+            <div class="profile-header">
+                <div class="profile-avatar-wrapper">
+                    <img src="https://via.placeholder.com/120" alt="Oyuncu Avatarı" class="profile-avatar">
+                    <div class="profile-user-info">
+                        <h1>Oyuncu_Nicki</h1>
+                        <span class="profile-tag">Pro Oyuncu</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-body">
+                
+                <div class="stats-card">
+                    <h3>İstatistikler</h3>
+                    <div class="stat-item">
+                        <span>Oynanan Maç</span>
+                        <span style="color: white; font-weight: bold;">142</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Kazanma Oranı</span>
+                        <span class="stat-value">%68</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Favori Oyun</span>
+                        <span style="color: #7597de; font-weight: bold;">Valorant</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Kayıt Tarihi</span>
+                        <span style="color: #a3a3b5;">Ocak 2026</span>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h3>Son Maçlar</h3>
+                    <ul class="match-history">
+                        <li class="win">
+                            <div>
+                                <strong>CS:GO - 5v5 Turnuvası</strong><br>
+                                <span style="font-size: 12px; color: #a3a3b5;">Dün oynandı</span>
+                            </div>
+                            <span style="color: #4caf50; font-weight: bold;">GALİBİYET (16-14)</span>
+                        </li>
+                        <li>
+                            <div>
+                                <strong>Valorant - Dereceli</strong><br>
+                                <span style="font-size: 12px; color: #a3a3b5;">3 gün önce oynandı</span>
+                            </div>
+                            <span style="color: #e53935; font-weight: bold;">MAĞLUBİYET (11-13)</span>
+                        </li>
+                        <li class="win">
+                            <div>
+                                <strong>League of Legends - Clash</strong><br>
+                                <span style="font-size: 12px; color: #a3a3b5;">1 hafta önce oynandı</span>
+                            </div>
+                            <span style="color: #4caf50; font-weight: bold;">GALİBİYET</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        </footer>
+
+</body>
+</html>
