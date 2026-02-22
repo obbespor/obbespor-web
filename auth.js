@@ -1,36 +1,37 @@
 /* -------------------------------------------------------
    OBB E-SPOR - MERKEZİ AUTH SİSTEMİ (auth.js)
-   -------------------------------------------------------
-*/
+   ------------------------------------------------------- */
 
-// 1. Supabase Yapılandırması
 const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
-// _supabase yerine window.supabaseClient kullanarak global hale getiriyoruz
-window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 2. Sayfa Yüklendiğinde Kullanıcıyı Kontrol Et
+// Çakışmayı önlemek için global kontrol
+if (!window.supabaseClient) {
+    window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+const sb = window.supabaseClient;
+
 document.addEventListener('DOMContentLoaded', () => {
     checkUserStatus();
 });
 
 async function checkUserStatus() {
-    // Mevcut oturumu al
-    const { data: { user }, error } = await _supabase.auth.getUser();
-
-    if (user) {
-        // Kullanıcı giriş yapmışsa Navbar'ı güncelle
-        updateNavbarWithUser(user);
+    try {
+        const { data: { user } } = await sb.auth.getUser();
+        if (user) {
+            updateNavbarWithUser(user);
+        }
+    } catch (err) {
+        console.error("Auth kontrol hatası:", err);
     }
 }
 
-// 3. Navbar'ı (Header) Güncelleyen Fonksiyon
 function updateNavbarWithUser(user) {
-    const username = user.user_metadata.username || "OYUNCU";
-    const navBtn = document.querySelector('.nav-btn');
+    const username = user.user_metadata?.username || user.email.split('@')[0] || "OYUNCU";
+    const navBtn = document.getElementById('loginRegisterBtn');
     
     if (navBtn) {
-        // ESKİ BASİT YAZI YERİNE PROFESYONEL DROPDOWN MENÜ GELİYOR
         navBtn.parentElement.innerHTML = `
             <div class="user-dropdown">
                 <button class="dropdown-trigger">
@@ -49,13 +50,9 @@ function updateNavbarWithUser(user) {
     }
 }
 
-// 4. Çıkış Yapma Fonksiyonu
 async function logoutAction() {
-    const { error } = await _supabase.auth.signOut();
-    if (!error) {
-        alert("Başarıyla çıkış yapıldı!");
-        window.location.href = "index.html"; // Çıkıştan sonra ana sayfaya at
-    } else {
-        console.error("Çıkış hatası:", error.message);
+    if(confirm("Çıkış yapmak istediğinize emin misiniz?")) {
+        await sb.auth.signOut();
+        window.location.href = "index.html";
     }
 }
