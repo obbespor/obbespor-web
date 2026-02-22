@@ -1,245 +1,252 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-9VH0LHNCS3');
-    </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oyuncu Profili - Obbespor</title>
+    <title>Profilim | OBB E-SPOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <link rel="stylesheet" href="style.css">
-
     <style>
-        /* SADECE PROFİL SAYFASINA ÖZEL CSS (Mevcut yapıyı bozmaz) */
+        /* --- TEMEL AYARLAR VE DEĞİŞKENLER --- */
+        :root {
+            --ana-siyah: #000000;
+            --nav-bg: #000000;
+            --neon-mor: #601dc2; 
+            --yazi-beyaz: #ffffff;
+            --gri-yazi: #a0a0a0;
+            --card-bg: #0a0a0a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-color: #0f0f13; /* Koyu e-spor teması arka planı */
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
+            background: radial-gradient(circle at top, #1a052d 0%, #000000 100%);
+            background-attachment: fixed;
+            color: var(--yazi-beyaz);
+            font-family: 'Poppins', sans-serif;
+            padding-top: 100px;
         }
 
-        .profile-container {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 0 20px;
+        /* --- KORUNAN HEADER --- */
+        header.main-nav {
+            background-color: var(--nav-bg);
+            padding: 0 10%; 
+            display: flex; justify-content: space-between; align-items: center;
+            height: 80px; border-bottom: 3px solid var(--neon-mor);
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
         }
+        .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; }
+        .logo span { color: var(--neon-mor); }
+        nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
+        nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; }
 
-        /* Banner ve Avatar Alanı */
-        .profile-header {
-            background: linear-gradient(135deg, #2b1055, #7597de);
-            height: 250px;
-            border-radius: 15px 15px 0 0;
+        /* --- PROFİL ANA ALAN --- */
+        .profile-container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+
+        /* Banner Alanı */
+        .profile-banner {
+            height: 200px;
+            background: linear-gradient(90deg, #1a052d, #601dc2);
+            border-radius: 20px 20px 0 0;
             position: relative;
+            overflow: hidden;
         }
 
-        .profile-avatar-wrapper {
-            position: absolute;
-            bottom: -50px;
-            left: 40px;
-            display: flex;
-            align-items: flex-end;
-            gap: 20px;
+        /* Profil Kartı */
+        .profile-card {
+            background: var(--card-bg);
+            border: 1px solid #222;
+            border-radius: 0 0 20px 20px;
+            padding: 0 40px 40px;
+            position: relative;
+            text-align: center;
+        }
+
+        /* Profil Fotoğrafı (Avatar) */
+        .avatar-wrapper {
+            position: relative;
+            width: 150px; height: 150px;
+            margin: -75px auto 20px;
         }
 
         .profile-avatar {
-            width: 120px;
-            height: 120px;
+            width: 100%; height: 100%;
             border-radius: 50%;
-            border: 4px solid #1c1c24;
-            background-color: #2a2a35;
+            border: 5px solid var(--card-bg);
+            background: #111;
             object-fit: cover;
+            box-shadow: 0 0 20px rgba(96, 29, 194, 0.5);
         }
 
-        .profile-user-info {
-            padding-bottom: 10px;
+        .edit-avatar-btn {
+            position: absolute; bottom: 5px; right: 5px;
+            background: var(--neon-mor);
+            width: 35px; height: 35px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border: 2px solid var(--card-bg);
+            transition: 0.3s;
         }
+        .edit-avatar-btn:hover { transform: scale(1.1); box-shadow: 0 0 10px var(--neon-mor); }
 
-        .profile-user-info h1 {
-            margin: 0;
-            font-size: 28px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-        }
-
-        .profile-tag {
-            background-color: #e53935; /* Kırmızı etiket */
-            color: white;
-            font-size: 12px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: bold;
+        /* Kıdem Etiketi (Badge) */
+        .rank-badge {
             display: inline-block;
-            margin-top: 5px;
-        }
-
-        /* Alt İçerik Alanı */
-        .profile-body {
-            background-color: #1c1c24;
-            border-radius: 0 0 15px 15px;
-            padding: 70px 40px 40px 40px; /* Avatar taşması için üstten boşluk */
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 30px;
-        }
-
-        /* Sol Taraf: İstatistikler */
-        .stats-card {
-            background-color: #262630;
-            padding: 20px;
-            border-radius: 10px;
-        }
-
-        .stats-card h3 {
-            margin-top: 0;
-            border-bottom: 2px solid #3d3d4d;
-            padding-bottom: 10px;
-            color: #a3a3b5;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             margin-bottom: 15px;
-            font-size: 16px;
+            /* Dinamik renkler JS ile değişecek */
+            background: rgba(96, 29, 194, 0.2);
+            border: 1px solid var(--neon-mor);
+            color: var(--neon-mor);
+            box-shadow: 0 0 10px rgba(96, 29, 194, 0.3);
         }
 
-        .stat-value {
-            font-weight: bold;
-            color: #4caf50; /* Yeşil kazanç rengi */
-        }
+        .profile-name { font-size: 28px; font-weight: 900; margin-bottom: 5px; }
+        .profile-bio { color: var(--gri-yazi); font-size: 14px; margin-bottom: 25px; }
 
-        /* Sağ Taraf: Geçmiş Maçlar / Biyografi */
-        .content-card {
-            background-color: #262630;
-            padding: 20px;
-            border-radius: 10px;
+        /* İstatistikler Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
         }
-
-        .content-card h3 {
-            margin-top: 0;
-            border-bottom: 2px solid #3d3d4d;
-            padding-bottom: 10px;
-            color: #a3a3b5;
+        .stat-item {
+            background: #111; padding: 20px; border-radius: 15px;
+            border-bottom: 2px solid #222; transition: 0.3s;
         }
+        .stat-item:hover { border-color: var(--neon-mor); transform: translateY(-5px); }
+        .stat-value { display: block; font-size: 24px; font-weight: 900; color: var(--neon-mor); }
+        .stat-label { font-size: 12px; color: var(--gri-yazi); text-transform: uppercase; }
 
-        .match-history {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        /* Başarılar (Achievements) Bölümü */
+        .achievements-section { text-align: left; }
+        .section-title { 
+            font-size: 18px; font-weight: 800; margin-bottom: 20px; 
+            border-left: 4px solid var(--neon-mor); padding-left: 10px;
         }
-
-        .match-history li {
-            background-color: #1c1c24;
-            margin-bottom: 10px;
-            padding: 15px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid #e53935; /* Kayıp (Kırmızı) */
+        .achievement-list { display: flex; gap: 15px; flex-wrap: wrap; }
+        .trophy-card {
+            background: #111; width: 100px; height: 120px;
+            border-radius: 12px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; opacity: 0.4;
+            filter: grayscale(1); transition: 0.3s; border: 1px dashed #333;
         }
+        .trophy-card i { font-size: 30px; margin-bottom: 10px; }
+        .trophy-card span { font-size: 10px; font-weight: bold; text-align: center; }
+        /* Kazanılan kupa aktifleşirse */
+        .trophy-card.earned { opacity: 1; filter: grayscale(0); border: 1px solid gold; color: gold; }
 
-        .match-history li.win {
-            border-left-color: #4caf50; /* Kazanç (Yeşil) */
+        /* --- KORUNAN FOOTER --- */
+        footer {
+            background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor);
+            padding: 60px 10% 30px; margin-top: 50px;
         }
+        .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 20px; color: #555; font-size: 13px; }
 
-        /* Mobil Uyumluluk */
+        /* Mobil Ayarlar */
         @media (max-width: 768px) {
-            .profile-body {
-                grid-template-columns: 1fr;
-            }
-            .profile-avatar-wrapper {
-                left: 50%;
-                transform: translateX(-50%);
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                bottom: -80px;
-            }
-            .profile-body {
-                padding-top: 100px;
-            }
+            .stats-grid { grid-template-columns: 1fr; }
+            .profile-card { padding: 0 20px 30px; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        </header>
+    <header class="main-nav">
+        <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
+        <nav>
+            <ul>
+                <li><a href="index.html">ANA SAYFA</a></li>
+                <li><a href="tournaments.html">TURNUVALAR</a></li>
+                <li><a href="canli.html">CANLI</a></li>
+                <li><a href="profil.html" style="color:var(--neon-mor)">PROFİLİM</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <main>
-        <div class="profile-container">
+    <main class="profile-container">
+        <div class="profile-banner"></div>
+
+        <div class="profile-card">
+            <div class="avatar-wrapper">
+                <img src="https://via.placeholder.com/150" alt="Avatar" class="profile-avatar" id="userAvatar">
+                <label for="avatarUpload" class="edit-avatar-btn">
+                    <i class="fas fa-camera"></i>
+                    <input type="file" id="avatarUpload" hidden accept="image/*">
+                </label>
+            </div>
+
+            <div class="rank-badge" id="userRank">YENİ SAVAŞÇI</div>
             
-            <div class="profile-header">
-                <div class="profile-avatar-wrapper">
-                    <img src="https://via.placeholder.com/120" alt="Oyuncu Avatarı" class="profile-avatar">
-                    <div class="profile-user-info">
-                        <h1>Oyuncu_Nicki</h1>
-                        <span class="profile-tag">Pro Oyuncu</span>
-                    </div>
+            <h1 class="profile-name" id="userName">Oyuncu Adı</h1>
+            <p class="profile-bio">"Zafer mor ışıkta parlar! Henüz bir açıklama eklenmedi."</p>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-value" id="matchCount">0</span>
+                    <span class="stat-label">Toplam Maç</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="winRate">%0</span>
+                    <span class="stat-label">Kazanma Oranı</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="tournamentCount">0</span>
+                    <span class="stat-label">Turnuvalar</span>
                 </div>
             </div>
 
-            <div class="profile-body">
-                
-                <div class="stats-card">
-                    <h3>İstatistikler</h3>
-                    <div class="stat-item">
-                        <span>Oynanan Maç</span>
-                        <span style="color: white; font-weight: bold;">142</span>
+            <div class="achievements-section">
+                <h2 class="section-title">KAZANILAN KUPALAR</h2>
+                <div class="achievement-list">
+                    <div class="trophy-card earned">
+                        <i class="fas fa-seedling"></i>
+                        <span>İLK ADIM</span>
                     </div>
-                    <div class="stat-item">
-                        <span>Kazanma Oranı</span>
-                        <span class="stat-value">%68</span>
+                    <div class="trophy-card">
+                        <i class="fas fa-trophy"></i>
+                        <span>SEZON ŞAMPİYONU</span>
                     </div>
-                    <div class="stat-item">
-                        <span>Favori Oyun</span>
-                        <span style="color: #7597de; font-weight: bold;">Valorant</span>
+                    <div class="trophy-card">
+                        <i class="fas fa-fire"></i>
+                        <span>10 MAÇLIK SERİ</span>
                     </div>
-                    <div class="stat-item">
-                        <span>Kayıt Tarihi</span>
-                        <span style="color: #a3a3b5;">Ocak 2026</span>
+                    <div class="trophy-card">
+                        <i class="fas fa-star"></i>
+                        <span>MVP</span>
                     </div>
                 </div>
-
-                <div class="content-card">
-                    <h3>Son Maçlar</h3>
-                    <ul class="match-history">
-                        <li class="win">
-                            <div>
-                                <strong>CS:GO - 5v5 Turnuvası</strong><br>
-                                <span style="font-size: 12px; color: #a3a3b5;">Dün oynandı</span>
-                            </div>
-                            <span style="color: #4caf50; font-weight: bold;">GALİBİYET (16-14)</span>
-                        </li>
-                        <li>
-                            <div>
-                                <strong>Valorant - Dereceli</strong><br>
-                                <span style="font-size: 12px; color: #a3a3b5;">3 gün önce oynandı</span>
-                            </div>
-                            <span style="color: #e53935; font-weight: bold;">MAĞLUBİYET (11-13)</span>
-                        </li>
-                        <li class="win">
-                            <div>
-                                <strong>League of Legends - Clash</strong><br>
-                                <span style="font-size: 12px; color: #a3a3b5;">1 hafta önce oynandı</span>
-                            </div>
-                            <span style="color: #4caf50; font-weight: bold;">GALİBİYET</span>
-                        </li>
-                    </ul>
-                </div>
-
             </div>
         </div>
     </main>
 
     <footer>
-        </footer>
+        <div class="footer-bottom">
+            <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
+        </div>
+    </footer>
 
+    <script>
+        // Dosya boyutu kontrolü (JS ile yüklemeden önce engelleme)
+        const avatarUpload = document.getElementById('avatarUpload');
+        avatarUpload.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const fileSize = file.size / 1024 / 1024; // MB cinsinden
+                if (fileSize > 2) {
+                    alert("Fotoğraf çok büyük! Maksimum 2MB yükleyebilirsin. (Senin dosyan: " + fileSize.toFixed(2) + "MB)");
+                    this.value = ""; // Seçimi temizle
+                } else {
+                    // Burada Supabase yükleme fonksiyonun çalışacak
+                    console.log("Dosya uygun, yükleniyor...");
+                }
+            }
+        });
+    </script>
 </body>
 </html>
