@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* --- GENEL TEMA VE HEADER/FOOTER (KORUNDU) --- */
+        /* --- 1. TEMEL AYARLAR --- */
         :root {
             --ana-siyah: #000000;
             --nav-bg: #000000;
@@ -26,61 +26,143 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
         body {
             background: radial-gradient(circle at top, #1a052d 0%, #000000 100%);
             background-attachment: fixed;
             color: var(--yazi-beyaz);
             font-family: 'Poppins', sans-serif;
-            padding-top: 100px;
+            line-height: 1.6;
+            padding-top: 80px;
         }
 
+        /* --- 2. AKILLI HEADER --- */
         header.main-nav {
             background-color: var(--nav-bg);
             padding: 0 10%; 
             display: flex; justify-content: space-between; align-items: center;
             height: 80px; border-bottom: 3px solid var(--neon-mor);
             position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            transition: transform 0.4s ease-in-out;
         }
+        header.main-nav.nav-hidden { transform: translateY(-110%); }
+
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); }
         
-        /* Dinamik Header Butonları */
-        .nav-links { list-style: none; display: flex; align-items: center; gap: 20px; }
-        .nav-links li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
-        .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; font-weight: bold; }
+        nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
+        nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
+        nav ul li a:hover { color: var(--neon-mor); }
+        
+        .nav-btn { 
+            border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; 
+            color: white !important; background: transparent; transition: 0.3s; 
+            text-decoration: none; font-weight: bold; display: inline-block;
+        }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- FORM TASARIMI --- */
-        .form-container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        /* --- 3. PRO OYUNCU MENÜSÜ --- */
+        .user-dropdown { position: relative; display: inline-block; }
+        .dropdown-trigger {
+            background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor);
+            padding: 8px 18px; border-radius: 50px; color: white; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; transition: 0.3s;
+            font-family: 'Poppins', sans-serif; z-index: 1001;
+        }
+        .dropdown-trigger:hover { box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); background: rgba(96, 29, 194, 0.2); }
+        .user-name-text { font-weight: 800; font-size: 13px; letter-spacing: 1px; }
+        .arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
+        
+        .dropdown-content {
+            display: none; position: absolute; right: 0; top: 100%; background: #0d0d0d;
+            min-width: 200px; border: 1px solid var(--neon-mor); border-radius: 12px;
+            padding: 5px 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+            animation: menuFadeIn 0.2s ease-out;
+        }
+        .dropdown-content::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
+        .dropdown-content a { color: #fff; padding: 12px 20px; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; transition: 0.2s; }
+        .dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
+        .dropdown-content a:hover { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); padding-left: 25px; }
+        .user-dropdown:hover .dropdown-content { display: block; }
+        .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
+        .logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
+        .logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
+
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 4. FORM TASARIMI --- */
+        .main-content { padding: 60px 10%; }
+        .form-container { max-width: 800px; margin: 0 auto; }
         .auth-card { background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         
+        .section-title { margin-bottom: 40px; border-left: 5px solid var(--neon-mor); padding-left: 15px; font-size: 28px; font-weight: 900; text-transform: uppercase; text-align: center; border-left: none;}
+        .section-title span { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
+
         .input-group { margin-bottom: 20px; position: relative; }
         .input-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--gri-yazi); font-weight: bold; }
-        .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; outline: none; }
+        .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; outline: none; font-family: 'Poppins', sans-serif; }
         .input-group input:focus { border-color: var(--neon-mor); }
 
-        /* Otomatik Tamamlama */
         .player-wrapper { position: relative; display: flex; align-items: center; }
         .status-tick { position: absolute; right: 15px; font-size: 18px; display: none; }
         .status-tick.grey { display: block; color: #444; }
         .status-tick.blue { display: block; color: var(--mavi-onay); filter: drop-shadow(0 0 5px var(--mavi-onay)); }
 
-        .autocomplete-items {
-            position: absolute; border: 1px solid var(--neon-mor); border-top: none; z-index: 99;
-            top: 100%; left: 0; right: 0; background-color: #0a0a0a; max-height: 200px; overflow-y: auto;
-        }
+        .autocomplete-items { position: absolute; border: 1px solid var(--neon-mor); border-top: none; z-index: 99; top: 100%; left: 0; right: 0; background-color: #0a0a0a; max-height: 200px; overflow-y: auto; border-radius: 0 0 8px 8px; }
         .autocomplete-items div { padding: 10px; cursor: pointer; border-bottom: 1px solid #222; font-size: 13px; }
         .autocomplete-items div:hover { background-color: var(--neon-mor); }
 
         .divider { height: 1px; background: #333; margin: 30px 0; position: relative; }
-        .divider::after { content: "Yedek Oyuncular (Opsiyonel)"; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #0a0a0a; padding: 0 15px; font-size: 12px; color: var(--neon-mor); font-weight: bold; }
+        .divider::after { content: "Yedek Oyuncular (Opsiyonel)"; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: rgba(10, 10, 10, 0.95); padding: 0 15px; font-size: 12px; color: var(--neon-mor); font-weight: bold; }
 
         .action-btns { display: flex; gap: 15px; margin-top: 30px; }
-        .save-btn { flex: 2; padding: 15px; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        .save-btn { flex: 2; padding: 15px; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.3s; font-family: 'Poppins', sans-serif; }
         .save-btn:disabled { background: #222; color: #555; cursor: not-allowed; }
-        .reset-btn { flex: 1; background: transparent; border: 1px solid #333; color: white; border-radius: 8px; cursor: pointer; }
+        .save-btn:not(:disabled):hover { box-shadow: 0 0 20px rgba(96, 29, 194, 0.4); transform: scale(1.02); }
+        .reset-btn { flex: 1; background: transparent; border: 1px solid #333; color: white; border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; }
+        .reset-btn:hover { background: #111; }
 
-        footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 60px 10%; margin-top: 50px; text-align: center; }
+        /* --- 5. FOOTER VE MOBİL UYUMLULUK --- */
+        footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
+        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+        .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
+        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
+        .social-icons { display: flex; gap: 15px; }
+        .social-icons a { width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; }
+        .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
+        .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
+        .footer-column ul { list-style: none; }
+        .footer-column ul li { margin-bottom: 12px; }
+        .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
+        .footer-column ul li a:hover { color: var(--neon-mor); }
+        .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
+        .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
+        .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
+
+        @media (max-width: 768px) {
+            header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
+            body { padding-top: 125px; }
+            nav { width: 100%; }
+            nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 10px; white-space: nowrap; }
+            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
+            
+            .user-name-text, .arrow-icon { display: none; } 
+            .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
+            .dropdown-content { position: fixed; right: 15px; top: 75px; width: 180px; }
+
+            .main-content { padding: 40px 5%; }
+            .auth-card { padding: 20px; }
+            .action-btns { flex-direction: column; }
+            .reset-btn { padding: 15px; }
+            
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+            .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
+            .footer-brand p { max-width: 100%; }
+            .social-icons { justify-content: center; }
+            .footer-column { text-align: left; }
+            footer { padding: 60px 8% 30px; }
+        }
     </style>
 </head>
 <body>
@@ -88,7 +170,7 @@
     <header class="main-nav" id="mainHeader">
         <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
         <nav>
-            <ul class="nav-links" id="navLinks">
+            <ul>
                 <li><a href="index.html">ANA SAYFA</a></li>
                 <li><a href="tournaments.html">TURNUVALAR</a></li>
                 <li><a href="canli.html">CANLI</a></li>
@@ -97,95 +179,147 @@
         </nav>
     </header>
 
-    <div class="form-container">
-        <div class="auth-card">
-            <h1 style="text-align:center; margin-bottom: 30px;">TURNUVA <span style="color:var(--neon-mor)">KAYIT</span></h1>
+    <div class="main-content">
+        <div class="form-container">
+            <h2 class="section-title">TAKIM <span>KAYDI</span></h2>
             
-            <form id="tournamentForm">
-                <div style="display: flex; gap: 15px;">
-                    <div class="input-group" style="flex: 2;">
-                        <label>Takım Adı</label>
-                        <input type="text" id="teamName" placeholder="Team Obbe" required>
-                    </div>
-                    <div class="input-group" style="flex: 1;">
-                        <label>Takım Kısaltması</label>
-                        <input type="text" id="teamTag" placeholder="OBB" required maxlength="5">
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label>Takım Logosu (Sadece PNG, Max 2MB)</label>
-                    <input type="file" id="teamLogo" accept="image/png" required>
-                </div>
-
-                <h3 style="margin: 20px 0 10px; font-size: 14px; color: var(--neon-mor);">ASIL KADRO (5 Oyuncu Zorunlu)</h3>
-                <div id="mainPlayers">
+            <div class="auth-card">
+                <form id="teamForm">
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <div class="input-group" style="flex: 2; min-width: 200px;">
+                            <label>Takım Adı *</label>
+                            <input type="text" id="teamName" placeholder="Örn: Team Obbe" required>
+                        </div>
+                        <div class="input-group" style="flex: 1; min-width: 100px;">
+                            <label>Takım Kısaltması *</label>
+                            <input type="text" id="teamTag" placeholder="OBB" required maxlength="5">
+                        </div>
                     </div>
 
-                <div class="divider"></div>
-
-                <h3 style="margin: 10px 0; font-size: 14px; color: var(--gri-yazi);">YEDEK KADRO (Opsiyonel)</h3>
-                <div id="subPlayers">
+                    <div class="input-group">
+                        <label>Takım Logosu (PNG, Max 2MB) *</label>
+                        <input type="file" id="teamLogo" accept="image/png" required>
                     </div>
 
-                <div style="display: flex; gap: 15px; margin-top: 20px;">
-                    <div class="input-group" style="flex: 1;">
-                        <label>Telefon</label>
-                        <input type="tel" id="phone" placeholder="05XX XXX XX XX" required>
-                    </div>
-                    <div class="input-group" style="flex: 1;">
-                        <label>E-posta</label>
-                        <input type="email" id="email" placeholder="kaptan@mail.com" required>
-                    </div>
-                </div>
+                    <h3 style="margin: 20px 0 10px; font-size: 14px; color: var(--neon-mor);">ASIL KADRO (Zorunlu)</h3>
+                    <div id="mainPlayers"></div>
 
-                <div class="action-btns">
-                    <button type="button" class="reset-btn" onclick="location.reload()">Sıfırla</button>
-                    <button type="submit" class="save-btn" id="submitBtn" disabled>ONAYLAR BEKLENİYOR (0/5)</button>
-                </div>
-            </form>
+                    <div class="divider"></div>
+
+                    <h3 style="margin: 10px 0; font-size: 14px; color: var(--gri-yazi);">YEDEK KADRO (Opsiyonel)</h3>
+                    <div id="subPlayers"></div>
+
+                    <div style="display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
+                        <div class="input-group" style="flex: 1; min-width: 200px;">
+                            <label>İletişim Numarası *</label>
+                            <input type="tel" id="phone" placeholder="05XX XXX XX XX" required>
+                        </div>
+                        <div class="input-group" style="flex: 1; min-width: 200px;">
+                            <label>E-posta *</label>
+                            <input type="email" id="email" placeholder="kaptan@mail.com" required>
+                        </div>
+                    </div>
+
+                    <div class="action-btns">
+                        <button type="button" class="reset-btn" onclick="location.reload()">Sıfırla</button>
+                        <button type="submit" class="save-btn" id="submitBtn" disabled>ONAYLAR BEKLENİYOR (0/5)</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
-    <footer id="mainFooter">
-        <div class="footer-bottom"><p>&copy; 2026 OBB E-SPOR.</p></div>
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h2>OBB <span style="color:white">E-SPOR</span></h2>
+                <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Hızlı Menü</h3>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="tournaments.html">Turnuvalar</a></li>
+                    <li><a href="canli.html">Canlı</a></li>
+                    <li><a href="kayit.html">Kayıt Ol</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>İletişim</h3>
+                <ul>
+                    <li class="contact-item"><i class="fas fa-envelope"></i> info@obbesports.com</li>
+                    <li class="contact-item"><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
+                    <li class="contact-item"><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
+        </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // --- SCROLL EFFECT ---
+        let lastScrollTop = 0;
+        const header = document.getElementById("mainHeader");
+        window.addEventListener("scroll", function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 100) { header.classList.add("nav-hidden"); }
+            else { header.classList.remove("nav-hidden"); }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+        }, false);
+
+        // --- SUPABASE & AUTH ---
         const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // --- 1. OTURUM KONTROLÜ VE HEADER GÜNCELLEME ---
         async function checkSession() {
             const { data: { user } } = await _supabase.auth.getUser();
             const authAction = document.getElementById('authAction');
             
             if (user) {
-                // Giriş yapılmışsa KATIL butonunu değiştir
+                const username = user.user_metadata?.username || "OYUNCU";
                 authAction.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <a href="profile.html" style="color:var(--mavi-onay); font-size:12px;">${user.user_metadata.username.toUpperCase()}</a>
-                        <a href="profile.html" class="nav-btn"><i class="fas fa-user"></i> PROFİL</a>
+                    <div class="user-dropdown">
+                        <button class="dropdown-trigger">
+                            <span class="user-name-text">${username.toUpperCase()}</span>
+                            <i class="fas fa-chevron-down arrow-icon"></i>
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="profil.html"><i class="fas fa-user"></i> Profil</a>
+                            <a href="#" class="logout-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</a>
+                        </div>
                     </div>
                 `;
             }
         }
         checkSession();
 
-        // --- 2. OYUNCU INPUTLARINI OLUŞTURMA ---
+        async function logout() {
+            await _supabase.auth.signOut();
+            window.location.reload();
+        }
+
+        // --- OYUNCU İNPUTLARINI OLUŞTURMA ---
         const mainPlayersDiv = document.getElementById('mainPlayers');
         const subPlayersDiv = document.getElementById('subPlayers');
 
         function createInput(index, isSub) {
             const id = isSub ? `sub_${index}` : `main_${index}`;
-            const label = isSub ? `${index}. Yedek Oyuncu` : `${index}. Oyuncu ${index==1 ? '(Kaptan)' : ''}`;
+            const label = isSub ? `${index}. Yedek Oyuncu` : `${index}. Oyuncu ${index==1 ? '(Kaptan - Sen)' : ''}`;
             return `
                 <div class="input-group">
                     <label>${label}</label>
                     <div class="player-wrapper">
-                        <input type="text" id="${id}" class="player-search" placeholder="Nickname yazarak ara..." ${!isSub ? 'required' : ''}>
+                        <input type="text" id="${id}" class="player-search" autocomplete="off" placeholder="Oyuncu nickname ara..." ${!isSub ? 'required' : ''}>
                         <i class="fas fa-check-circle status-tick" id="${id}-tick"></i>
                         <div id="${id}-list" class="autocomplete-items"></div>
                     </div>
@@ -196,16 +330,26 @@
         for(let i=1; i<=5; i++) mainPlayersDiv.innerHTML += createInput(i, false);
         for(let i=1; i<=2; i++) subPlayersDiv.innerHTML += createInput(i, true);
 
-        // --- 3. SUPABASE'DEN OYUNCU ARA VE FİLTRELE ---
+        // --- SUPABASE'DEN OYUNCU ARA (TAKIMI OLMAYANLAR) ---
         document.querySelectorAll('.player-search').forEach(input => {
             input.addEventListener('input', async function() {
                 const query = this.value;
                 const list = document.getElementById(this.id + '-list');
+                const tick = document.getElementById(this.id + '-tick');
+                
                 list.innerHTML = '';
+                
+                // Eğer input temizlenirse onayları iptal et ve butonu kontrol et
+                if(query === "") {
+                    this.dataset.status = "";
+                    tick.className = 'fas fa-check-circle status-tick';
+                    updateFormStatus();
+                    return;
+                }
 
                 if (query.length < 2) return;
 
-                // Sadece takımı olmayan (team_id IS NULL) kullanıcıları getir
+                // TAKIMI OLMAYAN (team_id is null) oyuncuları getir
                 const { data, error } = await _supabase
                     .from('profiles')
                     .select('username, id')
@@ -216,7 +360,7 @@
                 if (data) {
                     data.forEach(user => {
                         const div = document.createElement('div');
-                        div.innerText = user.username;
+                        div.innerHTML = `<i class="fas fa-user" style="color:var(--neon-mor); margin-right:8px;"></i> ${user.username}`;
                         div.onclick = () => selectPlayer(this.id, user.username, user.id);
                         list.appendChild(div);
                     });
@@ -224,7 +368,7 @@
             });
         });
 
-        // --- 4. OYUNCU SEÇİMİ VE DAVET SİSTEMİ ---
+        // --- OYUNCU SEÇİMİ ---
         function selectPlayer(inputId, username, userId) {
             const input = document.getElementById(inputId);
             const tick = document.getElementById(inputId + '-tick');
@@ -233,54 +377,62 @@
             input.dataset.status = 'pending';
             document.getElementById(inputId + '-list').innerHTML = '';
             
-            tick.className = 'fas fa-check-circle status-tick grey'; // Davet gitti (Gri)
+            tick.className = 'fas fa-check-circle status-tick grey';
 
-            // Burada Supabase'e davet kaydı atılabilir
-            console.log(`${userId} ID'li oyuncuya bildirim gönderildi.`);
-
-            // DEMO: 2 saniye sonra onaylanmış gibi yapalım (Normalde Realtime dinlenecek)
+            // DEMO: Gerçekte Supabase Realtime ile oyuncu onaylayınca mavi olacak.
+            // Şimdilik testi kolaylaştırmak için 1.5 saniye sonra onaylanmış gibi gösteriyoruz.
             setTimeout(() => {
                 tick.className = 'fas fa-check-circle status-tick blue';
                 input.dataset.status = 'accepted';
                 updateFormStatus();
-            }, 2000);
+            }, 1500);
         }
 
-        // --- 5. FORM GEÇERLİLİK KONTROLÜ (KRİTİK MANTIK) ---
+        // --- KATI FORM KONTROLÜ ---
         function updateFormStatus() {
             const submitBtn = document.getElementById('submitBtn');
             let mainAccepted = 0;
-            let subValid = true;
+            let subValid = true; // Başlangıçta geçerli sayılır (boş bırakılabilir)
 
             // 5 Asıl Oyuncu Kontrolü
             for(let i=1; i<=5; i++) {
                 if(document.getElementById(`main_${i}`).dataset.status === 'accepted') mainAccepted++;
             }
 
-            // Yedek Oyuncu Kontrolü: İsim yazılmışsa onaylanmış olmalı
+            // Yedek Oyuncu Kontrolü: İsim YAZILDIYSA mutlaka onay (mavi tik) olmalı!
             for(let i=1; i<=2; i++) {
                 const subInput = document.getElementById(`sub_${i}`);
-                if(subInput.value !== "" && subInput.dataset.status !== 'accepted') {
-                    subValid = false;
+                if(subInput.value.trim() !== "" && subInput.dataset.status !== 'accepted') {
+                    subValid = false; // Kutu dolu ama onay yoksa formu kilitler
                 }
             }
+
+            // Temel form inputlarının dolu olup olmadığını kontrol et (ad, tag vb.)
+            const formValid = document.getElementById('teamForm').checkValidity();
 
             if(mainAccepted === 5 && subValid) {
                 submitBtn.disabled = false;
                 submitBtn.innerText = "KAYDI TAMAMLA";
             } else {
                 submitBtn.disabled = true;
-                submitBtn.innerText = `ONAYLAR BEKLENİYOR (${mainAccepted}/5)`;
+                if (!subValid && mainAccepted === 5) {
+                    submitBtn.innerText = "YEDEK OYUNCU ONAYI BEKLENİYOR";
+                } else {
+                    submitBtn.innerText = `ASIL KADRO ONAY BEKLİYOR (${mainAccepted}/5)`;
+                }
             }
         }
 
-        // Logo Boyut Kontrolü
+        // --- LOGO BOYUT KONTROLÜ ---
         document.getElementById('teamLogo').onchange = function() {
             if(this.files[0].size > 2097152) {
-               alert("Dosya çok büyük! Max 2MB.");
+               alert("Takım logosu çok büyük! Maksimum boyut: 2MB.");
                this.value = "";
             }
         };
+
+        // Formdaki genel input değişimlerini dinle ve butonu güncelle
+        document.getElementById('teamForm').addEventListener('input', updateFormStatus);
     </script>
 </body>
 </html>
