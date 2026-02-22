@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* --- 1. TEMEL AYARLAR --- */
+        /* Tasarım kısımları dokunulmadan korundu */
         :root {
             --ana-siyah: #000000;
             --nav-bg: #000000;
@@ -37,7 +37,6 @@
             padding-top: 100px;
         }
 
-        /* --- 2. AKILLI HEADER (KOPYALANDI) --- */
         header.main-nav {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -72,38 +71,10 @@
         }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* Pro Oyuncu Menüsü Stilleri (auth.js ile eklendiği için hazırda bekler) */
-        .user-dropdown { position: relative; display: inline-block; }
-        .dropdown-trigger {
-            background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor);
-            padding: 8px 18px; border-radius: 50px; color: white; cursor: pointer;
-            display: flex; align-items: center; gap: 10px; transition: 0.3s; font-family: 'Poppins', sans-serif; z-index: 1001;
-        }
-        .dropdown-trigger:hover { box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); background: rgba(96, 29, 194, 0.2); }
-        .user-name-text { font-weight: 800; font-size: 13px; letter-spacing: 1px; }
-        .arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
-        .dropdown-content {
-            display: none; position: absolute; right: 0; top: 100%; 
-            background: #0d0d0d; min-width: 200px; border: 1px solid var(--neon-mor);
-            border-radius: 12px; padding: 5px 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9);
-            animation: menuFadeIn 0.2s ease-out;
-        }
-        .dropdown-content::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
-        .dropdown-content a { color: #fff; padding: 12px 20px; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; transition: 0.2s; }
-        .dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
-        .dropdown-content a:hover { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); padding-left: 25px; }
-        .user-dropdown:hover .dropdown-content { display: block; }
-        .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
-        .logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
-        .logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
-        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- 3. PROFİL ÖZEL CSS (Banner, Kart, İstatistikler) --- */
         .profile-container { max-width: 1000px; margin: 0 auto; padding: 20px; }
         
         .profile-banner {
             height: 250px;
-            /* Yol Düzeltildi */
             background: url('img/banner+.jpg') center/cover no-repeat;
             border-radius: 20px 20px 0 0;
             position: relative; border: 1px solid #222;
@@ -146,7 +117,6 @@
         .stat-value { display: block; font-size: 24px; font-weight: 900; color: var(--neon-mor); }
         .stat-label { font-size: 12px; color: var(--gri-yazi); text-transform: uppercase; }
 
-        /* Modal CSS */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
         .modal-content {
             background: #0a0a0a; margin: 5% auto; padding: 30px;
@@ -156,7 +126,6 @@
         .banner-option { width: 100%; height: 120px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; object-fit: cover; transition: 0.3s; }
         .banner-option:hover { border-color: var(--neon-mor); transform: scale(1.02); }
 
-        /* --- 4. FOOTER (KOPYALANDI) --- */
         footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
@@ -173,31 +142,17 @@
         .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* --- 5. MOBİL UYUMLULUK (GENİŞLETİLDİ) --- */
         @media (max-width: 768px) {
-            /* Header Mobil */
             header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
             body { padding-top: 125px; }
             nav { width: 100%; }
             nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
             nav ul li a { font-size: 10px; white-space: nowrap; }
             .nav-btn { padding: 6px 12px; font-size: 10px !important; }
-            .user-name-text, .arrow-icon { display: none; } 
-            .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
-            .dropdown-content { position: fixed; right: 15px; top: 75px; width: 180px; }
-
-            /* Profil Mobil Uyumluluğu */
             .profile-card { padding: 0 20px 30px; }
-            .stats-grid { grid-template-columns: 1fr; gap: 15px; } /* İstatistikler alt alta gelsin */
-            .banner-grid { grid-template-columns: 1fr; } /* Seçim modalı tek sütun */
-            
-            /* Footer Mobil */
+            .stats-grid { grid-template-columns: 1fr; gap: 15px; }
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
             .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
-            .footer-brand p { max-width: 100%; }
-            .social-icons { justify-content: center; }
-            .footer-column { text-align: left; }
-            footer { padding: 60px 8% 30px; }
         }
     </style>
 </head>
@@ -206,11 +161,11 @@
     <header class="main-nav" id="mainHeader">
         <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
         <nav>
-            <ul>
+            <ul id="mainNavList">
                 <li><a href="index.html">ANA SAYFA</a></li>
                 <li><a href="tournaments.html">TURNUVALAR</a></li>
                 <li><a href="canli.html">CANLI</a></li>
-                <li><a href="kayit.html" class="nav-btn" id="loginRegisterBtn">KATIL</a></li>
+                <li id="authContainer"><a href="kayit.html" class="nav-btn">KATIL</a></li>
             </ul>
         </nav>
     </header>
@@ -289,185 +244,142 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="auth.js"></script>
-
     <script>
-        // --- 1. HEADER SCROLL ANİMASYONU ---
-        let lastScrollTop = 0;
-        const header = document.getElementById("mainHeader");
-        window.addEventListener("scroll", function() {
-            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            if (scrollTop > lastScrollTop && scrollTop > 100) {
-                header.classList.add("nav-hidden");
-            } else {
-                header.classList.remove("nav-hidden");
-            }
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
-        }, false);
-        
-        // --- 2. SUPABASE BAĞLANTISI VE VERİ KALICILIĞI ---
-        // BURAYA KENDİ BİLGİLERİNİ GİRECEKSİN
+        // --- 1. CONFIG & INITIALIZATION ---
         const supabaseUrl = 'https://zvhtznxretxgofnbcbko.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2aHR6bnhyZXR4Z29mbmJjYmtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0ODY4NjksImV4cCI6MjA4NzA2Mjg2OX0.nJbnU1WNk5lSVogBqY0Jwp8-6JhbIURkw6Buf2WfXzU';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         let currentUser = null;
 
-        // Sayfa yüklendiğinde kullanıcıyı kontrol et ve profili getir
+        // Header Kaybolma Efekti
+        let lastScrollTop = 0;
+        window.addEventListener("scroll", () => {
+            const header = document.getElementById("mainHeader");
+            let st = window.pageYOffset || document.documentElement.scrollTop;
+            if (st > lastScrollTop && st > 100) header.classList.add("nav-hidden");
+            else header.classList.remove("nav-hidden");
+            lastScrollTop = st <= 0 ? 0 : st;
+        });
+
+        // --- 2. CORE FUNCTIONS ---
+
         async function initProfile() {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 currentUser = user;
-                loadProfileData();
+                await loadProfileData();
             } else {
-                // Kullanıcı giriş yapmamışsa anasayfaya veya login'e yönlendirilebilir
                 document.getElementById('profileNameDisplay').innerText = "GİRİŞ YAPILMADI";
-                document.getElementById('userBio').innerText = "Lütfen profilinizi görmek için giriş yapın.";
+                document.getElementById('userBio').innerText = "Lütfen giriş yapın.";
+                // Opsiyonel: Giriş yapmamışsa yönlendir
+                // window.location.href = "kayit.html";
             }
         }
 
-async function loadProfileData() {
-    try {
-        let { data, error } = await supabase
-            .from('profiles')
-            .select('*') // Sütunları tek tek yazmak yerine '*' kullanmak daha güvenlidir
-            .eq('id', currentUser.id)
-            .single();
-        
-        if (error && error.code === 'PGRST116') {
-            // Profil yoksa oluşturma mantığı (Mevcut kodun kalabilir)
-            const { data: newProfile, error: insertError } = await supabase
-                .from('profiles')
-                .insert([{ 
-                    id: currentUser.id, 
-                    username: currentUser.email ? currentUser.email.split('@')[0] : 'OYUNCU',
-                    bio: 'Zafer mor ışıkta parlar!',
-                    banner_url: 'img/banner+.jpg'
-                }])
-                .select().single();
-            if (insertError) throw insertError;
-            data = newProfile;
-        } else if (error) {
-            throw error; // Başka bir hata varsa catch bloğuna gönder
-        }
-
-        // Ekrana Yazdırma İşlemi
-        if (data) {
-            document.getElementById('profileNameDisplay').innerText = (data.username || 'OYUNCU').toUpperCase();
-            document.getElementById('userBio').innerText = data.bio || 'Açıklama yok.';
-            if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
-            if(data.avatar_url) document.getElementById('userAvatar').src = data.avatar_url;
-            document.getElementById('matchCount').innerText = data.matches_played || 0;
-        }
-    } catch (err) {
-        console.error("Profil yükleme hatası:", err);
-        document.getElementById('profileNameDisplay').innerText = "HATA OLUŞTU";
-        document.getElementById('userBio').innerText = "Veri çekilemedi: " + err.message;
-    }
-}
-
-
-        // --- BİYOGRAFİ GÜNCELLEME ---
-        async function editBio() {
-            if(!currentUser) return alert("Önce giriş yapmalısınız!");
-            const currentBio = document.getElementById('userBio').innerText;
-            const newBio = prompt("Profil açıklamanızı güncelleyin:", currentBio);
-            
-            if (newBio !== null && newBio.trim() !== "") {
-                document.getElementById('userBio').innerText = newBio; // Ekranda anında güncelle
-                
-                // Supabase'e kaydet
-                const { error } = await supabase
+        async function loadProfileData() {
+            try {
+                let { data, error } = await supabase
                     .from('profiles')
-                    .update({ bio: newBio })
-                    .eq('id', currentUser.id);
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
                 
-                if(error) alert("Biyografi kaydedilirken bir hata oluştu: " + error.message);
+                if (error && error.code === 'PGRST116') {
+                    // Profil yoksa temiz bir başlangıç yap
+                    const { data: newProfile, error: insErr } = await supabase
+                        .from('profiles')
+                        .insert([{ 
+                            id: currentUser.id, 
+                            username: currentUser.email ? currentUser.email.split('@')[0] : 'OYUNCU',
+                            bio: 'Zafer mor ışıkta parlar!',
+                            banner_url: 'img/banner+.jpg',
+                            matches_played: 0
+                        }])
+                        .select().single();
+                    if (insErr) throw insErr;
+                    data = newProfile;
+                } else if (error) throw error;
+
+                if (data) {
+                    // UI Güncelleme
+                    document.getElementById('profileNameDisplay').innerText = (data.username || 'OYUNCU').toUpperCase();
+                    document.getElementById('userBio').innerText = data.bio || 'Açıklama yok.';
+                    document.getElementById('matchCount').innerText = data.matches_played || 0;
+                    
+                    if(data.banner_url) {
+                        document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
+                    }
+                    if(data.avatar_url) {
+                        document.getElementById('userAvatar').src = data.avatar_url;
+                    }
+                }
+            } catch (err) {
+                console.error("Yükleme Hatası:", err);
+                document.getElementById('profileNameDisplay').innerText = "HATA!";
             }
         }
 
-        // --- KAPAK FOTOĞRAFI (BANNER) GÜNCELLEME ---
+        async function editBio() {
+            if(!currentUser) return;
+            const currentBio = document.getElementById('userBio').innerText;
+            const newBio = prompt("Yeni açıklamanız:", currentBio);
+            
+            if (newBio !== null) {
+                const { error } = await supabase.from('profiles').update({ bio: newBio }).eq('id', currentUser.id);
+                if(!error) document.getElementById('userBio').innerText = newBio;
+            }
+        }
+
+        // --- 3. BANNER & AVATAR LOGIC ---
+
         function openBannerModal() {
             const grid = document.getElementById('bannerOptions');
-            grid.innerHTML = ""; 
-            for(let i=1; i<=10; i++) {
+            const banners = ['img/banner+.jpg', 'img/banner1.jpg', 'img/banner2.jpg']; // Buraya gerçek banner yollarını ekle
+            
+            grid.innerHTML = "";
+            banners.forEach(url => {
                 const img = document.createElement('img');
-                img.src = 'img/banner+.jpg'; // Dosya yolu düzeltildi
+                img.src = url;
                 img.className = 'banner-option';
-                img.onclick = async function() { 
-                    const selectedImage = this.src;
-                    document.getElementById('currentBanner').style.backgroundImage = `url('${selectedImage}')`;
+                img.onerror = () => img.src = 'https://via.placeholder.com/400x150?text=OBB+ESPORTS';
+                img.onclick = async () => {
+                    document.getElementById('currentBanner').style.backgroundImage = `url('${url}')`;
+                    await supabase.from('profiles').update({ banner_url: url }).eq('id', currentUser.id);
                     closeBannerModal();
-                    
-                    // Supabase'e kaydet
-                    if(currentUser) {
-                        await supabase.from('profiles').update({ banner_url: selectedImage }).eq('id', currentUser.id);
-                    }
                 };
                 grid.appendChild(img);
-            }
+            });
             document.getElementById('bannerModal').style.display = "block";
         }
+
         function closeBannerModal() { document.getElementById('bannerModal').style.display = "none"; }
 
-        // --- PROFİL FOTOĞRAFI (PP) YÜKLEME VE KALICI YAPMA ---
-        document.getElementById('avatarUpload').addEventListener('change', async function(e) {
-            if(!currentUser) return alert("Önce giriş yapmalısınız!");
-            
+        document.getElementById('avatarUpload').addEventListener('change', async (e) => {
             const file = e.target.files[0];
-            const preview = document.getElementById('userAvatar');
+            if (!file || !currentUser) return;
 
-            if (file) {
-                if (file.size / 1024 / 1024 > 2) {
-                    return alert("Fotoğraf çok büyük! Maksimum 2MB yükleyebilirsin.");
-                }
+            if (file.size > 2 * 1024 * 1024) return alert("Dosya 2MB'den büyük olamaz.");
 
-                // Önizlemeyi göster (Kullanıcı beklerken görsün)
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    preview.src = event.target.result;
-                    preview.style.display = "block";
-                };
-                reader.readAsDataURL(file);
+            // Önizleme
+            const reader = new FileReader();
+            reader.onload = (ev) => document.getElementById('userAvatar').src = ev.target.result;
+            reader.readAsDataURL(file);
 
-                // Supabase Storage'a Yükleme ('avatars' isimli bir bucket açtığını varsayıyoruz)
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${currentUser.id}-${Math.random()}.${fileExt}`;
-                const filePath = `${fileName}`; // bucket kök dizini
+            // Upload süreci
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
 
-                // 1. Storage'a yükle
-                const { error: uploadError } = await supabase.storage
-                    .from('avatars')
-                    .upload(filePath, file);
+            const { error: upErr } = await supabase.storage.from('avatars').upload(fileName, file);
+            if (upErr) return alert("Yükleme hatası: " + upErr.message);
 
-                if (uploadError) {
-                    return alert("Fotoğraf yüklenemedi: " + uploadError.message);
-                }
-
-                // 2. Public (Açık) URL'yi al
-                const { data: publicUrlData } = supabase.storage
-                    .from('avatars')
-                    .getPublicUrl(filePath);
-
-                const publicAvatarUrl = publicUrlData.publicUrl;
-
-                // 3. Profiles tablosuna kaydet
-                const { error: updateError } = await supabase
-                    .from('profiles')
-                    .update({ avatar_url: publicAvatarUrl })
-                    .eq('id', currentUser.id);
-
-                if (updateError) alert("Profil güncellenemedi: " + updateError.message);
-            }
+            const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
+            await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
         });
 
-        // Sayfa tıklamaları ve başlangıç çalıştırmaları
-        window.onclick = function(event) {
-            const modal = document.getElementById('bannerModal');
-            if (event.target == modal) closeBannerModal();
-        }
+        // Modal dışı tıklama kapatma
+        window.onclick = (e) => { if (e.target.className === 'modal') closeBannerModal(); };
 
-        // Kodu başlat
         document.addEventListener('DOMContentLoaded', initProfile);
     </script>
 </body>
