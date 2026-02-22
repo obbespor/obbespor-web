@@ -304,7 +304,7 @@
             }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
-
+        
         // --- 2. SUPABASE BAĞLANTISI VE VERİ KALICILIĞI ---
         // BURAYA KENDİ BİLGİLERİNİ GİRECEKSİN
         const supabaseUrl = 'https://zvhtznxretxgofnbcbko.supabase.co';
@@ -326,48 +326,46 @@
             }
         }
 
-// Veritabanından verileri çekme ve yoksa oluşturma
 async function loadProfileData() {
-    // 1. Mevcut profili çekmeyi dene
-    let { data, error } = await supabase
-        .from('profiles')
-        .select('username, bio, avatar_url, banner_url, matches_played')
-        .eq('id', currentUser.id)
-        .single();
-    
-    // 2. Eğer profil yoksa (eski hesaplardan biriyse), otomatik oluştur
-    if (error && error.code === 'PGRST116') {
-        const { data: newProfile, error: insertError } = await supabase
+    try {
+        let { data, error } = await supabase
             .from('profiles')
-            .insert([{ 
-                id: currentUser.id, 
-                username: currentUser.email ? currentUser.email.split('@')[0] : 'OYUNCU',
-                bio: 'Zafer mor ışıkta parlar!',
-                banner_url: 'img/banner+.jpg'
-            }])
-            .select()
+            .select('*') // Sütunları tek tek yazmak yerine '*' kullanmak daha güvenlidir
+            .eq('id', currentUser.id)
             .single();
         
-        if (insertError) {
-            console.error("Profil oluşturulamadı:", insertError.message);
-            return;
+        if (error && error.code === 'PGRST116') {
+            // Profil yoksa oluşturma mantığı (Mevcut kodun kalabilir)
+            const { data: newProfile, error: insertError } = await supabase
+                .from('profiles')
+                .insert([{ 
+                    id: currentUser.id, 
+                    username: currentUser.email ? currentUser.email.split('@')[0] : 'OYUNCU',
+                    bio: 'Zafer mor ışıkta parlar!',
+                    banner_url: 'img/banner+.jpg'
+                }])
+                .select().single();
+            if (insertError) throw insertError;
+            data = newProfile;
+        } else if (error) {
+            throw error; // Başka bir hata varsa catch bloğuna gönder
         }
-        data = newProfile; // Yeni oluşturulan veriyi kullan
-    }
 
-    // 3. Ekrana yazdır
-    if (data) {
-        if(data.username) document.getElementById('profileNameDisplay').innerText = data.username.toUpperCase();
-        if(data.bio) document.getElementById('userBio').innerText = data.bio;
-        if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
-        if(data.avatar_url) {
-            const preview = document.getElementById('userAvatar');
-            preview.src = data.avatar_url;
-            preview.style.display = "block";
+        // Ekrana Yazdırma İşlemi
+        if (data) {
+            document.getElementById('profileNameDisplay').innerText = (data.username || 'OYUNCU').toUpperCase();
+            document.getElementById('userBio').innerText = data.bio || 'Açıklama yok.';
+            if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
+            if(data.avatar_url) document.getElementById('userAvatar').src = data.avatar_url;
+            document.getElementById('matchCount').innerText = data.matches_played || 0;
         }
-        if(data.matches_played !== undefined) document.getElementById('matchCount').innerText = data.matches_played;
+    } catch (err) {
+        console.error("Profil yükleme hatası:", err);
+        document.getElementById('profileNameDisplay').innerText = "HATA OLUŞTU";
+        document.getElementById('userBio').innerText = "Veri çekilemedi: " + err.message;
     }
 }
+
 
         // --- BİYOGRAFİ GÜNCELLEME ---
         async function editBio() {
