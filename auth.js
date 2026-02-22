@@ -39,7 +39,7 @@ function updateNavbarWithUser(user) {
                 </button>
                 <div class="dropdown-content">
                     <a href="profil.html"><i class="fas fa-user-cog"></i> Profilim</a>
-                    <a href="turnuvalarim.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
+                    <a href="my-tournaments.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
                     <hr style="border-color: rgba(255,255,255,0.1); margin: 5px 0;">
                     <a href="#" onclick="logoutAction()" class="logout-link"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</a>
                 </div>
