@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* --- 1. TEMEL AYARLAR (BİREBİR AYNI) --- */
+        /* --- 1. TEMEL AYARLAR (BİREBİR KORUNDU) --- */
         :root {
             --ana-siyah: #000000;
             --nav-bg: #000000;
@@ -36,7 +36,7 @@
             padding-top: 80px;
         }
 
-        /* --- 2. HEADER (KORUNAN YAPI) --- */
+        /* --- 2. HEADER (BİREBİR KORUNDU) --- */
         header.main-nav {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -59,7 +59,50 @@
         .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; font-weight: bold; }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- 3. ÇOK YAKINDA ÖZEL ALAN --- */
+        /* --- DROPDOWN PROBLEMİNİ ÇÖZEN EK CSS (DİĞERLERİNİ BOZMAZ) --- */
+        .user-dropdown { position: relative; display: inline-block; }
+        
+        /* Menü açıldığında linklerin alt alta gelmesini zorunlu kılar */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: #0d0d0d !important;
+            min-width: 200px !important;
+            border: 1px solid var(--neon-mor);
+            border-radius: 8px;
+            padding: 10px 0 !important;
+            z-index: 9999;
+            flex-direction: column !important; /* Yan yana binmeyi engeller */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Mouse butondan menüye geçerken kapanmaması için görünmez köprü */
+        .dropdown-content::before {
+            content: "";
+            position: absolute;
+            top: -15px;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: transparent;
+        }
+
+        .dropdown-content a {
+            display: flex !important; /* İkon ve metni düzgün hizalar */
+            align-items: center !important;
+            padding: 12px 20px !important;
+            gap: 12px !important;
+            width: 100% !important;
+            white-space: nowrap !important; /* Yazıların kırılmasını önler */
+            text-align: left !important;
+            font-size: 13px !important;
+        }
+
+        .user-dropdown:hover .dropdown-content { display: flex !important; }
+
+        /* --- 3. ÇOK YAKINDA ÖZEL ALAN (BİREBİR KORUNDU) --- */
         .coming-soon-container {
             flex: 1;
             display: flex;
@@ -69,7 +112,6 @@
             text-align: center;
             padding: 40px 20px;
         }
-
         .icon-box {
             font-size: 80px;
             color: var(--neon-mor);
@@ -77,7 +119,6 @@
             text-shadow: 0 0 30px var(--neon-mor);
             animation: pulse 2s infinite;
         }
-
         .coming-soon-container h1 {
             font-size: clamp(2.5rem, 8vw, 5rem);
             font-weight: 900;
@@ -85,20 +126,17 @@
             letter-spacing: -2px;
             line-height: 1;
         }
-
         .coming-soon-container h1 span {
             display: block;
             color: var(--neon-mor);
             text-shadow: 0 0 20px var(--neon-mor);
         }
-
         .coming-soon-container p {
             color: var(--gri-yazi);
             font-size: 18px;
             max-width: 600px;
             margin: 20px 0 40px;
         }
-
         .status-badge {
             background: rgba(96, 29, 194, 0.1);
             border: 1px solid var(--neon-mor);
@@ -110,14 +148,13 @@
             font-size: 14px;
             margin-bottom: 30px;
         }
-
         @keyframes pulse {
             0% { transform: scale(1); opacity: 0.8; }
             50% { transform: scale(1.1); opacity: 1; }
             100% { transform: scale(1); opacity: 0.8; }
         }
 
-        /* --- 4. FOOTER (KORUNAN YAPI) --- */
+        /* --- 4. FOOTER (BİREBİR KORUNDU) --- */
         footer {
             background-color: var(--nav-bg);
             border-top: 2px solid var(--neon-mor);
@@ -138,7 +175,7 @@
         .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* --- MOBİL UYUMLULUK --- */
+        /* --- MOBİL UYUMLULUK (BİREBİR KORUNDU) --- */
         @media (max-width: 768px) {
             header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
             body { padding-top: 125px; }
@@ -154,17 +191,17 @@
 </head>
 <body>
 
-<header class="main-nav" id="mainHeader">
-    <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
-    <nav>
-        <ul>
-            <li><a href="index.html">ANA SAYFA</a></li>
-            <li><a href="tournaments.html">TURNUVALAR</a></li>
-            <li><a href="canli.html">CANLI</a></li>
-            <li id="authSection"><a href="kayit.html" class="nav-btn">KATIL</a></li>
-        </ul>
-    </nav>
-</header>
+    <header class="main-nav" id="mainHeader">
+        <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
+        <nav>
+            <ul>
+                <li><a href="index.html">ANA SAYFA</a></li>
+                <li><a href="tournaments.html">TURNUVALAR</a></li>
+                <li><a href="canli.html">CANLI</a></li>
+                <li><a href="kayit.html" class="nav-btn">KATIL</a></li>
+            </ul>
+        </nav>
+    </header>
 
     <main class="coming-soon-container">
         <div class="status-badge">Sistem Geliştiriliyor</div>
@@ -212,7 +249,6 @@
     </footer>
 
     <script>
-        // Header Kaybolma Efekti
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
         window.addEventListener("scroll", function() {
