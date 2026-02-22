@@ -6,7 +6,8 @@
 // 1. Supabase Yapılandırması
 const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
-const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// _supabase yerine window.supabaseClient kullanarak global hale getiriyoruz
+window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // 2. Sayfa Yüklendiğinde Kullanıcıyı Kontrol Et
 document.addEventListener('DOMContentLoaded', () => {
