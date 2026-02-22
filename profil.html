@@ -289,6 +289,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script src="auth.js"></script>
 
     <script>
@@ -305,30 +306,32 @@
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
 
-        // --- 2. SUPABASE BAĞLANTISI VE VERİ KALICILIĞI ---
-        // BURAYA KENDİ BİLGİLERİNİ GİRECEKSİN
+        // --- 2. SUPABASE BAĞLANTISI VE KUSURSUZ İŞLEMLER ---
+        
+        // EĞER auth.js İÇERİSİNDE 'supabase' DEĞİŞKENİNİ ZATEN TANIMLADIYSAN,
+        // aşağıdaki createClient kısmını silebilirsin. Aksi halde buraya bilgilerini gir.
         const supabaseUrl = 'SENIN_SUPABASE_URL_BURAYA';
         const supabaseKey = 'SENIN_SUPABASE_KEY_BURAYA';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        // window.supabase kullanmamızın sebebi cdn ile içeri almış olmamız.
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         let currentUser = null;
 
-        // Sayfa yüklendiğinde kullanıcıyı kontrol et ve profili getir
+        // Sayfa yüklendiğinde kullanıcıyı kontrol et
         async function initProfile() {
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user } } = await supabaseClient.auth.getUser();
             if (user) {
                 currentUser = user;
                 loadProfileData();
             } else {
-                // Kullanıcı giriş yapmamışsa anasayfaya veya login'e yönlendirilebilir
                 document.getElementById('profileNameDisplay').innerText = "GİRİŞ YAPILMADI";
-                document.getElementById('userBio').innerText = "Lütfen profilinizi görmek için giriş yapın.";
+                document.getElementById('userBio').innerText = "Profil bilgilerini görmek için lütfen giriş yapın.";
             }
         }
 
-        // Veritabanından verileri çekme ('profiles' tablosu olduğunu varsayıyoruz)
+        // Veritabanından verileri çekme
         async function loadProfileData() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('profiles')
                 .select('username, bio, avatar_url, banner_url, matches_played')
                 .eq('id', currentUser.id)
@@ -347,22 +350,31 @@
             }
         }
 
-        // --- BİYOGRAFİ GÜNCELLEME ---
+        // --- BİYOGRAFİ GÜNCELLEME (Hata korumalı - Optimistic UI) ---
         async function editBio() {
             if(!currentUser) return alert("Önce giriş yapmalısınız!");
-            const currentBio = document.getElementById('userBio').innerText;
+            
+            const bioElement = document.getElementById('userBio');
+            const currentBio = bioElement.innerText;
             const newBio = prompt("Profil açıklamanızı güncelleyin:", currentBio);
             
-            if (newBio !== null && newBio.trim() !== "") {
-                document.getElementById('userBio').innerText = newBio; // Ekranda anında güncelle
+            if (newBio !== null) {
+                const trimmedBio = newBio.trim();
                 
-                // Supabase'e kaydet
-                const { error } = await supabase
+                // Önce ekranda hemen güncelleyerek hızlı bir deneyim sunuyoruz
+                bioElement.innerText = trimmedBio || "Açıklama bulunmuyor."; 
+                
+                // Arka planda Supabase'e kaydet
+                const { error } = await supabaseClient
                     .from('profiles')
-                    .update({ bio: newBio })
+                    .update({ bio: trimmedBio })
                     .eq('id', currentUser.id);
                 
-                if(error) alert("Biyografi kaydedilirken bir hata oluştu: " + error.message);
+                if(error) {
+                    alert("Biyografi kaydedilirken bir hata oluştu: " + error.message);
+                    // Hata olursa ekranı eski haline geri döndür
+                    bioElement.innerText = currentBio;
+                }
             }
         }
 
@@ -370,18 +382,18 @@
         function openBannerModal() {
             const grid = document.getElementById('bannerOptions');
             grid.innerHTML = ""; 
+            // Demo amaçlı 10 aynı fotoğrafı basıyor. Eğer farklı görsellerin varsa 'banner1.jpg', 'banner2.jpg' şeklinde güncelleyebilirsin.
             for(let i=1; i<=10; i++) {
                 const img = document.createElement('img');
-                img.src = 'img/banner+.jpg'; // Dosya yolu düzeltildi
+                img.src = 'img/banner+.jpg'; 
                 img.className = 'banner-option';
                 img.onclick = async function() { 
                     const selectedImage = this.src;
                     document.getElementById('currentBanner').style.backgroundImage = `url('${selectedImage}')`;
                     closeBannerModal();
                     
-                    // Supabase'e kaydet
                     if(currentUser) {
-                        await supabase.from('profiles').update({ banner_url: selectedImage }).eq('id', currentUser.id);
+                        await supabaseClient.from('profiles').update({ banner_url: selectedImage }).eq('id', currentUser.id);
                     }
                 };
                 grid.appendChild(img);
@@ -390,7 +402,7 @@
         }
         function closeBannerModal() { document.getElementById('bannerModal').style.display = "none"; }
 
-        // --- PROFİL FOTOĞRAFI (PP) YÜKLEME VE KALICI YAPMA ---
+        // --- PROFİL FOTOĞRAFI YÜKLEME (Kusursuzlaştırma) ---
         document.getElementById('avatarUpload').addEventListener('change', async function(e) {
             if(!currentUser) return alert("Önce giriş yapmalısınız!");
             
@@ -398,11 +410,12 @@
             const preview = document.getElementById('userAvatar');
 
             if (file) {
+                // 2MB Sınırı
                 if (file.size / 1024 / 1024 > 2) {
                     return alert("Fotoğraf çok büyük! Maksimum 2MB yükleyebilirsin.");
                 }
 
-                // Önizlemeyi göster (Kullanıcı beklerken görsün)
+                // 1. Ekranda anında önizleme göster
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     preview.src = event.target.result;
@@ -410,44 +423,47 @@
                 };
                 reader.readAsDataURL(file);
 
-                // Supabase Storage'a Yükleme ('avatars' isimli bir bucket açtığını varsayıyoruz)
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${currentUser.id}-${Math.random()}.${fileExt}`;
-                const filePath = `${fileName}`; // bucket kök dizini
+                try {
+                    // Dosya yolunu oluştur (Kullanıcının id'si altına kaydederek düzeni sağlarız)
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `avatar-${Date.now()}.${fileExt}`;
+                    const filePath = `${currentUser.id}/${fileName}`; 
 
-                // 1. Storage'a yükle
-                const { error: uploadError } = await supabase.storage
-                    .from('avatars')
-                    .upload(filePath, file);
+                    // 2. Supabase Storage'a Yükle (upsert: true ile aynı isim çakışmalarını engelleriz)
+                    const { error: uploadError } = await supabaseClient.storage
+                        .from('avatars')
+                        .upload(filePath, file, { cacheControl: '3600', upsert: true });
 
-                if (uploadError) {
-                    return alert("Fotoğraf yüklenemedi: " + uploadError.message);
+                    if (uploadError) throw uploadError;
+
+                    // 3. Dosyanın açık (public) URL'sini Supabase v2 yapısına uygun olarak çek
+                    const { data } = supabaseClient.storage
+                        .from('avatars')
+                        .getPublicUrl(filePath);
+
+                    const publicAvatarUrl = data.publicUrl;
+
+                    // 4. Veritabanındaki 'profiles' tablosuna kaydet
+                    const { error: updateError } = await supabaseClient
+                        .from('profiles')
+                        .update({ avatar_url: publicAvatarUrl })
+                        .eq('id', currentUser.id);
+
+                    if (updateError) throw updateError;
+                    
+                } catch (err) {
+                    alert("Fotoğraf yükleme işlemi başarısız: " + err.message);
                 }
-
-                // 2. Public (Açık) URL'yi al
-                const { data: publicUrlData } = supabase.storage
-                    .from('avatars')
-                    .getPublicUrl(filePath);
-
-                const publicAvatarUrl = publicUrlData.publicUrl;
-
-                // 3. Profiles tablosuna kaydet
-                const { error: updateError } = await supabase
-                    .from('profiles')
-                    .update({ avatar_url: publicAvatarUrl })
-                    .eq('id', currentUser.id);
-
-                if (updateError) alert("Profil güncellenemedi: " + updateError.message);
             }
         });
 
-        // Sayfa tıklamaları ve başlangıç çalıştırmaları
+        // Modal kapatma olayları
         window.onclick = function(event) {
             const modal = document.getElementById('bannerModal');
             if (event.target == modal) closeBannerModal();
         }
 
-        // Kodu başlat
+        // DOM yüklendiğinde sistemi çalıştır
         document.addEventListener('DOMContentLoaded', initProfile);
     </script>
 </body>
