@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* --- TEMEL AYARLAR VE DEĞİŞKENLER --- */
         :root {
             --ana-siyah: #000000;
             --nav-bg: #000000;
@@ -40,119 +39,99 @@
         nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
         nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; }
 
-        /* --- PROFİL ANA ALAN --- */
         .profile-container { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
-        /* Banner Alanı */
+        /* --- BANNER ALANI GÜNCELLEME --- */
         .profile-banner {
-            height: 200px;
-            background: linear-gradient(90deg, #1a052d, #601dc2);
+            height: 250px;
+            background: url('banner+.jpg') center/cover no-repeat;
             border-radius: 20px 20px 0 0;
             position: relative;
-            overflow: hidden;
-        }
-
-        /* Profil Kartı */
-        .profile-card {
-            background: var(--card-bg);
             border: 1px solid #222;
-            border-radius: 0 0 20px 20px;
-            padding: 0 40px 40px;
-            position: relative;
-            text-align: center;
         }
 
-        /* Profil Fotoğrafı (Avatar) */
+        .edit-banner-btn {
+            position: absolute; top: 20px; right: 20px;
+            background: rgba(0,0,0,0.6); color: white;
+            padding: 8px 15px; border-radius: 5px; border: 1px solid var(--neon-mor);
+            cursor: pointer; font-size: 12px; transition: 0.3s;
+        }
+        .edit-banner-btn:hover { background: var(--neon-mor); box-shadow: 0 0 10px var(--neon-mor); }
+
+        .profile-card {
+            background: var(--card-bg); border: 1px solid #222;
+            border-radius: 0 0 20px 20px; padding: 0 40px 40px;
+            position: relative; text-align: center;
+        }
+
         .avatar-wrapper {
-            position: relative;
-            width: 150px; height: 150px;
-            margin: -75px auto 20px;
+            position: relative; width: 150px; height: 150px; margin: -75px auto 20px;
         }
-
         .profile-avatar {
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            border: 5px solid var(--card-bg);
-            background: #111;
-            object-fit: cover;
+            width: 100%; height: 100%; border-radius: 50%;
+            border: 5px solid var(--card-bg); background: #111; object-fit: cover;
             box-shadow: 0 0 20px rgba(96, 29, 194, 0.5);
         }
-
         .edit-avatar-btn {
             position: absolute; bottom: 5px; right: 5px;
-            background: var(--neon-mor);
-            width: 35px; height: 35px; border-radius: 50%;
+            background: var(--neon-mor); width: 35px; height: 35px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; border: 2px solid var(--card-bg);
-            transition: 0.3s;
+            cursor: pointer; border: 2px solid var(--card-bg); transition: 0.3s;
         }
-        .edit-avatar-btn:hover { transform: scale(1.1); box-shadow: 0 0 10px var(--neon-mor); }
 
-        /* Kıdem Etiketi (Badge) */
         .rank-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 50px;
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            /* Dinamik renkler JS ile değişecek */
-            background: rgba(96, 29, 194, 0.2);
-            border: 1px solid var(--neon-mor);
-            color: var(--neon-mor);
-            box-shadow: 0 0 10px rgba(96, 29, 194, 0.3);
+            display: inline-block; padding: 5px 15px; border-radius: 50px;
+            font-size: 12px; font-weight: 800; text-transform: uppercase;
+            margin-bottom: 15px; background: rgba(96, 29, 194, 0.2);
+            border: 1px solid var(--neon-mor); color: var(--neon-mor);
         }
 
-        .profile-name { font-size: 28px; font-weight: 900; margin-bottom: 5px; }
-        .profile-bio { color: var(--gri-yazi); font-size: 14px; margin-bottom: 25px; }
+        /* --- BİO DÜZENLEME --- */
+        .bio-container {
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; margin-bottom: 25px;
+        }
+        .profile-bio { color: var(--gri-yazi); font-size: 14px; margin: 0; }
+        .edit-bio-icon {
+            color: var(--neon-mor); cursor: pointer; font-size: 14px; opacity: 0.6; transition: 0.3s;
+        }
+        .edit-bio-icon:hover { opacity: 1; transform: scale(1.2); }
 
-        /* İstatistikler Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        .stat-item {
-            background: #111; padding: 20px; border-radius: 15px;
-            border-bottom: 2px solid #222; transition: 0.3s;
-        }
-        .stat-item:hover { border-color: var(--neon-mor); transform: translateY(-5px); }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+        .stat-item { background: #111; padding: 20px; border-radius: 15px; border-bottom: 2px solid #222; }
         .stat-value { display: block; font-size: 24px; font-weight: 900; color: var(--neon-mor); }
         .stat-label { font-size: 12px; color: var(--gri-yazi); text-transform: uppercase; }
 
-        /* Başarılar (Achievements) Bölümü */
-        .achievements-section { text-align: left; }
-        .section-title { 
-            font-size: 18px; font-weight: 800; margin-bottom: 20px; 
-            border-left: 4px solid var(--neon-mor); padding-left: 10px;
+        /* --- BANNER MODAL --- */
+        .modal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.9);
         }
-        .achievement-list { display: flex; gap: 15px; flex-wrap: wrap; }
-        .trophy-card {
-            background: #111; width: 100px; height: 120px;
-            border-radius: 12px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; opacity: 0.4;
-            filter: grayscale(1); transition: 0.3s; border: 1px dashed #333;
+        .modal-content {
+            background: #0a0a0a; margin: 5% auto; padding: 30px;
+            border: 2px solid var(--neon-mor); width: 80%; max-width: 800px;
+            border-radius: 20px; position: relative;
         }
-        .trophy-card i { font-size: 30px; margin-bottom: 10px; }
-        .trophy-card span { font-size: 10px; font-weight: bold; text-align: center; }
-        /* Kazanılan kupa aktifleşirse */
-        .trophy-card.earned { opacity: 1; filter: grayscale(0); border: 1px solid gold; color: gold; }
+        .close-modal {
+            position: absolute; right: 20px; top: 15px; color: white;
+            font-size: 28px; cursor: pointer;
+        }
+        .banner-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px; margin-top: 20px; max-height: 400px; overflow-y: auto;
+        }
+        .banner-option {
+            width: 100%; height: 100px; border-radius: 10px; cursor: pointer;
+            border: 2px solid transparent; transition: 0.3s; object-fit: cover;
+        }
+        .banner-option:hover { border-color: var(--neon-mor); transform: scale(1.05); }
 
-        /* --- KORUNAN FOOTER --- */
+        /* --- FOOTER --- */
         footer {
             background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor);
-            padding: 60px 10% 30px; margin-top: 50px;
+            padding: 40px 10% 20px; margin-top: 50px; text-align: center;
         }
-        .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 20px; color: #555; font-size: 13px; }
-
-        /* Mobil Ayarlar */
-        @media (max-width: 768px) {
-            .stats-grid { grid-template-columns: 1fr; }
-            .profile-card { padding: 0 20px 30px; }
-        }
+        .footer-bottom { color: #555; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -170,7 +149,11 @@
     </header>
 
     <main class="profile-container">
-        <div class="profile-banner"></div>
+        <div class="profile-banner" id="currentBanner">
+            <button class="edit-banner-btn" onclick="openBannerModal()">
+                <i class="fas fa-image"></i> Kapak Değiştir
+            </button>
+        </div>
 
         <div class="profile-card">
             <div class="avatar-wrapper">
@@ -182,48 +165,38 @@
             </div>
 
             <div class="rank-badge" id="userRank">YENİ SAVAŞÇI</div>
-            
             <h1 class="profile-name" id="userName">Oyuncu Adı</h1>
-            <p class="profile-bio">"Zafer mor ışıkta parlar! Henüz bir açıklama eklenmedi."</p>
+            
+            <div class="bio-container">
+                <p class="profile-bio" id="userBio">Zafer mor ışıkta parlar! Henüz bir açıklama eklenmedi.</p>
+                <i class="fas fa-pencil-alt edit-bio-icon" onclick="editBio()"></i>
+            </div>
 
             <div class="stats-grid">
                 <div class="stat-item">
-                    <span class="stat-value" id="matchCount">0</span>
+                    <span class="stat-value">0</span>
                     <span class="stat-label">Toplam Maç</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value" id="winRate">%0</span>
+                    <span class="stat-value">%0</span>
                     <span class="stat-label">Kazanma Oranı</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value" id="tournamentCount">0</span>
+                    <span class="stat-value">0</span>
                     <span class="stat-label">Turnuvalar</span>
-                </div>
-            </div>
-
-            <div class="achievements-section">
-                <h2 class="section-title">KAZANILAN KUPALAR</h2>
-                <div class="achievement-list">
-                    <div class="trophy-card earned">
-                        <i class="fas fa-seedling"></i>
-                        <span>İLK ADIM</span>
-                    </div>
-                    <div class="trophy-card">
-                        <i class="fas fa-trophy"></i>
-                        <span>SEZON ŞAMPİYONU</span>
-                    </div>
-                    <div class="trophy-card">
-                        <i class="fas fa-fire"></i>
-                        <span>10 MAÇLIK SERİ</span>
-                    </div>
-                    <div class="trophy-card">
-                        <i class="fas fa-star"></i>
-                        <span>MVP</span>
-                    </div>
                 </div>
             </div>
         </div>
     </main>
+
+    <div id="bannerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeBannerModal()">&times;</span>
+            <h2 style="margin-bottom:20px;">Kapak Resmi Seç (10 Seçenek)</h2>
+            <div class="banner-grid" id="bannerOptions">
+                </div>
+        </div>
+    </div>
 
     <footer>
         <div class="footer-bottom">
@@ -232,21 +205,57 @@
     </footer>
 
     <script>
-        // Dosya boyutu kontrolü (JS ile yüklemeden önce engelleme)
-        const avatarUpload = document.getElementById('avatarUpload');
-        avatarUpload.addEventListener('change', function() {
+        // 1. Banner Modal Yönetimi
+        function openBannerModal() {
+            const modal = document.getElementById('bannerModal');
+            const grid = document.getElementById('bannerOptions');
+            grid.innerHTML = ""; // Temizle
+            
+            // 10 Sabit Seçenek Oluştur (Hepsine senin gönderdiğin görseli atıyoruz)
+            for(let i=1; i<=10; i++) {
+                const img = document.createElement('img');
+                img.src = 'banner+.jpg';
+                img.className = 'banner-option';
+                img.onclick = function() { selectBanner(this.src); };
+                grid.appendChild(img);
+            }
+            modal.style.display = "block";
+        }
+
+        function closeBannerModal() {
+            document.getElementById('bannerModal').style.display = "none";
+        }
+
+        function selectBanner(src) {
+            document.getElementById('currentBanner').style.backgroundImage = `url('${src}')`;
+            closeBannerModal();
+            // İleride buraya: Supabase'e banner tercihini kaydetme kodu gelecek
+        }
+
+        // 2. Bio Düzenleme
+        function editBio() {
+            const currentBio = document.getElementById('userBio').innerText;
+            const newBio = prompt("Yeni açıklamanızı yazın:", currentBio);
+            if (newBio !== null && newBio.trim() !== "") {
+                document.getElementById('userBio').innerText = newBio;
+                // İleride buraya: Supabase güncelleme kodu gelecek
+            }
+        }
+
+        // 3. Dosya Boyutu Kontrolü (2MB)
+        document.getElementById('avatarUpload').addEventListener('change', function() {
             const file = this.files[0];
-            if (file) {
-                const fileSize = file.size / 1024 / 1024; // MB cinsinden
-                if (fileSize > 2) {
-                    alert("Fotoğraf çok büyük! Maksimum 2MB yükleyebilirsin. (Senin dosyan: " + fileSize.toFixed(2) + "MB)");
-                    this.value = ""; // Seçimi temizle
-                } else {
-                    // Burada Supabase yükleme fonksiyonun çalışacak
-                    console.log("Dosya uygun, yükleniyor...");
-                }
+            if (file && file.size / 1024 / 1024 > 2) {
+                alert("Fotoğraf çok büyük! Maksimum 2MB yükleyebilirsin.");
+                this.value = "";
             }
         });
+
+        // Modal dışına tıklandığında kapatma
+        window.onclick = function(event) {
+            const modal = document.getElementById('bannerModal');
+            if (event.target == modal) closeBannerModal();
+        }
     </script>
 </body>
 </html>
