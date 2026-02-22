@@ -41,7 +41,7 @@
 
         .profile-container { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
-        /* --- BANNER ALANI GÜNCELLEME --- */
+        /* --- BANNER ALANI --- */
         .profile-banner {
             height: 250px;
             background: url('banner+.jpg') center/cover no-repeat;
@@ -49,7 +49,6 @@
             position: relative;
             border: 1px solid #222;
         }
-
         .edit-banner-btn {
             position: absolute; top: 20px; right: 20px;
             background: rgba(0,0,0,0.6); color: white;
@@ -58,12 +57,12 @@
         }
         .edit-banner-btn:hover { background: var(--neon-mor); box-shadow: 0 0 10px var(--neon-mor); }
 
+        /* --- PROFİL KARTI --- */
         .profile-card {
             background: var(--card-bg); border: 1px solid #222;
             border-radius: 0 0 20px 20px; padding: 0 40px 40px;
             position: relative; text-align: center;
         }
-
         .avatar-wrapper {
             position: relative; width: 150px; height: 150px; margin: -75px auto 20px;
         }
@@ -79,30 +78,28 @@
             cursor: pointer; border: 2px solid var(--card-bg); transition: 0.3s;
         }
 
+        /* --- KIDEM VE BİO --- */
         .rank-badge {
             display: inline-block; padding: 5px 15px; border-radius: 50px;
             font-size: 12px; font-weight: 800; text-transform: uppercase;
             margin-bottom: 15px; background: rgba(96, 29, 194, 0.2);
             border: 1px solid var(--neon-mor); color: var(--neon-mor);
         }
-
-        /* --- BİO DÜZENLEME --- */
         .bio-container {
             display: flex; align-items: center; justify-content: center;
             gap: 10px; margin-bottom: 25px;
         }
         .profile-bio { color: var(--gri-yazi); font-size: 14px; margin: 0; }
-        .edit-bio-icon {
-            color: var(--neon-mor); cursor: pointer; font-size: 14px; opacity: 0.6; transition: 0.3s;
-        }
+        .edit-bio-icon { color: var(--neon-mor); cursor: pointer; font-size: 14px; opacity: 0.6; transition: 0.3s; }
         .edit-bio-icon:hover { opacity: 1; transform: scale(1.2); }
 
+        /* --- İSTATİSTİKLER --- */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
         .stat-item { background: #111; padding: 20px; border-radius: 15px; border-bottom: 2px solid #222; }
         .stat-value { display: block; font-size: 24px; font-weight: 900; color: var(--neon-mor); }
         .stat-label { font-size: 12px; color: var(--gri-yazi); text-transform: uppercase; }
 
-        /* --- BANNER MODAL --- */
+        /* --- MODAL (BANNER SEÇİMİ) --- */
         .modal {
             display: none; position: fixed; z-index: 2000; left: 0; top: 0;
             width: 100%; height: 100%; background: rgba(0,0,0,0.9);
@@ -112,10 +109,7 @@
             border: 2px solid var(--neon-mor); width: 80%; max-width: 800px;
             border-radius: 20px; position: relative;
         }
-        .close-modal {
-            position: absolute; right: 20px; top: 15px; color: white;
-            font-size: 28px; cursor: pointer;
-        }
+        .close-modal { position: absolute; right: 20px; top: 15px; color: white; font-size: 28px; cursor: pointer; }
         .banner-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 15px; margin-top: 20px; max-height: 400px; overflow-y: auto;
@@ -126,7 +120,6 @@
         }
         .banner-option:hover { border-color: var(--neon-mor); transform: scale(1.05); }
 
-        /* --- FOOTER --- */
         footer {
             background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor);
             padding: 40px 10% 20px; margin-top: 50px; text-align: center;
@@ -165,7 +158,7 @@
             </div>
 
             <div class="rank-badge" id="userRank">YENİ SAVAŞÇI</div>
-            <h1 class="profile-name" id="userName">Oyuncu Adı</h1>
+            <h1 class="profile-name">Oyuncu Adı</h1>
             
             <div class="bio-container">
                 <p class="profile-bio" id="userBio">Zafer mor ışıkta parlar! Henüz bir açıklama eklenmedi.</p>
@@ -173,18 +166,9 @@
             </div>
 
             <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-value">0</span>
-                    <span class="stat-label">Toplam Maç</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value">%0</span>
-                    <span class="stat-label">Kazanma Oranı</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value">0</span>
-                    <span class="stat-label">Turnuvalar</span>
-                </div>
+                <div class="stat-item"><span class="stat-value">0</span><span class="stat-label">Toplam Maç</span></div>
+                <div class="stat-item"><span class="stat-value">%0</span><span class="stat-label">Kazanma Oranı</span></div>
+                <div class="stat-item"><span class="stat-value">0</span><span class="stat-label">Turnuvalar</span></div>
             </div>
         </div>
     </main>
@@ -192,69 +176,69 @@
     <div id="bannerModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeBannerModal()">&times;</span>
-            <h2 style="margin-bottom:20px;">Kapak Resmi Seç (10 Seçenek)</h2>
-            <div class="banner-grid" id="bannerOptions">
-                </div>
+            <h2 style="margin-bottom:20px;">Kapak Resmi Seç</h2>
+            <div class="banner-grid" id="bannerOptions"></div>
         </div>
     </div>
 
     <footer>
-        <div class="footer-bottom">
-            <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
-        </div>
+        <div class="footer-bottom"><p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p></div>
     </footer>
 
     <script>
-        // 1. Banner Modal Yönetimi
+        // 1. PP ÖNİZLEME VE BOYUT KONTROLÜ (DÜZELTİLDİ)
+        document.getElementById('avatarUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('userAvatar');
+
+            if (file) {
+                // 2MB Sınırı
+                if (file.size / 1024 / 1024 > 2) {
+                    alert("Fotoğraf çok büyük! Maksimum 2MB yükleyebilirsin.");
+                    this.value = "";
+                    return;
+                }
+
+                // Önizlemeyi Başlat
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    preview.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 2. BANNER MODAL YÖNETİMİ
         function openBannerModal() {
-            const modal = document.getElementById('bannerModal');
             const grid = document.getElementById('bannerOptions');
-            grid.innerHTML = ""; // Temizle
-            
-            // 10 Sabit Seçenek Oluştur (Hepsine senin gönderdiğin görseli atıyoruz)
+            grid.innerHTML = ""; 
             for(let i=1; i<=10; i++) {
                 const img = document.createElement('img');
-                img.src = 'banner+.jpg';
+                img.src = 'banner+.jpg'; // Senin gönderdiğin görsel
                 img.className = 'banner-option';
-                img.onclick = function() { selectBanner(this.src); };
+                img.onclick = function() { 
+                    document.getElementById('currentBanner').style.backgroundImage = `url('${this.src}')`;
+                    closeBannerModal();
+                };
                 grid.appendChild(img);
             }
-            modal.style.display = "block";
+            document.getElementById('bannerModal').style.display = "block";
         }
 
-        function closeBannerModal() {
-            document.getElementById('bannerModal').style.display = "none";
-        }
+        function closeBannerModal() { document.getElementById('bannerModal').style.display = "none"; }
 
-        function selectBanner(src) {
-            document.getElementById('currentBanner').style.backgroundImage = `url('${src}')`;
-            closeBannerModal();
-            // İleride buraya: Supabase'e banner tercihini kaydetme kodu gelecek
-        }
-
-        // 2. Bio Düzenleme
+        // 3. BİO DÜZENLEME
         function editBio() {
             const currentBio = document.getElementById('userBio').innerText;
             const newBio = prompt("Yeni açıklamanızı yazın:", currentBio);
             if (newBio !== null && newBio.trim() !== "") {
                 document.getElementById('userBio').innerText = newBio;
-                // İleride buraya: Supabase güncelleme kodu gelecek
             }
         }
 
-        // 3. Dosya Boyutu Kontrolü (2MB)
-        document.getElementById('avatarUpload').addEventListener('change', function() {
-            const file = this.files[0];
-            if (file && file.size / 1024 / 1024 > 2) {
-                alert("Fotoğraf çok büyük! Maksimum 2MB yükleyebilirsin.");
-                this.value = "";
-            }
-        });
-
-        // Modal dışına tıklandığında kapatma
+        // Dışarı tıklandığında modal kapatma
         window.onclick = function(event) {
-            const modal = document.getElementById('bannerModal');
-            if (event.target == modal) closeBannerModal();
+            if (event.target == document.getElementById('bannerModal')) closeBannerModal();
         }
     </script>
 </body>
