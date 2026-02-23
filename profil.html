@@ -79,7 +79,7 @@
         .stat-value { display: block; font-size: 24px; font-weight: 900; color: var(--neon-mor); }
         .stat-label { font-size: 12px; color: var(--gri-yazi); text-transform: uppercase; font-weight: bold; }
 
-        /* BİLDİRİM PANELİ */
+        /* --- BİLDİRİM PANELİ --- */
         .notifications-section { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 30px; display: none; animation: menuFadeIn 0.4s ease-out; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .notifications-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #222; padding-bottom: 15px; margin-bottom: 20px; }
         .notifications-header h3 { font-size: 18px; color: white; }
@@ -140,9 +140,11 @@
             .dropdown-content { position: fixed; right: 15px; top: 75px; width: 180px; }
             .profile-card { padding: 0 20px 30px; }
             .stats-grid { grid-template-columns: 1fr; gap: 15px; } 
+            
+            /* Mobil Bildirim Optimizasyonu */
             .notif-item { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .notif-actions { width: 100%; display: flex; justify-content: stretch; }
-            .notif-actions button { flex: 1; }
+            .notif-actions { width: 100%; display: flex; justify-content: space-between; gap: 10px; }
+            .notif-actions button { flex: 1; justify-content: center; }
         }
     </style>
 </head>
@@ -261,7 +263,6 @@
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
 
-        // ÇIKIŞ YAPMA FİXİ: Hata verdiren satır yerine temiz bir fonksiyon yazıldı.
         async function handleLogout() {
             await _supabase.auth.signOut();
             window.location.href = 'kayit.html';
@@ -278,7 +279,6 @@
             currentUser = user;
 
             const username = user.user_metadata?.username || "OYUNCU";
-            // Çıkış butonuna handleLogout eklendi
             document.getElementById('authAction').innerHTML = `
                 <div class="user-dropdown">
                     <button class="dropdown-trigger">
@@ -294,7 +294,7 @@
 
             await loadProfileData();
             await loadInvitations();
-            subscribeToInvites();
+            subscribeToInvites(); // Gerçek zamanlı dinleyiciyi başlat
         }
 
         async function loadProfileData() {
@@ -312,7 +312,7 @@
             }
         }
 
-        // --- AVATAR (PP) YÜKLEME ---
+        // --- AVATAR YÜKLEME ---
         document.getElementById('avatarUpload').addEventListener('change', async function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -351,8 +351,9 @@
             }
         });
 
-        // --- BİLDİRİM VE DİĞER FONKSİYONLAR ---
+        // --- BİLDİRİM VE SİNYAL SİSTEMİ ---
         async function loadInvitations() {
+            // Sadece "pending" (bekleyen) davetleri çeker. Onaylanan veya silinenler ekrana gelmez.
             const { data, error } = await _supabase
                 .from('application_members')
                 .select(`id, role, tournament_applications ( team_name, team_tag )`)
@@ -390,17 +391,39 @@
             }
         }
 
-        async function respondInvite(memberId, status) {
+        async function respondInvite(memberId, action) {
             try {
-                if (status === 'accepted') await _supabase.from('application_members').update({ status: 'accepted' }).eq('id', memberId);
-                else await _supabase.from('application_members').delete().eq('id', memberId);
+                if (action === 'accepted') {
+                    // Veritabanını güncelle
+                    const { error } = await _supabase.from('application_members').update({ status: 'accepted' }).eq('id', memberId);
+                    
+                    // Diğer sayfalara SİNYAL GÖNDER (Gri tiki mavi yapmak için)
+                    if (!error) {
+                        localStorage.setItem('teamInviteSignal', JSON.stringify({ id: memberId, status: 'accepted', timestamp: Date.now() }));
+                    }
+                } else {
+                    // Reddedilirse veritabanından tamamen sil
+                    await _supabase.from('application_members').delete().eq('id', memberId);
+                    
+                    // Reddedilme sinyali (Gerekirse diğer sayfada elementi kırmızı yapmak vs. için)
+                    localStorage.setItem('teamInviteSignal', JSON.stringify({ id: memberId, status: 'rejected', timestamp: Date.now() }));
+                }
+                
+                // İşlem bittikten sonra listeyi yenile (Kabul edilen veya reddedilen anında kaybolur)
                 await loadInvitations();
-            } catch (err) { console.error(err); }
+            } catch (err) { console.error("İşlem sırasında hata:", err); }
         }
 
+        // Kaptan başvuru iptal ederse anında silinmesini sağlayan WebSockets dinleyicisi
         function subscribeToInvites() {
-            _supabase.channel('custom-all-channel')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'application_members', filter: `user_id=eq.${currentUser.id}` }, () => {
+            _supabase.channel('custom-invites-channel')
+                .on('postgres_changes', { 
+                    event: '*', // INSERT, UPDATE veya DELETE olaylarını dinler
+                    schema: 'public', 
+                    table: 'application_members', 
+                    filter: `user_id=eq.${currentUser.id}` 
+                }, (payload) => {
+                    // Veritabanında herhangi bir değişiklik olduğunda (kaptan iptal ederse vs.) paneli anında günceller
                     loadInvitations();
                 }).subscribe();
         }
