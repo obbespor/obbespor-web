@@ -190,8 +190,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
+const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -205,6 +204,16 @@
             await _supabase.auth.signOut();
             window.location.href = 'kayit.html';
         }
+
+        // --- SCROLL EFFECT ---
+        let lastScrollTop = 0;
+        const header = document.getElementById("mainHeader");
+        window.addEventListener("scroll", () => {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 100) header.classList.add("nav-hidden");
+            else header.classList.remove("nav-hidden");
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+        }, false);
 
         async function init() {
             const { data: { user } } = await _supabase.auth.getUser();
@@ -224,9 +233,9 @@
                         <a href="#" onclick="handleLogout(); return false;"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
                     </div>
                 </div>`;
-
-            renderPlayerInputs();
-            await loadOrCreateDraft(username);
+<script>
+            renderPlayerInputs(); // Önce input HTML'lerini oluştur
+            await loadOrCreateDraft(username); // Sonra verileri doldur
             setupAutoSave();
             subscribeToDraftUpdates();
         }
@@ -240,32 +249,31 @@
 
             let draft = drafts && drafts.length > 0 ? drafts[0] : null;
 
-            // Eğer başvuru zaten tamamlanmışsa (pending)
             if (draft && draft.status === 'pending') {
                 document.querySelector('.auth-card').innerHTML = `<h3 style="text-align:center; color:var(--mavi-onay);">Başvurunuz turnuva yöneticileri tarafından inceleniyor.</h3><p style="text-align:center; margin-top:20px;"><a href="profil.html" style="color:white; text-decoration:underline;">Profile Dön</a></p>`;
                 return;
             }
 
             if (draft) {
-                // Zaman Aşımı Kontrolü (İkinci Güvenlik Duvarı)
                 const createdTime = new Date(draft.created_at).getTime();
                 const now = new Date().getTime();
                 if (now - createdTime > 3 * 60 * 60 * 1000) {
-                    await cancelDraft(true); // Süre doldu, sessizce sil ve yenile
+                    await cancelDraft(true); 
                     return; 
                 }
                 currentDraftId = draft.id;
                 draftCreatedAt = createdTime;
                 
-                // Formu doldur
                 document.getElementById('teamName').value = draft.team_name || '';
                 document.getElementById('teamTag').value = draft.team_tag || '';
                 document.getElementById('draftInfoBox').style.display = 'block';
                 startCountdown();
+                
+                // DÜZELTME: Eski taslak yüklenirken de kaptan slotunu zorla doldur
+                fillCaptainSlot(username);
                 await loadDraftMembers();
 
             } else {
-                // Yeni Taslak Oluştur
                 const { data: newDraft } = await _supabase.from('tournament_applications').insert({
                     captain_id: currentUser.id,
                     team_name: '', team_tag: '', status: 'draft'
@@ -276,21 +284,28 @@
                 document.getElementById('draftInfoBox').style.display = 'block';
                 startCountdown();
 
-                // Kaptanı otomatik olarak asıl oyuncu listesine kabul edilmiş (accepted) olarak ekle
                 await _supabase.from('application_members').insert({
                     application_id: currentDraftId,
                     user_id: currentUser.id, role: 'main', status: 'accepted'
                 });
                 
-                // Formda kaptanı göster
-                const captInput = document.getElementById('main_1');
+                // DÜZELTME: Yeni taslak oluşurken kaptan slotunu doldur
+                fillCaptainSlot(username);
+            }
+        }
+
+        // DÜZELTME: Kaptan slotunu dolduran ortak fonksiyon
+        function fillCaptainSlot(username) {
+            const captInput = document.getElementById('main_1');
+            if(captInput) {
                 captInput.value = username;
                 captInput.readOnly = true;
                 captInput.dataset.userId = currentUser.id;
                 captInput.dataset.status = 'accepted';
                 document.getElementById('main_1-tick').className = 'fas fa-check-circle status-tick blue';
-                updateFormStatus();
+                document.getElementById('main_1-tick').style.display = 'block';
             }
+            updateFormStatus();
         }
 
         // --- 2. TASLAK OYUNCULARINI FORMA YÜKLEME ---
@@ -300,30 +315,25 @@
                 .eq('application_id', currentDraftId);
                 
             if(members) {
-                let mainIndex = 2; // 1 kaptan için rezerve
+                let mainIndex = 2; // 1 numara kaptan
                 let subIndex = 1;
                 
                 members.forEach(m => {
-                    let inputId = '';
-                    if (m.user_id === currentUser.id) {
-                        inputId = 'main_1'; // Kaptan her zaman 1. slot
-                    } else {
-                        if(m.role === 'main') { inputId = 'main_' + mainIndex; mainIndex++; } 
-                        else { inputId = 'sub_' + subIndex; subIndex++; }
-                    }
-
-                    const input = document.getElementById(inputId);
-                    if(input) {
-                        input.value = m.profiles.username;
-                        input.readOnly = true;
-                        input.dataset.userId = m.user_id;
-                        input.dataset.memberId = m.id;
-                        input.dataset.status = m.status;
+                    if (m.user_id !== currentUser.id) { // Kaptanı zaten fillCaptainSlot doldurdu
+                        let inputId = m.role === 'main' ? 'main_' + mainIndex++ : 'sub_' + subIndex++;
+                        const input = document.getElementById(inputId);
                         
-                        const tick = document.getElementById(inputId + '-tick');
-                        tick.className = m.status === 'accepted' ? 'fas fa-check-circle status-tick blue' : 'fas fa-check-circle status-tick grey';
-                        
-                        if (inputId !== 'main_1') {
+                        if(input) {
+                            input.value = m.profiles.username;
+                            input.readOnly = true;
+                            input.dataset.userId = m.user_id;
+                            input.dataset.memberId = m.id;
+                            input.dataset.status = m.status;
+                            
+                            const tick = document.getElementById(inputId + '-tick');
+                            tick.style.display = 'block';
+                            tick.className = m.status === 'accepted' ? 'fas fa-check-circle status-tick blue' : 'fas fa-check-circle status-tick grey';
+                            
                             document.getElementById(inputId + '-remove').style.display = 'block';
                         }
                     }
@@ -338,7 +348,7 @@
             const sDiv = document.getElementById('subPlayers');
             for(let i=1; i<=5; i++) mDiv.innerHTML += createInputHTML(i, false);
             for(let i=1; i<=2; i++) sDiv.innerHTML += createInputHTML(i, true);
-            attachSearchEvents();
+            attachSearchEvents(); // DÜZELTME: Inputlar basıldıktan hemen sonra eventleri bağla
         }
 
         function createInputHTML(idx, isSub) {
@@ -360,13 +370,13 @@
             document.querySelectorAll('.player-search').forEach(input => {
                 if(input.id === 'main_1') return; 
 
+                // Event listener'ı bir kez atadığımızdan emin olmak için eskiyi temizlemeye gerek yok, renderPlayerInputs sadece 1 kez çalışır.
                 input.addEventListener('input', async function() {
                     const query = this.value;
                     const list = document.getElementById(this.id + '-list');
                     list.innerHTML = '';
                     if (query.length < 2) return;
 
-                    // Formda seçili olanları hariç tut
                     const selectedIds = Array.from(document.querySelectorAll('.player-search')).map(el => el.dataset.userId).filter(id => id);
 
                     let supabaseQuery = _supabase.from('profiles').select('username, id').ilike('username', `%${query}%`).is('team_id', null).neq('id', currentUser.id);
@@ -378,13 +388,14 @@
                         const div = document.createElement('div');
                         div.innerHTML = `<i class="fas fa-user"></i> ${u.username}`;
                         div.onclick = async () => {
-                            // Arayüzü kilitle ve yükleniyor yap
                             input.value = u.username;
                             input.readOnly = true;
                             list.innerHTML = '';
-                            document.getElementById(input.id + '-tick').className = 'fas fa-spinner fa-spin status-tick grey';
+                            
+                            const tick = document.getElementById(input.id + '-tick');
+                            tick.style.display = 'block';
+                            tick.className = 'fas fa-spinner fa-spin status-tick grey';
 
-                            // VERİTABANINA DAVETİ EKLE (BİLDİRİM ANINDA GİDER!)
                             const role = input.id.startsWith('main') ? 'main' : 'sub';
                             const { data: newMember, error } = await _supabase.from('application_members').insert({
                                 application_id: currentDraftId,
@@ -395,8 +406,7 @@
                                 input.dataset.userId = u.id;
                                 input.dataset.memberId = newMember.id;
                                 input.dataset.status = 'pending';
-                                // Bekliyor (Gri Tik) durumuna geçir ve Çöp kutusunu göster
-                                document.getElementById(input.id + '-tick').className = 'fas fa-check-circle status-tick grey';
+                                tick.className = 'fas fa-check-circle status-tick grey';
                                 document.getElementById(input.id + '-remove').style.display = 'block';
                                 updateFormStatus();
                             }
@@ -407,32 +417,31 @@
             });
         }
 
-        // Oyuncuyu taslaktan çıkarma (Daveti Geri Çekme)
         async function removePlayer(inputId) {
             const input = document.getElementById(inputId);
             const memberId = input.dataset.memberId;
             if (memberId) {
-                // Veritabanından sil (Karşı tarafın bildirimi anında silinir)
                 await _supabase.from('application_members').delete().eq('id', memberId);
             }
-            // Form slotunu sıfırla
             input.value = '';
             input.readOnly = false;
             input.dataset.userId = '';
             input.dataset.memberId = '';
             input.dataset.status = '';
-            document.getElementById(inputId + '-tick').className = 'fas fa-check-circle status-tick';
+            
+            const tick = document.getElementById(inputId + '-tick');
+            tick.className = 'fas fa-check-circle status-tick';
+            tick.style.display = 'none';
             document.getElementById(inputId + '-remove').style.display = 'none';
             updateFormStatus();
         }
 
-        // --- 4. GERÇEK ZAMANLI LOBİ TAKİBİ (Supabase Realtime) ---
+        // --- 4. GERÇEK ZAMANLI LOBİ TAKİBİ ---
         function subscribeToDraftUpdates() {
             if(!currentDraftId) return;
             _supabase.channel('draft-updates')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'application_members', filter: `application_id=eq.${currentDraftId}` }, payload => {
                     
-                    // Eğer bir oyuncu daveti KABUL EDERSE
                     if (payload.eventType === 'UPDATE') {
                         const member = payload.new;
                         const input = document.querySelector(`[data-member-id="${member.id}"]`);
@@ -441,17 +450,18 @@
                             document.getElementById(input.id + '-tick').className = 'fas fa-check-circle status-tick blue';
                         }
                     } 
-                    // Eğer bir oyuncu daveti REDDEDERSE (Profilinden silerse)
                     else if (payload.eventType === 'DELETE') {
                         const member = payload.old;
                         const input = document.querySelector(`[data-member-id="${member.id}"]`);
                         if(input) {
-                            // Slotu temizle ve kaptana uyarı ver
                             input.value = ''; input.readOnly = false;
                             input.dataset.userId = ''; input.dataset.memberId = ''; input.dataset.status = '';
-                            document.getElementById(input.id + '-tick').className = 'fas fa-check-circle status-tick';
+                            
+                            const tick = document.getElementById(input.id + '-tick');
+                            tick.className = 'fas fa-check-circle status-tick';
+                            tick.style.display = 'none';
                             document.getElementById(input.id + '-remove').style.display = 'none';
-                            alert(`Bir oyuncu takım davetinizi reddetti.`);
+                            alert(`Bir oyuncu takım davetinizi reddetti veya sistemden silindi.`);
                         }
                     }
                     updateFormStatus();
@@ -477,14 +487,12 @@
         }
 
         function updateFormStatus() {
-            // Sadece 'main' (asıl) oyunculardan statüsü 'accepted' olanları say
             const acceptedMains = Array.from(document.querySelectorAll('[id^="main_"]'))
                 .filter(i => i.dataset.status === 'accepted').length;
             
             const btn = document.getElementById('submitBtn');
             btn.innerText = `OYUNCU ONAYLARI BEKLENİYOR (${acceptedMains}/5)`;
             
-            // Eğer 5 asıl oyuncu da kabul ettiyse GÖNDER butonu açılır
             btn.disabled = acceptedMains < 5;
             if(acceptedMains === 5) {
                 btn.innerText = "BAŞVURUYU TAMAMLA VE GÖNDER";
@@ -510,7 +518,6 @@
             submitBtn.innerText = "YÜKLENİYOR...";
 
             try {
-                // Logo Yükleme
                 const logoFile = document.getElementById('teamLogo').files[0];
                 let logoUrl = "";
                 if(logoFile) {
@@ -522,7 +529,6 @@
                     logoUrl = data.publicUrl;
                 }
 
-                // Statüyü 'pending' (yönetici onayı bekliyor) olarak güncelle
                 const { error: teamError } = await _supabase.from('tournament_applications').update({
                     status: 'pending',
                     logo_url: logoUrl
@@ -540,7 +546,6 @@
             }
         });
 
-        // Kalan Süreyi Gösterme
         function startCountdown() {
             setInterval(() => {
                 if(!draftCreatedAt) return;
@@ -550,10 +555,11 @@
                 const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 document.getElementById('timeLeft').innerText = `Kalan Süre: ${h}s ${m}d`;
-            }, 60000); // Dakikada bir güncelle
+            }, 60000); 
         }
 
         init();
-    </script>
+                </script>
+                      
 </body>
 </html>
