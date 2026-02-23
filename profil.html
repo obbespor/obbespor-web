@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* --- 1. TEMEL AYARLAR --- */
+        /* --- TEMEL AYARLAR --- */
         :root {
             --ana-siyah: #000000;
             --nav-bg: #000000;
@@ -29,114 +29,47 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
-        body {
-            background: radial-gradient(circle at top, #1a052d 0%, #000000 100%);
-            background-attachment: fixed;
-            color: var(--yazi-beyaz);
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            padding-top: 80px;
-        }
+        body { background: radial-gradient(circle at top, #1a052d 0%, #000000 100%); background-attachment: fixed; color: var(--yazi-beyaz); font-family: 'Poppins', sans-serif; line-height: 1.6; padding-top: 80px; }
 
-        /* --- 2. KUSURSUZ HEADER --- */
-        header.main-nav {
-            background-color: var(--nav-bg);
-            padding: 0 10%; 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 80px;
-            border-bottom: 3px solid var(--neon-mor);
-            position: fixed;
-            top: 0; left: 0; width: 100%;
-            z-index: 1000;
-            transition: transform 0.4s ease-in-out;
-        }
+        /* --- KUSURSUZ HEADER --- */
+        header.main-nav { background-color: var(--nav-bg); padding: 0 10%; display: flex; justify-content: space-between; align-items: center; height: 80px; border-bottom: 3px solid var(--neon-mor); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; transition: transform 0.4s ease-in-out; }
         header.main-nav.nav-hidden { transform: translateY(-110%); }
-
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); }
-        
         nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
         nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
         nav ul li a:hover { color: var(--neon-mor); }
-        
-        .nav-btn { 
-            border: 2px solid var(--neon-mor); 
-            padding: 8px 20px; 
-            border-radius: 5px; 
-            color: white !important; 
-            background: transparent; 
-            transition: 0.3s;
-            text-decoration: none;
-            font-weight: bold;
-        }
+        .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; font-weight: bold; }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
         /* --- PRO OYUNCU MENÜSÜ --- */
         .user-dropdown { position: relative; display: inline-block; }
-        .dropdown-trigger {
-            background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor);
-            padding: 8px 18px; border-radius: 50px; color: white; cursor: pointer;
-            display: flex; align-items: center; gap: 10px; transition: 0.3s;
-            font-family: 'Poppins', sans-serif; z-index: 1001;
-        }
+        .dropdown-trigger { background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor); padding: 8px 18px; border-radius: 50px; color: white; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; font-family: 'Poppins', sans-serif; z-index: 1001; }
         .dropdown-trigger:hover { box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); background: rgba(96, 29, 194, 0.2); }
         .user-name-text { font-weight: 800; font-size: 13px; letter-spacing: 1px; }
         .arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
-        
-        .dropdown-content {
-            display: none; position: absolute; right: 0; top: 100%; background: #0d0d0d;
-            min-width: 200px; border: 1px solid var(--neon-mor); border-radius: 12px;
-            padding: 5px 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9);
-            animation: menuFadeIn 0.2s ease-out;
-        }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: #0d0d0d; min-width: 200px; border: 1px solid var(--neon-mor); border-radius: 12px; padding: 5px 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9); animation: menuFadeIn 0.2s ease-out; }
         .dropdown-content::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
         .dropdown-content a { color: #fff; padding: 12px 20px; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; transition: 0.2s; }
         .dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
         .dropdown-content a:hover { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); padding-left: 25px; }
-        
         .user-dropdown:hover .dropdown-content { display: block; }
         .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
-
         @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- 3. PROFİL TASARIMI --- */
+        /* --- PROFİL TASARIMI --- */
         .profile-container { max-width: 1000px; margin: 40px auto; padding: 20px; }
-        
-        .profile-banner {
-            height: 250px; background: url('img/banner+.jpg') center/cover no-repeat;
-            border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222;
-        }
-        .edit-banner-btn {
-            position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white;
-            padding: 8px 15px; border-radius: 5px; border: 1px solid var(--neon-mor);
-            cursor: pointer; font-size: 12px; transition: 0.3s; font-family: 'Poppins', sans-serif;
-        }
+        .profile-banner { height: 250px; background: url('img/banner+.jpg') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
+        .edit-banner-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 15px; border-radius: 5px; border: 1px solid var(--neon-mor); cursor: pointer; font-size: 12px; transition: 0.3s; font-family: 'Poppins', sans-serif; }
         .edit-banner-btn:hover { background: var(--neon-mor); }
 
-        .profile-card {
-            background: var(--card-bg); border: 1px solid #222; border-top: none;
-            border-radius: 0 0 20px 20px; padding: 0 40px 40px;
-            position: relative; text-align: center; margin-bottom: 30px;
-        }
+        .profile-card { background: var(--card-bg); border: 1px solid #222; border-top: none; border-radius: 0 0 20px 20px; padding: 0 40px 40px; position: relative; text-align: center; margin-bottom: 30px; }
         .avatar-wrapper { position: relative; width: 150px; height: 150px; margin: -75px auto 20px; }
-        .profile-avatar {
-            width: 150px; height: 150px; border-radius: 50%; border: 5px solid var(--card-bg); 
-            background: #111; object-fit: cover; display: block; box-shadow: 0 0 20px rgba(96, 29, 194, 0.5);
-        }
-        .edit-avatar-btn {
-            position: absolute; bottom: 5px; right: 5px; background: var(--neon-mor);
-            width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; border: 2px solid var(--card-bg); color: white; transition: 0.3s;
-        }
+        .profile-avatar { width: 150px; height: 150px; border-radius: 50%; border: 5px solid var(--card-bg); background: #111; object-fit: cover; display: block; box-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
+        .edit-avatar-btn { position: absolute; bottom: 5px; right: 5px; background: var(--neon-mor); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid var(--card-bg); color: white; transition: 0.3s; z-index: 5; }
         .edit-avatar-btn:hover { transform: scale(1.1); }
 
-        .rank-badge {
-            display: inline-block; padding: 5px 15px; border-radius: 50px;
-            font-size: 12px; font-weight: 800; text-transform: uppercase;
-            margin-bottom: 15px; background: rgba(96, 29, 194, 0.2); border: 1px solid var(--neon-mor); color: var(--neon-mor);
-        }
+        .rank-badge { display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; background: rgba(96, 29, 194, 0.2); border: 1px solid var(--neon-mor); color: var(--neon-mor); }
         .bio-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; }
         .edit-bio-icon { color: var(--neon-mor); cursor: pointer; font-size: 14px; opacity: 0.7; transition: 0.3s;}
         .edit-bio-icon:hover { opacity: 1; transform: scale(1.1); }
@@ -147,11 +80,7 @@
         .stat-label { font-size: 12px; color: var(--gri-yazi); text-transform: uppercase; font-weight: bold; }
 
         /* BİLDİRİM PANELİ */
-        .notifications-section {
-            background: rgba(10, 10, 10, 0.95); border: 1px solid #222;
-            border-radius: 20px; padding: 30px; display: none; 
-            animation: menuFadeIn 0.4s ease-out; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        .notifications-section { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 30px; display: none; animation: menuFadeIn 0.4s ease-out; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .notifications-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #222; padding-bottom: 15px; margin-bottom: 20px; }
         .notifications-header h3 { font-size: 18px; color: white; }
         .notifications-header h3 i { color: var(--neon-mor); margin-right: 8px; }
@@ -175,21 +104,13 @@
         .banner-option { width: 100%; height: 120px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; object-fit: cover; transition: 0.3s; }
         .banner-option:hover { border-color: var(--neon-mor); transform: scale(1.02); }
 
-        /* --- 4. KUSURSUZ FOOTER --- */
-        footer {
-            background-color: var(--nav-bg);
-            border-top: 2px solid var(--neon-mor);
-            padding: 80px 10% 40px;
-            margin-top: 100px;
-        }
+        /* --- KUSURSUZ FOOTER --- */
+        footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 100px; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
         .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
         .social-icons { display: flex; gap: 15px; }
-        .social-icons a {
-            width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s;
-        }
+        .social-icons a { width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; }
         .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
         .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
         .footer-column ul { list-style: none; }
@@ -200,7 +121,7 @@
         .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* --- 5. MOBİL UYUMLULUK (BİREBİR AKTARILDI) --- */
+        /* --- MOBİL UYUMLULUK --- */
         @media (max-width: 768px) {
             header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
             body { padding-top: 125px; }
@@ -208,16 +129,12 @@
             nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
             nav ul li a { font-size: 10px; white-space: nowrap; }
             .nav-btn { padding: 6px 12px; font-size: 10px !important; }
-
-            /* Footer Yan Yana Mobil Düzeni */
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
             .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
             .footer-brand p { max-width: 100%; }
             .social-icons { justify-content: center; }
             .footer-column { text-align: left; }
             footer { padding: 60px 8% 30px; }
-
-            /* Profil ve Bildirim Ekstraları */
             .user-name-text, .arrow-icon { display: none; } 
             .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
             .dropdown-content { position: fixed; right: 15px; top: 75px; width: 180px; }
@@ -253,10 +170,11 @@
         <div class="profile-card">
             <div class="avatar-wrapper">
                 <img src="https://via.placeholder.com/150" alt="Avatar" class="profile-avatar" id="userAvatar">
+                
                 <label for="avatarUpload" class="edit-avatar-btn">
                     <i class="fas fa-camera"></i>
-                    <input type="file" id="avatarUpload" hidden accept="image/*">
                 </label>
+                <input type="file" id="avatarUpload" accept="image/png, image/jpeg, image/jpg" style="display: none;">
             </div>
 
             <div class="rank-badge" id="userRank">YENİ SAVAŞÇI</div>
@@ -343,6 +261,12 @@
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
 
+        // ÇIKIŞ YAPMA FİXİ: Hata verdiren satır yerine temiz bir fonksiyon yazıldı.
+        async function handleLogout() {
+            await _supabase.auth.signOut();
+            window.location.href = 'kayit.html';
+        }
+
         // --- INIT PROFILE ---
         async function initProfile() {
             const { data: { user } } = await _supabase.auth.getUser();
@@ -354,6 +278,7 @@
             currentUser = user;
 
             const username = user.user_metadata?.username || "OYUNCU";
+            // Çıkış butonuna handleLogout eklendi
             document.getElementById('authAction').innerHTML = `
                 <div class="user-dropdown">
                     <button class="dropdown-trigger">
@@ -363,7 +288,7 @@
                     </button>
                     <div class="dropdown-content">
                         <a href="profil.html"><i class="fas fa-user-circle"></i> Profil</a>
-                        <a href="#" onclick="await _supabase.auth.signOut(); window.location.href='kayit.html';"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
+                        <a href="#" onclick="handleLogout(); return false;"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
                     </div>
                 </div>`;
 
@@ -379,7 +304,6 @@
                 if(data.bio) document.getElementById('userBio').innerText = data.bio;
                 if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
                 
-                // Cache-Buster ile resmi çek (Tarayıcı önbelleğini atlamak için)
                 if(data.avatar_url) {
                     const cacheBuster = data.avatar_url.includes('?') ? '&t=' : '?t=';
                     document.getElementById('userAvatar').src = data.avatar_url + cacheBuster + new Date().getTime();
@@ -388,7 +312,7 @@
             }
         }
 
-        // --- AVATAR (PP) YÜKLEME (SORUN ÇÖZÜLDÜ) ---
+        // --- AVATAR (PP) YÜKLEME ---
         document.getElementById('avatarUpload').addEventListener('change', async function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -397,27 +321,22 @@
                 return alert("Fotoğraf çok büyük! (Max 2MB)");
             }
 
-            // Seçilen resmi anında UI'da göster
             const preview = document.getElementById('userAvatar');
             preview.src = URL.createObjectURL(file);
 
             try {
-                // Benzersiz dosya ismi oluştur
                 const fileExt = file.name.split('.').pop();
                 const fileName = `avatar-${Date.now()}.${fileExt}`;
                 const filePath = `${currentUser.id}/${fileName}`;
 
-                // Supabase Storage'a Yükle (upsert: true ile üzerine yazmaya izin veriyoruz)
                 const { error: uploadError } = await _supabase.storage
                     .from('avatars')
                     .upload(filePath, file, { cacheControl: '3600', upsert: true });
 
                 if (uploadError) throw uploadError;
 
-                // Dosyanın public URL'sini al
                 const { data } = _supabase.storage.from('avatars').getPublicUrl(filePath);
                 
-                // Veritabanını yeni URL ile güncelle
                 const { error: updateError } = await _supabase
                     .from('profiles')
                     .update({ avatar_url: data.publicUrl })
@@ -432,7 +351,7 @@
             }
         });
 
-        // --- DİĞER FONKSİYONLAR (BİLDİRİM, BİO, KAPAK) ---
+        // --- BİLDİRİM VE DİĞER FONKSİYONLAR ---
         async function loadInvitations() {
             const { data, error } = await _supabase
                 .from('application_members')
