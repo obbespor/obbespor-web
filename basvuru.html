@@ -106,8 +106,6 @@
             .main-content { padding: 40px 5%; }
             .action-btns { flex-direction: column; }
             .footer-grid { grid-template-columns: 1fr; gap: 30px; text-align: center; }
-            .footer-brand p { max-width: 100%; }
-            .social-icons { justify-content: center; }
         }
     </style>
 </head>
@@ -193,7 +191,6 @@
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom"><p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p></div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -207,7 +204,7 @@
         let draftCreatedAt = null;
         let saveTimeout = null;
 
-        // Header scroll efekti
+        // --- HEADER SCROLL ---
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
         window.addEventListener("scroll", () => {
@@ -217,23 +214,26 @@
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
 
-        // Çıkış yapma
         async function handleLogout() {
             await _supabase.auth.signOut();
             window.location.href = 'kayit.html';
         }
 
+        // --- INIT: Sayfa Yüklendiğinde Çalışır ---
         async function init() {
             const { data: { user } } = await _supabase.auth.getUser();
             if (!user) { window.location.href = 'kayit.html'; return; }
             currentUser = user;
 
-            const username = user.user_metadata?.username || "OYUNCU";
+            // Kaptanın gerçek adını veritabanından çek (Auth boşluğu ihtimaline karşı)
+            const { data: profileData } = await _supabase.from('profiles').select('username').eq('id', user.id).single();
+            const realUsername = profileData?.username || user.user_metadata?.username || "KAPTAN";
+
             document.getElementById('authAction').innerHTML = `
                 <div class="user-dropdown">
                     <button class="dropdown-trigger">
                         <i class="fas fa-user"></i>
-                        <span class="user-name-text">${username.toUpperCase()}</span>
+                        <span class="user-name-text">${realUsername.toUpperCase()}</span>
                         <i class="fas fa-chevron-down arrow-icon"></i>
                     </button>
                     <div class="dropdown-content">
@@ -242,13 +242,13 @@
                     </div>
                 </div>`;
 
-            renderPlayerInputs(); // 1. Önce inputları ekrana bas
-            await loadOrCreateDraft(username); // 2. Sonra verilerle doldur
+            renderPlayerInputs(); // HTML inputları ekrana basılır
+            await loadOrCreateDraft(realUsername); // Kaptan adı slot'a gönderilir
             setupAutoSave();
             subscribeToDraftUpdates();
         }
 
-        // --- TASLAK YÜKLEME VE KAPTAN SLOTU ---
+        // --- TASLAK OLUŞTURMA & KAPTANI YAZDIRMA ---
         async function loadOrCreateDraft(username) {
             const { data: drafts } = await _supabase.from('tournament_applications')
                 .select('*')
@@ -266,8 +266,7 @@
                 const createdTime = new Date(draft.created_at).getTime();
                 const now = new Date().getTime();
                 if (now - createdTime > 3 * 60 * 60 * 1000) {
-                    await cancelDraft(true); 
-                    return; 
+                    await cancelDraft(true); return; 
                 }
                 currentDraftId = draft.id;
                 draftCreatedAt = createdTime;
@@ -277,13 +276,12 @@
                 document.getElementById('draftInfoBox').style.display = 'block';
                 startCountdown();
                 
-                fillCaptainSlot(username); // Kaptanı forma yerleştir
-                await loadDraftMembers(); // Varsa diğer üyeleri çek
+                fillCaptainSlot(username); // Eski taslak olsa da kaptan adını bas
+                await loadDraftMembers();
 
             } else {
                 const { data: newDraft } = await _supabase.from('tournament_applications').insert({
-                    captain_id: currentUser.id,
-                    team_name: '', team_tag: '', status: 'draft'
+                    captain_id: currentUser.id, team_name: '', team_tag: '', status: 'draft'
                 }).select().single();
                 
                 currentDraftId = newDraft.id;
@@ -292,15 +290,14 @@
                 startCountdown();
 
                 await _supabase.from('application_members').insert({
-                    application_id: currentDraftId,
-                    user_id: currentUser.id, role: 'main', status: 'accepted'
+                    application_id: currentDraftId, user_id: currentUser.id, role: 'main', status: 'accepted'
                 });
                 
-                fillCaptainSlot(username); // Kaptanı forma yerleştir
+                fillCaptainSlot(username); // Yeni taslakta kaptan adını bas
             }
         }
 
-        // Ortak Kaptan Doldurma Fonksiyonu
+        // Kaptanı formdaki 1. Slota Mavi Tik ile sabitleyen kod
         function fillCaptainSlot(username) {
             const captInput = document.getElementById('main_1');
             if(captInput) {
@@ -308,19 +305,22 @@
                 captInput.readOnly = true;
                 captInput.dataset.userId = currentUser.id;
                 captInput.dataset.status = 'accepted';
-                document.getElementById('main_1-tick').className = 'fas fa-check-circle status-tick blue';
-                document.getElementById('main_1-tick').style.display = 'block';
+                
+                const tick = document.getElementById('main_1-tick');
+                tick.className = 'fas fa-check-circle status-tick blue';
+                tick.style.display = 'block';
             }
             updateFormStatus();
         }
 
+        // Diğer oyuncuları veritabanından çekip formda doldurur
         async function loadDraftMembers() {
             const { data: members } = await _supabase.from('application_members')
                 .select('*, profiles(username)')
                 .eq('application_id', currentDraftId);
                 
             if(members) {
-                let mainIndex = 2; // 1 numara kaptan
+                let mainIndex = 2; 
                 let subIndex = 1;
                 
                 members.forEach(m => {
@@ -336,8 +336,8 @@
                             input.dataset.status = m.status;
                             
                             const tick = document.getElementById(inputId + '-tick');
-                            tick.style.display = 'block';
                             tick.className = m.status === 'accepted' ? 'fas fa-check-circle status-tick blue' : 'fas fa-check-circle status-tick grey';
+                            tick.style.display = 'block';
                             
                             document.getElementById(inputId + '-remove').style.display = 'block';
                         }
@@ -347,7 +347,7 @@
             }
         }
 
-        // --- HTML INPUTLARINI OLUŞTURMA VE ARAMA (SEARCH) ---
+        // --- HTML INPUT OLUŞTURMA VE DİNAMİK ARAMA SİSTEMİ ---
         function renderPlayerInputs() {
             const mDiv = document.getElementById('mainPlayers');
             const sDiv = document.getElementById('subPlayers');
@@ -371,9 +371,10 @@
                 </div>`;
         }
 
+        // ARAMA VE AYNI OYUNCUYU İKİ KERE SEÇMEYİ ENGELLEYEN MANTIK
         function attachSearchEvents() {
             document.querySelectorAll('.player-search').forEach(input => {
-                if(input.id === 'main_1') return; 
+                if(input.id === 'main_1') return; // Kaptan slotunda arama yapılmaz
 
                 input.addEventListener('input', async function() {
                     const query = this.value;
@@ -381,10 +382,17 @@
                     list.innerHTML = '';
                     if (query.length < 2) return;
 
+                    // Formda o an seçili olan tüm ID'leri topla
                     const selectedIds = Array.from(document.querySelectorAll('.player-search')).map(el => el.dataset.userId).filter(id => id);
 
                     let supabaseQuery = _supabase.from('profiles').select('username, id').ilike('username', `%${query}%`).is('team_id', null).neq('id', currentUser.id);
-                    if (selectedIds.length > 0) supabaseQuery = supabaseQuery.not('id', 'in', `(${selectedIds.join(',')})`);
+                    
+                    // AYNI OYUNCU ENGELİ: Seçili ID'leri teker teker sorgudan çıkar
+                    if (selectedIds.length > 0) {
+                        selectedIds.forEach(id => {
+                            supabaseQuery = supabaseQuery.neq('id', id);
+                        });
+                    }
 
                     const { data } = await supabaseQuery.limit(5);
 
@@ -401,6 +409,8 @@
                             tick.className = 'fas fa-spinner fa-spin status-tick grey';
 
                             const role = input.id.startsWith('main') ? 'main' : 'sub';
+                            
+                            // Seçilen oyuncuyu veritabanına kaydet ve bildirimi at
                             const { data: newMember, error } = await _supabase.from('application_members').insert({
                                 application_id: currentDraftId,
                                 user_id: u.id, role: role, status: 'pending'
@@ -421,6 +431,7 @@
             });
         }
 
+        // Oyuncuyu taslaktan çıkarma (Daveti iptal etme)
         async function removePlayer(inputId) {
             const input = document.getElementById(inputId);
             const memberId = input.dataset.memberId;
@@ -472,7 +483,7 @@
                 }).subscribe();
         }
 
-        // --- OTOMATİK KAYIT (AUTOSAVE) VE GÖNDERME ---
+        // --- OTOMATİK KAYIT VE ONAY KONTROLÜ ---
         function setupAutoSave() {
             const saveInputs = ['teamName', 'teamTag'];
             saveInputs.forEach(id => {
@@ -561,7 +572,8 @@
             }, 60000); 
         }
 
-        init();
+        // Sayfa DOM yüklendikten sonra çalıştır ki "main_1" bulunabilsin
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
