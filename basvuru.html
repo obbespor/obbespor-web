@@ -312,23 +312,38 @@
 
         function attachSearchEvents() {
             document.querySelectorAll('.player-search').forEach(input => {
-                if(input.id === 'main_1') return;
+                if(input.id === 'main_1') return; // Kaptanı atla
 
                 input.addEventListener('input', async function() {
                     const query = this.value;
                     const list = document.getElementById(this.id + '-list');
                     list.innerHTML = '';
                     
-                    // Reset status if changed
+                    // Input değiştiğinde mevcut durumu sıfırla
                     this.dataset.userId = "";
                     this.dataset.status = "";
                     document.getElementById(this.id + '-tick').className = 'fas fa-check-circle status-tick';
+                    updateFormStatus();
 
                     if (query.length < 2) return;
 
-                    const { data } = await _supabase.from('profiles')
-                        .select('username, id').ilike('username', `%${query}%`)
-                        .is('team_id', null).neq('id', currentUser.id).limit(5);
+                    // Dinamik Hariç Tutma: Formda halihazırda seçili olan ID'leri topla
+                    const selectedIds = Array.from(document.querySelectorAll('.player-search'))
+                        .map(el => el.dataset.userId)
+                        .filter(id => id && id !== "");
+
+                    let supabaseQuery = _supabase.from('profiles')
+                        .select('username, id')
+                        .ilike('username', `%${query}%`)
+                        .is('team_id', null)
+                        .neq('id', currentUser.id);
+
+                    // Eğer önceden seçilmiş ID'ler varsa sorgudan dışla
+                    if (selectedIds.length > 0) {
+                        supabaseQuery = supabaseQuery.not('id', 'in', `(${selectedIds.join(',')})`);
+                    }
+
+                    const { data } = await supabaseQuery.limit(5);
 
                     data?.forEach(u => {
                         const div = document.createElement('div');
