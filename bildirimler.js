@@ -1,151 +1,108 @@
-/* --- BİLDİRİM PANELİ TASARIMI --- */
-.notifications-section {
-    background: #0a0a0a;
-    border: 1px solid #222;
-    border-radius: 20px;
-    padding: 30px;
-    margin-bottom: 50px;
-    animation: fadeIn 0.5s ease-in-out;
-}
+/* -------------------------------------------------------
+   OBB E-SPOR - MERKEZİ ŞIK BİLDİRİM SİSTEMİ
+   ------------------------------------------------------- */
 
-.notifications-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
-    border-bottom: 2px solid #222;
-    padding-bottom: 15px;
-}
-
-.notifications-header h3 {
-    font-size: 20px;
-    font-weight: 800;
-    color: #fff;
-    text-transform: uppercase;
-}
-
-.notifications-header h3 i {
-    color: #601dc2; /* neon mor */
-    margin-right: 8px;
-}
-
-.notifications-header .badge {
-    background: #601dc2;
-    color: #fff;
-    padding: 4px 12px;
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 900;
-}
-
-.notifications-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.notif-item {
-    background: #111;
-    border-left: 4px solid #601dc2;
-    padding: 20px;
-    border-radius: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.notif-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-}
-
-.notif-text {
-    font-size: 14px;
-    color: #ccc;
-    line-height: 1.5;
-}
-
-.notif-text .highlight {
-    color: #fff;
-    font-weight: 700;
-}
-
-.notif-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.notif-actions button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: 0.3s;
-    font-family: 'Poppins', sans-serif;
-}
-
-.btn-accept {
-    background: rgba(39, 174, 96, 0.1);
-    color: #2ecc71;
-    border: 1px solid #27ae60 !important;
-}
-
-.btn-accept:hover {
-    background: #27ae60;
-    color: #fff;
-    box-shadow: 0 0 15px rgba(39, 174, 96, 0.4);
-}
-
-.btn-reject {
-    background: rgba(231, 76, 60, 0.1);
-    color: #e74c3c;
-    border: 1px solid #c0392b !important;
-}
-
-.btn-reject:hover {
-    background: #e74c3c;
-    color: #fff;
-    box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
-}
-
-.notif-success {
-    width: 100%;
-    text-align: center;
-    color: #2ecc71;
-    font-weight: 700;
-    font-size: 15px;
-    padding: 10px;
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* --- MOBİL UYUMLULUK --- */
-@media (max-width: 768px) {
-    .notif-item {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 15px;
-    }
-    
-    .notif-actions {
-        width: 100%;
+const style = document.createElement('style');
+style.textContent = `
+    #toast-container {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 999999;
         display: flex;
-        margin-top: 10px;
+        flex-direction: column;
+        gap: 15px;
+        pointer-events: none;
     }
-    
-    .notif-actions button {
-        flex: 1;
-        justify-content: center;
+
+    .custom-toast {
+        background: rgba(15, 15, 15, 0.95);
+        color: #fff;
+        padding: 16px 24px;
+        border-radius: 12px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        min-width: 300px;
+        max-width: 400px;
+        transform: translateX(120%);
+        opacity: 0;
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+        backdrop-filter: blur(10px);
+        pointer-events: auto;
     }
-}
+
+    .custom-toast.show {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .custom-toast.hide {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+
+    .toast-icon {
+        font-size: 20px;
+    }
+
+    /* Durumlara Göre Tasarım */
+    .toast-success { border-left: 4px solid #00d2ff; }
+    .toast-success .toast-icon { color: #00d2ff; }
+
+    .toast-error { border-left: 4px solid #ff4b4b; }
+    .toast-error .toast-icon { color: #ff4b4b; }
+
+    .toast-info { border-left: 4px solid #601dc2; }
+    .toast-info .toast-icon { color: #601dc2; }
+`;
+document.head.appendChild(style);
+
+// Sayfa yüklendiğinde container'ı oluştur
+document.addEventListener('DOMContentLoaded', () => {
+    if (!document.getElementById('toast-container')) {
+        const container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+});
+
+// Bildirim Gösterme Fonksiyonu (type: 'success', 'error', 'info')
+window.showNotification = function(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `custom-toast toast-${type}`;
+
+    // İkon belirleme
+    let iconClass = 'fas fa-info-circle';
+    if (type === 'success') iconClass = 'fas fa-check-circle';
+    if (type === 'error') iconClass = 'fas fa-exclamation-circle';
+
+    toast.innerHTML = `
+        <i class="${iconClass} toast-icon"></i>
+        <span>${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    // Animasyonla girişi tetikle
+    requestAnimationFrame(() => {
+        toast.classList.add('show');
+    });
+
+    // 4 saniye sonra animasyonla çıkışı tetikle ve sil
+    setTimeout(() => {
+        toast.classList.replace('show', 'hide');
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.remove();
+            }
+        }, 400); // CSS transition süresi kadar bekle
+    }, 4000);
+};
