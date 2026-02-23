@@ -14,11 +14,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* TEMEL AYARLAR VE HEADER/FOOTER SENİN KUSURSUZ YAPIN (Birebir Aynı) */
+        /* --- TEMEL AYARLAR --- */
         :root { --ana-siyah: #000000; --nav-bg: #000000; --neon-mor: #601dc2; --yazi-beyaz: #ffffff; --gri-yazi: #a0a0a0; --mavi-onay: #00d2ff; --red-reject: #ff4b4b; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
         body { background: radial-gradient(circle at top, #1a052d 0%, #000000 100%); background-attachment: fixed; color: var(--yazi-beyaz); font-family: 'Poppins', sans-serif; line-height: 1.6; padding-top: 80px; }
+        
+        /* --- HEADER --- */
         header.main-nav { background-color: var(--nav-bg); padding: 0 10%; display: flex; justify-content: space-between; align-items: center; height: 80px; border-bottom: 3px solid var(--neon-mor); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; transition: transform 0.4s ease-in-out; }
         header.main-nav.nav-hidden { transform: translateY(-110%); }
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
@@ -29,6 +31,7 @@
         .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; font-weight: bold; }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
+        /* --- PRO OYUNCU MENÜSÜ --- */
         .user-dropdown { position: relative; display: inline-block; }
         .dropdown-trigger { background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor); padding: 8px 18px; border-radius: 50px; color: white; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; font-family: 'Poppins', sans-serif; z-index: 1001; }
         .user-name-text { font-weight: 800; font-size: 13px; letter-spacing: 1px; }
@@ -39,8 +42,9 @@
         .dropdown-content a:hover { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); padding-left: 25px; }
         .user-dropdown:hover .dropdown-content { display: block; }
         .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- FORM TASARIMI VE YENİ İKONLAR --- */
+        /* --- FORM TASARIMI VE İKONLAR --- */
         .main-content { padding: 60px 10%; }
         .form-container { max-width: 800px; margin: 0 auto; }
         .auth-card { background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
@@ -58,7 +62,6 @@
         .status-tick.grey { display: block; color: #444; }
         .status-tick.blue { display: block; color: var(--mavi-onay); filter: drop-shadow(0 0 5px var(--mavi-onay)); }
         
-        /* Çöp kutusu ikonu eklendi (Oyuncu çıkarma) */
         .remove-player { position: absolute; right: 10px; font-size: 16px; color: var(--red-reject); cursor: pointer; display: none; transition: 0.3s; }
         .remove-player:hover { transform: scale(1.2); filter: drop-shadow(0 0 5px var(--red-reject)); }
 
@@ -73,21 +76,22 @@
         .save-btn { flex: 2; padding: 15px; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.3s; font-family: 'Poppins', sans-serif; }
         .save-btn:disabled { background: #222; color: #555; cursor: not-allowed; }
         
-        /* Taslak (Draft) silme butonu */
         .cancel-draft-btn { flex: 1; background: transparent; border: 1px solid var(--red-reject); color: var(--red-reject); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: bold; transition: 0.3s; }
         .cancel-draft-btn:hover { background: var(--red-reject); color: white; }
 
-        /* FOOTER & MOBIL (KORUNAN YAPI) */
+        /* --- FOOTER --- */
         footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
         .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
         .social-icons { display: flex; gap: 15px; }
         .social-icons a { width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; }
+        .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
         .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
         .footer-column ul { list-style: none; }
         .footer-column ul li { margin-bottom: 12px; }
         .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
+        .footer-column ul li a:hover { color: var(--neon-mor); }
         .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
         .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
@@ -102,6 +106,8 @@
             .main-content { padding: 40px 5%; }
             .action-btns { flex-direction: column; }
             .footer-grid { grid-template-columns: 1fr; gap: 30px; text-align: center; }
+            .footer-brand p { max-width: 100%; }
+            .social-icons { justify-content: center; }
         }
     </style>
 </head>
@@ -187,10 +193,12 @@
                 </ul>
             </div>
         </div>
+        <div class="footer-bottom"><p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p></div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
+    <script>
+        const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -199,13 +207,7 @@ const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
         let draftCreatedAt = null;
         let saveTimeout = null;
 
-        // Çıkış yapma
-        async function handleLogout() {
-            await _supabase.auth.signOut();
-            window.location.href = 'kayit.html';
-        }
-
-        // --- SCROLL EFFECT ---
+        // Header scroll efekti
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
         window.addEventListener("scroll", () => {
@@ -214,6 +216,12 @@ const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
             else header.classList.remove("nav-hidden");
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
+
+        // Çıkış yapma
+        async function handleLogout() {
+            await _supabase.auth.signOut();
+            window.location.href = 'kayit.html';
+        }
 
         async function init() {
             const { data: { user } } = await _supabase.auth.getUser();
@@ -233,14 +241,14 @@ const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
                         <a href="#" onclick="handleLogout(); return false;"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
                     </div>
                 </div>`;
-<script>
-            renderPlayerInputs(); // Önce input HTML'lerini oluştur
-            await loadOrCreateDraft(username); // Sonra verileri doldur
+
+            renderPlayerInputs(); // 1. Önce inputları ekrana bas
+            await loadOrCreateDraft(username); // 2. Sonra verilerle doldur
             setupAutoSave();
             subscribeToDraftUpdates();
         }
 
-        // --- 1. TASLAK (DRAFT) OLUŞTURMA VE YÜKLEME ---
+        // --- TASLAK YÜKLEME VE KAPTAN SLOTU ---
         async function loadOrCreateDraft(username) {
             const { data: drafts } = await _supabase.from('tournament_applications')
                 .select('*')
@@ -269,9 +277,8 @@ const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
                 document.getElementById('draftInfoBox').style.display = 'block';
                 startCountdown();
                 
-                // DÜZELTME: Eski taslak yüklenirken de kaptan slotunu zorla doldur
-                fillCaptainSlot(username);
-                await loadDraftMembers();
+                fillCaptainSlot(username); // Kaptanı forma yerleştir
+                await loadDraftMembers(); // Varsa diğer üyeleri çek
 
             } else {
                 const { data: newDraft } = await _supabase.from('tournament_applications').insert({
@@ -289,12 +296,11 @@ const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
                     user_id: currentUser.id, role: 'main', status: 'accepted'
                 });
                 
-                // DÜZELTME: Yeni taslak oluşurken kaptan slotunu doldur
-                fillCaptainSlot(username);
+                fillCaptainSlot(username); // Kaptanı forma yerleştir
             }
         }
 
-        // DÜZELTME: Kaptan slotunu dolduran ortak fonksiyon
+        // Ortak Kaptan Doldurma Fonksiyonu
         function fillCaptainSlot(username) {
             const captInput = document.getElementById('main_1');
             if(captInput) {
@@ -308,7 +314,6 @@ const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
             updateFormStatus();
         }
 
-        // --- 2. TASLAK OYUNCULARINI FORMA YÜKLEME ---
         async function loadDraftMembers() {
             const { data: members } = await _supabase.from('application_members')
                 .select('*, profiles(username)')
@@ -319,7 +324,7 @@ const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
                 let subIndex = 1;
                 
                 members.forEach(m => {
-                    if (m.user_id !== currentUser.id) { // Kaptanı zaten fillCaptainSlot doldurdu
+                    if (m.user_id !== currentUser.id) { 
                         let inputId = m.role === 'main' ? 'main_' + mainIndex++ : 'sub_' + subIndex++;
                         const input = document.getElementById(inputId);
                         
@@ -342,13 +347,13 @@ const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
             }
         }
 
-        // --- 3. INPUTLAR VE GERÇEK ZAMANLI DAVET ATMA ---
+        // --- HTML INPUTLARINI OLUŞTURMA VE ARAMA (SEARCH) ---
         function renderPlayerInputs() {
             const mDiv = document.getElementById('mainPlayers');
             const sDiv = document.getElementById('subPlayers');
             for(let i=1; i<=5; i++) mDiv.innerHTML += createInputHTML(i, false);
             for(let i=1; i<=2; i++) sDiv.innerHTML += createInputHTML(i, true);
-            attachSearchEvents(); // DÜZELTME: Inputlar basıldıktan hemen sonra eventleri bağla
+            attachSearchEvents();
         }
 
         function createInputHTML(idx, isSub) {
@@ -370,7 +375,6 @@ const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
             document.querySelectorAll('.player-search').forEach(input => {
                 if(input.id === 'main_1') return; 
 
-                // Event listener'ı bir kez atadığımızdan emin olmak için eskiyi temizlemeye gerek yok, renderPlayerInputs sadece 1 kez çalışır.
                 input.addEventListener('input', async function() {
                     const query = this.value;
                     const list = document.getElementById(this.id + '-list');
@@ -436,7 +440,7 @@ const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
             updateFormStatus();
         }
 
-        // --- 4. GERÇEK ZAMANLI LOBİ TAKİBİ ---
+        // --- LOBİ GERÇEK ZAMANLI GÜNCELLEMELER ---
         function subscribeToDraftUpdates() {
             if(!currentDraftId) return;
             _supabase.channel('draft-updates')
@@ -461,14 +465,14 @@ const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
                             tick.className = 'fas fa-check-circle status-tick';
                             tick.style.display = 'none';
                             document.getElementById(input.id + '-remove').style.display = 'none';
-                            alert(`Bir oyuncu takım davetinizi reddetti veya sistemden silindi.`);
+                            alert(`Bir oyuncu takım davetinizi reddetti.`);
                         }
                     }
                     updateFormStatus();
                 }).subscribe();
         }
 
-        // --- 5. OTOMATİK KAYIT VE ONAY KONTROLÜ ---
+        // --- OTOMATİK KAYIT (AUTOSAVE) VE GÖNDERME ---
         function setupAutoSave() {
             const saveInputs = ['teamName', 'teamTag'];
             saveInputs.forEach(id => {
@@ -502,7 +506,6 @@ const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
             }
         }
 
-        // --- 6. BAŞVURUYU İPTAL ETME VEYA GÖNDERME ---
         async function cancelDraft(silent = false) {
             if (!silent && !confirm("Tüm taslak silinecek ve davetler iptal edilecek. Emin misiniz?")) return;
             if (currentDraftId) {
@@ -559,7 +562,6 @@ const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
         }
 
         init();
-                </script>
-                      
+    </script>
 </body>
 </html>
