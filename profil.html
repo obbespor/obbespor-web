@@ -247,7 +247,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
+    <script src="bildirimler.js"></script> <script>
         const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -318,7 +318,7 @@
             if (!file) return;
 
             if (file.size / 1024 / 1024 > 2) {
-                return alert("Fotoğraf çok büyük! (Max 2MB)");
+                return showNotification("Fotoğraf çok büyük! (Max 2MB)", "error"); // ALERT DEĞİŞTİRİLDİ
             }
 
             const preview = document.getElementById('userAvatar');
@@ -344,16 +344,15 @@
 
                 if (updateError) throw updateError;
                 
-                alert("Profil fotoğrafı başarıyla güncellendi!");
+                showNotification("Profil fotoğrafı başarıyla güncellendi!", "success"); // ALERT DEĞİŞTİRİLDİ
             } catch (err) {
-                alert("Fotoğraf yüklenirken hata oluştu: " + err.message);
+                showNotification("Fotoğraf yüklenirken hata oluştu.", "error"); // ALERT DEĞİŞTİRİLDİ
                 console.error(err);
             }
         });
 
         // --- BİLDİRİM VE SİNYAL SİSTEMİ ---
         async function loadInvitations() {
-            // Sadece "pending" (bekleyen) davetleri çeker. Onaylanan veya silinenler ekrana gelmez.
             const { data, error } = await _supabase
                 .from('application_members')
                 .select(`id, role, tournament_applications ( team_name, team_tag )`)
@@ -380,8 +379,8 @@
                             <span class="highlight">${team.team_name}</span> takımından <b>${roleText}</b> olarak davet aldın.
                         </div>
                         <div class="notif-actions">
-                            <button class="btn-accept" onclick="respondInvite('${invite.id}', 'accepted')"><i class="fas fa-check"></i> Kabul Et</button>
-                            <button class="btn-reject" onclick="respondInvite('${invite.id}', 'rejected')"><i class="fas fa-times"></i> Reddet</button>
+                            <button class="btn-accept" onclick="respondInvite('${invite.id}', 'accepted', '${team.team_name}')"><i class="fas fa-check"></i> Kabul Et</button>
+                            <button class="btn-reject" onclick="respondInvite('${invite.id}', 'rejected', '${team.team_name}')"><i class="fas fa-times"></i> Reddet</button>
                         </div>
                     `;
                     notifList.appendChild(div);
@@ -391,39 +390,29 @@
             }
         }
 
-        async function respondInvite(memberId, action) {
+        async function respondInvite(memberId, action, teamName) {
             try {
                 if (action === 'accepted') {
-                    // Veritabanını güncelle
                     const { error } = await _supabase.from('application_members').update({ status: 'accepted' }).eq('id', memberId);
-                    
-                    // Diğer sayfalara SİNYAL GÖNDER (Gri tiki mavi yapmak için)
                     if (!error) {
                         localStorage.setItem('teamInviteSignal', JSON.stringify({ id: memberId, status: 'accepted', timestamp: Date.now() }));
+                        showNotification(`${teamName} takımının davetini kabul ettin.`, "success"); // YENİ BİLDİRİM
                     }
                 } else {
-                    // Reddedilirse veritabanından tamamen sil
                     await _supabase.from('application_members').delete().eq('id', memberId);
-                    
-                    // Reddedilme sinyali (Gerekirse diğer sayfada elementi kırmızı yapmak vs. için)
                     localStorage.setItem('teamInviteSignal', JSON.stringify({ id: memberId, status: 'rejected', timestamp: Date.now() }));
+                    showNotification(`${teamName} takımının davetini reddettin.`, "error"); // YENİ BİLDİRİM
                 }
                 
-                // İşlem bittikten sonra listeyi yenile (Kabul edilen veya reddedilen anında kaybolur)
                 await loadInvitations();
             } catch (err) { console.error("İşlem sırasında hata:", err); }
         }
 
-        // Kaptan başvuru iptal ederse anında silinmesini sağlayan WebSockets dinleyicisi
         function subscribeToInvites() {
             _supabase.channel('custom-invites-channel')
                 .on('postgres_changes', { 
-                    event: '*', // INSERT, UPDATE veya DELETE olaylarını dinler
-                    schema: 'public', 
-                    table: 'application_members', 
-                    filter: `user_id=eq.${currentUser.id}` 
+                    event: '*', schema: 'public', table: 'application_members', filter: `user_id=eq.${currentUser.id}` 
                 }, (payload) => {
-                    // Veritabanında herhangi bir değişiklik olduğunda (kaptan iptal ederse vs.) paneli anında günceller
                     loadInvitations();
                 }).subscribe();
         }
@@ -434,6 +423,7 @@
             if (newBio !== null) {
                 bioEl.innerText = newBio.trim() || "Açıklama bulunmuyor.";
                 await _supabase.from('profiles').update({ bio: newBio.trim() }).eq('id', currentUser.id);
+                showNotification("Açıklamanız güncellendi.", "info"); // YENİ BİLDİRİM
             }
         }
 
@@ -448,6 +438,7 @@
                     document.getElementById('currentBanner').style.backgroundImage = `url('${this.src}')`;
                     closeBannerModal();
                     await _supabase.from('profiles').update({ banner_url: this.src }).eq('id', currentUser.id);
+                    showNotification("Kapak resmi güncellendi.", "success"); // YENİ BİLDİRİM
                 };
                 grid.appendChild(img);
             }
