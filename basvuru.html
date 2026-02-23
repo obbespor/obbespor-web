@@ -191,6 +191,7 @@
                 </ul>
             </div>
         </div>
+        <div class="footer-bottom"><p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p></div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -221,12 +222,12 @@
 
         // --- INIT: Sayfa Yüklendiğinde Çalışır ---
         async function init() {
-            const { data: { user } } = await _supabase.auth.getUser();
-            if (!user) { window.location.href = 'kayit.html'; return; }
+            const { data: { user }, error: authError } = await _supabase.auth.getUser();
+            if (authError || !user) { window.location.href = 'kayit.html'; return; }
             currentUser = user;
 
-            // Kaptanın gerçek adını veritabanından çek (Auth boşluğu ihtimaline karşı)
-            const { data: profileData } = await _supabase.from('profiles').select('username').eq('id', user.id).single();
+            // KESİN ÇÖZÜM 1: Kaptan Adı Boş Kalmasın (maybeSingle kullanımı)
+            const { data: profileData } = await _supabase.from('profiles').select('username').eq('id', user.id).maybeSingle();
             const realUsername = profileData?.username || user.user_metadata?.username || "KAPTAN";
 
             document.getElementById('authAction').innerHTML = `
@@ -246,6 +247,36 @@
             await loadOrCreateDraft(realUsername); // Kaptan adı slot'a gönderilir
             setupAutoSave();
             subscribeToDraftUpdates();
+        }
+
+        // --- HTML INPUT OLUŞTURMA (Optimize Edildi) ---
+        function renderPlayerInputs() {
+            const mDiv = document.getElementById('mainPlayers');
+            const sDiv = document.getElementById('subPlayers');
+            let mHtml = '';
+            let sHtml = '';
+            for(let i=1; i<=5; i++) mHtml += createInputHTML(i, false);
+            for(let i=1; i<=2; i++) sHtml += createInputHTML(i, true);
+            mDiv.innerHTML = mHtml;
+            sDiv.innerHTML = sHtml;
+            
+            // DOM tamamen oluştuktan sonra Event'leri bağla
+            attachSearchEvents();
+        }
+
+        function createInputHTML(idx, isSub) {
+            const id = isSub ? `sub_${idx}` : `main_${idx}`;
+            const label = isSub ? `${idx}. Yedek Oyuncu` : `${idx}. Oyuncu ${idx==1 ? '(Kaptan)' : ''}`;
+            return `
+                <div class="input-group">
+                    <label>${label}</label>
+                    <div class="player-wrapper">
+                        <input type="text" id="${id}" class="player-search" autocomplete="off" placeholder="Nickname ara...">
+                        <i class="fas fa-check-circle status-tick" id="${id}-tick"></i>
+                        <i class="fas fa-trash remove-player" id="${id}-remove" title="Daveti İptal Et" onclick="removePlayer('${id}')"></i>
+                        <div id="${id}-list" class="autocomplete-items"></div>
+                    </div>
+                </div>`;
         }
 
         // --- TASLAK OLUŞTURMA & KAPTANI YAZDIRMA ---
@@ -276,7 +307,7 @@
                 document.getElementById('draftInfoBox').style.display = 'block';
                 startCountdown();
                 
-                fillCaptainSlot(username); // Eski taslak olsa da kaptan adını bas
+                fillCaptainSlot(username); // Eski taslakta kaptanı bas
                 await loadDraftMembers();
 
             } else {
@@ -293,7 +324,7 @@
                     application_id: currentDraftId, user_id: currentUser.id, role: 'main', status: 'accepted'
                 });
                 
-                fillCaptainSlot(username); // Yeni taslakta kaptan adını bas
+                fillCaptainSlot(username); // Yeni taslakta kaptanı bas
             }
         }
 
@@ -347,31 +378,7 @@
             }
         }
 
-        // --- HTML INPUT OLUŞTURMA VE DİNAMİK ARAMA SİSTEMİ ---
-        function renderPlayerInputs() {
-            const mDiv = document.getElementById('mainPlayers');
-            const sDiv = document.getElementById('subPlayers');
-            for(let i=1; i<=5; i++) mDiv.innerHTML += createInputHTML(i, false);
-            for(let i=1; i<=2; i++) sDiv.innerHTML += createInputHTML(i, true);
-            attachSearchEvents();
-        }
-
-        function createInputHTML(idx, isSub) {
-            const id = isSub ? `sub_${idx}` : `main_${idx}`;
-            const label = isSub ? `${idx}. Yedek Oyuncu` : `${idx}. Oyuncu ${idx==1 ? '(Kaptan)' : ''}`;
-            return `
-                <div class="input-group">
-                    <label>${label}</label>
-                    <div class="player-wrapper">
-                        <input type="text" id="${id}" class="player-search" autocomplete="off" placeholder="Nickname ara...">
-                        <i class="fas fa-check-circle status-tick" id="${id}-tick"></i>
-                        <i class="fas fa-trash remove-player" id="${id}-remove" title="Daveti İptal Et" onclick="removePlayer('${id}')"></i>
-                        <div id="${id}-list" class="autocomplete-items"></div>
-                    </div>
-                </div>`;
-        }
-
-        // ARAMA VE AYNI OYUNCUYU İKİ KERE SEÇMEYİ ENGELLEYEN MANTIK
+        // --- KESİN ÇÖZÜM 2: ARAMA VE AYNI OYUNCUYU İKİ KERE SEÇMEYİ ENGELLEYEN FRONTEND FİLTRESİ ---
         function attachSearchEvents() {
             document.querySelectorAll('.player-search').forEach(input => {
                 if(input.id === 'main_1') return; // Kaptan slotunda arama yapılmaz
@@ -382,21 +389,25 @@
                     list.innerHTML = '';
                     if (query.length < 2) return;
 
-                    // Formda o an seçili olan tüm ID'leri topla
-                    const selectedIds = Array.from(document.querySelectorAll('.player-search')).map(el => el.dataset.userId).filter(id => id);
+                    // Formda o an seçili olan tüm ID'leri bir listede topla
+                    const selectedIds = Array.from(document.querySelectorAll('.player-search'))
+                                             .map(el => el.dataset.userId)
+                                             .filter(id => id && id.trim() !== "");
 
-                    let supabaseQuery = _supabase.from('profiles').select('username, id').ilike('username', `%${query}%`).is('team_id', null).neq('id', currentUser.id);
+                    // Supabase'den ilk 15 kişiyi getir (Daha sonra içlerinden seçeceğiz)
+                    const { data } = await _supabase.from('profiles')
+                                                    .select('username, id')
+                                                    .ilike('username', `%${query}%`)
+                                                    .is('team_id', null)
+                                                    .neq('id', currentUser.id)
+                                                    .limit(15); 
                     
-                    // AYNI OYUNCU ENGELİ: Seçili ID'leri teker teker sorgudan çıkar
-                    if (selectedIds.length > 0) {
-                        selectedIds.forEach(id => {
-                            supabaseQuery = supabaseQuery.neq('id', id);
-                        });
-                    }
+                    if (!data) return;
 
-                    const { data } = await supabaseQuery.limit(5);
+                    // YÜZDE YÜZ KORUMA: Supabase'in gönderdiği listeden, formda zaten ekli olanları tarayıcıda sil.
+                    const filteredPlayers = data.filter(u => !selectedIds.includes(u.id)).slice(0, 5);
 
-                    data?.forEach(u => {
+                    filteredPlayers.forEach(u => {
                         const div = document.createElement('div');
                         div.innerHTML = `<i class="fas fa-user"></i> ${u.username}`;
                         div.onclick = async () => {
@@ -483,7 +494,7 @@
                 }).subscribe();
         }
 
-        // --- OTOMATİK KAYIT VE ONAY KONTROLÜ ---
+        // --- OTOMATİK KAYIT (AUTOSAVE) VE GÖNDERME ---
         function setupAutoSave() {
             const saveInputs = ['teamName', 'teamTag'];
             saveInputs.forEach(id => {
@@ -572,7 +583,7 @@
             }, 60000); 
         }
 
-        // Sayfa DOM yüklendikten sonra çalıştır ki "main_1" bulunabilsin
+        // SAYFA TAMAMEN YÜKLENDİKTEN SONRA İŞLEMLERİ BAŞLAT
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
