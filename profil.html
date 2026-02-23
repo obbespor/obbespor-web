@@ -15,6 +15,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <link rel="stylesheet" href="bildirim.css">
+    
     <style>
         /* --- 1. TEMEL AYARLAR --- */
         :root {
@@ -117,7 +119,7 @@
         .profile-card {
             background: var(--card-bg); border: 1px solid #222;
             border-radius: 0 0 20px 20px; padding: 0 40px 40px;
-            position: relative; text-align: center; margin-bottom: 50px;
+            position: relative; text-align: center; margin-bottom: 30px; /* margin düzeltildi */
         }
         .avatar-wrapper { position: relative; width: 150px; height: 150px; margin: -75px auto 20px; }
         .profile-avatar {
@@ -183,7 +185,7 @@
             .user-name-text, .arrow-icon { display: none; } 
             .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
             .dropdown-content { position: fixed; right: 15px; top: 75px; width: 180px; }
-            .profile-card { padding: 0 20px 30px; }
+            .profile-card { padding: 0 20px 30px; margin-bottom: 20px; }
             .stats-grid { grid-template-columns: 1fr; gap: 15px; } 
             .banner-grid { grid-template-columns: 1fr; } 
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
@@ -239,6 +241,16 @@
                 <div class="stat-item"><span class="stat-value" id="tournamentsPlayed">0</span><span class="stat-label">Turnuvalar</span></div>
             </div>
         </div>
+
+        <div class="notifications-section" id="notificationsSection" style="display: none;">
+            <div class="notifications-header">
+                <h3><i class="fas fa-bell"></i> Gelen Davetler</h3>
+                <span class="badge" id="notifBadge">0</span>
+            </div>
+            <div id="notificationsList" class="notifications-list">
+                </div>
+        </div>
+
     </main>
 
     <div id="bannerModal" class="modal">
@@ -283,7 +295,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <script src="auth.js"></script>
 
     <script>
@@ -301,15 +312,10 @@
         }, false);
 
         // --- 2. SUPABASE BAĞLANTISI VE KUSURSUZ İŞLEMLER ---
-        
-        // ÇÖZÜM 1: Çift yükleme uyarısını (Multiple GoTrueClient) kaldırmak için zekice bir kontrol.
-        // Eğer auth.js dosyanız supabase'i çoktan ayağa kaldırdıysa, aynısını kullanıyoruz.
         let supabaseClient;
         if (window.supabaseClient) {
             supabaseClient = window.supabaseClient;
         } else {
-            // DİKKAT: Sayfanda oluşan "ERR_NAME_NOT_RESOLVED" hatasının sebebi bu URL'nin ulaşılamaz olması. 
-            // Eğer projenin URL'si değiştiyse veya duraklatıldıysa Supabase'den girip bu URL'yi doğrulamalısın.
             const supabaseUrl = 'https://zvhtznxretxgofnbcbko.supabase.co';
             const supabaseKey = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
             supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -318,7 +324,6 @@
 
         let currentUser = null;
 
-        // ÇÖZÜM 2: Sonsuz Dönmeyi (Loading) Engelleyen Hata Ayıklama (Try-Catch) 
         async function initProfile() {
             try {
                 const { data, error } = await supabaseClient.auth.getUser();
@@ -330,6 +335,7 @@
                 if (data && data.user) {
                     currentUser = data.user;
                     await loadProfileData();
+                    await loadInvitations(); // Profil yüklendikten sonra davetleri çek!
                 } else {
                     document.getElementById('profileNameDisplay').innerText = "GİRİŞ YAPILMADI";
                     document.getElementById('userBio').innerText = "Profil bilgilerini görmek için lütfen giriş yapın.";
@@ -341,7 +347,6 @@
             }
         }
 
-        // Veritabanından verileri çekme (Toplam maç atlaması giderildi)
         async function loadProfileData() {
             try {
                 const { data, error } = await supabaseClient
@@ -363,7 +368,6 @@
                         preview.src = data.avatar_url;
                         preview.style.display = "block";
                     }
-                    // Toplam Maç Kodu Eski ve Güvenli Haline Getirildi
                     if(data.matches_played !== undefined && data.matches_played !== null) {
                         document.getElementById('matchCount').innerText = data.matches_played;
                     }
@@ -372,6 +376,94 @@
                 console.warn("Veri çekme işlemi başarısız:", error.message);
                 document.getElementById('profileNameDisplay').innerText = "BİLGİLER ALINAMADI";
                 document.getElementById('userBio').innerText = "Kullanıcı verileriniz getirilirken bağlantı sorunu oluştu.";
+            }
+        }
+
+        // --- BİLDİRİM VE DAVET SİSTEMİ ---
+        // Not: Bu kodun çalışması için Supabase'de 'tournament_invites' isimli bir tablon olması gerekiyor.
+        async function loadInvitations() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tournament_invites')
+                    .select('*')
+                    .eq('invited_user_id', currentUser.id)
+                    .eq('status', 'pending'); // Sadece bekleyen davetleri çek
+
+                if (error) throw error;
+
+                const notifSection = document.getElementById('notificationsSection');
+                const notifList = document.getElementById('notificationsList');
+                const badge = document.getElementById('notifBadge');
+                
+                notifList.innerHTML = '';
+
+                if (data && data.length > 0) {
+                    notifSection.style.display = 'block';
+                    badge.innerText = data.length;
+
+                    data.forEach(invite => {
+                        const div = document.createElement('div');
+                        div.className = 'notif-item';
+                        div.id = `invite-${invite.id}`;
+                        div.innerHTML = `
+                            <div class="notif-text">
+                                <span class="highlight">${invite.captain_name}</span> seni <span class="highlight">${invite.tournament_name}</span> turnuvasına davet ediyor.
+                            </div>
+                            <div class="notif-actions">
+                                <button class="btn-accept" onclick="respondInvite('${invite.id}', 'accepted')"><i class="fas fa-check"></i> Kabul Et</button>
+                                <button class="btn-reject" onclick="respondInvite('${invite.id}', 'rejected')"><i class="fas fa-times"></i> Reddet</button>
+                            </div>
+                        `;
+                        notifList.appendChild(div);
+                    });
+                } else {
+                    notifSection.style.display = 'none';
+                }
+            } catch (error) {
+                console.error("Davetler yüklenirken hata:", error.message);
+            }
+        }
+
+        async function respondInvite(inviteId, responseStatus) {
+            try {
+                const inviteElement = document.getElementById(`invite-${inviteId}`);
+                
+                // Supabase veritabanını güncelle
+                const { error } = await supabaseClient
+                    .from('tournament_invites')
+                    .update({ status: responseStatus })
+                    .eq('id', inviteId);
+
+                if (error) throw error;
+
+                // UI Güncellemeleri
+                if (responseStatus === 'rejected') {
+                    inviteElement.remove();
+                    updateBadgeAndSection();
+                } else if (responseStatus === 'accepted') {
+                    inviteElement.innerHTML = `
+                        <div class="notif-success">
+                            <i class="fas fa-check-circle"></i> Davet Onaylandı! Kaptanına bildirildi.
+                        </div>
+                    `;
+                    // 3 saniye sonra onay mesajını sil
+                    setTimeout(() => {
+                        inviteElement.remove();
+                        updateBadgeAndSection();
+                    }, 3000);
+                }
+            } catch (error) {
+                alert("İşlem başarısız: " + error.message);
+            }
+        }
+
+        function updateBadgeAndSection() {
+            const notifList = document.getElementById('notificationsList');
+            const remaining = notifList.querySelectorAll('.notif-item').length;
+            document.getElementById('notifBadge').innerText = remaining;
+            
+            if(remaining === 0) {
+                document.getElementById('notificationsSection').style.display = 'none';
             }
         }
 
@@ -472,13 +564,11 @@
             }
         });
 
-        // Modal kapatma olayları
         window.onclick = function(event) {
             const modal = document.getElementById('bannerModal');
             if (event.target == modal) closeBannerModal();
         }
 
-        // DOM yüklendiğinde sistemi çalıştır
         document.addEventListener('DOMContentLoaded', initProfile);
     </script>
 </body>
