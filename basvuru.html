@@ -83,7 +83,6 @@
         .cancel-draft-btn { flex: 1; background: transparent; border: 1px solid var(--red-reject); color: var(--red-reject); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: bold; transition: 0.3s; text-align: center; }
         .cancel-draft-btn:hover { background: var(--red-reject); color: white; }
 
-        /* --- YENİ EKLENEN ŞIK DÜZENLE BUTONU --- */
         .edit-mode-btn { flex: 1; padding: 12px 25px; background: transparent; border: 2px solid var(--mavi-onay); color: var(--mavi-onay); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 800; transition: 0.3s; font-size: 14px; text-transform: uppercase; }
         .edit-mode-btn:hover { background: var(--mavi-onay); color: #000; box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); transform: translateY(-2px); }
 
@@ -114,7 +113,7 @@
             .main-content { padding: 40px 5%; }
             .action-btns { flex-direction: column; }
             .footer-grid { grid-template-columns: 1fr; gap: 30px; text-align: center; }
-            #pendingBtnGroup { flex-direction: column; } /* Mobil buton hizalaması */
+            #pendingBtnGroup { flex-direction: column; } 
         }
     </style>
 </head>
@@ -194,9 +193,7 @@
                 <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
                 <div class="social-icons">
                     <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-x-twitter"></i></a>
                     <a href="#"><i class="fab fa-discord"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
             <div class="footer-column">
@@ -217,7 +214,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
+    <script src="bildirimler.js"></script> <script>
         const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -319,15 +316,13 @@
                 document.getElementById('teamTag').value = draft.team_tag || '';
                 
                 fillCaptainSlot(username); 
-                await loadDraftMembers(); // Oyuncuları veritabanından arka planda her türlü dolduruyoruz
+                await loadDraftMembers(); 
 
                 if (draft.status === 'pending') {
-                    // Eğer durum bekliyorsa formu gizle, şık bekleme ekranını göster
                     document.getElementById('teamForm').style.display = 'none';
                     document.getElementById('draftInfoBox').style.display = 'none';
                     document.getElementById('pendingScreen').style.display = 'block';
                 } else {
-                    // Draft modundaysa formu göster
                     document.getElementById('draftInfoBox').style.display = 'block';
                     document.getElementById('teamForm').style.display = 'block';
                     startCountdown();
@@ -352,32 +347,28 @@
             }
         }
 
-        // --- YENİ EKLENEN DÜZENLEME MODU MANTIĞI ---
         async function enableEditMode() {
             const btn = document.getElementById('editDraftBtn');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lütfen Bekleyin...';
             btn.disabled = true;
 
-            // Veritabanında takımın durumunu geri 'draft' yapıyoruz. (Oyuncu onayları bozulmaz!)
             const { error } = await _supabase.from('tournament_applications').update({ status: 'draft' }).eq('id', currentDraftId);
             
             if (error) {
-                alert("Hata oluştu: " + error.message);
+                showNotification("Hata oluştu: " + error.message, "error");
                 btn.innerHTML = '<i class="fas fa-edit"></i> Formu Düzenle';
                 btn.disabled = false;
                 return;
             }
 
-            // Arayüz geçişi
             document.getElementById('pendingScreen').style.display = 'none';
             document.getElementById('draftInfoBox').style.display = 'block';
             document.getElementById('teamForm').style.display = 'block';
             
-            // Butonu eski haline getir
             btn.innerHTML = '<i class="fas fa-edit"></i> Formu Düzenle';
             btn.disabled = false;
             
-            // Sayaç ve form durumunu tazele
+            showNotification("Düzenleme modu aktif. Oyuncu onayları korundu.", "info");
             startCountdown();
             updateFormStatus();
         }
@@ -480,6 +471,10 @@
                                 user_id: u.id, role: role, status: 'pending'
                             }).select().single();
 
+                            if (error) {
+                                showNotification("Oyuncu eklenirken bir sorun oluştu.", "error");
+                            }
+
                             if (newMember) {
                                 input.setAttribute('data-user-id', u.id);
                                 input.setAttribute('data-member-id', newMember.id);
@@ -546,9 +541,10 @@
                     if (data.status === 'accepted') {
                         targetInput.setAttribute('data-status', 'accepted');
                         document.getElementById(targetInput.id + '-tick').className = 'fas fa-check-circle status-tick blue';
+                        showNotification(`${targetInput.value} daveti kabul etti!`, "success");
                     } else if (data.status === 'rejected') {
+                        showNotification(`${targetInput.value} daveti reddetti. Slot temizlendi.`, "error");
                         removePlayer(targetInput.id);
-                        alert(`${targetInput.value} daveti reddetti! Sinyal alındı.`);
                     }
                     updateFormStatus(); 
                 }
@@ -633,14 +629,14 @@
 
                 if (teamError) throw teamError;
 
-                // Forma gönderme yapıldığında sayfayı yenilemek veya profile atmak yerine 
-                // şık bir geçişle "Bekleme (Pending)" ekranını açıyoruz:
+                showNotification("Takım başvurunuz turnuva yöneticilerine iletildi.", "success");
+                
                 document.getElementById('teamForm').style.display = 'none';
                 document.getElementById('draftInfoBox').style.display = 'none';
                 document.getElementById('pendingScreen').style.display = 'block';
                 
             } catch (err) {
-                alert("Kayıt sırasında hata: " + err.message);
+                showNotification("Kayıt sırasında hata: " + err.message, "error");
                 submitBtn.disabled = false;
                 submitBtn.innerText = "BAŞVURUYU TAMAMLA VE GÖNDER";
             }
