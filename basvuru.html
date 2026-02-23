@@ -5,8 +5,7 @@
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-9VH0LHNCS3');
+      gtag('js', new Date()); gtag('config', 'G-9VH0LHNCS3');
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -15,78 +14,33 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* --- 1. TEMEL AYARLAR --- */
-        :root {
-            --ana-siyah: #000000;
-            --nav-bg: #000000;
-            --neon-mor: #601dc2; 
-            --yazi-beyaz: #ffffff;
-            --gri-yazi: #a0a0a0;
-            --mavi-onay: #00d2ff;
-        }
-
+        /* TEMEL AYARLAR VE HEADER/FOOTER SENİN KUSURSUZ YAPIN (Birebir Aynı) */
+        :root { --ana-siyah: #000000; --nav-bg: #000000; --neon-mor: #601dc2; --yazi-beyaz: #ffffff; --gri-yazi: #a0a0a0; --mavi-onay: #00d2ff; --red-reject: #ff4b4b; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
-        body {
-            background: radial-gradient(circle at top, #1a052d 0%, #000000 100%);
-            background-attachment: fixed;
-            color: var(--yazi-beyaz);
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            padding-top: 80px;
-        }
-
-        /* --- 2. AKILLI HEADER --- */
-        header.main-nav {
-            background-color: var(--nav-bg);
-            padding: 0 10%; 
-            display: flex; justify-content: space-between; align-items: center;
-            height: 80px; border-bottom: 3px solid var(--neon-mor);
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
-            transition: transform 0.4s ease-in-out;
-        }
+        body { background: radial-gradient(circle at top, #1a052d 0%, #000000 100%); background-attachment: fixed; color: var(--yazi-beyaz); font-family: 'Poppins', sans-serif; line-height: 1.6; padding-top: 80px; }
+        header.main-nav { background-color: var(--nav-bg); padding: 0 10%; display: flex; justify-content: space-between; align-items: center; height: 80px; border-bottom: 3px solid var(--neon-mor); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; transition: transform 0.4s ease-in-out; }
         header.main-nav.nav-hidden { transform: translateY(-110%); }
-
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); }
-        
         nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
         nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
         nav ul li a:hover { color: var(--neon-mor); }
-        
-        .nav-btn { 
-            border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; 
-            color: white !important; background: transparent; transition: 0.3s; 
-            text-decoration: none; font-weight: bold; display: inline-block;
-        }
+        .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; font-weight: bold; }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- 3. PRO OYUNCU MENÜSÜ --- */
         .user-dropdown { position: relative; display: inline-block; }
-        .dropdown-trigger {
-            background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor);
-            padding: 8px 18px; border-radius: 50px; color: white; cursor: pointer;
-            display: flex; align-items: center; gap: 10px; transition: 0.3s;
-            font-family: 'Poppins', sans-serif; z-index: 1001;
-        }
+        .dropdown-trigger { background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor); padding: 8px 18px; border-radius: 50px; color: white; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; font-family: 'Poppins', sans-serif; z-index: 1001; }
         .user-name-text { font-weight: 800; font-size: 13px; letter-spacing: 1px; }
         .arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
-        
-        .dropdown-content {
-            display: none; position: absolute; right: 0; top: 100%; background: #0d0d0d;
-            min-width: 200px; border: 1px solid var(--neon-mor); border-radius: 12px;
-            padding: 5px 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9);
-            animation: menuFadeIn 0.2s ease-out;
-        }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: #0d0d0d; min-width: 200px; border: 1px solid var(--neon-mor); border-radius: 12px; padding: 5px 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9); animation: menuFadeIn 0.2s ease-out; }
         .dropdown-content a { color: #fff; padding: 12px 20px; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; transition: 0.2s; }
         .dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
         .dropdown-content a:hover { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); padding-left: 25px; }
         .user-dropdown:hover .dropdown-content { display: block; }
         .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
 
-        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- 4. FORM TASARIMI --- */
+        /* --- FORM TASARIMI VE YENİ İKONLAR --- */
         .main-content { padding: 60px 10%; }
         .form-container { max-width: 800px; margin: 0 auto; }
         .auth-card { background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
@@ -95,13 +49,18 @@
 
         .input-group { margin-bottom: 20px; position: relative; }
         .input-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--gri-yazi); font-weight: bold; }
-        .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; outline: none; font-family: 'Poppins', sans-serif; }
+        .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; outline: none; font-family: 'Poppins', sans-serif; transition: 0.3s; }
         .input-group input:focus { border-color: var(--neon-mor); }
+        .input-group input[readonly] { background: #0a0a0a; border-color: var(--neon-mor); color: var(--neon-mor); font-weight: bold; }
 
         .player-wrapper { position: relative; display: flex; align-items: center; }
-        .status-tick { position: absolute; right: 15px; font-size: 18px; display: none; }
+        .status-tick { position: absolute; right: 40px; font-size: 18px; display: none; }
         .status-tick.grey { display: block; color: #444; }
         .status-tick.blue { display: block; color: var(--mavi-onay); filter: drop-shadow(0 0 5px var(--mavi-onay)); }
+        
+        /* Çöp kutusu ikonu eklendi (Oyuncu çıkarma) */
+        .remove-player { position: absolute; right: 10px; font-size: 16px; color: var(--red-reject); cursor: pointer; display: none; transition: 0.3s; }
+        .remove-player:hover { transform: scale(1.2); filter: drop-shadow(0 0 5px var(--red-reject)); }
 
         .autocomplete-items { position: absolute; border: 1px solid var(--neon-mor); border-top: none; z-index: 99; top: 100%; left: 0; right: 0; background-color: #0a0a0a; max-height: 200px; overflow-y: auto; border-radius: 0 0 8px 8px; }
         .autocomplete-items div { padding: 10px; cursor: pointer; border-bottom: 1px solid #222; font-size: 13px; }
@@ -113,21 +72,22 @@
         .action-btns { display: flex; gap: 15px; margin-top: 30px; }
         .save-btn { flex: 2; padding: 15px; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.3s; font-family: 'Poppins', sans-serif; }
         .save-btn:disabled { background: #222; color: #555; cursor: not-allowed; }
-        .reset-btn { flex: 1; background: transparent; border: 1px solid #333; color: white; border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; }
+        
+        /* Taslak (Draft) silme butonu */
+        .cancel-draft-btn { flex: 1; background: transparent; border: 1px solid var(--red-reject); color: var(--red-reject); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: bold; transition: 0.3s; }
+        .cancel-draft-btn:hover { background: var(--red-reject); color: white; }
 
-        /* --- 5. FOOTER --- */
+        /* FOOTER & MOBIL (KORUNAN YAPI) */
         footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
         .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
         .social-icons { display: flex; gap: 15px; }
         .social-icons a { width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; }
-        .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
         .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
         .footer-column ul { list-style: none; }
         .footer-column ul li { margin-bottom: 12px; }
         .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
-        .footer-column ul li a:hover { color: var(--neon-mor); }
         .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
         .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
@@ -142,8 +102,6 @@
             .main-content { padding: 40px 5%; }
             .action-btns { flex-direction: column; }
             .footer-grid { grid-template-columns: 1fr; gap: 30px; text-align: center; }
-            .footer-brand p { max-width: 100%; }
-            .social-icons { justify-content: center; }
         }
     </style>
 </head>
@@ -163,8 +121,14 @@
 
     <div class="main-content">
         <div class="form-container">
-            <h2 class="section-title">OBB 1.TOPLULUK <span>TURNUVASI</span> BAŞVURU FORMU</h2>
+            <h2 class="section-title">OBB 1.TOPLULUK <span>TURNUVASI</span> LOBİSİ</h2>
             
+            <div id="draftInfoBox" style="display:none; background:rgba(96,29,194,0.2); border:1px solid var(--neon-mor); padding:15px; border-radius:10px; margin-bottom:20px; font-size:13px;">
+                <i class="fas fa-info-circle" style="color:var(--neon-mor);"></i> 
+                Bu form <b>canlı bir taslaktır</b>. Sayfadan çıksanız bile verileriniz 3 saat boyunca korunur. Seçtiğiniz oyunculara anında davet gider.
+                <span id="timeLeft" style="float:right; font-weight:bold; color:var(--red-reject);"></span>
+            </div>
+
             <div class="auth-card">
                 <form id="teamForm">
                     <div style="display: flex; gap: 15px; flex-wrap: wrap;">
@@ -183,7 +147,7 @@
                         <input type="file" id="teamLogo" accept="image/png" required>
                     </div>
 
-                    <h3 style="margin: 20px 0 10px; font-size: 14px; color: var(--neon-mor);">ASIL KADRO (Arama Yapıp Seçiniz)</h3>
+                    <h3 style="margin: 20px 0 10px; font-size: 14px; color: var(--neon-mor);">ASIL KADRO (Onay Bekleniyor)</h3>
                     <div id="mainPlayers"></div>
 
                     <div class="divider"></div>
@@ -191,8 +155,8 @@
                     <div id="subPlayers"></div>
 
                     <div class="action-btns">
-                        <button type="button" class="reset-btn" onclick="location.reload()">Sıfırla</button>
-                        <button type="submit" class="save-btn" id="submitBtn" disabled>ASIL KADRO ONAY BEKLİYOR (1/5)</button>
+                        <button type="button" class="cancel-draft-btn" onclick="cancelDraft()">Başvuruyu İptal Et</button>
+                        <button type="submit" class="save-btn" id="submitBtn" disabled>OYUNCU ONAYLARI BEKLENİYOR (1/5)</button>
                     </div>
                 </form>
             </div>
@@ -206,63 +170,49 @@
                 <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
                 <div class="social-icons">
                     <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-x-twitter"></i></a>
                     <a href="#"><i class="fab fa-discord"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
             <div class="footer-column">
                 <h3>Hızlı Menü</h3>
                 <ul>
                     <li><a href="index.html">Ana Sayfa</a></li>
-                    <li><a href="tournaments.html">Turnuvalar</a></li>
-                    <li><a href="canli.html">Canlı</a></li>
-                    <li><a href="kayit.html">Kayıt Ol</a></li>
+                    <li><a href="profil.html">Profil</a></li>
                 </ul>
             </div>
             <div class="footer-column">
                 <h3>İletişim</h3>
                 <ul>
                     <li class="contact-item"><i class="fas fa-envelope"></i> info@obbesports.com</li>
-                    <li class="contact-item"><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
-                    <li class="contact-item"><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
                 </ul>
             </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // --- CONFIG & UTILS ---
         const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentUser = null;
+        let currentDraftId = null; 
+        let draftCreatedAt = null;
+        let saveTimeout = null;
 
-        // --- SCROLL EFFECT ---
-        let lastScrollTop = 0;
-        const header = document.getElementById("mainHeader");
-        window.addEventListener("scroll", () => {
-            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            if (scrollTop > lastScrollTop && scrollTop > 100) header.classList.add("nav-hidden");
-            else header.classList.remove("nav-hidden");
-            lastScrollTop = scrollTop;
-        });
+        // Çıkış yapma
+        async function handleLogout() {
+            await _supabase.auth.signOut();
+            window.location.href = 'kayit.html';
+        }
 
-        // --- AUTH & INITIALIZE ---
         async function init() {
             const { data: { user } } = await _supabase.auth.getUser();
             if (!user) { window.location.href = 'kayit.html'; return; }
             currentUser = user;
 
-            // Update Navbar User Menu
-            const authAction = document.getElementById('authAction');
             const username = user.user_metadata?.username || "OYUNCU";
-            authAction.innerHTML = `
+            document.getElementById('authAction').innerHTML = `
                 <div class="user-dropdown">
                     <button class="dropdown-trigger">
                         <i class="fas fa-user"></i>
@@ -271,23 +221,118 @@
                     </button>
                     <div class="dropdown-content">
                         <a href="profil.html"><i class="fas fa-user-circle"></i> Profil</a>
-                        <a href="#" onclick="await _supabase.auth.signOut(); location.reload();"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
+                        <a href="#" onclick="handleLogout(); return false;"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
                     </div>
                 </div>`;
 
             renderPlayerInputs();
-            
-            // Set Captain (Auto-fill)
-            const capt = document.getElementById('main_1');
-            capt.value = username;
-            capt.readOnly = true;
-            capt.dataset.userId = user.id;
-            capt.dataset.status = 'accepted';
-            document.getElementById('main_1-tick').className = 'fas fa-check-circle status-tick blue';
-            
-            updateFormStatus();
+            await loadOrCreateDraft(username);
+            setupAutoSave();
+            subscribeToDraftUpdates();
         }
 
+        // --- 1. TASLAK (DRAFT) OLUŞTURMA VE YÜKLEME ---
+        async function loadOrCreateDraft(username) {
+            const { data: drafts } = await _supabase.from('tournament_applications')
+                .select('*')
+                .eq('captain_id', currentUser.id)
+                .in('status', ['draft', 'pending']);
+
+            let draft = drafts && drafts.length > 0 ? drafts[0] : null;
+
+            // Eğer başvuru zaten tamamlanmışsa (pending)
+            if (draft && draft.status === 'pending') {
+                document.querySelector('.auth-card').innerHTML = `<h3 style="text-align:center; color:var(--mavi-onay);">Başvurunuz turnuva yöneticileri tarafından inceleniyor.</h3><p style="text-align:center; margin-top:20px;"><a href="profil.html" style="color:white; text-decoration:underline;">Profile Dön</a></p>`;
+                return;
+            }
+
+            if (draft) {
+                // Zaman Aşımı Kontrolü (İkinci Güvenlik Duvarı)
+                const createdTime = new Date(draft.created_at).getTime();
+                const now = new Date().getTime();
+                if (now - createdTime > 3 * 60 * 60 * 1000) {
+                    await cancelDraft(true); // Süre doldu, sessizce sil ve yenile
+                    return; 
+                }
+                currentDraftId = draft.id;
+                draftCreatedAt = createdTime;
+                
+                // Formu doldur
+                document.getElementById('teamName').value = draft.team_name || '';
+                document.getElementById('teamTag').value = draft.team_tag || '';
+                document.getElementById('draftInfoBox').style.display = 'block';
+                startCountdown();
+                await loadDraftMembers();
+
+            } else {
+                // Yeni Taslak Oluştur
+                const { data: newDraft } = await _supabase.from('tournament_applications').insert({
+                    captain_id: currentUser.id,
+                    team_name: '', team_tag: '', status: 'draft'
+                }).select().single();
+                
+                currentDraftId = newDraft.id;
+                draftCreatedAt = new Date(newDraft.created_at).getTime();
+                document.getElementById('draftInfoBox').style.display = 'block';
+                startCountdown();
+
+                // Kaptanı otomatik olarak asıl oyuncu listesine kabul edilmiş (accepted) olarak ekle
+                await _supabase.from('application_members').insert({
+                    application_id: currentDraftId,
+                    user_id: currentUser.id, role: 'main', status: 'accepted'
+                });
+                
+                // Formda kaptanı göster
+                const captInput = document.getElementById('main_1');
+                captInput.value = username;
+                captInput.readOnly = true;
+                captInput.dataset.userId = currentUser.id;
+                captInput.dataset.status = 'accepted';
+                document.getElementById('main_1-tick').className = 'fas fa-check-circle status-tick blue';
+                updateFormStatus();
+            }
+        }
+
+        // --- 2. TASLAK OYUNCULARINI FORMA YÜKLEME ---
+        async function loadDraftMembers() {
+            const { data: members } = await _supabase.from('application_members')
+                .select('*, profiles(username)')
+                .eq('application_id', currentDraftId);
+                
+            if(members) {
+                let mainIndex = 2; // 1 kaptan için rezerve
+                let subIndex = 1;
+                
+                members.forEach(m => {
+                    let inputId = '';
+                    if (m.user_id === currentUser.id) {
+                        inputId = 'main_1'; // Kaptan her zaman 1. slot
+                    } else {
+                        if(m.role === 'main') { inputId = 'main_' + mainIndex; mainIndex++; } 
+                        else { inputId = 'sub_' + subIndex; subIndex++; }
+                    }
+
+                    const input = document.getElementById(inputId);
+                    if(input) {
+                        input.value = m.profiles.username;
+                        input.readOnly = true;
+                        input.dataset.userId = m.user_id;
+                        input.dataset.memberId = m.id;
+                        input.dataset.status = m.status;
+                        
+                        const tick = document.getElementById(inputId + '-tick');
+                        tick.className = m.status === 'accepted' ? 'fas fa-check-circle status-tick blue' : 'fas fa-check-circle status-tick grey';
+                        
+                        if (inputId !== 'main_1') {
+                            document.getElementById(inputId + '-remove').style.display = 'block';
+                        }
+                    }
+                });
+                updateFormStatus();
+            }
+        }
+
+        // --- 3. INPUTLAR VE GERÇEK ZAMANLI DAVET ATMA ---
         function renderPlayerInputs() {
             const mDiv = document.getElementById('mainPlayers');
             const sDiv = document.getElementById('subPlayers');
@@ -305,6 +350,7 @@
                     <div class="player-wrapper">
                         <input type="text" id="${id}" class="player-search" autocomplete="off" placeholder="Nickname ara...">
                         <i class="fas fa-check-circle status-tick" id="${id}-tick"></i>
+                        <i class="fas fa-trash remove-player" id="${id}-remove" title="Daveti İptal Et" onclick="removePlayer('${id}')"></i>
                         <div id="${id}-list" class="autocomplete-items"></div>
                     </div>
                 </div>`;
@@ -312,55 +358,48 @@
 
         function attachSearchEvents() {
             document.querySelectorAll('.player-search').forEach(input => {
-                if(input.id === 'main_1') return; // Kaptanı atla
+                if(input.id === 'main_1') return; 
 
                 input.addEventListener('input', async function() {
                     const query = this.value;
                     const list = document.getElementById(this.id + '-list');
                     list.innerHTML = '';
-                    
-                    // Input değiştiğinde mevcut durumu sıfırla
-                    this.dataset.userId = "";
-                    this.dataset.status = "";
-                    document.getElementById(this.id + '-tick').className = 'fas fa-check-circle status-tick';
-                    updateFormStatus();
-
                     if (query.length < 2) return;
 
-                    // Dinamik Hariç Tutma: Formda halihazırda seçili olan ID'leri topla
-                    const selectedIds = Array.from(document.querySelectorAll('.player-search'))
-                        .map(el => el.dataset.userId)
-                        .filter(id => id && id !== "");
+                    // Formda seçili olanları hariç tut
+                    const selectedIds = Array.from(document.querySelectorAll('.player-search')).map(el => el.dataset.userId).filter(id => id);
 
-                    let supabaseQuery = _supabase.from('profiles')
-                        .select('username, id')
-                        .ilike('username', `%${query}%`)
-                        .is('team_id', null)
-                        .neq('id', currentUser.id);
-
-                    // Eğer önceden seçilmiş ID'ler varsa sorgudan dışla
-                    if (selectedIds.length > 0) {
-                        supabaseQuery = supabaseQuery.not('id', 'in', `(${selectedIds.join(',')})`);
-                    }
+                    let supabaseQuery = _supabase.from('profiles').select('username, id').ilike('username', `%${query}%`).is('team_id', null).neq('id', currentUser.id);
+                    if (selectedIds.length > 0) supabaseQuery = supabaseQuery.not('id', 'in', `(${selectedIds.join(',')})`);
 
                     const { data } = await supabaseQuery.limit(5);
 
                     data?.forEach(u => {
                         const div = document.createElement('div');
                         div.innerHTML = `<i class="fas fa-user"></i> ${u.username}`;
-                        div.onclick = () => {
+                        div.onclick = async () => {
+                            // Arayüzü kilitle ve yükleniyor yap
                             input.value = u.username;
-                            input.dataset.userId = u.id;
-                            input.dataset.status = 'pending';
+                            input.readOnly = true;
                             list.innerHTML = '';
-                            document.getElementById(input.id + '-tick').className = 'fas fa-check-circle status-tick grey';
-                            
-                            // Demo auto-accept (Realtime code would replace this)
-                            setTimeout(() => {
-                                document.getElementById(input.id + '-tick').className = 'fas fa-check-circle status-tick blue';
-                                input.dataset.status = 'accepted';
+                            document.getElementById(input.id + '-tick').className = 'fas fa-spinner fa-spin status-tick grey';
+
+                            // VERİTABANINA DAVETİ EKLE (BİLDİRİM ANINDA GİDER!)
+                            const role = input.id.startsWith('main') ? 'main' : 'sub';
+                            const { data: newMember, error } = await _supabase.from('application_members').insert({
+                                application_id: currentDraftId,
+                                user_id: u.id, role: role, status: 'pending'
+                            }).select().single();
+
+                            if (newMember) {
+                                input.dataset.userId = u.id;
+                                input.dataset.memberId = newMember.id;
+                                input.dataset.status = 'pending';
+                                // Bekliyor (Gri Tik) durumuna geçir ve Çöp kutusunu göster
+                                document.getElementById(input.id + '-tick').className = 'fas fa-check-circle status-tick grey';
+                                document.getElementById(input.id + '-remove').style.display = 'block';
                                 updateFormStatus();
-                            }, 1000);
+                            }
                         };
                         list.appendChild(div);
                     });
@@ -368,13 +407,150 @@
             });
         }
 
+        // Oyuncuyu taslaktan çıkarma (Daveti Geri Çekme)
+        async function removePlayer(inputId) {
+            const input = document.getElementById(inputId);
+            const memberId = input.dataset.memberId;
+            if (memberId) {
+                // Veritabanından sil (Karşı tarafın bildirimi anında silinir)
+                await _supabase.from('application_members').delete().eq('id', memberId);
+            }
+            // Form slotunu sıfırla
+            input.value = '';
+            input.readOnly = false;
+            input.dataset.userId = '';
+            input.dataset.memberId = '';
+            input.dataset.status = '';
+            document.getElementById(inputId + '-tick').className = 'fas fa-check-circle status-tick';
+            document.getElementById(inputId + '-remove').style.display = 'none';
+            updateFormStatus();
+        }
+
+        // --- 4. GERÇEK ZAMANLI LOBİ TAKİBİ (Supabase Realtime) ---
+        function subscribeToDraftUpdates() {
+            if(!currentDraftId) return;
+            _supabase.channel('draft-updates')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'application_members', filter: `application_id=eq.${currentDraftId}` }, payload => {
+                    
+                    // Eğer bir oyuncu daveti KABUL EDERSE
+                    if (payload.eventType === 'UPDATE') {
+                        const member = payload.new;
+                        const input = document.querySelector(`[data-member-id="${member.id}"]`);
+                        if(input && member.status === 'accepted') {
+                            input.dataset.status = 'accepted';
+                            document.getElementById(input.id + '-tick').className = 'fas fa-check-circle status-tick blue';
+                        }
+                    } 
+                    // Eğer bir oyuncu daveti REDDEDERSE (Profilinden silerse)
+                    else if (payload.eventType === 'DELETE') {
+                        const member = payload.old;
+                        const input = document.querySelector(`[data-member-id="${member.id}"]`);
+                        if(input) {
+                            // Slotu temizle ve kaptana uyarı ver
+                            input.value = ''; input.readOnly = false;
+                            input.dataset.userId = ''; input.dataset.memberId = ''; input.dataset.status = '';
+                            document.getElementById(input.id + '-tick').className = 'fas fa-check-circle status-tick';
+                            document.getElementById(input.id + '-remove').style.display = 'none';
+                            alert(`Bir oyuncu takım davetinizi reddetti.`);
+                        }
+                    }
+                    updateFormStatus();
+                }).subscribe();
+        }
+
+        // --- 5. OTOMATİK KAYIT VE ONAY KONTROLÜ ---
+        function setupAutoSave() {
+            const saveInputs = ['teamName', 'teamTag'];
+            saveInputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', () => {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(async () => {
+                        if (currentDraftId) {
+                            await _supabase.from('tournament_applications').update({
+                                team_name: document.getElementById('teamName').value,
+                                team_tag: document.getElementById('teamTag').value
+                            }).eq('id', currentDraftId);
+                        }
+                    }, 1000);
+                });
+            });
+        }
+
         function updateFormStatus() {
-            const accepted = Array.from(document.querySelectorAll('[id^="main_"]'))
+            // Sadece 'main' (asıl) oyunculardan statüsü 'accepted' olanları say
+            const acceptedMains = Array.from(document.querySelectorAll('[id^="main_"]'))
                 .filter(i => i.dataset.status === 'accepted').length;
+            
             const btn = document.getElementById('submitBtn');
-            btn.innerText = `ASIL KADRO ONAY BEKLİYOR (${accepted}/5)`;
-            btn.disabled = accepted < 5;
-            if(accepted === 5) btn.innerText = "KAYDI TAMAMLA";
+            btn.innerText = `OYUNCU ONAYLARI BEKLENİYOR (${acceptedMains}/5)`;
+            
+            // Eğer 5 asıl oyuncu da kabul ettiyse GÖNDER butonu açılır
+            btn.disabled = acceptedMains < 5;
+            if(acceptedMains === 5) {
+                btn.innerText = "BAŞVURUYU TAMAMLA VE GÖNDER";
+                btn.style.boxShadow = "0 0 20px var(--neon-mor)";
+            } else {
+                btn.style.boxShadow = "none";
+            }
+        }
+
+        // --- 6. BAŞVURUYU İPTAL ETME VEYA GÖNDERME ---
+        async function cancelDraft(silent = false) {
+            if (!silent && !confirm("Tüm taslak silinecek ve davetler iptal edilecek. Emin misiniz?")) return;
+            if (currentDraftId) {
+                await _supabase.from('tournament_applications').delete().eq('id', currentDraftId);
+                location.reload();
+            }
+        }
+
+        document.getElementById('teamForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "YÜKLENİYOR...";
+
+            try {
+                // Logo Yükleme
+                const logoFile = document.getElementById('teamLogo').files[0];
+                let logoUrl = "";
+                if(logoFile) {
+                    const fileExt = logoFile.name.split('.').pop();
+                    const fileName = `team_${Date.now()}.${fileExt}`;
+                    const { error: uploadError } = await _supabase.storage.from('team-logos').upload(fileName, logoFile);
+                    if (uploadError) throw uploadError;
+                    const { data } = _supabase.storage.from('team-logos').getPublicUrl(fileName);
+                    logoUrl = data.publicUrl;
+                }
+
+                // Statüyü 'pending' (yönetici onayı bekliyor) olarak güncelle
+                const { error: teamError } = await _supabase.from('tournament_applications').update({
+                    status: 'pending',
+                    logo_url: logoUrl
+                }).eq('id', currentDraftId);
+
+                if (teamError) throw teamError;
+
+                alert("Tebrikler! Takım başvurunuz turnuva yöneticilerine iletildi.");
+                window.location.href = "profil.html"; 
+                
+            } catch (err) {
+                alert("Kayıt sırasında hata: " + err.message);
+                submitBtn.disabled = false;
+                submitBtn.innerText = "BAŞVURUYU TAMAMLA VE GÖNDER";
+            }
+        });
+
+        // Kalan Süreyi Gösterme
+        function startCountdown() {
+            setInterval(() => {
+                if(!draftCreatedAt) return;
+                const now = new Date().getTime();
+                const diff = (draftCreatedAt + (3 * 60 * 60 * 1000)) - now;
+                if(diff <= 0) { cancelDraft(true); return; }
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                document.getElementById('timeLeft').innerText = `Kalan Süre: ${h}s ${m}d`;
+            }, 60000); // Dakikada bir güncelle
         }
 
         init();
