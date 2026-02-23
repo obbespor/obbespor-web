@@ -14,13 +14,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* --- TEMEL AYARLAR --- */
+        /* --- 1. TEMEL AYARLAR --- */
         :root { --ana-siyah: #000000; --nav-bg: #000000; --neon-mor: #601dc2; --yazi-beyaz: #ffffff; --gri-yazi: #a0a0a0; --mavi-onay: #00d2ff; --red-reject: #ff4b4b; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
         body { background: radial-gradient(circle at top, #1a052d 0%, #000000 100%); background-attachment: fixed; color: var(--yazi-beyaz); font-family: 'Poppins', sans-serif; line-height: 1.6; padding-top: 80px; }
         
-        /* --- HEADER --- */
+        /* --- 2. AKILLI HEADER --- */
         header.main-nav { background-color: var(--nav-bg); padding: 0 10%; display: flex; justify-content: space-between; align-items: center; height: 80px; border-bottom: 3px solid var(--neon-mor); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; transition: transform 0.4s ease-in-out; }
         header.main-nav.nav-hidden { transform: translateY(-110%); }
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
@@ -31,7 +31,7 @@
         .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; font-weight: bold; }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- PRO OYUNCU MENÜSÜ --- */
+        /* --- 3. PRO OYUNCU MENÜSÜ VE SABİTLEME FİXİ --- */
         .user-dropdown { position: relative; display: inline-block; }
         .dropdown-trigger { background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor); padding: 8px 18px; border-radius: 50px; color: white; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; font-family: 'Poppins', sans-serif; z-index: 1001; }
         .dropdown-trigger:hover { box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); background: rgba(96, 29, 194, 0.2); }
@@ -44,9 +44,11 @@
         .dropdown-content a:hover { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); padding-left: 25px; }
         .user-dropdown:hover .dropdown-content { display: block; }
         .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
+        .logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
+        .logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
         @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- FORM TASARIMI VE İKONLAR --- */
+        /* --- 4. FORM TASARIMI VE İKONLAR --- */
         .main-content { padding: 60px 10%; }
         .form-container { max-width: 800px; margin: 0 auto; }
         .auth-card { background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
@@ -86,8 +88,8 @@
         .edit-mode-btn { flex: 1; padding: 12px 25px; background: transparent; border: 2px solid var(--mavi-onay); color: var(--mavi-onay); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 800; transition: 0.3s; font-size: 14px; text-transform: uppercase; }
         .edit-mode-btn:hover { background: var(--mavi-onay); color: #000; box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); transform: translateY(-2px); }
 
-        /* --- FOOTER --- */
-        footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
+        /* --- 5. FOOTER (BİREBİR KOPYALANDI) --- */
+        footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 100px; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
         .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
@@ -103,16 +105,31 @@
         .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
+        /* --- 6. MOBİL UYUMLULUK (TAM ENTEGRASYON) --- */
         @media (max-width: 768px) {
             header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
             body { padding-top: 125px; }
-            nav ul { gap: 10px; justify-content: space-between; width: 100%; }
-            nav ul li a { font-size: 10px; }
-            .user-name-text, .arrow-icon { display: none; }
-            .dropdown-trigger { width: 40px; height: 40px; padding: 0; justify-content: center; }
+            nav { width: 100%; }
+            nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 10px; white-space: nowrap; }
+            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
+
+            /* Footer Yan Yana Mobil Düzeni */
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+            .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
+            .footer-brand p { max-width: 100%; }
+            .social-icons { justify-content: center; }
+            .footer-column { text-align: left; }
+            footer { padding: 60px 8% 30px; }
+
+            /* Mobilde Nickname Buton Fixi */
+            .user-name-text, .arrow-icon { display: none; } 
+            .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
+            .dropdown-content { position: fixed; right: 15px; top: 75px; width: 180px; }
+            
+            /* Form İçin Özel Düzen */
             .main-content { padding: 40px 5%; }
             .action-btns { flex-direction: column; }
-            .footer-grid { grid-template-columns: 1fr; gap: 30px; text-align: center; }
             #pendingBtnGroup { flex-direction: column; } 
         }
     </style>
@@ -193,20 +210,26 @@
                 <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
                 <div class="social-icons">
                     <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
                     <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
             <div class="footer-column">
                 <h3>Hızlı Menü</h3>
                 <ul>
                     <li><a href="index.html">Ana Sayfa</a></li>
-                    <li><a href="profil.html">Profil</a></li>
+                    <li><a href="tournaments.html">Turnuvalar</a></li>
+                    <li><a href="canli.html">Canlı</a></li>
+                    <li><a href="kayit.html">Kayıt Ol</a></li>
                 </ul>
             </div>
             <div class="footer-column">
                 <h3>İletişim</h3>
                 <ul>
                     <li class="contact-item"><i class="fas fa-envelope"></i> info@obbesports.com</li>
+                    <li class="contact-item"><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
+                    <li class="contact-item"><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
                 </ul>
             </div>
         </div>
@@ -214,7 +237,9 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="bildirimler.js"></script> <script>
+    <script src="bildirimler.js"></script>
+    
+    <script>
         const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
