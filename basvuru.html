@@ -56,6 +56,7 @@
         .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; outline: none; font-family: 'Poppins', sans-serif; transition: 0.3s; }
         .input-group input:focus { border-color: var(--neon-mor); }
         .input-group input[readonly] { background: #0a0a0a; border-color: var(--neon-mor); color: var(--neon-mor); font-weight: bold; }
+        .input-group input.main-captain { border-color: var(--mavi-onay); color: var(--mavi-onay); }
 
         .player-wrapper { position: relative; display: flex; align-items: center; }
         .status-tick { position: absolute; right: 40px; font-size: 18px; display: none; }
@@ -151,7 +152,7 @@
                         <input type="file" id="teamLogo" accept="image/png" required>
                     </div>
 
-                    <h3 style="margin: 20px 0 10px; font-size: 14px; color: var(--neon-mor);">ASIL KADRO (Onay Bekleniyor)</h3>
+                    <h3 style="margin: 20px 0 10px; font-size: 14px; color: var(--neon-mor);">ASIL KADRO</h3>
                     <div id="mainPlayers"></div>
 
                     <div class="divider"></div>
@@ -220,13 +221,11 @@
             window.location.href = 'kayit.html';
         }
 
-        // --- INIT: Sayfa Yüklendiğinde Çalışır ---
         async function init() {
             const { data: { user }, error: authError } = await _supabase.auth.getUser();
             if (authError || !user) { window.location.href = 'kayit.html'; return; }
             currentUser = user;
 
-            // KESİN ÇÖZÜM 1: Kaptan Adı Boş Kalmasın (maybeSingle kullanımı)
             const { data: profileData } = await _supabase.from('profiles').select('username').eq('id', user.id).maybeSingle();
             const realUsername = profileData?.username || user.user_metadata?.username || "KAPTAN";
 
@@ -243,13 +242,12 @@
                     </div>
                 </div>`;
 
-            renderPlayerInputs(); // HTML inputları ekrana basılır
-            await loadOrCreateDraft(realUsername); // Kaptan adı slot'a gönderilir
+            renderPlayerInputs();
+            await loadOrCreateDraft(realUsername); 
             setupAutoSave();
             subscribeToDraftUpdates();
         }
 
-        // --- HTML INPUT OLUŞTURMA (Optimize Edildi) ---
         function renderPlayerInputs() {
             const mDiv = document.getElementById('mainPlayers');
             const sDiv = document.getElementById('subPlayers');
@@ -260,18 +258,19 @@
             mDiv.innerHTML = mHtml;
             sDiv.innerHTML = sHtml;
             
-            // DOM tamamen oluştuktan sonra Event'leri bağla
             attachSearchEvents();
         }
 
         function createInputHTML(idx, isSub) {
             const id = isSub ? `sub_${idx}` : `main_${idx}`;
             const label = isSub ? `${idx}. Yedek Oyuncu` : `${idx}. Oyuncu ${idx==1 ? '(Kaptan)' : ''}`;
+            const readonlyAttr = (!isSub && idx === 1) ? 'readonly class="main-captain"' : 'class="player-search"';
+            
             return `
                 <div class="input-group">
                     <label>${label}</label>
                     <div class="player-wrapper">
-                        <input type="text" id="${id}" class="player-search" autocomplete="off" placeholder="Nickname ara...">
+                        <input type="text" id="${id}" ${readonlyAttr} autocomplete="off" placeholder="Nickname ara...">
                         <i class="fas fa-check-circle status-tick" id="${id}-tick"></i>
                         <i class="fas fa-trash remove-player" id="${id}-remove" title="Daveti İptal Et" onclick="removePlayer('${id}')"></i>
                         <div id="${id}-list" class="autocomplete-items"></div>
@@ -279,7 +278,6 @@
                 </div>`;
         }
 
-        // --- TASLAK OLUŞTURMA & KAPTANI YAZDIRMA ---
         async function loadOrCreateDraft(username) {
             const { data: drafts } = await _supabase.from('tournament_applications')
                 .select('*')
@@ -307,9 +305,8 @@
                 document.getElementById('draftInfoBox').style.display = 'block';
                 startCountdown();
                 
-                fillCaptainSlot(username); // Eski taslakta kaptanı bas
+                fillCaptainSlot(username); 
                 await loadDraftMembers();
-
             } else {
                 const { data: newDraft } = await _supabase.from('tournament_applications').insert({
                     captain_id: currentUser.id, team_name: '', team_tag: '', status: 'draft'
@@ -324,16 +321,15 @@
                     application_id: currentDraftId, user_id: currentUser.id, role: 'main', status: 'accepted'
                 });
                 
-                fillCaptainSlot(username); // Yeni taslakta kaptanı bas
+                fillCaptainSlot(username);
             }
         }
 
-        // Kaptanı formdaki 1. Slota Mavi Tik ile sabitleyen kod
+        // Kaptanı Sabitleme Fonksiyonu
         function fillCaptainSlot(username) {
             const captInput = document.getElementById('main_1');
             if(captInput) {
                 captInput.value = username;
-                captInput.readOnly = true;
                 captInput.dataset.userId = currentUser.id;
                 captInput.dataset.status = 'accepted';
                 
@@ -344,7 +340,6 @@
             updateFormStatus();
         }
 
-        // Diğer oyuncuları veritabanından çekip formda doldurur
         async function loadDraftMembers() {
             const { data: members } = await _supabase.from('application_members')
                 .select('*, profiles(username)')
@@ -378,10 +373,19 @@
             }
         }
 
-        // --- KESİN ÇÖZÜM 2: ARAMA VE AYNI OYUNCUYU İKİ KERE SEÇMEYİ ENGELLEYEN FRONTEND FİLTRESİ ---
+        // SADECE LİSTEDEN SEÇME VE BENZERSİZLİK FİLTRESİ
         function attachSearchEvents() {
             document.querySelectorAll('.player-search').forEach(input => {
-                if(input.id === 'main_1') return; // Kaptan slotunda arama yapılmaz
+                
+                // 1. Şart: Inputtan çıkıldığında eğer readonly değilse (yani listeden seçilmemişse) içini temizle
+                input.addEventListener('blur', function() {
+                    setTimeout(() => {
+                        if (!this.readOnly && this.value !== '') {
+                            this.value = ''; // Zorla listeden seçtiriyoruz
+                            document.getElementById(this.id + '-list').innerHTML = '';
+                        }
+                    }, 200);
+                });
 
                 input.addEventListener('input', async function() {
                     const query = this.value;
@@ -389,22 +393,20 @@
                     list.innerHTML = '';
                     if (query.length < 2) return;
 
-                    // Formda o an seçili olan tüm ID'leri bir listede topla
-                    const selectedIds = Array.from(document.querySelectorAll('.player-search'))
+                    // Formdaki tüm ID'leri topla (Kaptan dahil)
+                    const selectedIds = Array.from(document.querySelectorAll('input[id^="main_"], input[id^="sub_"]'))
                                              .map(el => el.dataset.userId)
                                              .filter(id => id && id.trim() !== "");
 
-                    // Supabase'den ilk 15 kişiyi getir (Daha sonra içlerinden seçeceğiz)
                     const { data } = await _supabase.from('profiles')
                                                     .select('username, id')
                                                     .ilike('username', `%${query}%`)
                                                     .is('team_id', null)
-                                                    .neq('id', currentUser.id)
                                                     .limit(15); 
                     
                     if (!data) return;
 
-                    // YÜZDE YÜZ KORUMA: Supabase'in gönderdiği listeden, formda zaten ekli olanları tarayıcıda sil.
+                    // Formda ekli olanları listeden anında çıkar
                     const filteredPlayers = data.filter(u => !selectedIds.includes(u.id)).slice(0, 5);
 
                     filteredPlayers.forEach(u => {
@@ -421,7 +423,6 @@
 
                             const role = input.id.startsWith('main') ? 'main' : 'sub';
                             
-                            // Seçilen oyuncuyu veritabanına kaydet ve bildirimi at
                             const { data: newMember, error } = await _supabase.from('application_members').insert({
                                 application_id: currentDraftId,
                                 user_id: u.id, role: role, status: 'pending'
@@ -442,7 +443,6 @@
             });
         }
 
-        // Oyuncuyu taslaktan çıkarma (Daveti iptal etme)
         async function removePlayer(inputId) {
             const input = document.getElementById(inputId);
             const memberId = input.dataset.memberId;
@@ -462,12 +462,60 @@
             updateFormStatus();
         }
 
-        // --- LOBİ GERÇEK ZAMANLI GÜNCELLEMELER ---
+        // --- DİNAMİK BUTON GÜNCELLEMESİ VE YEDEK KONTROLÜ ---
+        function updateFormStatus() {
+            // Asıl kadrodaki dolu olan inputların sayısı (Hedef her zaman 5 olmalı)
+            const mainInputs = Array.from(document.querySelectorAll('[id^="main_"]')).filter(i => i.dataset.userId);
+            
+            // Yedek kadrodaki dolu olan inputların sayısı
+            const subInputs = Array.from(document.querySelectorAll('[id^="sub_"]')).filter(i => i.dataset.userId);
+            
+            // Toplam gereken onay = 5 (Asıl) + (Kaç tane yedek eklendiyse)
+            const totalRequired = 5 + subInputs.length;
+            
+            // Tüm inputlar içinde 'accepted' statüsünde olanların sayısı
+            const allActiveInputs = Array.from(document.querySelectorAll('input[id^="main_"], input[id^="sub_"]')).filter(i => i.dataset.userId);
+            const acceptedCount = allActiveInputs.filter(i => i.dataset.status === 'accepted').length;
+
+            const btn = document.getElementById('submitBtn');
+            
+            // Formu gönderme şartı: Asıl kadro (5 kişi) tamamen dolmuş mu? VE Tüm eklenenler (yedekler dahil) onaylamış mı?
+            if (mainInputs.length === 5 && acceptedCount === totalRequired) {
+                btn.innerText = "BAŞVURUYU TAMAMLA VE GÖNDER";
+                btn.disabled = false;
+                btn.style.boxShadow = "0 0 20px var(--neon-mor)";
+            } else {
+                btn.innerText = `OYUNCU ONAYLARI BEKLENİYOR (${acceptedCount}/${totalRequired})`;
+                btn.disabled = true;
+                btn.style.boxShadow = "none";
+            }
+        }
+
+        // --- PROFİLDEN GELEN SİNYALİ YAKALAMA (ANINDA MAVİ TİK) ---
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'teamInviteSignal') {
+                const data = JSON.parse(e.newValue);
+                const allInputs = Array.from(document.querySelectorAll('input[id^="main_"], input[id^="sub_"]'));
+                const targetInput = allInputs.find(input => input.dataset.memberId === data.id);
+
+                if (targetInput) {
+                    if (data.status === 'accepted') {
+                        targetInput.dataset.status = 'accepted';
+                        document.getElementById(targetInput.id + '-tick').className = 'fas fa-check-circle status-tick blue';
+                    } else if (data.status === 'rejected') {
+                        removePlayer(targetInput.id);
+                        alert(`${targetInput.value} daveti reddetti! Sinyal alındı.`);
+                    }
+                    updateFormStatus(); // Butonu anında günceller (Örn: 5/5 yapar)
+                }
+            }
+        });
+
+        // Supabase Realtime (Eğer sayfa yenilenirse veya farklı bir bilgisayardan onay gelirse diye ekstra güvenlik)
         function subscribeToDraftUpdates() {
             if(!currentDraftId) return;
             _supabase.channel('draft-updates')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'application_members', filter: `application_id=eq.${currentDraftId}` }, payload => {
-                    
                     if (payload.eventType === 'UPDATE') {
                         const member = payload.new;
                         const input = document.querySelector(`[data-member-id="${member.id}"]`);
@@ -482,19 +530,17 @@
                         if(input) {
                             input.value = ''; input.readOnly = false;
                             input.dataset.userId = ''; input.dataset.memberId = ''; input.dataset.status = '';
-                            
                             const tick = document.getElementById(input.id + '-tick');
                             tick.className = 'fas fa-check-circle status-tick';
                             tick.style.display = 'none';
                             document.getElementById(input.id + '-remove').style.display = 'none';
-                            alert(`Bir oyuncu takım davetinizi reddetti.`);
                         }
                     }
                     updateFormStatus();
                 }).subscribe();
         }
 
-        // --- OTOMATİK KAYIT (AUTOSAVE) VE GÖNDERME ---
+        // --- OTOMATİK KAYIT ---
         function setupAutoSave() {
             const saveInputs = ['teamName', 'teamTag'];
             saveInputs.forEach(id => {
@@ -510,22 +556,6 @@
                     }, 1000);
                 });
             });
-        }
-
-        function updateFormStatus() {
-            const acceptedMains = Array.from(document.querySelectorAll('[id^="main_"]'))
-                .filter(i => i.dataset.status === 'accepted').length;
-            
-            const btn = document.getElementById('submitBtn');
-            btn.innerText = `OYUNCU ONAYLARI BEKLENİYOR (${acceptedMains}/5)`;
-            
-            btn.disabled = acceptedMains < 5;
-            if(acceptedMains === 5) {
-                btn.innerText = "BAŞVURUYU TAMAMLA VE GÖNDER";
-                btn.style.boxShadow = "0 0 20px var(--neon-mor)";
-            } else {
-                btn.style.boxShadow = "none";
-            }
         }
 
         async function cancelDraft(silent = false) {
@@ -583,7 +613,6 @@
             }, 60000); 
         }
 
-        // SAYFA TAMAMEN YÜKLENDİKTEN SONRA İŞLEMLERİ BAŞLAT
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
