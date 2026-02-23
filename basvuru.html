@@ -15,224 +15,351 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        :root { --ana-siyah: #000000; --nav-bg: #000000; --neon-mor: #601dc2; --yazi-beyaz: #ffffff; --gri-yazi: #a0a0a0; --mavi-onay: #00d2ff; }
+        /* --- 1. TEMEL AYARLAR --- */
+        :root {
+            --ana-siyah: #000000;
+            --nav-bg: #000000;
+            --neon-mor: #601dc2; 
+            --yazi-beyaz: #ffffff;
+            --gri-yazi: #a0a0a0;
+            --mavi-onay: #00d2ff;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
-        body { background: radial-gradient(circle at top, #1a052d 0%, #000000 100%); background-attachment: fixed; color: var(--yazi-beyaz); font-family: 'Poppins', sans-serif; line-height: 1.6; padding-top: 80px; }
-        
-        /* Navbar */
-        header.main-nav { background-color: var(--nav-bg); padding: 0 10%; display: flex; justify-content: space-between; align-items: center; height: 80px; border-bottom: 3px solid var(--neon-mor); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
+        body {
+            background: radial-gradient(circle at top, #1a052d 0%, #000000 100%);
+            background-attachment: fixed;
+            color: var(--yazi-beyaz);
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            padding-top: 80px;
+        }
+
+        /* --- 2. AKILLI HEADER --- */
+        header.main-nav {
+            background-color: var(--nav-bg);
+            padding: 0 10%; 
+            display: flex; justify-content: space-between; align-items: center;
+            height: 80px; border-bottom: 3px solid var(--neon-mor);
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            transition: transform 0.4s ease-in-out;
+        }
+        header.main-nav.nav-hidden { transform: translateY(-110%); }
+
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); }
+        
         nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
         nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
-        .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; font-weight: bold; }
+        nav ul li a:hover { color: var(--neon-mor); }
+        
+        .nav-btn { 
+            border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; 
+            color: white !important; background: transparent; transition: 0.3s; 
+            text-decoration: none; font-weight: bold; display: inline-block;
+        }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* Form & Cards */
-        .main-content { padding: 40px 5%; }
-        .auth-card { background: rgba(10, 10, 10, 0.95); padding: 30px; border-radius: 20px; border: 1px solid #222; max-width: 800px; margin: 0 auto; }
-        .section-title { margin-bottom: 30px; font-size: 22px; font-weight: 900; text-align: center; }
-        .section-title span { color: var(--neon-mor); }
+        /* --- 3. PRO OYUNCU MENÜSÜ --- */
+        .user-dropdown { position: relative; display: inline-block; }
+        .dropdown-trigger {
+            background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor);
+            padding: 8px 18px; border-radius: 50px; color: white; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; transition: 0.3s;
+            font-family: 'Poppins', sans-serif; z-index: 1001;
+        }
+        .user-name-text { font-weight: 800; font-size: 13px; letter-spacing: 1px; }
+        .arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
         
-        /* Autocomplete & Input Styles */
+        .dropdown-content {
+            display: none; position: absolute; right: 0; top: 100%; background: #0d0d0d;
+            min-width: 200px; border: 1px solid var(--neon-mor); border-radius: 12px;
+            padding: 5px 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+            animation: menuFadeIn 0.2s ease-out;
+        }
+        .dropdown-content a { color: #fff; padding: 12px 20px; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; transition: 0.2s; }
+        .dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
+        .dropdown-content a:hover { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); padding-left: 25px; }
+        .user-dropdown:hover .dropdown-content { display: block; }
+        .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
+
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 4. FORM TASARIMI --- */
+        .main-content { padding: 60px 10%; }
+        .form-container { max-width: 800px; margin: 0 auto; }
+        .auth-card { background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .section-title { margin-bottom: 40px; font-size: 28px; font-weight: 900; text-transform: uppercase; text-align: center; }
+        .section-title span { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
+
         .input-group { margin-bottom: 20px; position: relative; }
-        .input-group label { display: block; margin-bottom: 8px; font-size: 12px; color: var(--gri-yazi); font-weight: bold; }
-        .player-wrapper { position: relative; }
-        .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; font-family: 'Poppins'; }
-        .input-group input:focus { border-color: var(--neon-mor); outline: none; }
-        
-        .autocomplete-items { position: absolute; border: 1px solid #333; z-index: 99; top: 100%; left: 0; right: 0; background: #0d0d0d; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; }
-        .autocomplete-items div { padding: 12px; cursor: pointer; border-bottom: 1px solid #222; font-size: 13px; }
-        .autocomplete-items div:hover { background: var(--neon-mor); }
+        .input-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--gri-yazi); font-weight: bold; }
+        .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; outline: none; font-family: 'Poppins', sans-serif; }
+        .input-group input:focus { border-color: var(--neon-mor); }
 
-        .status-tick { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 18px; display: none; pointer-events: none; }
-        .status-tick.visible { display: block; }
-        .tick-grey { color: #444; }
-        .tick-blue { color: var(--mavi-onay); filter: drop-shadow(0 0 5px var(--mavi-onay)); }
+        .player-wrapper { position: relative; display: flex; align-items: center; }
+        .status-tick { position: absolute; right: 15px; font-size: 18px; display: none; }
+        .status-tick.grey { display: block; color: #444; }
+        .status-tick.blue { display: block; color: var(--mavi-onay); filter: drop-shadow(0 0 5px var(--mavi-onay)); }
 
-        /* Buttons */
-        .action-btns { display: flex; gap: 10px; margin-top: 30px; }
-        .save-btn { flex: 1; padding: 15px; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        .autocomplete-items { position: absolute; border: 1px solid var(--neon-mor); border-top: none; z-index: 99; top: 100%; left: 0; right: 0; background-color: #0a0a0a; max-height: 200px; overflow-y: auto; border-radius: 0 0 8px 8px; }
+        .autocomplete-items div { padding: 10px; cursor: pointer; border-bottom: 1px solid #222; font-size: 13px; }
+        .autocomplete-items div:hover { background-color: var(--neon-mor); }
+
+        .divider { height: 1px; background: #333; margin: 30px 0; position: relative; }
+        .divider::after { content: "Yedek Oyuncular (Opsiyonel)"; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #0a0a0a; padding: 0 15px; font-size: 12px; color: var(--neon-mor); font-weight: bold; }
+
+        .action-btns { display: flex; gap: 15px; margin-top: 30px; }
+        .save-btn { flex: 2; padding: 15px; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.3s; font-family: 'Poppins', sans-serif; }
         .save-btn:disabled { background: #222; color: #555; cursor: not-allowed; }
-        .reset-btn { padding: 15px 25px; background: transparent; border: 1px solid #333; color: white; border-radius: 8px; cursor: pointer; }
+        .reset-btn { flex: 1; background: transparent; border: 1px solid #333; color: white; border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; }
 
-        /* Footer */
-        footer { background: #000; border-top: 1px solid #222; padding: 60px 10% 30px; margin-top: 80px; }
-        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 40px; }
-        .footer-section h4 { color: var(--neon-mor); margin-bottom: 20px; font-size: 16px; }
-        .footer-section p, .footer-section a { color: var(--gri-yazi); text-decoration: none; font-size: 14px; display: block; margin-bottom: 10px; }
-        .footer-bottom { text-align: center; border-top: 1px solid #111; padding-top: 20px; font-size: 12px; color: #444; }
+        /* --- 5. FOOTER --- */
+        footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 50px; }
+        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+        .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
+        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
+        .social-icons { display: flex; gap: 15px; }
+        .social-icons a { width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; }
+        .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
+        .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
+        .footer-column ul { list-style: none; }
+        .footer-column ul li { margin-bottom: 12px; }
+        .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
+        .footer-column ul li a:hover { color: var(--neon-mor); }
+        .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
+        .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
+        .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* Mobile Fixes */
         @media (max-width: 768px) {
-            header.main-nav { padding: 0 5%; }
-            .logo { font-size: 18px; }
-            nav ul li:not(:last-child) { display: none; }
-            .main-content { padding-top: 20px; }
-            .auth-card { padding: 20px; }
+            header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
+            body { padding-top: 125px; }
+            nav ul { gap: 10px; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 10px; }
+            .user-name-text, .arrow-icon { display: none; }
+            .dropdown-trigger { width: 40px; height: 40px; padding: 0; justify-content: center; }
+            .main-content { padding: 40px 5%; }
+            .action-btns { flex-direction: column; }
+            .footer-grid { grid-template-columns: 1fr; gap: 30px; text-align: center; }
+            .footer-brand p { max-width: 100%; }
+            .social-icons { justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-    <header class="main-nav">
+    <header class="main-nav" id="mainHeader">
         <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
         <nav>
             <ul>
                 <li><a href="index.html">ANA SAYFA</a></li>
                 <li><a href="tournaments.html">TURNUVALAR</a></li>
+                <li><a href="canli.html">CANLI</a></li>
                 <li id="authAction"><a href="kayit.html" class="nav-btn">KATIL</a></li>
             </ul>
         </nav>
     </header>
 
     <div class="main-content">
-        <div class="auth-card">
-            <h2 class="section-title">TAKIM <span>KAYIT</span> FORMU</h2>
-            <form id="teamForm">
-                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <div class="input-group" style="flex: 2; min-width: 200px;">
-                        <label>Takım Adı *</label>
-                        <input type="text" id="teamName" placeholder="Örn: Team Obbe" required>
+        <div class="form-container">
+            <h2 class="section-title">OBB 1.TOPLULUK <span>TURNUVASI</span> BAŞVURU FORMU</h2>
+            
+            <div class="auth-card">
+                <form id="teamForm">
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <div class="input-group" style="flex: 2; min-width: 200px;">
+                            <label>Takım Adı *</label>
+                            <input type="text" id="teamName" placeholder="Örn: Team Obbe" required>
+                        </div>
+                        <div class="input-group" style="flex: 1; min-width: 100px;">
+                            <label>Takım Kısaltması *</label>
+                            <input type="text" id="teamTag" placeholder="OBB" required maxlength="5">
+                        </div>
                     </div>
-                    <div class="input-group" style="flex: 1; min-width: 100px;">
-                        <label>Takım Kısaltması *</label>
-                        <input type="text" id="teamTag" placeholder="OBB" required maxlength="5">
+
+                    <div class="input-group">
+                        <label>Takım Logosu (PNG, Max 2MB) *</label>
+                        <input type="file" id="teamLogo" accept="image/png" required>
                     </div>
-                </div>
 
-                <h3 style="margin: 20px 0 10px; font-size: 14px; color: var(--neon-mor);">ASIL KADRO (Arama Yapıp Seçiniz)</h3>
-                <div id="mainPlayers"></div>
+                    <h3 style="margin: 20px 0 10px; font-size: 14px; color: var(--neon-mor);">ASIL KADRO (Arama Yapıp Seçiniz)</h3>
+                    <div id="mainPlayers"></div>
 
-                <h3 style="margin: 30px 0 10px; font-size: 14px; color: var(--gri-yazi);">YEDEK KADRO (Opsiyonel)</h3>
-                <div id="subPlayers"></div>
+                    <div class="divider"></div>
 
-                <div class="action-btns">
-                    <button type="button" class="reset-btn" onclick="location.reload()">Sıfırla</button>
-                    <button type="submit" class="save-btn" id="submitBtn" disabled>OYUNCU SEÇİNİZ (1/5)</button>
-                </div>
-            </form>
+                    <div id="subPlayers"></div>
+
+                    <div class="action-btns">
+                        <button type="button" class="reset-btn" onclick="location.reload()">Sıfırla</button>
+                        <button type="submit" class="save-btn" id="submitBtn" disabled>ASIL KADRO ONAY BEKLİYOR (1/5)</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
     <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>OBB E-SPOR</h4>
-                <p>Türkiye'nin en aktif topluluk turnuvaları platformu. Rekabet, eğlence ve gelişim burada!</p>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h2>OBB <span style="color:white">E-SPOR</span></h2>
+                <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
             </div>
-            <div class="footer-section">
-                <h4>HIZLI MENÜ</h4>
-                <a href="index.html">Ana Sayfa</a>
-                <a href="tournaments.html">Turnuvalar</a>
-                <a href="profil.html">Profilim</a>
+            <div class="footer-column">
+                <h3>Hızlı Menü</h3>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="tournaments.html">Turnuvalar</a></li>
+                    <li><a href="canli.html">Canlı</a></li>
+                    <li><a href="kayit.html">Kayıt Ol</a></li>
+                </ul>
             </div>
-            <div class="footer-section">
-                <h4>İLETİŞİM</h4>
-                <a href="#"><i class="fab fa-discord"></i> Discord Katıl</a>
-                <a href="#"><i class="fab fa-instagram"></i> Instagram</a>
+            <div class="footer-column">
+                <h3>İletişim</h3>
+                <ul>
+                    <li class="contact-item"><i class="fas fa-envelope"></i> info@obbesports.com</li>
+                    <li class="contact-item"><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
+                    <li class="contact-item"><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
+                </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            &copy; 2026 OBB E-Sport Platform. Tüm hakları saklıdır.
+            <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // --- CONFIG & UTILS ---
         const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentUser = null;
 
+        // --- SCROLL EFFECT ---
+        let lastScrollTop = 0;
+        const header = document.getElementById("mainHeader");
+        window.addEventListener("scroll", () => {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 100) header.classList.add("nav-hidden");
+            else header.classList.remove("nav-hidden");
+            lastScrollTop = scrollTop;
+        });
+
+        // --- AUTH & INITIALIZE ---
         async function init() {
             const { data: { user } } = await _supabase.auth.getUser();
             if (!user) { window.location.href = 'kayit.html'; return; }
             currentUser = user;
 
-            // Oyuncu Alanlarını Oluştur
-            renderInputs();
+            // Update Navbar User Menu
+            const authAction = document.getElementById('authAction');
+            const username = user.user_metadata?.username || "OYUNCU";
+            authAction.innerHTML = `
+                <div class="user-dropdown">
+                    <button class="dropdown-trigger">
+                        <i class="fas fa-user"></i>
+                        <span class="user-name-text">${username.toUpperCase()}</span>
+                        <i class="fas fa-chevron-down arrow-icon"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="profil.html"><i class="fas fa-user-circle"></i> Profil</a>
+                        <a href="#" onclick="await _supabase.auth.signOut(); location.reload();"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
+                    </div>
+                </div>`;
+
+            renderPlayerInputs();
             
-            // Kaptanı Sabitle (1. Oyuncu)
-            const kaptanInput = document.getElementById('main_1');
-            kaptanInput.value = user.user_metadata.username || "KAPTAN";
-            kaptanInput.readOnly = true;
-            kaptanInput.dataset.userId = user.id;
-            kaptanInput.dataset.status = 'accepted';
-            document.getElementById('main_1-tick').className = 'fas fa-check-circle status-tick visible tick-blue';
+            // Set Captain (Auto-fill)
+            const capt = document.getElementById('main_1');
+            capt.value = username;
+            capt.readOnly = true;
+            capt.dataset.userId = user.id;
+            capt.dataset.status = 'accepted';
+            document.getElementById('main_1-tick').className = 'fas fa-check-circle status-tick blue';
             
             updateFormStatus();
         }
 
-        function renderInputs() {
-            const m = document.getElementById('mainPlayers');
-            const s = document.getElementById('subPlayers');
-            for(let i=1; i<=5; i++) m.innerHTML += createInputHTML(i, false);
-            for(let i=1; i<=2; i++) s.innerHTML += createInputHTML(i, true);
-            attachSearch();
+        function renderPlayerInputs() {
+            const mDiv = document.getElementById('mainPlayers');
+            const sDiv = document.getElementById('subPlayers');
+            for(let i=1; i<=5; i++) mDiv.innerHTML += createInputHTML(i, false);
+            for(let i=1; i<=2; i++) sDiv.innerHTML += createInputHTML(i, true);
+            attachSearchEvents();
         }
 
         function createInputHTML(idx, isSub) {
             const id = isSub ? `sub_${idx}` : `main_${idx}`;
+            const label = isSub ? `${idx}. Yedek Oyuncu` : `${idx}. Oyuncu ${idx==1 ? '(Kaptan)' : ''}`;
             return `
                 <div class="input-group">
-                    <label>${isSub ? idx + '. Yedek' : idx + '. Oyuncu'}</label>
+                    <label>${label}</label>
                     <div class="player-wrapper">
-                        <input type="text" id="${id}" class="search-input" placeholder="Oyuncu ara..." autocomplete="off">
+                        <input type="text" id="${id}" class="player-search" autocomplete="off" placeholder="Nickname ara...">
                         <i class="fas fa-check-circle status-tick" id="${id}-tick"></i>
                         <div id="${id}-list" class="autocomplete-items"></div>
                     </div>
                 </div>`;
         }
 
-        function attachSearch() {
-            document.querySelectorAll('.search-input').forEach(input => {
+        function attachSearchEvents() {
+            document.querySelectorAll('.player-search').forEach(input => {
                 if(input.id === 'main_1') return;
 
-                input.addEventListener('input', async (e) => {
-                    const val = e.target.value;
-                    const list = document.getElementById(input.id + '-list');
+                input.addEventListener('input', async function() {
+                    const query = this.value;
+                    const list = document.getElementById(this.id + '-list');
                     list.innerHTML = '';
                     
-                    // Manuel yazımı engellemek için her tuş vuruşunda dataseti sıfırla
-                    input.dataset.userId = "";
-                    input.dataset.status = "";
-                    document.getElementById(input.id + '-tick').classList.remove('visible');
+                    // Reset status if changed
+                    this.dataset.userId = "";
+                    this.dataset.status = "";
+                    document.getElementById(this.id + '-tick').className = 'fas fa-check-circle status-tick';
 
-                    if(val.length < 2) return;
+                    if (query.length < 2) return;
 
                     const { data } = await _supabase.from('profiles')
-                        .select('username, id')
-                        .ilike('username', `%${val}%`)
-                        .is('team_id', null) // Boşta olanlar
-                        .neq('id', currentUser.id)
-                        .limit(5);
+                        .select('username, id').ilike('username', `%${query}%`)
+                        .is('team_id', null).neq('id', currentUser.id).limit(5);
 
-                    data?.forEach(p => {
-                        const item = document.createElement('div');
-                        item.textContent = p.username;
-                        item.onclick = () => {
-                            input.value = p.username;
-                            input.dataset.userId = p.id;
-                            input.dataset.status = 'pending'; // Davet edildi
+                    data?.forEach(u => {
+                        const div = document.createElement('div');
+                        div.innerHTML = `<i class="fas fa-user"></i> ${u.username}`;
+                        div.onclick = () => {
+                            input.value = u.username;
+                            input.dataset.userId = u.id;
+                            input.dataset.status = 'pending';
                             list.innerHTML = '';
-                            document.getElementById(input.id + '-tick').className = 'fas fa-check-circle status-tick visible tick-grey';
-                            updateFormStatus();
+                            document.getElementById(input.id + '-tick').className = 'fas fa-check-circle status-tick grey';
+                            
+                            // Demo auto-accept (Realtime code would replace this)
+                            setTimeout(() => {
+                                document.getElementById(input.id + '-tick').className = 'fas fa-check-circle status-tick blue';
+                                input.dataset.status = 'accepted';
+                                updateFormStatus();
+                            }, 1000);
                         };
-                        list.appendChild(item);
+                        list.appendChild(div);
                     });
                 });
             });
         }
 
         function updateFormStatus() {
-            const mainCount = Array.from(document.querySelectorAll('[id^="main_"]'))
-                .filter(i => i.dataset.userId).length;
+            const accepted = Array.from(document.querySelectorAll('[id^="main_"]'))
+                .filter(i => i.dataset.status === 'accepted').length;
             const btn = document.getElementById('submitBtn');
-            btn.innerText = `ONAY BEKLENİYOR (${mainCount}/5)`;
-            btn.disabled = mainCount < 5;
+            btn.innerText = `ASIL KADRO ONAY BEKLİYOR (${accepted}/5)`;
+            btn.disabled = accepted < 5;
+            if(accepted === 5) btn.innerText = "KAYDI TAMAMLA";
         }
 
         init();
