@@ -216,7 +216,6 @@
         width: 180px; 
     }
 }
-
 .logout-minimal-btn:hover {
     transform: scale(1.2);
     color: #ff0000;
@@ -315,7 +314,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
+    <script src="bildirimler.js"></script> <script>
         // 1. Supabase Bağlantısı
         const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
@@ -373,7 +372,7 @@
                 // Kayıt Olma
                 const confirmPass = document.getElementById('confirmPass').value;
                 if (password !== confirmPass) {
-                    alert("Şifreler uyuşmuyor!");
+                    showNotification("Şifreler uyuşmuyor!", "error"); // ALERT DEĞİŞTİRİLDİ
                     submitBtn.disabled = false;
                     submitBtn.innerText = "HESABI OLUŞTUR";
                     return;
@@ -390,8 +389,11 @@
                     }
                 });
 
-                if (error) alert("Hata: " + error.message);
-                else alert("Kayıt başarılı! Lütfen e-postanı kontrol et.");
+                if (error) {
+                    showNotification("Kayıt hatası: " + error.message, "error"); // ALERT DEĞİŞTİRİLDİ
+                } else {
+                    showNotification("Kayıt başarılı! Lütfen e-postanı kontrol et.", "success"); // ALERT DEĞİŞTİRİLDİ
+                }
 
             } else {
                 // Giriş Yapma
@@ -400,10 +402,13 @@
                     password: password,
                 });
 
-                if (error) alert("Giriş başarısız: " + error.message);
-                else {
-                    alert("Giriş yapıldı! Başarılar dileriz.");
-                    window.location.href = "index.html";
+                if (error) {
+                    showNotification("Giriş başarısız: " + error.message, "error"); // ALERT DEĞİŞTİRİLDİ
+                } else {
+                    showNotification("Giriş yapıldı! Başarılar dileriz.", "success"); // ALERT DEĞİŞTİRİLDİ
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 1000); // Bildirimi görmesi için 1 saniye bekle
                 }
             }
 
@@ -421,12 +426,6 @@
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="auth.js"></script>
+    <script src="auth.js"></script>
 </body>
 </html>
-
-
-
-
