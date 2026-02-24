@@ -9,22 +9,13 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turnuva Başvurusu | OBB E-SPOR</title>
+    <title>Takım Kaydı | OBB E-SPOR</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
         /* --- 1. TEMEL AYARLAR --- */
-        :root { 
-            --ana-siyah: #000000; 
-            --nav-bg: #000000; 
-            --neon-mor: #601dc2; 
-            --yazi-beyaz: #ffffff; 
-            --gri-yazi: #a0a0a0; 
-            --mavi-onay: #00d2ff; 
-            --red-reject: #ff4b4b;
-            --kirmizi-bekleme: #ff3366; 
-        }
+        :root { --ana-siyah: #000000; --nav-bg: #000000; --neon-mor: #601dc2; --yazi-beyaz: #ffffff; --gri-yazi: #a0a0a0; --mavi-onay: #00d2ff; --red-reject: #ff4b4b; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
         body { background: radial-gradient(circle at top, #1a052d 0%, #000000 100%); background-attachment: fixed; color: var(--yazi-beyaz); font-family: 'Poppins', sans-serif; line-height: 1.6; padding-top: 80px; }
@@ -40,7 +31,7 @@
         .nav-btn { border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: white !important; background: transparent; transition: 0.3s; text-decoration: none; font-weight: bold; }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- 3. DROPDOWN MENÜ --- */
+        /* --- 3. PRO OYUNCU MENÜSÜ --- */
         .user-dropdown { position: relative; display: inline-block; }
         .dropdown-trigger { background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor); padding: 8px 18px; border-radius: 50px; color: white; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; font-family: 'Poppins', sans-serif; z-index: 1001; }
         .dropdown-trigger:hover { box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); background: rgba(96, 29, 194, 0.2); }
@@ -94,8 +85,8 @@
         .cancel-draft-btn { flex: 1; background: transparent; border: 1px solid var(--red-reject); color: var(--red-reject); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: bold; transition: 0.3s; text-align: center; }
         .cancel-draft-btn:hover { background: var(--red-reject); color: white; }
 
-        .edit-mode-btn { flex: 1; padding: 12px 25px; background: transparent; border: 2px solid var(--kirmizi-bekleme); color: var(--kirmizi-bekleme); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 800; transition: 0.3s; font-size: 14px; text-transform: uppercase; }
-        .edit-mode-btn:hover { background: var(--kirmizi-bekleme); color: #000; box-shadow: 0 0 20px rgba(255, 51, 102, 0.4); transform: translateY(-2px); }
+        .edit-mode-btn { flex: 1; padding: 12px 25px; background: transparent; border: 2px solid var(--mavi-onay); color: var(--mavi-onay); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 800; transition: 0.3s; font-size: 14px; text-transform: uppercase; }
+        .edit-mode-btn:hover { background: var(--mavi-onay); color: #000; box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); transform: translateY(-2px); }
 
         /* --- 5. FOOTER --- */
         footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 100px; }
@@ -134,8 +125,6 @@
             .main-content { padding: 40px 5%; }
             .action-btns { flex-direction: column; }
             #pendingBtnGroup { flex-direction: column; } 
-            .auth-card { overflow: visible !important; height: auto !important; }
-            .form-container { overflow: visible !important; }
         }
     </style>
 </head>
@@ -165,14 +154,14 @@
 
             <div class="auth-card">
                 <div id="pendingScreen" style="display: none; padding: 20px 0; text-align: center; animation: menuFadeIn 0.4s ease-out;">
-                    <i class="fas fa-hourglass-half fa-3x" style="color: var(--kirmizi-bekleme); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--kirmizi-bekleme));"></i>
-                    <h3 style="color: var(--kirmizi-bekleme); font-size: 22px; font-weight: 800; margin-bottom: 35px; letter-spacing: 0.5px;">Başvurunuz turnuva yöneticileri tarafından inceleniyor.</h3>
+                    <i class="fas fa-hourglass-half fa-3x" style="color: var(--mavi-onay); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--mavi-onay));"></i>
+                    <h3 style="color: var(--mavi-onay); font-size: 22px; font-weight: 800; margin-bottom: 35px; letter-spacing: 0.5px;">Başvurunuz turnuva yöneticileri tarafından inceleniyor.</h3>
                     
                     <div id="pendingBtnGroup" style="display: flex; gap: 15px; justify-content: center; align-items: stretch;">
-                        <a href="profil.html" class="save-btn" style="padding: 12px 30px; font-size: 14px; flex: unset; background: var(--kirmizi-bekleme);"><i class="fas fa-user-circle"></i> Profile Dön</a>
+                        <a href="profil.html" class="save-btn" style="padding: 12px 30px; font-size: 14px; flex: unset;"><i class="fas fa-user-circle"></i> Profile Dön</a>
                         <button type="button" id="editDraftBtn" onclick="enableEditMode()" class="edit-mode-btn"><i class="fas fa-edit"></i> Formu Düzenle</button>
                     </div>
-                    <p id="editInfoText" style="color: var(--gri-yazi); font-size: 12px; margin-top: 25px;"><i class="fas fa-info-circle"></i> Sadece Kaptan düzenleme yapabilir. Düzenleme moduna geçtiğinizde halihazırda onay vermiş oyuncuların durumları bozulmaz.</p>
+                    <p style="color: var(--gri-yazi); font-size: 12px; margin-top: 25px;"><i class="fas fa-info-circle"></i> Düzenleme moduna geçtiğinizde halihazırda onay vermiş oyuncuların durumları bozulmaz.</p>
                 </div>
 
                 <form id="teamForm" style="display: none;">
@@ -199,7 +188,7 @@
 
                     <div id="subPlayers"></div>
 
-                    <div class="action-btns" id="actionBtnsArea">
+                    <div class="action-btns">
                         <button type="button" class="cancel-draft-btn" onclick="cancelDraft()">Başvuruyu İptal Et</button>
                         <button type="submit" class="save-btn" id="submitBtn" disabled>OYUNCU ONAYLARI BEKLENİYOR (1/5)</button>
                     </div>
@@ -242,7 +231,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="auth.js"></script>
     <script src="bildirimler.js"></script>
     
     <script>
@@ -252,11 +240,10 @@
 
         let currentUser = null;
         let currentDraftId = null; 
-        let teamCaptainId = null;
-        let isCaptain = false;
         let draftCreatedAt = null;
         let saveTimeout = null;
 
+        // --- HEADER SCROLL ---
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
         window.addEventListener("scroll", () => {
@@ -278,7 +265,7 @@
                 currentUser = user;
 
                 const { data: profileData } = await _supabase.from('profiles').select('username').eq('id', user.id).maybeSingle();
-                const realUsername = profileData?.username || user.user_metadata?.username || "OYUNCU";
+                const realUsername = profileData?.username || user.user_metadata?.username || "KAPTAN";
 
                 document.getElementById('authAction').innerHTML = `
                     <div class="user-dropdown">
@@ -306,12 +293,13 @@
         function renderPlayerInputs() {
             const mDiv = document.getElementById('mainPlayers');
             const sDiv = document.getElementById('subPlayers');
-            let mHtml = ''; let sHtml = '';
+            let mHtml = '';
+            let sHtml = '';
             for(let i=1; i<=5; i++) mHtml += createInputHTML(i, false);
             for(let i=1; i<=2; i++) sHtml += createInputHTML(i, true);
-            mDiv.innerHTML = mHtml; sDiv.innerHTML = sHtml;
+            mDiv.innerHTML = mHtml;
+            sDiv.innerHTML = sHtml;
             
-            // Arama motorunu başlat (HATA BURADAYDI, ARTIK DÜZELTİLDİ)
             attachSearchEvents();
         }
 
@@ -332,60 +320,22 @@
                 </div>`;
         }
 
-        function applyMemberRestrictions() {
-            if (!isCaptain) {
-                document.getElementById('teamName').readOnly = true;
-                document.getElementById('teamTag').readOnly = true;
-                document.getElementById('teamLogo').disabled = true;
-                
-                document.querySelectorAll('.player-search').forEach(input => {
-                    input.readOnly = true;
-                    input.placeholder = "Kaptanınız oyuncu ekleyebilir.";
-                });
-
-                document.getElementById('actionBtnsArea').style.display = 'none';
-                document.getElementById('draftInfoBox').innerHTML = `<i class="fas fa-info-circle" style="color:var(--neon-mor);"></i> Kaptanınız başvuruyu hazırlıyor. Şu an <b>izleyici modundasınız</b> ve takımın durumunu canlı takip ediyorsunuz.`;
-
-                const editBtn = document.getElementById('editDraftBtn');
-                if (editBtn) editBtn.style.display = 'none';
-                document.getElementById('editInfoText').style.display = 'none';
-            }
-        }
-
         async function loadOrCreateDraft(username) {
-            let draft = null;
+            const { data: drafts } = await _supabase.from('tournament_applications')
+                .select('*')
+                .eq('captain_id', currentUser.id)
+                .in('status', ['draft', 'pending']);
 
-            const { data: capDrafts } = await _supabase.from('tournament_applications')
-                .select('*').eq('captain_id', currentUser.id).in('status', ['draft', 'pending']);
-
-            if (capDrafts && capDrafts.length > 0) {
-                draft = capDrafts[0];
-                isCaptain = true;
-            } else {
-                const { data: memData } = await _supabase.from('application_members')
-                    .select('application_id').eq('user_id', currentUser.id).neq('status', 'rejected');
-
-                if (memData && memData.length > 0) {
-                    const appId = memData[0].application_id;
-                    const { data: teamData } = await _supabase.from('tournament_applications')
-                        .select('*').eq('id', appId).in('status', ['draft', 'pending']);
-                    
-                    if (teamData && teamData.length > 0) {
-                        draft = teamData[0];
-                        isCaptain = false;
-                    }
-                }
-            }
+            let draft = drafts && drafts.length > 0 ? drafts[0] : null;
 
             if (draft) {
                 currentDraftId = draft.id;
-                teamCaptainId = draft.captain_id;
                 draftCreatedAt = new Date(draft.created_at).getTime();
                 
                 document.getElementById('teamName').value = draft.team_name || '';
                 document.getElementById('teamTag').value = draft.team_tag || '';
                 
-                applyMemberRestrictions();
+                fillCaptainSlot(username); 
                 await loadDraftMembers(); 
 
                 if (draft.status === 'pending') {
@@ -398,13 +348,11 @@
                     startCountdown();
                 }
             } else {
-                isCaptain = true;
                 const { data: newDraft } = await _supabase.from('tournament_applications').insert({
                     captain_id: currentUser.id, team_name: '', team_tag: '', status: 'draft'
                 }).select().single();
                 
                 currentDraftId = newDraft.id;
-                teamCaptainId = currentUser.id;
                 draftCreatedAt = new Date(newDraft.created_at).getTime();
                 
                 document.getElementById('draftInfoBox').style.display = 'block';
@@ -415,12 +363,11 @@
                     application_id: currentDraftId, user_id: currentUser.id, role: 'main', status: 'accepted'
                 });
                 
-                await loadDraftMembers();
+                fillCaptainSlot(username);
             }
         }
 
         async function enableEditMode() {
-            if(!isCaptain) return; 
             const btn = document.getElementById('editDraftBtn');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lütfen Bekleyin...';
             btn.disabled = true;
@@ -446,6 +393,20 @@
             updateFormStatus();
         }
 
+        function fillCaptainSlot(username) {
+            const captInput = document.getElementById('main_1');
+            if(captInput) {
+                captInput.value = username;
+                captInput.setAttribute('data-user-id', currentUser.id);
+                captInput.setAttribute('data-status', 'accepted');
+                
+                const tick = document.getElementById('main_1-tick');
+                tick.className = 'fas fa-check-circle status-tick blue';
+                tick.style.display = 'block';
+            }
+            updateFormStatus();
+        }
+
         async function loadDraftMembers() {
             const { data: members } = await _supabase.from('application_members')
                 .select('*, profiles(username)')
@@ -455,53 +416,33 @@
                 let mainIndex = 2; 
                 let subIndex = 1;
                 
-                document.querySelectorAll('input[id^="main_"], input[id^="sub_"]').forEach(inp => {
-                    if(inp.id !== 'main_1') inp.value = '';
-                    inp.removeAttribute('data-user-id');
-                    inp.removeAttribute('data-member-id');
-                    inp.removeAttribute('data-status');
-                    document.getElementById(inp.id + '-tick').style.display = 'none';
-                    document.getElementById(inp.id + '-remove').style.display = 'none';
-                });
-
                 members.forEach(m => {
-                    let inputId = '';
-                    if (m.user_id === teamCaptainId) {
-                        inputId = 'main_1';
-                    } else if (m.role === 'main' && mainIndex <= 5) {
-                        inputId = 'main_' + mainIndex++;
-                    } else if (m.role === 'sub' && subIndex <= 2) {
-                        inputId = 'sub_' + subIndex++;
-                    }
-                    
-                    const input = document.getElementById(inputId);
-                    if(input) {
-                        input.value = m.profiles?.username || "Bilinmiyor";
-                        input.readOnly = true;
-                        input.setAttribute('data-user-id', m.user_id);
-                        input.setAttribute('data-member-id', m.id);
-                        input.setAttribute('data-status', m.status);
+                    if (m.user_id !== currentUser.id) { 
+                        let inputId = m.role === 'main' ? 'main_' + mainIndex++ : 'sub_' + subIndex++;
+                        const input = document.getElementById(inputId);
                         
-                        const tick = document.getElementById(inputId + '-tick');
-                        tick.className = m.status === 'accepted' ? 'fas fa-check-circle status-tick blue' : 'fas fa-check-circle status-tick grey';
-                        tick.style.display = 'block';
-                        
-                        if (isCaptain && m.user_id !== teamCaptainId) {
+                        if(input) {
+                            input.value = m.profiles?.username || "Bilinmiyor";
+                            input.readOnly = true;
+                            input.setAttribute('data-user-id', m.user_id);
+                            input.setAttribute('data-member-id', m.id);
+                            input.setAttribute('data-status', m.status);
+                            
+                            const tick = document.getElementById(inputId + '-tick');
+                            tick.className = m.status === 'accepted' ? 'fas fa-check-circle status-tick blue' : 'fas fa-check-circle status-tick grey';
+                            tick.style.display = 'block';
+                            
                             document.getElementById(inputId + '-remove').style.display = 'block';
                         }
                     }
                 });
-                
-                applyMemberRestrictions();
                 updateFormStatus();
             }
         }
 
         function attachSearchEvents() {
-            // HATA BURADAYDI: if (!isCaptain) return; diyerek arama motorunu kökten kapatıyordum. 
-            // O kısıtlamayı sildim, onun yerine aşağıda yazarken kontrol ediyoruz.
-            
             document.querySelectorAll('.player-search').forEach(input => {
+                
                 input.addEventListener('blur', function() {
                     setTimeout(() => {
                         if (!this.readOnly && this.value !== '') {
@@ -512,9 +453,6 @@
                 });
 
                 input.addEventListener('input', async function() {
-                    // Kaptan değilse işlem yapma (Burada olması daha güvenli)
-                    if (!isCaptain) return;
-
                     const query = this.value;
                     const list = document.getElementById(this.id + '-list');
                     list.innerHTML = '';
@@ -524,16 +462,12 @@
                                              .map(el => el.getAttribute('data-user-id'))
                                              .filter(id => id && id.trim() !== "");
 
-                    // ORİJİNAL ÇALIŞAN ARAMA SORGUSU
-                    const { data, error } = await _supabase.from('profiles')
+                    const { data } = await _supabase.from('profiles')
                                                     .select('username, id')
                                                     .ilike('username', `%${query}%`)
                                                     .is('team_id', null)
                                                     .limit(15); 
                     
-                    if (error) {
-                        console.error("Arama Hatası:", error);
-                    }
                     if (!data) return;
 
                     const filteredPlayers = data.filter(u => !selectedIds.includes(u.id)).slice(0, 5);
@@ -553,10 +487,13 @@
                             const role = input.id.startsWith('main') ? 'main' : 'sub';
                             
                             const { data: newMember, error } = await _supabase.from('application_members').insert({
-                                application_id: currentDraftId, user_id: u.id, role: role, status: 'pending'
+                                application_id: currentDraftId,
+                                user_id: u.id, role: role, status: 'pending'
                             }).select().single();
 
-                            if (error) showNotification("Oyuncu eklenirken bir sorun oluştu.", "error");
+                            if (error) {
+                                showNotification("Oyuncu eklenirken bir sorun oluştu.", "error");
+                            }
 
                             if (newMember) {
                                 input.setAttribute('data-user-id', u.id);
@@ -574,7 +511,6 @@
         }
 
         async function removePlayer(inputId) {
-            if(!isCaptain) return; 
             const input = document.getElementById(inputId);
             const memberId = input.getAttribute('data-member-id');
             if (memberId) {
@@ -594,8 +530,6 @@
         }
 
         function updateFormStatus() {
-            if(!isCaptain) return; 
-
             const mainInputs = Array.from(document.querySelectorAll('[id^="main_"]')).filter(i => i.getAttribute('data-user-id'));
             const subInputs = Array.from(document.querySelectorAll('[id^="sub_"]')).filter(i => i.getAttribute('data-user-id'));
             
@@ -617,36 +551,55 @@
             }
         }
 
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'teamInviteSignal') {
+                const data = JSON.parse(e.newValue);
+                const allInputs = Array.from(document.querySelectorAll('input[id^="main_"], input[id^="sub_"]'));
+                const targetInput = allInputs.find(input => input.getAttribute('data-member-id') === data.id);
+
+                if (targetInput) {
+                    if (data.status === 'accepted') {
+                        targetInput.setAttribute('data-status', 'accepted');
+                        document.getElementById(targetInput.id + '-tick').className = 'fas fa-check-circle status-tick blue';
+                        showNotification(`${targetInput.value} daveti kabul etti!`, "success");
+                    } else if (data.status === 'rejected') {
+                        showNotification(`${targetInput.value} daveti reddetti. Slot temizlendi.`, "error");
+                        removePlayer(targetInput.id);
+                    }
+                    updateFormStatus(); 
+                }
+            }
+        });
+
         function subscribeToDraftUpdates() {
             if(!currentDraftId) return;
-
-            _supabase.channel('draft-members-updates')
+            _supabase.channel('draft-updates')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'application_members', filter: `application_id=eq.${currentDraftId}` }, payload => {
-                    loadDraftMembers();
-                }).subscribe();
-
-            if (!isCaptain) {
-                _supabase.channel('team-details-updates')
-                    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tournament_applications', filter: `id=eq.${currentDraftId}` }, payload => {
-                        const draft = payload.new;
-                        document.getElementById('teamName').value = draft.team_name || '';
-                        document.getElementById('teamTag').value = draft.team_tag || '';
-                        
-                        if (draft.status === 'pending') {
-                            document.getElementById('teamForm').style.display = 'none';
-                            document.getElementById('draftInfoBox').style.display = 'none';
-                            document.getElementById('pendingScreen').style.display = 'block';
-                        } else if (draft.status === 'draft') {
-                            document.getElementById('pendingScreen').style.display = 'none';
-                            document.getElementById('draftInfoBox').style.display = 'block';
-                            document.getElementById('teamForm').style.display = 'block';
+                    if (payload.eventType === 'UPDATE') {
+                        const member = payload.new;
+                        const input = document.querySelector(`[data-member-id="${member.id}"]`);
+                        if(input && member.status === 'accepted') {
+                            input.setAttribute('data-status', 'accepted');
+                            document.getElementById(input.id + '-tick').className = 'fas fa-check-circle status-tick blue';
                         }
-                    }).subscribe();
-            }
+                    } 
+                    else if (payload.eventType === 'DELETE') {
+                        const member = payload.old;
+                        const input = document.querySelector(`[data-member-id="${member.id}"]`);
+                        if(input) {
+                            input.value = ''; input.readOnly = false;
+                            input.removeAttribute('data-user-id'); input.removeAttribute('data-member-id'); input.removeAttribute('data-status');
+                            const tick = document.getElementById(input.id + '-tick');
+                            tick.className = 'fas fa-check-circle status-tick';
+                            tick.style.display = 'none';
+                            document.getElementById(input.id + '-remove').style.display = 'none';
+                        }
+                    }
+                    updateFormStatus();
+                }).subscribe();
         }
 
         function setupAutoSave() {
-            if(!isCaptain) return; 
             const saveInputs = ['teamName', 'teamTag'];
             saveInputs.forEach(id => {
                 document.getElementById(id).addEventListener('input', () => {
@@ -664,7 +617,6 @@
         }
 
         async function cancelDraft(silent = false) {
-            if(!isCaptain) return;
             if (!silent && !confirm("Tüm taslak silinecek ve davetler iptal edilecek. Emin misiniz?")) return;
             if (currentDraftId) {
                 await _supabase.from('tournament_applications').delete().eq('id', currentDraftId);
@@ -674,8 +626,6 @@
 
         document.getElementById('teamForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!isCaptain) return;
-
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
             submitBtn.innerText = "YÜKLENİYOR...";
@@ -717,11 +667,7 @@
                 if(!draftCreatedAt) return;
                 const now = new Date().getTime();
                 const diff = (draftCreatedAt + (3 * 60 * 60 * 1000)) - now;
-                if(diff <= 0) { 
-                    if(isCaptain) cancelDraft(true); 
-                    else location.reload();
-                    return; 
-                }
+                if(diff <= 0) { cancelDraft(true); return; }
                 const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 document.getElementById('timeLeft').innerText = `Kalan Süre: ${h}s ${m}d`;
