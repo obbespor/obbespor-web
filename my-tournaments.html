@@ -105,7 +105,6 @@
             padding: 5px 0;
             z-index: 9999;
             box-shadow: 0 15px 35px rgba(0,0,0,0.9);
-            animation: menuFadeIn 0.2s ease-out;
         }
         .dropdown-content::before {
             content: "";
@@ -126,260 +125,143 @@
             transition: 0.2s;
         }
         .dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
-        .dropdown-content a:hover { 
-            background: rgba(96, 29, 194, 0.2); 
-            color: var(--neon-mor); 
-            padding-left: 25px;
-        }
+        .dropdown-content a:hover { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); padding-left: 25px; }
         .user-dropdown:hover .dropdown-content { display: block; }
         .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
-        @keyframes menuFadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
 
-        /* --- 4. TURNUVALARIM DASHBOARD --- */
-        .dashboard-container {
+        /* --- 4. TURNUVALARIM ANA İÇERİK --- */
+        .page-wrapper {
             flex: 1;
             padding: 50px 10%;
             max-width: 1400px;
             margin: 0 auto;
             width: 100%;
-        }
-
-        .dashboard-header {
-            margin-bottom: 40px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 20px;
-        }
-
-        .dashboard-header h1 {
-            font-size: clamp(2rem, 5vw, 3rem);
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: -1px;
-        }
-
-        .dashboard-header h1 span { color: var(--neon-mor); }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 20px;
             display: flex;
+            flex-direction: column;
+        }
+        .page-header { margin-bottom: 40px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 20px; }
+        .page-header h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; text-transform: uppercase; letter-spacing: -1px; }
+        .page-header h1 span { color: var(--neon-mor); }
+
+        /* DURUM 1: BOŞ EKRAN */
+        #empty-state {
+            display: none; /* JS ile kontrol edilecek */
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
-            color: var(--yazi-beyaz);
-        }
-
-        .section-title i { color: var(--neon-mor); }
-
-        .tournament-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 50px;
-        }
-
-        /* Kart Tasarımları */
-        .tourney-card {
+            justify-content: center;
+            text-align: center;
+            padding: 60px 20px;
             background: var(--kart-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 25px;
-            transition: 0.3s;
+            border: 1px dashed var(--neon-mor);
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        #empty-state i { font-size: 60px; color: var(--gri-yazi); margin-bottom: 20px; opacity: 0.5; }
+        #empty-state h2 { font-size: 24px; margin-bottom: 10px; }
+        #empty-state p { color: var(--gri-yazi); margin-bottom: 25px; max-width: 400px; }
+
+        /* DURUM 2: DOLU EKRAN (BÜYÜK KART) */
+        #active-state {
+            display: none; /* JS ile kontrol edilecek */
+        }
+        .showcase-card {
+            display: flex;
+            background: var(--kart-bg);
+            border: 1px solid rgba(96, 29, 194, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
             position: relative;
         }
-
-        .tourney-card:hover {
-            border-color: rgba(96, 29, 194, 0.5);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .tourney-card.active {
-            border: 1px solid var(--neon-mor);
-            box-shadow: 0 0 15px rgba(96, 29, 194, 0.2);
-            overflow: hidden;
-        }
-        .tourney-card.active::before {
+        .showcase-card::before {
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 4px;
-            background: var(--neon-mor);
+            background: linear-gradient(90deg, var(--neon-mor), #b785f6);
         }
 
-        .card-header {
+        /* Görsel Alanı (Masaüstünde görünür, mobilde gizlenir) */
+        .showcase-image {
+            flex: 1;
+            background: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
+            position: relative;
+            min-height: 400px;
+        }
+        .showcase-image::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, var(--kart-bg));
+        }
+
+        /* İçerik Alanı */
+        .showcase-content {
+            flex: 1.2;
+            padding: 40px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 2; /* Gradientin üstünde kalması için */
         }
 
         .status-badge {
-            font-size: 11px;
-            font-weight: 800;
-            padding: 5px 12px;
+            display: inline-block;
+            background: rgba(96, 29, 194, 0.2);
+            color: #b785f6;
+            border: 1px solid var(--neon-mor);
+            padding: 6px 15px;
             border-radius: 30px;
+            font-size: 12px;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
-        }
-        .status-badge.ongoing { background: rgba(96, 29, 194, 0.2); color: #b785f6; border: 1px solid var(--neon-mor); }
-        .status-badge.won { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid #2ecc71; }
-        .status-badge.eliminated { background: rgba(231, 76, 60, 0.15); color: #e74c3c; border: 1px solid #e74c3c; }
-
-        .tourney-date { font-size: 13px; color: var(--gri-yazi); }
-
-        .tourney-card h3 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            line-height: 1.3;
+            margin-bottom: 20px;
+            width: max-content;
         }
 
-        .tourney-details {
-            list-style: none;
-            margin-bottom: 15px;
+        .tourney-title { font-size: 32px; font-weight: 900; margin-bottom: 10px; line-height: 1.2; }
+        .tourney-meta { display: flex; gap: 20px; color: var(--gri-yazi); font-size: 14px; margin-bottom: 30px; }
+        .tourney-meta span i { color: var(--neon-mor); margin-right: 5px; }
+
+        /* Takım ve Oyuncu Listesi (Basit, Temiz Liste) */
+        .team-section {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: auto;
         }
-        .tourney-details li {
-            font-size: 14px;
-            color: var(--gri-yazi);
-            margin-bottom: 5px;
+        .team-header {
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-
-        .btn-small {
-            padding: 8px 15px;
-            font-size: 12px;
-            width: 100%;
-            text-align: center;
-        }
-
-        /* --- YENİ EKLENEN: TAKIM ARKADAŞLARI VE POPOVER --- */
-        .teammates-section {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-        .teammates-title {
-            font-size: 12px;
-            color: var(--gri-yazi);
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-        .teammates-list {
-            display: flex;
             gap: 15px;
-            flex-wrap: wrap;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 15px;
         }
-        .teammate-item {
+        .team-header h3 { font-size: 20px; font-weight: 700; margin: 0; }
+        .team-tag { background: #111; padding: 4px 10px; border-radius: 5px; font-size: 12px; color: var(--gri-yazi); font-weight: bold; letter-spacing: 1px; }
+
+        .roster-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .roster-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            position: relative;
-            padding: 5px;
-            border-radius: 30px;
-            transition: 0.2s;
-        }
-        .teammate-item:hover {
-            background: rgba(255,255,255,0.05);
-        }
-        .teammate-pp {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid transparent;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.4);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border-left: 3px solid transparent;
             transition: 0.3s;
         }
-        .teammate-item:hover .teammate-pp {
-            border-color: var(--neon-mor);
-        }
-        .teammate-nick {
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        /* Profil Popover (Açılır Menü) Tasarımı - Ekrana Görseline Göre */
-        .profile-popover {
-            display: none;
-            position: absolute;
-            bottom: 120%; /* Üstünde açılması için */
-            left: 50%;
-            transform: translateX(-50%);
-            background: #0d0d0d;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 15px;
-            width: max-content;
-            min-width: 280px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            z-index: 100;
-            cursor: default;
-        }
-        /* Ok işareti */
-        .profile-popover::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -8px;
-            border-width: 8px;
-            border-style: solid;
-            border-color: #0d0d0d transparent transparent transparent;
-        }
-        
-        /* JS ile aktif edildiğinde görünür olacak sınıf */
-        .profile-popover.show {
-            display: block;
-            animation: fadeIn 0.2s ease-in-out;
-        }
-        
-        .popover-header {
-            text-align: center;
-            margin-bottom: 15px;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .popover-stats-grid {
-            display: flex;
-            gap: 10px;
-            justify-content: space-between;
-        }
-
-        /* Ekran Görüntüsündeki Siyah Kutu Tasarımı */
-        .stat-box {
-            background: #111;
-            border: 1px solid #1a1a1a;
-            border-radius: 10px;
-            padding: 12px 10px;
-            text-align: center;
-            flex: 1;
-        }
-        
-        .stat-val {
-            color: #601dc2; /* Neon Mor */
-            font-size: 20px;
-            font-weight: 900;
-            margin-bottom: 2px;
-            line-height: 1;
-        }
-        
-        .stat-label {
-            color: #b3b3b3; /* Gri Yazı */
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translate(-50%, 10px); }
-            to { opacity: 1; transform: translate(-50%, 0); }
-        }
+        .roster-item:hover { border-left-color: var(--neon-mor); background: rgba(96, 29, 194, 0.1); }
+        .roster-user { display: flex; align-items: center; gap: 12px; }
+        .roster-user img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        .roster-user .nick { font-weight: 600; font-size: 14px; }
+        .roster-role { font-size: 11px; font-weight: bold; text-transform: uppercase; color: var(--gri-yazi); }
 
         /* --- 5. FOOTER --- */
         footer {
@@ -415,9 +297,15 @@
             nav ul li a { font-size: 10px; white-space: nowrap; }
             .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
-            .dashboard-container { padding: 30px 5%; }
-            .dashboard-header h1 { text-align: center; }
-            .section-title { justify-content: center; }
+            .page-wrapper { padding: 30px 5%; }
+            .page-header h1 { text-align: center; }
+            
+            /* Mobilde kart tasarımı */
+            .showcase-card { flex-direction: column; }
+            .showcase-image { display: none; /* Mobilde görseli gizle */ }
+            .showcase-content { padding: 25px 20px; }
+            .tourney-title { font-size: 24px; }
+            .tourney-meta { flex-direction: column; gap: 10px; }
 
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
             .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
@@ -448,126 +336,44 @@
         </nav>
     </header>
 
-    <main class="dashboard-container">
-        <div class="dashboard-header">
+    <main class="page-wrapper">
+        <div class="page-header">
             <h1>Turnuva <span>Geçmişim</span></h1>
-            <p style="color: var(--gri-yazi);">Katıldığın tüm turnuvalar ve güncel başvuruların burada listelenir.</p>
+            <p style="color: var(--gri-yazi);">Güncel başvuruların ve takım istatistiklerin.</p>
         </div>
 
-        <section>
-            <h2 class="section-title"><i class="fas fa-fire"></i> Güncel Turnuvalarım</h2>
-            <div class="tournament-grid">
-                
-                <div class="tourney-card active">
-                    <div class="card-header">
-                        <span class="status-badge ongoing">Devam Ediyor</span>
-                        <span class="tourney-date">Sonraki Maç: Bugün, 20:00</span>
-                    </div>
-                    <h3>Valorant Kış Kupası 2026</h3>
-                    <ul class="tourney-details">
-                        <li><i class="fas fa-users"></i> Takım: StrikeForce</li>
-                        <li><i class="fas fa-sitemap"></i> Aşama: Yarı Final</li>
-                    </ul>
+        <div id="empty-state">
+            <i class="fas fa-ghost"></i>
+            <h2>Turnuva Geçmişi Bulunamadı</h2>
+            <p>Şu an herhangi bir turnuvaya kayıtlı görünmüyorsun. Yeni zaferler kazanmak için hemen bir turnuvaya başvur!</p>
+            <a href="tournaments.html" class="nav-btn">Turnuvalara Göz At</a>
+        </div>
 
-                    <div class="teammates-section">
-                        <p class="teammates-title">Takım Arkadaşların:</p>
-                        <div class="teammates-list">
-                            <div class="teammate-item" onclick="togglePopover(event, this)">
-                                <img src="https://ui-avatars.com/api/?name=Ali+V&background=random" alt="PP" class="teammate-pp">
-                                <span class="teammate-nick">JettMain</span>
-                                
-                                <div class="profile-popover" onclick="event.stopPropagation()">
-                                    <div class="popover-header">JettMain İstatistikleri</div>
-                                    <div class="popover-stats-grid">
-                                        <div class="stat-box">
-                                            <div class="stat-val">42</div>
-                                            <div class="stat-label">TOPLAM MAÇ</div>
-                                        </div>
-                                        <div class="stat-box">
-                                            <div class="stat-val">%58</div>
-                                            <div class="stat-label">KAZANMA ORANI</div>
-                                        </div>
-                                        <div class="stat-box">
-                                            <div class="stat-val">5</div>
-                                            <div class="stat-label">TURNUVALAR</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="teammate-item" onclick="togglePopover(event, this)">
-                                <img src="https://ui-avatars.com/api/?name=Ozgur+K&background=random" alt="PP" class="teammate-pp">
-                                <span class="teammate-nick">OmenPro</span>
-                                
-                                <div class="profile-popover" onclick="event.stopPropagation()">
-                                    <div class="popover-header">OmenPro İstatistikleri</div>
-                                    <div class="popover-stats-grid">
-                                        <div class="stat-box">
-                                            <div class="stat-val">12</div>
-                                            <div class="stat-label">TOPLAM MAÇ</div>
-                                        </div>
-                                        <div class="stat-box">
-                                            <div class="stat-val">%45</div>
-                                            <div class="stat-label">KAZANMA ORANI</div>
-                                        </div>
-                                        <div class="stat-box">
-                                            <div class="stat-val">2</div>
-                                            <div class="stat-label">TURNUVALAR</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+        <div id="active-state">
+            <div class="showcase-card">
+                <div class="showcase-image"></div>
+                
+                <div class="showcase-content">
+                    <span class="status-badge">Kura Bekleniyor</span>
+                    
+                    <h2 class="tourney-title">Valorant Bahar Kupası 2026</h2>
+                    <div class="tourney-meta">
+                        <span><i class="fas fa-calendar-alt"></i> Başlangıç: 15 Mart</span>
+                        <span><i class="fas fa-trophy"></i> Ödül Havuzu: 25.000 TL</span>
+                    </div>
+
+                    <div class="team-section">
+                        <div class="team-header">
+                            <h3 id="display-team-name">Takım Adı Yükleniyor...</h3>
+                            <span class="team-tag" id="display-team-tag">[...]</span>
                         </div>
+                        
+                        <div class="roster-list" id="display-roster">
+                            </div>
                     </div>
-                    <a href="#" class="nav-btn btn-small" style="margin-top: 20px;">Eşleşmeleri Gör</a>
                 </div>
-
-                <div class="tourney-card active">
-                    <div class="card-header">
-                        <span class="status-badge ongoing">Onay Bekliyor</span>
-                        <span class="tourney-date">Başvuru: 20 Şub</span>
-                    </div>
-                    <h3>CS2 Bahar Turnuvası</h3>
-                    <ul class="tourney-details">
-                        <li><i class="fas fa-users"></i> Takım: StrikeForce</li>
-                        <li><i class="fas fa-info-circle"></i> Kura Çekimi Bekleniyor</li>
-                    </ul>
-                    <a href="#" class="nav-btn btn-small" style="background: transparent; color: white;">Detaylar</a>
-                </div>
-
             </div>
-        </section>
-
-        <section style="margin-top: 20px;">
-            <h2 class="section-title"><i class="fas fa-history"></i> Geçmiş Turnuvalar</h2>
-            <div class="tournament-grid">
-                
-                <div class="tourney-card">
-                    <div class="card-header">
-                        <span class="status-badge won">Şampiyon</span>
-                        <span class="tourney-date">Ocak 2026</span>
-                    </div>
-                    <h3>LoL Bölgesel Lig</h3>
-                    <ul class="tourney-details">
-                        <li><i class="fas fa-trophy"></i> Ödül: 10.000 TL</li>
-                        <li><i class="fas fa-users"></i> Takım: OBB Kırmızı</li>
-                    </ul>
-                </div>
-
-                <div class="tourney-card">
-                    <div class="card-header">
-                        <span class="status-badge eliminated">Çeyrek Final</span>
-                        <span class="tourney-date">Aralık 2025</span>
-                    </div>
-                    <h3>TFT Taktik Savaşları</h3>
-                    <ul class="tourney-details">
-                        <li><i class="fas fa-user"></i> Bireysel Katılım</li>
-                        <li><i class="fas fa-medal"></i> Sıralama: 5-8. Arası</li>
-                    </ul>
-                </div>
-
-            </div>
-        </section>
+        </div>
     </main>
 
     <footer>
@@ -607,6 +413,10 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+    <script src="bildirim.js"></script>
+
     <script>
         // Header Scroll Efekti
         let lastScrollTop = 0;
@@ -622,34 +432,86 @@
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
 
-        // Popover Menüleri Açıp Kapatma İşlemi
-        function togglePopover(event, element) {
-            event.stopPropagation(); // Tıklamanın dışarı yayılmasını engelle
+        // SUPABASE VERİ ÇEKME İŞLEMİ (TURNUVA KONTROLÜ)
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Not: supabase objesinin auth.js içinde tanımlanmış (global) olduğunu varsayıyoruz.
+            const { data: { session } } = await supabase.auth.getSession();
             
-            // Tıklanan öğenin içindeki popover'ı bul
-            const popover = element.querySelector('.profile-popover');
-            
-            // Başka açık popover varsa kapat
-            document.querySelectorAll('.profile-popover.show').forEach(p => {
-                if(p !== popover) p.classList.remove('show');
-            });
-            
-            // Mevcut popover'ın durumunu değiştir (aç/kapat)
-            if(popover) {
-                popover.classList.toggle('show');
-            }
-        }
+            const emptyState = document.getElementById('empty-state');
+            const activeState = document.getElementById('active-state');
 
-        // Sayfada boş bir yere tıklanırsa tüm popover'ları kapat
-        document.addEventListener('click', function() {
-            document.querySelectorAll('.profile-popover.show').forEach(p => {
-                p.classList.remove('show');
-            });
+            if (!session) {
+                emptyState.style.display = 'flex'; // Giriş yapmamışsa boş ekran göster
+                return;
+            }
+
+            const userId = session.user.id;
+
+            // 1. Kullanıcının içinde bulunduğu bir başvuru var mı kontrol et
+            const { data: memberData, error: memberErr } = await supabase
+                .from('application_members')
+                .select('application_id')
+                .eq('user_id', userId)
+                .neq('status', 'rejected') // Reddedilmişleri sayma
+                .limit(1)
+                .single();
+
+            if (memberErr || !memberData) {
+                emptyState.style.display = 'flex'; // Başvuru yok
+                return;
+            }
+
+            // 2. Başvuru bulundu! Şimdi o takımın detaylarını ve tüm oyuncularını çekelim
+            const appId = memberData.application_id;
+            
+            const { data: teamData, error: teamErr } = await supabase
+                .from('tournament_applications')
+                .select(`
+                    team_name, 
+                    team_tag,
+                    application_members (
+                        role,
+                        profiles (username, avatar_url)
+                    )
+                `)
+                .eq('id', appId)
+                .single();
+
+            if (teamData) {
+                // Aktif ekranı göster, boş ekranı gizle
+                emptyState.style.display = 'none';
+                activeState.style.display = 'block';
+
+                // Takım adı ve etiketini yazdır
+                document.getElementById('display-team-name').innerText = teamData.team_name || "İsimsiz Takım";
+                document.getElementById('display-team-tag').innerText = `[${teamData.team_tag || "TAG"}]`;
+
+                // Oyuncu listesini oluştur
+                const rosterContainer = document.getElementById('display-roster');
+                rosterContainer.innerHTML = ''; // Önce temizle
+
+                teamData.application_members.forEach(member => {
+                    if(!member.profiles) return; // Profil bilgisi yoksa atla
+                    
+                    const p = member.profiles;
+                    const roleText = member.role === 'main' ? 'Asil' : 'Yedek';
+                    const avatar = p.avatar_url ? p.avatar_url : `https://ui-avatars.com/api/?name=${p.username}&background=random`;
+
+                    const htmlString = `
+                        <div class="roster-item">
+                            <div class="roster-user">
+                                <img src="${avatar}" alt="Profil">
+                                <span class="nick">${p.username}</span>
+                            </div>
+                            <span class="roster-role">${roleText}</span>
+                        </div>
+                    `;
+                    rosterContainer.insertAdjacentHTML('beforeend', htmlString);
+                });
+            } else {
+                emptyState.style.display = 'flex';
+            }
         });
     </script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="auth.js"></script>
-    <script src="bildirim.js"></script>
 </body>
 </html>
