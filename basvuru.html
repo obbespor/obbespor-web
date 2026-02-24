@@ -23,7 +23,7 @@
             --gri-yazi: #a0a0a0; 
             --mavi-onay: #00d2ff; 
             --red-reject: #ff4b4b;
-            --kirmizi-bekleme: #ff3366; /* Yeni eklenen kırmızı renk */
+            --kirmizi-bekleme: #ff3366; 
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
@@ -240,13 +240,11 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
     <script src="bildirimler.js"></script>
     
     <script>
-        const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+        // auth.js zaten supabase bağlantısını hallettiği için burada sadece standart "supabase" objesini kullanıyoruz.
         let currentUser = null;
         let currentDraftId = null; 
         let teamCaptainId = null;
@@ -264,17 +262,17 @@
         }, false);
 
         async function handleLogout() {
-            await _supabase.auth.signOut();
+            await supabase.auth.signOut();
             window.location.href = 'kayit.html';
         }
 
         async function init() {
             try {
-                const { data: { user }, error: authError } = await _supabase.auth.getUser();
+                const { data: { user }, error: authError } = await supabase.auth.getUser();
                 if (authError || !user) { window.location.href = 'kayit.html'; return; }
                 currentUser = user;
 
-                const { data: profileData } = await _supabase.from('profiles').select('username').eq('id', user.id).maybeSingle();
+                const { data: profileData } = await supabase.from('profiles').select('username').eq('id', user.id).maybeSingle();
                 const realUsername = profileData?.username || user.user_metadata?.username || "OYUNCU";
 
                 document.getElementById('authAction').innerHTML = `
@@ -286,7 +284,7 @@
                         </button>
                         <div class="dropdown-content">
                             <a href="profil.html"><i class="fas fa-user-circle"></i> Profil</a>
-                            <a href="turnuvalarim.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
+                            <a href="my-tournaments.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
                             <a href="#" onclick="handleLogout(); return false;"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
                         </div>
                     </div>`;
@@ -327,27 +325,20 @@
                 </div>`;
         }
 
-        // Üyeler (Kaptan Olmayanlar) İçin Kısıtlama Fonksiyonu
         function applyMemberRestrictions() {
             if (!isCaptain) {
-                // Form alanlarını kitle
                 document.getElementById('teamName').readOnly = true;
                 document.getElementById('teamTag').readOnly = true;
                 document.getElementById('teamLogo').disabled = true;
                 
-                // Oyuncu arama çubuklarını kitle
                 document.querySelectorAll('.player-search').forEach(input => {
                     input.readOnly = true;
                     input.placeholder = "Kaptanınız oyuncu ekleyebilir.";
                 });
 
-                // Başvuru gönder / iptal et butonlarını gizle
                 document.getElementById('actionBtnsArea').style.display = 'none';
-
-                // Bilgi kutusunu değiştir
                 document.getElementById('draftInfoBox').innerHTML = `<i class="fas fa-info-circle" style="color:var(--neon-mor);"></i> Kaptanınız başvuruyu hazırlıyor. Şu an <b>izleyici modundasınız</b> ve takımın durumunu canlı takip ediyorsunuz.`;
 
-                // İnceleniyor ekranındaki "Formu Düzenle" butonunu üyelerden gizle
                 const editBtn = document.getElementById('editDraftBtn');
                 if (editBtn) editBtn.style.display = 'none';
                 document.getElementById('editInfoText').style.display = 'none';
@@ -357,21 +348,19 @@
         async function loadOrCreateDraft(username) {
             let draft = null;
 
-            // 1. Kullanıcı kaptan mı kontrol et
-            const { data: capDrafts } = await _supabase.from('tournament_applications')
+            const { data: capDrafts } = await supabase.from('tournament_applications')
                 .select('*').eq('captain_id', currentUser.id).in('status', ['draft', 'pending']);
 
             if (capDrafts && capDrafts.length > 0) {
                 draft = capDrafts[0];
                 isCaptain = true;
             } else {
-                // 2. Kaptan değilse, herhangi bir takıma üye/davetli mi?
-                const { data: memData } = await _supabase.from('application_members')
+                const { data: memData } = await supabase.from('application_members')
                     .select('application_id').eq('user_id', currentUser.id).neq('status', 'rejected');
 
                 if (memData && memData.length > 0) {
                     const appId = memData[0].application_id;
-                    const { data: teamData } = await _supabase.from('tournament_applications')
+                    const { data: teamData } = await supabase.from('tournament_applications')
                         .select('*').eq('id', appId).in('status', ['draft', 'pending']);
                     
                     if (teamData && teamData.length > 0) {
@@ -382,7 +371,6 @@
             }
 
             if (draft) {
-                // Aktif Bir Lobi Bulundu (Kaptan veya Üye için)
                 currentDraftId = draft.id;
                 teamCaptainId = draft.captain_id;
                 draftCreatedAt = new Date(draft.created_at).getTime();
@@ -403,9 +391,8 @@
                     startCountdown();
                 }
             } else {
-                // 3. Hiçbir takımı yoksa yepyeni bir takım (kaptan) oluşturur.
                 isCaptain = true;
-                const { data: newDraft } = await _supabase.from('tournament_applications').insert({
+                const { data: newDraft } = await supabase.from('tournament_applications').insert({
                     captain_id: currentUser.id, team_name: '', team_tag: '', status: 'draft'
                 }).select().single();
                 
@@ -417,7 +404,7 @@
                 document.getElementById('teamForm').style.display = 'block';
                 startCountdown();
 
-                await _supabase.from('application_members').insert({
+                await supabase.from('application_members').insert({
                     application_id: currentDraftId, user_id: currentUser.id, role: 'main', status: 'accepted'
                 });
                 
@@ -426,12 +413,12 @@
         }
 
         async function enableEditMode() {
-            if(!isCaptain) return; // Güvenlik önlemi
+            if(!isCaptain) return; 
             const btn = document.getElementById('editDraftBtn');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lütfen Bekleyin...';
             btn.disabled = true;
 
-            const { error } = await _supabase.from('tournament_applications').update({ status: 'draft' }).eq('id', currentDraftId);
+            const { error } = await supabase.from('tournament_applications').update({ status: 'draft' }).eq('id', currentDraftId);
             
             if (error) {
                 showNotification("Hata oluştu: " + error.message, "error");
@@ -453,7 +440,7 @@
         }
 
         async function loadDraftMembers() {
-            const { data: members } = await _supabase.from('application_members')
+            const { data: members } = await supabase.from('application_members')
                 .select('*, profiles(username)')
                 .eq('application_id', currentDraftId);
                 
@@ -461,7 +448,6 @@
                 let mainIndex = 2; 
                 let subIndex = 1;
                 
-                // Formu temizle (Realtime güncellemeler için)
                 document.querySelectorAll('input[id^="main_"], input[id^="sub_"]').forEach(inp => {
                     if(inp.id !== 'main_1') inp.value = '';
                     inp.removeAttribute('data-user-id');
@@ -493,21 +479,19 @@
                         tick.className = m.status === 'accepted' ? 'fas fa-check-circle status-tick blue' : 'fas fa-check-circle status-tick grey';
                         tick.style.display = 'block';
                         
-                        // Sadece kaptan, kendini hariç tutarak çöp kutusu ikonunu görebilir
                         if (isCaptain && m.user_id !== teamCaptainId) {
                             document.getElementById(inputId + '-remove').style.display = 'block';
                         }
                     }
                 });
                 
-                // Eğer üye formda değilse hala kilitli tut
                 applyMemberRestrictions();
                 updateFormStatus();
             }
         }
 
         function attachSearchEvents() {
-            if (!isCaptain) return; // Üyeler arama yapamaz
+            if (!isCaptain) return;
 
             document.querySelectorAll('.player-search').forEach(input => {
                 input.addEventListener('blur', function() {
@@ -529,15 +513,24 @@
                                              .map(el => el.getAttribute('data-user-id'))
                                              .filter(id => id && id.trim() !== "");
 
-                    const { data } = await _supabase.from('profiles')
-                                                    .select('username, id')
+                    const { data, error } = await supabase.from('profiles')
+                                                    .select('username, id, team_id')
                                                     .ilike('username', `%${query}%`)
-                                                    .is('team_id', null)
                                                     .limit(15); 
                     
+                    if (error) {
+                        console.error("Arama Hatası:", error);
+                        return;
+                    }
+
                     if (!data) return;
 
-                    const filteredPlayers = data.filter(u => !selectedIds.includes(u.id)).slice(0, 5);
+                    const filteredPlayers = data.filter(u => !selectedIds.includes(u.id) && u.team_id == null).slice(0, 5);
+
+                    if (filteredPlayers.length === 0) {
+                        list.innerHTML = `<div style="color:var(--gri-yazi); cursor:default; padding: 10px; font-size: 13px;">Kullanıcı bulunamadı veya takımda</div>`;
+                        return;
+                    }
 
                     filteredPlayers.forEach(u => {
                         const div = document.createElement('div');
@@ -553,11 +546,18 @@
 
                             const role = input.id.startsWith('main') ? 'main' : 'sub';
                             
-                            const { data: newMember, error } = await _supabase.from('application_members').insert({
+                            const { data: newMember, error: insertError } = await supabase.from('application_members').insert({
                                 application_id: currentDraftId, user_id: u.id, role: role, status: 'pending'
                             }).select().single();
 
-                            if (error) showNotification("Oyuncu eklenirken bir sorun oluştu.", "error");
+                            if (insertError) {
+                                console.error("Kayıt Hatası:", insertError);
+                                showNotification("Oyuncu eklenirken bir sorun oluştu.", "error");
+                                tick.style.display = 'none';
+                                input.readOnly = false;
+                                input.value = '';
+                                return;
+                            }
 
                             if (newMember) {
                                 input.setAttribute('data-user-id', u.id);
@@ -575,11 +575,11 @@
         }
 
         async function removePlayer(inputId) {
-            if(!isCaptain) return; // Güvenlik önlemi
+            if(!isCaptain) return; 
             const input = document.getElementById(inputId);
             const memberId = input.getAttribute('data-member-id');
             if (memberId) {
-                await _supabase.from('application_members').delete().eq('id', memberId);
+                await supabase.from('application_members').delete().eq('id', memberId);
             }
             input.value = '';
             input.readOnly = false;
@@ -595,7 +595,7 @@
         }
 
         function updateFormStatus() {
-            if(!isCaptain) return; // Sadece kaptanda buton aktif edilebilir
+            if(!isCaptain) return; 
 
             const mainInputs = Array.from(document.querySelectorAll('[id^="main_"]')).filter(i => i.getAttribute('data-user-id'));
             const subInputs = Array.from(document.querySelectorAll('[id^="sub_"]')).filter(i => i.getAttribute('data-user-id'));
@@ -618,19 +618,16 @@
             }
         }
 
-        // Realtime Canlı Veri Takibi (Üyeler izlerken isimlerin anında değişmesi için)
         function subscribeToDraftUpdates() {
             if(!currentDraftId) return;
 
-            // Oyuncu eklendiğinde veya onayladığında tüm listeyi yenile
-            _supabase.channel('draft-members-updates')
+            supabase.channel('draft-members-updates')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'application_members', filter: `application_id=eq.${currentDraftId}` }, payload => {
                     loadDraftMembers();
                 }).subscribe();
 
-            // Takım adı vs değiştiğinde üyeler görsün
             if (!isCaptain) {
-                _supabase.channel('team-details-updates')
+                supabase.channel('team-details-updates')
                     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tournament_applications', filter: `id=eq.${currentDraftId}` }, payload => {
                         const draft = payload.new;
                         document.getElementById('teamName').value = draft.team_name || '';
@@ -650,14 +647,14 @@
         }
 
         function setupAutoSave() {
-            if(!isCaptain) return; // Üyeler kayıt tetiklemesin
+            if(!isCaptain) return; 
             const saveInputs = ['teamName', 'teamTag'];
             saveInputs.forEach(id => {
                 document.getElementById(id).addEventListener('input', () => {
                     clearTimeout(saveTimeout);
                     saveTimeout = setTimeout(async () => {
                         if (currentDraftId) {
-                            await _supabase.from('tournament_applications').update({
+                            await supabase.from('tournament_applications').update({
                                 team_name: document.getElementById('teamName').value,
                                 team_tag: document.getElementById('teamTag').value
                             }).eq('id', currentDraftId);
@@ -671,7 +668,7 @@
             if(!isCaptain) return;
             if (!silent && !confirm("Tüm taslak silinecek ve davetler iptal edilecek. Emin misiniz?")) return;
             if (currentDraftId) {
-                await _supabase.from('tournament_applications').delete().eq('id', currentDraftId);
+                await supabase.from('tournament_applications').delete().eq('id', currentDraftId);
                 location.reload();
             }
         }
@@ -690,13 +687,13 @@
                 if(logoFile) {
                     const fileExt = logoFile.name.split('.').pop();
                     const fileName = `team_${Date.now()}.${fileExt}`;
-                    const { error: uploadError } = await _supabase.storage.from('team-logos').upload(fileName, logoFile);
+                    const { error: uploadError } = await supabase.storage.from('team-logos').upload(fileName, logoFile);
                     if (uploadError) throw uploadError;
-                    const { data } = _supabase.storage.from('team-logos').getPublicUrl(fileName);
+                    const { data } = supabase.storage.from('team-logos').getPublicUrl(fileName);
                     logoUrl = data.publicUrl;
                 }
 
-                const { error: teamError } = await _supabase.from('tournament_applications').update({
+                const { error: teamError } = await supabase.from('tournament_applications').update({
                     status: 'pending',
                     logo_url: logoUrl
                 }).eq('id', currentDraftId);
