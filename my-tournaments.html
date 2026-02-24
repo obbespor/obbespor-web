@@ -22,7 +22,7 @@
             --neon-mor: #601dc2; 
             --yazi-beyaz: #ffffff;
             --gri-yazi: #a0a0a0;
-            --kart-bg: #0a0314; /* Yeni eklenen kart arkaplanı */
+            --kart-bg: #0a0314; 
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -138,7 +138,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- 4. TURNUVALARIM DASHBOARD (YENİ ALAN) --- */
+        /* --- 4. TURNUVALARIM DASHBOARD --- */
         .dashboard-container {
             flex: 1;
             padding: 50px 10%;
@@ -176,7 +176,7 @@
 
         .tournament-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 25px;
             margin-bottom: 50px;
         }
@@ -189,19 +189,17 @@
             padding: 25px;
             transition: 0.3s;
             position: relative;
-            overflow: hidden;
         }
 
         .tourney-card:hover {
-            transform: translateY(-5px);
             border-color: rgba(96, 29, 194, 0.5);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        /* Güncel/Aktif Turnuva Vurgusu */
         .tourney-card.active {
             border: 1px solid var(--neon-mor);
             box-shadow: 0 0 15px rgba(96, 29, 194, 0.2);
+            overflow: hidden;
         }
         .tourney-card.active::before {
             content: '';
@@ -229,10 +227,7 @@
         .status-badge.won { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid #2ecc71; }
         .status-badge.eliminated { background: rgba(231, 76, 60, 0.15); color: #e74c3c; border: 1px solid #e74c3c; }
 
-        .tourney-date {
-            font-size: 13px;
-            color: var(--gri-yazi);
-        }
+        .tourney-date { font-size: 13px; color: var(--gri-yazi); }
 
         .tourney-card h3 {
             font-size: 20px;
@@ -243,7 +238,7 @@
 
         .tourney-details {
             list-style: none;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .tourney-details li {
             font-size: 14px;
@@ -259,6 +254,131 @@
             font-size: 12px;
             width: 100%;
             text-align: center;
+        }
+
+        /* --- YENİ EKLENEN: TAKIM ARKADAŞLARI VE POPOVER --- */
+        .teammates-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .teammates-title {
+            font-size: 12px;
+            color: var(--gri-yazi);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .teammates-list {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .teammate-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            position: relative;
+            padding: 5px;
+            border-radius: 30px;
+            transition: 0.2s;
+        }
+        .teammate-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .teammate-pp {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+        .teammate-item:hover .teammate-pp {
+            border-color: var(--neon-mor);
+        }
+        .teammate-nick {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Profil Popover (Açılır Menü) Tasarımı - Ekrana Görseline Göre */
+        .profile-popover {
+            display: none;
+            position: absolute;
+            bottom: 120%; /* Üstünde açılması için */
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0d0d0d;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            width: max-content;
+            min-width: 280px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            z-index: 100;
+            cursor: default;
+        }
+        /* Ok işareti */
+        .profile-popover::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: #0d0d0d transparent transparent transparent;
+        }
+        
+        /* JS ile aktif edildiğinde görünür olacak sınıf */
+        .profile-popover.show {
+            display: block;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+        
+        .popover-header {
+            text-align: center;
+            margin-bottom: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .popover-stats-grid {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+        }
+
+        /* Ekran Görüntüsündeki Siyah Kutu Tasarımı */
+        .stat-box {
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 10px;
+            padding: 12px 10px;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-val {
+            color: #601dc2; /* Neon Mor */
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            color: #b3b3b3; /* Gri Yazı */
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, 10px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
         }
 
         /* --- 5. FOOTER --- */
@@ -348,7 +468,58 @@
                         <li><i class="fas fa-users"></i> Takım: StrikeForce</li>
                         <li><i class="fas fa-sitemap"></i> Aşama: Yarı Final</li>
                     </ul>
-                    <a href="#" class="nav-btn btn-small">Eşleşmeleri Gör</a>
+
+                    <div class="teammates-section">
+                        <p class="teammates-title">Takım Arkadaşların:</p>
+                        <div class="teammates-list">
+                            <div class="teammate-item" onclick="togglePopover(event, this)">
+                                <img src="https://ui-avatars.com/api/?name=Ali+V&background=random" alt="PP" class="teammate-pp">
+                                <span class="teammate-nick">JettMain</span>
+                                
+                                <div class="profile-popover" onclick="event.stopPropagation()">
+                                    <div class="popover-header">JettMain İstatistikleri</div>
+                                    <div class="popover-stats-grid">
+                                        <div class="stat-box">
+                                            <div class="stat-val">42</div>
+                                            <div class="stat-label">TOPLAM MAÇ</div>
+                                        </div>
+                                        <div class="stat-box">
+                                            <div class="stat-val">%58</div>
+                                            <div class="stat-label">KAZANMA ORANI</div>
+                                        </div>
+                                        <div class="stat-box">
+                                            <div class="stat-val">5</div>
+                                            <div class="stat-label">TURNUVALAR</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="teammate-item" onclick="togglePopover(event, this)">
+                                <img src="https://ui-avatars.com/api/?name=Ozgur+K&background=random" alt="PP" class="teammate-pp">
+                                <span class="teammate-nick">OmenPro</span>
+                                
+                                <div class="profile-popover" onclick="event.stopPropagation()">
+                                    <div class="popover-header">OmenPro İstatistikleri</div>
+                                    <div class="popover-stats-grid">
+                                        <div class="stat-box">
+                                            <div class="stat-val">12</div>
+                                            <div class="stat-label">TOPLAM MAÇ</div>
+                                        </div>
+                                        <div class="stat-box">
+                                            <div class="stat-val">%45</div>
+                                            <div class="stat-label">KAZANMA ORANI</div>
+                                        </div>
+                                        <div class="stat-box">
+                                            <div class="stat-val">2</div>
+                                            <div class="stat-label">TURNUVALAR</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#" class="nav-btn btn-small" style="margin-top: 20px;">Eşleşmeleri Gör</a>
                 </div>
 
                 <div class="tourney-card active">
@@ -450,8 +621,35 @@
             }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
+
+        // Popover Menüleri Açıp Kapatma İşlemi
+        function togglePopover(event, element) {
+            event.stopPropagation(); // Tıklamanın dışarı yayılmasını engelle
+            
+            // Tıklanan öğenin içindeki popover'ı bul
+            const popover = element.querySelector('.profile-popover');
+            
+            // Başka açık popover varsa kapat
+            document.querySelectorAll('.profile-popover.show').forEach(p => {
+                if(p !== popover) p.classList.remove('show');
+            });
+            
+            // Mevcut popover'ın durumunu değiştir (aç/kapat)
+            if(popover) {
+                popover.classList.toggle('show');
+            }
+        }
+
+        // Sayfada boş bir yere tıklanırsa tüm popover'ları kapat
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.profile-popover.show').forEach(p => {
+                p.classList.remove('show');
+            });
+        });
     </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="auth.js"></script>
+    <script src="bildirim.js"></script>
 </body>
 </html>
