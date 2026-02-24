@@ -145,7 +145,7 @@
 
         /* DURUM 1: BOŞ EKRAN */
         #empty-state {
-            display: none; /* JS ile kontrol edilecek */
+            display: none; 
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -162,7 +162,7 @@
 
         /* DURUM 2: DOLU EKRAN (BÜYÜK KART) */
         #active-state {
-            display: none; /* JS ile kontrol edilecek */
+            display: none; 
         }
         .showcase-card {
             display: flex;
@@ -180,7 +180,6 @@
             background: linear-gradient(90deg, var(--neon-mor), #b785f6);
         }
 
-        /* Görsel Alanı (Masaüstünde görünür, mobilde gizlenir) */
         .showcase-image {
             flex: 1;
             background: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
@@ -194,14 +193,13 @@
             background: linear-gradient(to right, transparent, var(--kart-bg));
         }
 
-        /* İçerik Alanı */
         .showcase-content {
             flex: 1.2;
             padding: 40px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            z-index: 2; /* Gradientin üstünde kalması için */
+            z-index: 2; 
         }
 
         .status-badge {
@@ -223,7 +221,6 @@
         .tourney-meta { display: flex; gap: 20px; color: var(--gri-yazi); font-size: 14px; margin-bottom: 30px; }
         .tourney-meta span i { color: var(--neon-mor); margin-right: 5px; }
 
-        /* Takım ve Oyuncu Listesi (Basit, Temiz Liste) */
         .team-section {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.05);
@@ -300,9 +297,8 @@
             .page-wrapper { padding: 30px 5%; }
             .page-header h1 { text-align: center; }
             
-            /* Mobilde kart tasarımı */
             .showcase-card { flex-direction: column; }
-            .showcase-image { display: none; /* Mobilde görseli gizle */ }
+            .showcase-image { display: none; }
             .showcase-content { padding: 25px 20px; }
             .tourney-title { font-size: 24px; }
             .tourney-meta { flex-direction: column; gap: 10px; }
@@ -432,7 +428,7 @@
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
 
-        // SUPABASE VERİ ÇEKME İŞLEMİ (ÇÖKMEYEN GÜVENLİ YAPI)
+        // SUPABASE VERİ ÇEKME İŞLEMİ (KESİN ÇÖZÜM - FLAT FETCHING)
         document.addEventListener('DOMContentLoaded', async () => {
             const emptyState = document.getElementById('empty-state');
             const activeState = document.getElementById('active-state');
@@ -456,89 +452,95 @@
                 const userId = session.user.id;
                 let appId = null;
 
-                // 3. KAPTAN KONTROLÜ: Kullanıcının kurduğu takım var mı?
-                const { data: captainData } = await supabase
+                // 3. KAPTAN KONTROLÜ (Ayrı Sorgu)
+                const { data: capData } = await supabase
                     .from('tournament_applications')
                     .select('id')
                     .eq('captain_id', userId);
                     
-                if (captainData && captainData.length > 0) {
-                    appId = captainData[0].id;
+                if (capData && capData.length > 0) {
+                    appId = capData[0].id;
                 } else {
-                    // 4. ÜYE KONTROLÜ: Kaptan değilse davet edildiği takım var mı?
-                    const { data: memberData } = await supabase
+                    // 4. ÜYE KONTROLÜ (Ayrı Sorgu)
+                    const { data: memData } = await supabase
                         .from('application_members')
                         .select('application_id')
                         .eq('user_id', userId)
                         .neq('status', 'rejected');
 
-                    if (memberData && memberData.length > 0) {
-                        appId = memberData[0].application_id;
+                    if (memData && memData.length > 0) {
+                        appId = memData[0].application_id;
                     }
                 }
 
-                // HİÇBİR TAKIMI YOKSA (appId boşsa) hata vermeden dur ve boş ekranı göster
+                // EĞER HİÇBİR TAKIM BULUNAMADIYSA
                 if (!appId) {
                     emptyState.style.display = 'flex';
                     return;
                 }
 
-                // 5. TAKIM BULUNDU! Şimdi takım detaylarını ve oyuncuları çek
+                // 5. TAKIM DETAYLARINI ÇEK (Sadece takım tablosu - Join YOK)
                 const { data: teamData, error: teamErr } = await supabase
                     .from('tournament_applications')
-                    .select(`
-                        team_name, 
-                        team_tag,
-                        application_members (
-                            role,
-                            profiles (username, avatar_url)
-                        )
-                    `)
+                    .select('team_name, team_tag')
                     .eq('id', appId);
 
-                // Veri başarıyla geldiyse kartı doldur
-                if (teamData && teamData.length > 0) {
-                    const team = teamData[0];
-                    
-                    // Boş ekranı gizle, büyük kartı göster
-                    emptyState.style.display = 'none';
-                    activeState.style.display = 'block'; 
-
-                    document.getElementById('display-team-name').innerText = team.team_name || "İsimsiz Takım";
-                    document.getElementById('display-team-tag').innerText = `[${team.team_tag || "TAG"}]`;
-
-                    const rosterContainer = document.getElementById('display-roster');
-                    rosterContainer.innerHTML = ''; 
-
-                    // Oyuncuları HTML'e yerleştir
-                    if (team.application_members) {
-                        team.application_members.forEach(member => {
-                            if(!member.profiles) return; 
-                            
-                            const p = member.profiles;
-                            const roleText = member.role === 'main' ? 'Asil' : 'Yedek';
-                            const avatar = p.avatar_url ? p.avatar_url : `https://ui-avatars.com/api/?name=${p.username}&background=random`;
-
-                            const htmlString = `
-                                <div class="roster-item">
-                                    <div class="roster-user">
-                                        <img src="${avatar}" alt="Profil">
-                                        <span class="nick">${p.username}</span>
-                                    </div>
-                                    <span class="roster-role">${roleText}</span>
-                                </div>
-                            `;
-                            rosterContainer.insertAdjacentHTML('beforeend', htmlString);
-                        });
-                    }
-                } else {
-                    // Veri çekilirken sorun olursa boş ekranı göster
+                if (teamErr || !teamData || teamData.length === 0) {
                     emptyState.style.display = 'flex';
+                    return;
+                }
+
+                const team = teamData[0];
+                
+                // GÖRÜNÜMÜ AKTİF ET
+                emptyState.style.display = 'none';
+                activeState.style.display = 'block'; 
+
+                document.getElementById('display-team-name').innerText = team.team_name || "İsimsiz Takım";
+                document.getElementById('display-team-tag').innerText = team.team_tag ? `[${team.team_tag}]` : "[-]";
+
+                const rosterContainer = document.getElementById('display-roster');
+                rosterContainer.innerHTML = ''; 
+
+                // 6. ÜYE BİLGİLERİNİ ÇEK (Sadece application_members tablosu - Join YOK)
+                const { data: members, error: membersErr } = await supabase
+                    .from('application_members')
+                    .select('role, user_id')
+                    .eq('application_id', appId)
+                    .neq('status', 'rejected');
+
+                if (members && members.length > 0) {
+                    // Üyelerin ID'lerini bir diziye al
+                    const userIds = members.map(m => m.user_id);
+
+                    // 7. PROFİLLERİ ÇEK (Sadece profiles tablosu - Join YOK)
+                    const { data: profiles, error: profErr } = await supabase
+                        .from('profiles')
+                        .select('id, username, avatar_url')
+                        .in('id', userIds);
+
+                    // Üyeleri ve profilleri eşleştirip HTML'e bas
+                    members.forEach(member => {
+                        const p = profiles ? profiles.find(pr => pr.id === member.user_id) : null;
+                        const username = p ? p.username : "Bilinmeyen Oyuncu";
+                        const avatar = (p && p.avatar_url) ? p.avatar_url : `https://ui-avatars.com/api/?name=${username}&background=random`;
+                        const roleText = member.role === 'main' ? 'Asil' : 'Yedek';
+
+                        const htmlString = `
+                            <div class="roster-item">
+                                <div class="roster-user">
+                                    <img src="${avatar}" alt="Profil">
+                                    <span class="nick">${username}</span>
+                                </div>
+                                <span class="roster-role">${roleText}</span>
+                            </div>
+                        `;
+                        rosterContainer.insertAdjacentHTML('beforeend', htmlString);
+                    });
                 }
 
             } catch (error) {
                 console.error("Veri çekme sırasında beklenmeyen hata:", error);
-                // Kod tamamen çökse bile siyah ekranı engellemek için boş durumu gösteriyoruz
                 emptyState.style.display = 'flex';
             }
         });
