@@ -11,17 +11,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Turnuvalarım | OBB E-SPOR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* --- 1. TEMEL AYARLAR (GÖNDERDİĞİN KODLA BİREBİR) --- */
+        /* --- 1. TEMEL AYARLAR --- */
         :root {
             --ana-siyah: #000000;
             --nav-bg: #000000;
             --neon-mor: #601dc2; 
             --yazi-beyaz: #ffffff;
             --gri-yazi: #a0a0a0;
+            --kart-bg: #0a0314; /* Yeni eklenen kart arkaplanı */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -38,7 +39,7 @@
             min-height: 100vh;
         }
 
-        /* --- 2. AKILLI HEADER (GÖNDERDİĞİN KODLA BİREBİR) --- */
+        /* --- 2. AKILLI HEADER --- */
         header.main-nav {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -70,62 +71,11 @@
             transition: 0.3s;
             text-decoration: none;
             font-weight: bold;
+            display: inline-block;
         }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- 3. TURNUVALARIM ÖZEL İÇERİK --- */
-        .coming-soon-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            text-align: center;
-            padding: 40px 20px;
-        }
-        .status-badge {
-            background: rgba(96, 29, 194, 0.1);
-            border: 1px solid var(--neon-mor);
-            padding: 10px 25px;
-            border-radius: 50px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-        .icon-box {
-            font-size: 80px;
-            color: var(--neon-mor);
-            margin-bottom: 20px;
-            text-shadow: 0 0 30px var(--neon-mor);
-            animation: pulse 2s infinite;
-        }
-        .coming-soon-container h1 {
-            font-size: clamp(2rem, 8vw, 4rem);
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: -2px;
-            line-height: 1.1;
-        }
-        .coming-soon-container h1 span {
-            display: block;
-            color: var(--neon-mor);
-            text-shadow: 0 0 20px var(--neon-mor);
-        }
-        .coming-soon-container p {
-            color: var(--gri-yazi);
-            font-size: 16px;
-            max-width: 600px;
-            margin: 20px 0 40px;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-
-        /* --- 4. DROPDOWN (NICKNAME BUTONU) --- */
+        /* --- 3. DROPDOWN (NICKNAME BUTONU) --- */
         .user-dropdown { position: relative; display: inline-block; }
         .dropdown-trigger {
             background: rgba(96, 29, 194, 0.1);
@@ -188,7 +138,130 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- 5. FOOTER (GÖNDERDİĞİN KODLA BİREBİR) --- */
+        /* --- 4. TURNUVALARIM DASHBOARD (YENİ ALAN) --- */
+        .dashboard-container {
+            flex: 1;
+            padding: 50px 10%;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .dashboard-header {
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 20px;
+        }
+
+        .dashboard-header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .dashboard-header h1 span { color: var(--neon-mor); }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--yazi-beyaz);
+        }
+
+        .section-title i { color: var(--neon-mor); }
+
+        .tournament-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        /* Kart Tasarımları */
+        .tourney-card {
+            background: var(--kart-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tourney-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(96, 29, 194, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Güncel/Aktif Turnuva Vurgusu */
+        .tourney-card.active {
+            border: 1px solid var(--neon-mor);
+            box-shadow: 0 0 15px rgba(96, 29, 194, 0.2);
+        }
+        .tourney-card.active::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--neon-mor);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .status-badge.ongoing { background: rgba(96, 29, 194, 0.2); color: #b785f6; border: 1px solid var(--neon-mor); }
+        .status-badge.won { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid #2ecc71; }
+        .status-badge.eliminated { background: rgba(231, 76, 60, 0.15); color: #e74c3c; border: 1px solid #e74c3c; }
+
+        .tourney-date {
+            font-size: 13px;
+            color: var(--gri-yazi);
+        }
+
+        .tourney-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .tourney-details {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        .tourney-details li {
+            font-size: 14px;
+            color: var(--gri-yazi);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 12px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* --- 5. FOOTER --- */
         footer {
             background-color: var(--nav-bg);
             border-top: 2px solid var(--neon-mor);
@@ -213,7 +286,7 @@
         .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* --- 6. MOBİL UYUMLULUK (GÖNDERDİĞİN KODLA BİREBİR) --- */
+        /* --- 6. MOBİL UYUMLULUK --- */
         @media (max-width: 768px) {
             header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
             body { padding-top: 125px; }
@@ -222,14 +295,17 @@
             nav ul li a { font-size: 10px; white-space: nowrap; }
             .nav-btn { padding: 6px 12px; font-size: 10px !important; }
 
+            .dashboard-container { padding: 30px 5%; }
+            .dashboard-header h1 { text-align: center; }
+            .section-title { justify-content: center; }
+
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
             .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
-            .footer-brand p { max-width: 100%; }
+            .footer-brand p { max-width: 100%; margin: 0 auto 25px; }
             .social-icons { justify-content: center; }
             .footer-column { text-align: left; }
             footer { padding: 60px 8% 30px; }
 
-            /* Mobilde Nickname Buton Fixi */
             .user-name-text, .arrow-icon { display: none; } 
             .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
             .dropdown-content { position: fixed; right: 15px; top: 75px; width: 180px; }
@@ -252,14 +328,75 @@
         </nav>
     </header>
 
-    <main class="coming-soon-container">
-        <div class="status-badge">Sistem Geliştiriliyor</div>
-        <div class="icon-box">
-            <i class="fas fa-trophy"></i>
+    <main class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Turnuva <span>Geçmişim</span></h1>
+            <p style="color: var(--gri-yazi);">Katıldığın tüm turnuvalar ve güncel başvuruların burada listelenir.</p>
         </div>
-        <h1>TURNUVALARIM <span>ÇOK YAKINDA</span></h1>
-        <p>Katıldığın turnuvaları, maç geçmişini ve takım istatistiklerini bu panelden takip edebileceksin. Hazırlanmaya devam et!</p>
-        <a href="tournaments.html" class="nav-btn" style="padding: 15px 35px; font-size: 16px;">GÜNCEL TURNUVALARA BAK</a>
+
+        <section>
+            <h2 class="section-title"><i class="fas fa-fire"></i> Güncel Turnuvalarım</h2>
+            <div class="tournament-grid">
+                
+                <div class="tourney-card active">
+                    <div class="card-header">
+                        <span class="status-badge ongoing">Devam Ediyor</span>
+                        <span class="tourney-date">Sonraki Maç: Bugün, 20:00</span>
+                    </div>
+                    <h3>Valorant Kış Kupası 2026</h3>
+                    <ul class="tourney-details">
+                        <li><i class="fas fa-users"></i> Takım: StrikeForce</li>
+                        <li><i class="fas fa-sitemap"></i> Aşama: Yarı Final</li>
+                    </ul>
+                    <a href="#" class="nav-btn btn-small">Eşleşmeleri Gör</a>
+                </div>
+
+                <div class="tourney-card active">
+                    <div class="card-header">
+                        <span class="status-badge ongoing">Onay Bekliyor</span>
+                        <span class="tourney-date">Başvuru: 20 Şub</span>
+                    </div>
+                    <h3>CS2 Bahar Turnuvası</h3>
+                    <ul class="tourney-details">
+                        <li><i class="fas fa-users"></i> Takım: StrikeForce</li>
+                        <li><i class="fas fa-info-circle"></i> Kura Çekimi Bekleniyor</li>
+                    </ul>
+                    <a href="#" class="nav-btn btn-small" style="background: transparent; color: white;">Detaylar</a>
+                </div>
+
+            </div>
+        </section>
+
+        <section style="margin-top: 20px;">
+            <h2 class="section-title"><i class="fas fa-history"></i> Geçmiş Turnuvalar</h2>
+            <div class="tournament-grid">
+                
+                <div class="tourney-card">
+                    <div class="card-header">
+                        <span class="status-badge won">Şampiyon</span>
+                        <span class="tourney-date">Ocak 2026</span>
+                    </div>
+                    <h3>LoL Bölgesel Lig</h3>
+                    <ul class="tourney-details">
+                        <li><i class="fas fa-trophy"></i> Ödül: 10.000 TL</li>
+                        <li><i class="fas fa-users"></i> Takım: OBB Kırmızı</li>
+                    </ul>
+                </div>
+
+                <div class="tourney-card">
+                    <div class="card-header">
+                        <span class="status-badge eliminated">Çeyrek Final</span>
+                        <span class="tourney-date">Aralık 2025</span>
+                    </div>
+                    <h3>TFT Taktik Savaşları</h3>
+                    <ul class="tourney-details">
+                        <li><i class="fas fa-user"></i> Bireysel Katılım</li>
+                        <li><i class="fas fa-medal"></i> Sıralama: 5-8. Arası</li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
     </main>
 
     <footer>
@@ -300,7 +437,7 @@
     </footer>
 
     <script>
-        // Header Scroll Efekti (Gönderdiğin Koddaki Mantık)
+        // Header Scroll Efekti
         let lastScrollTop = 0;
         const mainHeader = document.getElementById("mainHeader");
 
