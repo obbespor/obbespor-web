@@ -134,6 +134,10 @@
             .main-content { padding: 40px 5%; }
             .action-btns { flex-direction: column; }
             #pendingBtnGroup { flex-direction: column; } 
+            
+            /* KESİLMEYİ ENGELLEYEN MOBİL KODLARI */
+            .auth-card { overflow: visible !important; height: auto !important; }
+            .form-container { overflow: visible !important; }
         }
     </style>
 </head>
@@ -240,10 +244,14 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="auth.js"></script>
     <script src="bildirimler.js"></script>
     
     <script>
+        // Orijinal Supabase Bağlantısı Geri Getirildi
+        const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         let currentUser = null;
         let currentDraftId = null; 
         let teamCaptainId = null;
@@ -261,18 +269,17 @@
         }, false);
 
         async function handleLogout() {
-            await supabase.auth.signOut();
+            await _supabase.auth.signOut();
             window.location.href = 'kayit.html';
         }
 
         async function init() {
             try {
-                // Burada global atanmış supabase nesnesini kullanıyoruz
-                const { data: { user }, error: authError } = await supabase.auth.getUser();
+                const { data: { user }, error: authError } = await _supabase.auth.getUser();
                 if (authError || !user) { window.location.href = 'kayit.html'; return; }
                 currentUser = user;
 
-                const { data: profileData } = await supabase.from('profiles').select('username').eq('id', user.id).maybeSingle();
+                const { data: profileData } = await _supabase.from('profiles').select('username').eq('id', user.id).maybeSingle();
                 const realUsername = profileData?.username || user.user_metadata?.username || "OYUNCU";
 
                 document.getElementById('authAction').innerHTML = `
@@ -348,19 +355,19 @@
         async function loadOrCreateDraft(username) {
             let draft = null;
 
-            const { data: capDrafts } = await supabase.from('tournament_applications')
+            const { data: capDrafts } = await _supabase.from('tournament_applications')
                 .select('*').eq('captain_id', currentUser.id).in('status', ['draft', 'pending']);
 
             if (capDrafts && capDrafts.length > 0) {
                 draft = capDrafts[0];
                 isCaptain = true;
             } else {
-                const { data: memData } = await supabase.from('application_members')
+                const { data: memData } = await _supabase.from('application_members')
                     .select('application_id').eq('user_id', currentUser.id).neq('status', 'rejected');
 
                 if (memData && memData.length > 0) {
                     const appId = memData[0].application_id;
-                    const { data: teamData } = await supabase.from('tournament_applications')
+                    const { data: teamData } = await _supabase.from('tournament_applications')
                         .select('*').eq('id', appId).in('status', ['draft', 'pending']);
                     
                     if (teamData && teamData.length > 0) {
@@ -392,7 +399,7 @@
                 }
             } else {
                 isCaptain = true;
-                const { data: newDraft } = await supabase.from('tournament_applications').insert({
+                const { data: newDraft } = await _supabase.from('tournament_applications').insert({
                     captain_id: currentUser.id, team_name: '', team_tag: '', status: 'draft'
                 }).select().single();
                 
@@ -404,7 +411,7 @@
                 document.getElementById('teamForm').style.display = 'block';
                 startCountdown();
 
-                await supabase.from('application_members').insert({
+                await _supabase.from('application_members').insert({
                     application_id: currentDraftId, user_id: currentUser.id, role: 'main', status: 'accepted'
                 });
                 
@@ -418,7 +425,7 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lütfen Bekleyin...';
             btn.disabled = true;
 
-            const { error } = await supabase.from('tournament_applications').update({ status: 'draft' }).eq('id', currentDraftId);
+            const { error } = await _supabase.from('tournament_applications').update({ status: 'draft' }).eq('id', currentDraftId);
             
             if (error) {
                 showNotification("Hata oluştu: " + error.message, "error");
@@ -440,7 +447,7 @@
         }
 
         async function loadDraftMembers() {
-            const { data: members } = await supabase.from('application_members')
+            const { data: members } = await _supabase.from('application_members')
                 .select('*, profiles(username)')
                 .eq('application_id', currentDraftId);
                 
@@ -490,6 +497,7 @@
             }
         }
 
+        // --- ORİJİNAL ÇALIŞAN ARAMA FONKSİYONU GERİ YÜKLENDİ ---
         function attachSearchEvents() {
             if (!isCaptain) return;
 
@@ -513,25 +521,16 @@
                                              .map(el => el.getAttribute('data-user-id'))
                                              .filter(id => id && id.trim() !== "");
 
-                    // Supabase üzerinden arama yapıyoruz
-                    const { data, error } = await supabase.from('profiles')
-                                                    .select('username, id, team_id')
+                    // Eski çalışan sorgu yapısı
+                    const { data } = await _supabase.from('profiles')
+                                                    .select('username, id')
                                                     .ilike('username', `%${query}%`)
+                                                    .is('team_id', null)
                                                     .limit(15); 
                     
-                    if (error) {
-                        console.error("Arama Hatası:", error);
-                        return;
-                    }
-
                     if (!data) return;
 
-                    const filteredPlayers = data.filter(u => !selectedIds.includes(u.id) && u.team_id == null).slice(0, 5);
-
-                    if (filteredPlayers.length === 0) {
-                        list.innerHTML = `<div style="color:var(--gri-yazi); cursor:default; padding: 10px; font-size: 13px;">Kullanıcı bulunamadı veya takımda</div>`;
-                        return;
-                    }
+                    const filteredPlayers = data.filter(u => !selectedIds.includes(u.id)).slice(0, 5);
 
                     filteredPlayers.forEach(u => {
                         const div = document.createElement('div');
@@ -547,18 +546,11 @@
 
                             const role = input.id.startsWith('main') ? 'main' : 'sub';
                             
-                            const { data: newMember, error: insertError } = await supabase.from('application_members').insert({
+                            const { data: newMember, error } = await _supabase.from('application_members').insert({
                                 application_id: currentDraftId, user_id: u.id, role: role, status: 'pending'
                             }).select().single();
 
-                            if (insertError) {
-                                console.error("Kayıt Hatası:", insertError);
-                                showNotification("Oyuncu eklenirken bir sorun oluştu.", "error");
-                                tick.style.display = 'none';
-                                input.readOnly = false;
-                                input.value = '';
-                                return;
-                            }
+                            if (error) showNotification("Oyuncu eklenirken bir sorun oluştu.", "error");
 
                             if (newMember) {
                                 input.setAttribute('data-user-id', u.id);
@@ -580,7 +572,7 @@
             const input = document.getElementById(inputId);
             const memberId = input.getAttribute('data-member-id');
             if (memberId) {
-                await supabase.from('application_members').delete().eq('id', memberId);
+                await _supabase.from('application_members').delete().eq('id', memberId);
             }
             input.value = '';
             input.readOnly = false;
@@ -622,13 +614,13 @@
         function subscribeToDraftUpdates() {
             if(!currentDraftId) return;
 
-            supabase.channel('draft-members-updates')
+            _supabase.channel('draft-members-updates')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'application_members', filter: `application_id=eq.${currentDraftId}` }, payload => {
                     loadDraftMembers();
                 }).subscribe();
 
             if (!isCaptain) {
-                supabase.channel('team-details-updates')
+                _supabase.channel('team-details-updates')
                     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tournament_applications', filter: `id=eq.${currentDraftId}` }, payload => {
                         const draft = payload.new;
                         document.getElementById('teamName').value = draft.team_name || '';
@@ -655,7 +647,7 @@
                     clearTimeout(saveTimeout);
                     saveTimeout = setTimeout(async () => {
                         if (currentDraftId) {
-                            await supabase.from('tournament_applications').update({
+                            await _supabase.from('tournament_applications').update({
                                 team_name: document.getElementById('teamName').value,
                                 team_tag: document.getElementById('teamTag').value
                             }).eq('id', currentDraftId);
@@ -669,7 +661,7 @@
             if(!isCaptain) return;
             if (!silent && !confirm("Tüm taslak silinecek ve davetler iptal edilecek. Emin misiniz?")) return;
             if (currentDraftId) {
-                await supabase.from('tournament_applications').delete().eq('id', currentDraftId);
+                await _supabase.from('tournament_applications').delete().eq('id', currentDraftId);
                 location.reload();
             }
         }
@@ -688,13 +680,13 @@
                 if(logoFile) {
                     const fileExt = logoFile.name.split('.').pop();
                     const fileName = `team_${Date.now()}.${fileExt}`;
-                    const { error: uploadError } = await supabase.storage.from('team-logos').upload(fileName, logoFile);
+                    const { error: uploadError } = await _supabase.storage.from('team-logos').upload(fileName, logoFile);
                     if (uploadError) throw uploadError;
-                    const { data } = supabase.storage.from('team-logos').getPublicUrl(fileName);
+                    const { data } = _supabase.storage.from('team-logos').getPublicUrl(fileName);
                     logoUrl = data.publicUrl;
                 }
 
-                const { error: teamError } = await supabase.from('tournament_applications').update({
+                const { error: teamError } = await _supabase.from('tournament_applications').update({
                     status: 'pending',
                     logo_url: logoUrl
                 }).eq('id', currentDraftId);
