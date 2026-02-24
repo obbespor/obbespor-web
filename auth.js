@@ -5,12 +5,10 @@
 const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
 
-// 1. Çakışmayı önleyen global başlatma (Global değişken: _supabase)
-if (!window._supabase) {
-    window._supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-}
-// Diğer scriptler için de erişilebilir yapalım
-window.supabaseClient = window._supabase;
+// 1. Supabase client'ı oluşturuyoruz ve tüm sayfaların tanıdığı 
+// eski standart ismiyle (supabase) globale eşitliyoruz.
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.supabase = supabaseClient;
 
 document.addEventListener('DOMContentLoaded', () => {
     checkUserStatus();
@@ -18,8 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function checkUserStatus() {
     try {
-        // user_metadata içinden verileri almak için getUser kullanıyoruz
-        const { data: { user }, error } = await window._supabase.auth.getUser();
+        // Artık standart supabase ismini kullanıyoruz
+        const { data: { user }, error } = await supabase.auth.getUser();
         
         if (user) {
             updateNavbarWithUser(user);
@@ -30,12 +28,11 @@ async function checkUserStatus() {
 }
 
 function updateNavbarWithUser(user) {
-    // Nav butonunu senin orijinal querySelector yapınla buluyoruz
+    // Nav butonunu orijinal querySelector yapınla buluyoruz
     const navBtn = document.querySelector('.nav-btn');
     const username = user.user_metadata?.username || user.email.split('@')[0] || "OYUNCU";
 
     if (navBtn && navBtn.parentElement) {
-        // Orijinal HTML yapını ve CSS sınıflarını koruyarak dropdown'ı enjekte ediyoruz
         navBtn.parentElement.innerHTML = `
             <div class="user-dropdown">
                 <button class="dropdown-trigger">
@@ -55,7 +52,7 @@ function updateNavbarWithUser(user) {
 }
 
 async function logoutAction() {
-    const { error } = await window._supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
     if (!error) {
         window.location.href = "index.html";
     } else {
