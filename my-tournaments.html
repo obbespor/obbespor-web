@@ -432,83 +432,113 @@
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
 
-        // SUPABASE VERİ ÇEKME İŞLEMİ (TURNUVA KONTROLÜ)
+        // SUPABASE VERİ ÇEKME İŞLEMİ (ÇÖKMEYEN GÜVENLİ YAPI)
         document.addEventListener('DOMContentLoaded', async () => {
-            // Not: supabase objesinin auth.js içinde tanımlanmış (global) olduğunu varsayıyoruz.
-            const { data: { session } } = await supabase.auth.getSession();
-            
             const emptyState = document.getElementById('empty-state');
             const activeState = document.getElementById('active-state');
 
-            if (!session) {
-                emptyState.style.display = 'flex'; // Giriş yapmamışsa boş ekran göster
-                return;
-            }
+            try {
+                // 1. Supabase objesinin kullanılabilirliğini kontrol et
+                if (typeof supabase === 'undefined') {
+                    console.error("HATA: supabase objesi bulunamadı! auth.js dosyasında window.supabase tanımlandığından emin ol.");
+                    emptyState.style.display = 'flex'; 
+                    return;
+                }
 
-            const userId = session.user.id;
+                // 2. Kullanıcı Oturum Kontrolü
+                const { data: { session }, error: sessionErr } = await supabase.auth.getSession();
+                
+                if (sessionErr || !session) {
+                    emptyState.style.display = 'flex'; 
+                    return;
+                }
 
-            // 1. Kullanıcının içinde bulunduğu bir başvuru var mı kontrol et
-            const { data: memberData, error: memberErr } = await supabase
-                .from('application_members')
-                .select('application_id')
-                .eq('user_id', userId)
-                .neq('status', 'rejected') // Reddedilmişleri sayma
-                .limit(1)
-                .single();
+                const userId = session.user.id;
+                let appId = null;
 
-            if (memberErr || !memberData) {
-                emptyState.style.display = 'flex'; // Başvuru yok
-                return;
-            }
-
-            // 2. Başvuru bulundu! Şimdi o takımın detaylarını ve tüm oyuncularını çekelim
-            const appId = memberData.application_id;
-            
-            const { data: teamData, error: teamErr } = await supabase
-                .from('tournament_applications')
-                .select(`
-                    team_name, 
-                    team_tag,
-                    application_members (
-                        role,
-                        profiles (username, avatar_url)
-                    )
-                `)
-                .eq('id', appId)
-                .single();
-
-            if (teamData) {
-                // Aktif ekranı göster, boş ekranı gizle
-                emptyState.style.display = 'none';
-                activeState.style.display = 'block';
-
-                // Takım adı ve etiketini yazdır
-                document.getElementById('display-team-name').innerText = teamData.team_name || "İsimsiz Takım";
-                document.getElementById('display-team-tag').innerText = `[${teamData.team_tag || "TAG"}]`;
-
-                // Oyuncu listesini oluştur
-                const rosterContainer = document.getElementById('display-roster');
-                rosterContainer.innerHTML = ''; // Önce temizle
-
-                teamData.application_members.forEach(member => {
-                    if(!member.profiles) return; // Profil bilgisi yoksa atla
+                // 3. KAPTAN KONTROLÜ: Kullanıcının kurduğu takım var mı?
+                const { data: captainData } = await supabase
+                    .from('tournament_applications')
+                    .select('id')
+                    .eq('captain_id', userId);
                     
-                    const p = member.profiles;
-                    const roleText = member.role === 'main' ? 'Asil' : 'Yedek';
-                    const avatar = p.avatar_url ? p.avatar_url : `https://ui-avatars.com/api/?name=${p.username}&background=random`;
+                if (captainData && captainData.length > 0) {
+                    appId = captainData[0].id;
+                } else {
+                    // 4. ÜYE KONTROLÜ: Kaptan değilse davet edildiği takım var mı?
+                    const { data: memberData } = await supabase
+                        .from('application_members')
+                        .select('application_id')
+                        .eq('user_id', userId)
+                        .neq('status', 'rejected');
 
-                    const htmlString = `
-                        <div class="roster-item">
-                            <div class="roster-user">
-                                <img src="${avatar}" alt="Profil">
-                                <span class="nick">${p.username}</span>
-                            </div>
-                            <span class="roster-role">${roleText}</span>
-                        </div>
-                    `;
-                    rosterContainer.insertAdjacentHTML('beforeend', htmlString);
-                });
-            } else {
+                    if (memberData && memberData.length > 0) {
+                        appId = memberData[0].application_id;
+                    }
+                }
+
+                // HİÇBİR TAKIMI YOKSA (appId boşsa) hata vermeden dur ve boş ekranı göster
+                if (!appId) {
+                    emptyState.style.display = 'flex';
+                    return;
+                }
+
+                // 5. TAKIM BULUNDU! Şimdi takım detaylarını ve oyuncuları çek
+                const { data: teamData, error: teamErr } = await supabase
+                    .from('tournament_applications')
+                    .select(`
+                        team_name, 
+                        team_tag,
+                        application_members (
+                            role,
+                            profiles (username, avatar_url)
+                        )
+                    `)
+                    .eq('id', appId);
+
+                // Veri başarıyla geldiyse kartı doldur
+                if (teamData && teamData.length > 0) {
+                    const team = teamData[0];
+                    
+                    // Boş ekranı gizle, büyük kartı göster
+                    emptyState.style.display = 'none';
+                    activeState.style.display = 'block'; 
+
+                    document.getElementById('display-team-name').innerText = team.team_name || "İsimsiz Takım";
+                    document.getElementById('display-team-tag').innerText = `[${team.team_tag || "TAG"}]`;
+
+                    const rosterContainer = document.getElementById('display-roster');
+                    rosterContainer.innerHTML = ''; 
+
+                    // Oyuncuları HTML'e yerleştir
+                    if (team.application_members) {
+                        team.application_members.forEach(member => {
+                            if(!member.profiles) return; 
+                            
+                            const p = member.profiles;
+                            const roleText = member.role === 'main' ? 'Asil' : 'Yedek';
+                            const avatar = p.avatar_url ? p.avatar_url : `https://ui-avatars.com/api/?name=${p.username}&background=random`;
+
+                            const htmlString = `
+                                <div class="roster-item">
+                                    <div class="roster-user">
+                                        <img src="${avatar}" alt="Profil">
+                                        <span class="nick">${p.username}</span>
+                                    </div>
+                                    <span class="roster-role">${roleText}</span>
+                                </div>
+                            `;
+                            rosterContainer.insertAdjacentHTML('beforeend', htmlString);
+                        });
+                    }
+                } else {
+                    // Veri çekilirken sorun olursa boş ekranı göster
+                    emptyState.style.display = 'flex';
+                }
+
+            } catch (error) {
+                console.error("Veri çekme sırasında beklenmeyen hata:", error);
+                // Kod tamamen çökse bile siyah ekranı engellemek için boş durumu gösteriyoruz
                 emptyState.style.display = 'flex';
             }
         });
