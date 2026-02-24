@@ -161,9 +161,8 @@
         #empty-state p { color: var(--gri-yazi); margin-bottom: 25px; max-width: 400px; }
 
         /* DURUM 2: DOLU EKRAN (BÜYÜK KART) */
-        #active-state {
-            display: none; 
-        }
+        #active-state { display: none; }
+        
         .showcase-card {
             display: flex;
             background: var(--kart-bg);
@@ -180,7 +179,6 @@
             background: linear-gradient(90deg, var(--neon-mor), #b785f6);
         }
 
-        /* Görsel Alanı */
         .showcase-image {
             flex: 1;
             background: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
@@ -194,7 +192,6 @@
             background: linear-gradient(to right, transparent, var(--kart-bg));
         }
 
-        /* İçerik Alanı */
         .showcase-content {
             flex: 1.2;
             padding: 40px;
@@ -223,7 +220,6 @@
         .tourney-meta { display: flex; gap: 20px; color: var(--gri-yazi); font-size: 14px; margin-bottom: 30px; }
         .tourney-meta span i { color: var(--neon-mor); margin-right: 5px; }
 
-        /* Takım ve Oyuncu Listesi */
         .team-section {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.05);
@@ -262,7 +258,7 @@
         .roster-user img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
         .roster-user .nick { font-weight: 600; font-size: 14px; }
         .roster-role { font-size: 11px; font-weight: bold; text-transform: uppercase; color: var(--gri-yazi); }
-        .role-captain { color: var(--neon-mor); }
+        .role-captain { color: #b785f6; font-weight: 900;}
 
         /* --- 5. FOOTER --- */
         footer {
@@ -429,20 +425,22 @@
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
 
-        // SUPABASE VERİ ÇEKME İŞLEMİ (TÜM TAKIM ÜYELERİ GÖREBİLİR)
+        // SUPABASE VERİ ÇEKME (TÜM TAKIM ÜYELERİ VE KAPTANLAR İÇİN)
         document.addEventListener('DOMContentLoaded', async () => {
             const emptyState = document.getElementById('empty-state');
             const activeState = document.getElementById('active-state');
 
             try {
-                // auth.js dosyasında window.supabase eklendiği için artık hata vermeyecek
-                if (!window.supabase) {
-                    console.error("Supabase bağlantısı bulunamadı. Lütfen auth.js içine 'window.supabase = supabase;' ekleyin.");
+                // Hata tespiti sonrası düzeltilen bağlantı yapısı: window._supabase
+                const db = window._supabase || window.supabaseClient;
+                
+                if (!db) {
+                    console.error("Supabase bağlantısı (window._supabase) bulunamadı! auth.js kontrol edin.");
                     return;
                 }
 
                 // 1. Kullanıcı Oturum Kontrolü
-                const { data: { session }, error: sessionErr } = await window.supabase.auth.getSession();
+                const { data: { session }, error: sessionErr } = await db.auth.getSession();
                 
                 if (sessionErr || !session) {
                     emptyState.style.display = 'flex'; 
@@ -452,83 +450,81 @@
                 const userId = session.user.id;
                 let appId = null;
 
-                // 2. KAPTAN KONTROLÜ (Giriş yapan kişi takımı kuran kişi mi?)
-                const { data: capData } = await window.supabase
+                // 2. ÖNCE KAPTAN MI DİYE KONTROL EDİYORUZ
+                const { data: capData } = await db
                     .from('tournament_applications')
                     .select('id')
-                    .eq('captain_id', userId)
-                    .maybeSingle();
+                    .eq('captain_id', userId);
                     
-                if (capData) {
-                    appId = capData.id;
+                if (capData && capData.length > 0) {
+                    appId = capData[0].id;
                 } else {
-                    // 3. ÜYE KONTROLÜ (Kaptan değilse, davetle katılan bir oyuncu mu?)
-                    const { data: memData } = await window.supabase
+                    // 3. KAPTAN DEĞİLSE, ÜYELİĞİ (DAVETİ) VAR MI? (Sadece Kaptan değil, takımın tüm üyeleri görsün)
+                    const { data: memData } = await db
                         .from('application_members')
                         .select('application_id')
                         .eq('user_id', userId)
-                        .neq('status', 'rejected')
-                        .maybeSingle();
+                        .neq('status', 'rejected');
 
-                    if (memData) {
-                        appId = memData.application_id;
+                    if (memData && memData.length > 0) {
+                        appId = memData[0].application_id;
                     }
                 }
 
-                // HİÇBİR TAKIM BULUNAMADIYSA (Ne kaptan ne de üye)
+                // HİÇBİR TAKIMI VEYA ÜYELİĞİ YOKSA (Ne kaptan ne de davetli)
                 if (!appId) {
                     emptyState.style.display = 'flex';
                     return;
                 }
 
-                // 4. TAKIM BULUNDU! Şimdi takım bilgilerini çekiyoruz
-                const { data: teamData, error: teamErr } = await window.supabase
+                // 4. TAKIM BİLGİLERİNİ ÇEKİYORUZ
+                const { data: teamData, error: teamErr } = await db
                     .from('tournament_applications')
                     .select('team_name, team_tag, captain_id')
-                    .eq('id', appId)
-                    .single();
+                    .eq('id', appId);
 
-                if (teamErr || !teamData) {
+                if (teamErr || !teamData || teamData.length === 0) {
                     emptyState.style.display = 'flex';
                     return;
                 }
                 
-                // GÖRÜNÜMÜ AKTİF ET
+                const team = teamData[0];
+                
+                // BOŞ EKRANI GİZLE, TURNUVA KARTINI GÖSTER
                 emptyState.style.display = 'none';
                 activeState.style.display = 'block'; 
 
-                document.getElementById('display-team-name').innerText = teamData.team_name || "İsimsiz Takım";
-                document.getElementById('display-team-tag').innerText = teamData.team_tag ? `[${teamData.team_tag}]` : "[-]";
+                document.getElementById('display-team-name').innerText = team.team_name || "İsimsiz Takım";
+                document.getElementById('display-team-tag').innerText = team.team_tag ? `[${team.team_tag}]` : "[-]";
 
                 const rosterContainer = document.getElementById('display-roster');
                 rosterContainer.innerHTML = ''; 
 
-                // 5. TÜM ÜYELERİ (VE KAPTANI) EKRANA BAS
-                const { data: members } = await window.supabase
+                // 5. TÜM ÜYELERİ VE PROFİLLERİ ÇEKİP LİSTEYE BASIYORUZ
+                const { data: members } = await db
                     .from('application_members')
                     .select('role, user_id')
                     .eq('application_id', appId)
                     .neq('status', 'rejected');
 
-                // Kaptanın ID'sini de listeye ekleyelim ki tüm kadroyu profiller tablosundan tek seferde çekelim
+                // Üyelerin ID'leri (Kaptanı da dahil edelim ki tüm profilleri tek seferde çekebilelim)
                 let userIds = members ? members.map(m => m.user_id) : [];
-                if (!userIds.includes(teamData.captain_id)) {
-                    userIds.push(teamData.captain_id);
+                if (!userIds.includes(team.captain_id)) {
+                    userIds.push(team.captain_id);
                 }
 
-                // Profilleri çek
-                const { data: profiles } = await window.supabase
+                const { data: profiles } = await db
                     .from('profiles')
                     .select('id, username, avatar_url')
                     .in('id', userIds);
 
                 if (profiles) {
-                    // Önce Kaptanı (Takım Liderini) en üste yazdır
-                    const captainProfile = profiles.find(p => p.id === teamData.captain_id);
+                    // 5a. Önce Lideri (Kaptanı) havalı bir şekilde en üste yazdır
+                    const captainProfile = profiles.find(p => p.id === team.captain_id);
                     if (captainProfile) {
                         const avatar = captainProfile.avatar_url || `https://ui-avatars.com/api/?name=${captainProfile.username}&background=random`;
                         rosterContainer.insertAdjacentHTML('beforeend', `
-                            <div class="roster-item" style="border-left-color: var(--neon-mor);">
+                            <div class="roster-item" style="border-left-color: var(--neon-mor); background: rgba(96, 29, 194, 0.15);">
                                 <div class="roster-user">
                                     <img src="${avatar}" alt="Kaptan">
                                     <span class="nick">${captainProfile.username}</span>
@@ -538,10 +534,10 @@
                         `);
                     }
 
-                    // Sonra diğer takım üyelerini yazdır
+                    // 5b. Ardından diğer takım üyelerini (Asil/Yedek) sırala
                     if (members) {
                         members.forEach(member => {
-                            if (member.user_id === teamData.captain_id) return; // Kaptanı zaten yazdık, atla
+                            if (member.user_id === team.captain_id) return; // Kaptanı atla, onu üstte yazdık
                             
                             const p = profiles.find(pr => pr.id === member.user_id);
                             const username = p ? p.username : "Bilinmeyen";
@@ -562,7 +558,7 @@
                 }
 
             } catch (error) {
-                console.error("Bağlantı Hatası:", error);
+                console.error("Veri çekme sırasında beklenmeyen hata:", error);
                 emptyState.style.display = 'flex';
             }
         });
