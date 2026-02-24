@@ -9,7 +9,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Takım Kaydı | OBB E-SPOR</title>
+    <title>Turnuva Başvurusu | OBB E-SPOR</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -244,7 +244,6 @@
     <script src="bildirimler.js"></script>
     
     <script>
-        // auth.js zaten supabase bağlantısını hallettiği için burada sadece standart "supabase" objesini kullanıyoruz.
         let currentUser = null;
         let currentDraftId = null; 
         let teamCaptainId = null;
@@ -268,6 +267,7 @@
 
         async function init() {
             try {
+                // Burada global atanmış supabase nesnesini kullanıyoruz
                 const { data: { user }, error: authError } = await supabase.auth.getUser();
                 if (authError || !user) { window.location.href = 'kayit.html'; return; }
                 currentUser = user;
@@ -513,6 +513,7 @@
                                              .map(el => el.getAttribute('data-user-id'))
                                              .filter(id => id && id.trim() !== "");
 
+                    // Supabase üzerinden arama yapıyoruz
                     const { data, error } = await supabase.from('profiles')
                                                     .select('username, id, team_id')
                                                     .ilike('username', `%${query}%`)
