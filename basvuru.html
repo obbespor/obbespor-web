@@ -134,8 +134,6 @@
             .main-content { padding: 40px 5%; }
             .action-btns { flex-direction: column; }
             #pendingBtnGroup { flex-direction: column; } 
-            
-            /* KESİLMEYİ ENGELLEYEN MOBİL KODLARI */
             .auth-card { overflow: visible !important; height: auto !important; }
             .form-container { overflow: visible !important; }
         }
@@ -244,10 +242,10 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
     <script src="bildirimler.js"></script>
     
     <script>
-        // Orijinal Supabase Bağlantısı Geri Getirildi
         const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -312,6 +310,8 @@
             for(let i=1; i<=5; i++) mHtml += createInputHTML(i, false);
             for(let i=1; i<=2; i++) sHtml += createInputHTML(i, true);
             mDiv.innerHTML = mHtml; sDiv.innerHTML = sHtml;
+            
+            // Arama motorunu başlat (HATA BURADAYDI, ARTIK DÜZELTİLDİ)
             attachSearchEvents();
         }
 
@@ -497,10 +497,10 @@
             }
         }
 
-        // --- ORİJİNAL ÇALIŞAN ARAMA FONKSİYONU GERİ YÜKLENDİ ---
         function attachSearchEvents() {
-            if (!isCaptain) return;
-
+            // HATA BURADAYDI: if (!isCaptain) return; diyerek arama motorunu kökten kapatıyordum. 
+            // O kısıtlamayı sildim, onun yerine aşağıda yazarken kontrol ediyoruz.
+            
             document.querySelectorAll('.player-search').forEach(input => {
                 input.addEventListener('blur', function() {
                     setTimeout(() => {
@@ -512,6 +512,9 @@
                 });
 
                 input.addEventListener('input', async function() {
+                    // Kaptan değilse işlem yapma (Burada olması daha güvenli)
+                    if (!isCaptain) return;
+
                     const query = this.value;
                     const list = document.getElementById(this.id + '-list');
                     list.innerHTML = '';
@@ -521,13 +524,16 @@
                                              .map(el => el.getAttribute('data-user-id'))
                                              .filter(id => id && id.trim() !== "");
 
-                    // Eski çalışan sorgu yapısı
-                    const { data } = await _supabase.from('profiles')
+                    // ORİJİNAL ÇALIŞAN ARAMA SORGUSU
+                    const { data, error } = await _supabase.from('profiles')
                                                     .select('username, id')
                                                     .ilike('username', `%${query}%`)
                                                     .is('team_id', null)
                                                     .limit(15); 
                     
+                    if (error) {
+                        console.error("Arama Hatası:", error);
+                    }
                     if (!data) return;
 
                     const filteredPlayers = data.filter(u => !selectedIds.includes(u.id)).slice(0, 5);
