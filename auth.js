@@ -21,6 +21,9 @@ async function checkUserStatus() {
         
         if (user) {
             updateNavbarWithUser(user);
+            
+            // YENİ: Kullanıcı giriş yaptıysa GLOBAL DAVET SİSTEMİNİ başlat
+            initGlobalInviteSystem(user.id);
         }
     } catch (err) {
         console.error("Auth kontrolü sırasında hata:", err);
@@ -58,4 +61,71 @@ async function logoutAction() {
     } else {
         console.error("Çıkış hatası:", error.message);
     }
+}
+
+/* ===================================================================
+   YENİ: GLOBAL DAVET VE BİLDİRİM SİSTEMİ (HER SAYFADA ÇALIŞIR)
+   =================================================================== */
+async function initGlobalInviteSystem(userId) {
+    // DURUM 1: Oyuncu çevrimdışıyken davet atılmış ve siteye yeni girmiş (veya sayfayı yenilemiş)
+    const { data: pendingInvites } = await supabase
+        .from('application_members')
+        .select('id, tournament_applications(team_name)')
+        .eq('user_id', userId)
+        .eq('status', 'pending');
+
+    if (pendingInvites && pendingInvites.length > 0) {
+        // Spam koruması: Hangi bildirimleri zaten gösterdiğimizi oturum hafızasında tutuyoruz
+        let alertedInvites = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
+        let newAlertsFound = false;
+
+        pendingInvites.forEach(invite => {
+            if (!alertedInvites.includes(invite.id)) {
+                const teamName = invite.tournament_applications?.team_name || "Bir takım";
+                // bildirimler.js dosyasındaki global fonksiyonu çağırıyoruz
+                if (typeof showNotification === "function") {
+                    showNotification(`🔔 ${teamName} takımından davet aldın! Yanıtlamak için profiline git.`, "info", 6000);
+                }
+                alertedInvites.push(invite.id);
+                newAlertsFound = true;
+            }
+        });
+
+        // Yeni bildirim gösterdiysek hafızayı güncelle
+        if (newAlertsFound) {
+            sessionStorage.setItem('alertedInvites', JSON.stringify(alertedInvites));
+        }
+    }
+
+    // DURUM 2: Oyuncu zaten sitede geziyor (Aktif) ve o an bir kaptan onu davet ediyor
+    supabase.channel('global-invite-listener')
+        .on('postgres_changes', {
+            event: 'INSERT', // Sadece yeni bir davet EKLENDİĞİNDE tetiklenir
+            schema: 'public',
+            table: 'application_members',
+            filter: `user_id=eq.${userId}`
+        }, async (payload) => {
+            
+            // Gelen veride takım adı yok, sadece ID var. Takım adını öğrenmek için hızlı bir sorgu atıyoruz:
+            const appId = payload.new.application_id;
+            const { data: teamData } = await supabase
+                .from('tournament_applications')
+                .select('team_name')
+                .eq('id', appId)
+                .single();
+
+            const teamName = teamData ? teamData.team_name : "Bir takım";
+            
+            // Aktif anlık bildirimi gönder
+            if (typeof showNotification === "function") {
+                showNotification(`🔔 YENİ DAVET: ${teamName} seni takımına çağırıyor! Hemen profiline göz at.`, "success", 8000);
+            }
+
+            // Sayfa yenilenirse aynı bildirimi tekrar görmemesi için hafızaya kaydet
+            let alertedInvites = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
+            alertedInvites.push(payload.new.id);
+            sessionStorage.setItem('alertedInvites', JSON.stringify(alertedInvites));
+            
+        })
+        .subscribe();
 }
