@@ -79,8 +79,8 @@
         .stat-value { display: block; font-size: 24px; font-weight: 900; color: var(--neon-mor); }
         .stat-label { font-size: 12px; color: var(--gri-yazi); text-transform: uppercase; font-weight: bold; }
 
-        /* --- BİLDİRİM PANELİ --- */
-        .notifications-section { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 30px; display: none; animation: menuFadeIn 0.4s ease-out; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        /* --- BİLDİRİM PANELİ (Güncellendi: display: none; kaldırıldı) --- */
+        .notifications-section { display: block; background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 30px; animation: menuFadeIn 0.4s ease-out; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .notifications-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #222; padding-bottom: 15px; margin-bottom: 20px; }
         .notifications-header h3 { font-size: 18px; color: white; }
         .notifications-header h3 i { color: var(--neon-mor); margin-right: 8px; }
@@ -354,7 +354,7 @@
             }
         });
 
-        // --- BİLDİRİM VE SİNYAL SİSTEMİ ---
+        // --- BİLDİRİM VE SİNYAL SİSTEMİ (GÜNCELLENDİ) ---
         async function loadInvitations() {
             const { data, error } = await supabase
                 .from('application_members')
@@ -367,8 +367,8 @@
             const badge = document.getElementById('notifBadge');
             notifList.innerHTML = '';
 
+            // Davet varsa listele
             if (data && data.length > 0) {
-                notifSection.style.display = 'block';
                 badge.innerText = data.length;
                 data.forEach(invite => {
                     const team = invite.tournament_applications;
@@ -389,7 +389,15 @@
                     notifList.appendChild(div);
                 });
             } else {
-                notifSection.style.display = 'none';
+                // YENİ: Davet yoksa paneli gizleme, boş mesajını göster
+                badge.innerText = "0";
+                notifList.innerHTML = `
+                    <div class="notif-item" style="justify-content: center; text-align: center; border-left: 4px solid #333;">
+                        <div class="notif-text" style="color: #777; font-style: italic;">
+                            Şu anda bekleyen bir takım davetiniz bulunmuyor.
+                        </div>
+                    </div>
+                `;
             }
         }
 
