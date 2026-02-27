@@ -2,20 +2,19 @@
 <html lang="tr">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-9VH0LHNCS3');
-</script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-9VH0LHNCS3');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kayıt Ol | OBB E-SPOR</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* --- 1. TEMEL AYARLAR (DEĞİŞMEDİ) --- */
+        /* --- 1. TEMEL AYARLAR --- */
         :root {
             --ana-siyah: #000000;
             --nav-bg: #000000;
@@ -109,117 +108,28 @@
             footer { padding: 60px 8% 30px; }
             .auth-side-image { display: none; }
         }
-    /* --- PRO OYUNCU MENÜSÜ VE SABİTLEME FİXİ --- */
-.user-dropdown {
-    position: relative;
-    display: inline-block;
-}
 
-.dropdown-trigger {
-    background: rgba(96, 29, 194, 0.1);
-    border: 1px solid var(--neon-mor);
-    padding: 8px 18px;
-    border-radius: 50px;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: 0.3s;
-    font-family: 'Poppins', sans-serif;
-    z-index: 1001;
-}
-
-.dropdown-trigger:hover {
-    box-shadow: 0 0 15px rgba(96, 29, 194, 0.4);
-    background: rgba(96, 29, 194, 0.2);
-}
-
-.user-name-text {
-    font-weight: 800;
-    font-size: 13px;
-    letter-spacing: 1px;
-}
-
-.arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
-
-/* Menü İçeriği */
-.dropdown-content {
-    display: none;
-    position: absolute;
-    right: 0;
-    /* Butona tam sıfırladık, aradaki boşluk kapandı */
-    top: 100%; 
-    background: #0d0d0d;
-    min-width: 200px;
-    border: 1px solid var(--neon-mor);
-    border-radius: 12px;
-    padding: 5px 0;
-    z-index: 9999;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.9);
-    animation: menuFadeIn 0.2s ease-out;
-}
-
-/* KAPANMA SORUNUNU ÇÖZEN GÖRÜNMEZ KÖPRÜ */
-/* Fare butondan menüye geçerken bu alan üzerinden geçtiği için menü açık kalır */
-.dropdown-content::before {
-    content: "";
-    position: absolute;
-    top: -20px; 
-    left: 0;
-    width: 100%;
-    height: 20px;
-    background: transparent;
-}
-
-.dropdown-content a {
-    color: #fff;
-    padding: 12px 20px;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    font-weight: 500;
-    transition: 0.2s;
-}
-
-.dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
-
-.dropdown-content a:hover { 
-    background: rgba(96, 29, 194, 0.2); 
-    color: var(--neon-mor); 
-    padding-left: 25px; /* Şık bir kayma efekti */
-}
-
-/* Hover Kontrolleri */
-.user-dropdown:hover .dropdown-content { display: block; }
-.user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
-
-.logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
-.logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
-
-/* Animasyon */
-@keyframes menuFadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* --- MOBİL UYUMLULUK --- */
-@media (max-width: 768px) {
-    .user-name-text, .arrow-icon { display: none; } 
-    .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
-    .dropdown-content { 
-        position: fixed; 
-        right: 15px; 
-        top: 75px; 
-        width: 180px; 
-    }
-}
-.logout-minimal-btn:hover {
-    transform: scale(1.2);
-    color: #ff0000;
-}
+        /* --- PRO OYUNCU MENÜSÜ --- */
+        .user-dropdown { position: relative; display: inline-block; }
+        .dropdown-trigger { background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor); padding: 8px 18px; border-radius: 50px; color: white; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; font-family: 'Poppins', sans-serif; z-index: 1001; }
+        .dropdown-trigger:hover { box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); background: rgba(96, 29, 194, 0.2); }
+        .user-name-text { font-weight: 800; font-size: 13px; letter-spacing: 1px; }
+        .arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: #0d0d0d; min-width: 200px; border: 1px solid var(--neon-mor); border-radius: 12px; padding: 5px 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9); animation: menuFadeIn 0.2s ease-out; }
+        .dropdown-content::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
+        .dropdown-content a { color: #fff; padding: 12px 20px; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; transition: 0.2s; }
+        .dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
+        .dropdown-content a:hover { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); padding-left: 25px; }
+        .user-dropdown:hover .dropdown-content { display: block; }
+        .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
+        .logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
+        .logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 768px) {
+            .user-name-text, .arrow-icon { display: none; } 
+            .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
+            .dropdown-content { position: fixed; right: 15px; top: 75px; width: 180px; }
+        }
     </style>
 </head>
 <body>
@@ -314,9 +224,13 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="bildirimler.js"></script> <script>
-        // 1. Supabase Bağlantısı
-        // 2. Auth Toggle Fonksiyonu (Tasarımı yönetir)
+    
+    <script src="auth.js"></script>
+    
+    <script src="bildirimler.js"></script> 
+    
+    <script>
+        // --- 2. Auth Toggle Fonksiyonu ---
         function toggleAuth() {
             const header = document.querySelector('#authHeader h1');
             const subtext = document.getElementById('authSubtext');
@@ -351,7 +265,7 @@
             }
         }
 
-        // 3. Form Gönderimi (Veritabanı İşlemi)
+        // --- 3. Form Gönderimi (Veritabanı İşlemi) ---
         const authForm = document.getElementById('authForm');
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -368,13 +282,14 @@
                 // Kayıt Olma
                 const confirmPass = document.getElementById('confirmPass').value;
                 if (password !== confirmPass) {
-                    showNotification("Şifreler uyuşmuyor!", "error"); // ALERT DEĞİŞTİRİLDİ
+                    showNotification("Şifreler uyuşmuyor!", "error");
                     submitBtn.disabled = false;
                     submitBtn.innerText = "HESABI OLUŞTUR";
                     return;
                 }
 
-                const { data, error } = await _supabase.auth.signUp({
+                // DÜZELTİLEN KISIM BURASI (_supabase yerine supabase)
+                const { data, error } = await supabase.auth.signUp({
                     email: email,
                     password: password,
                     options: {
@@ -386,25 +301,27 @@
                 });
 
                 if (error) {
-                    showNotification("Kayıt hatası: " + error.message, "error"); // ALERT DEĞİŞTİRİLDİ
+                    showNotification("Kayıt hatası: " + error.message, "error");
                 } else {
-                    showNotification("Kayıt başarılı! Lütfen e-postanı kontrol et.", "success"); // ALERT DEĞİŞTİRİLDİ
+                    showNotification("Kayıt başarılı! Giriş yapabilirsiniz.", "success");
+                    // Kayıt başarılıysa otomatik giriş sayfasına atalım
+                    setTimeout(() => toggleAuth(), 1500); 
                 }
 
             } else {
-                // Giriş Yapma
-                const { data, error } = await _supabase.auth.signInWithPassword({
+                // Giriş Yapma - DÜZELTİLEN KISIM BURASI
+                const { data, error } = await supabase.auth.signInWithPassword({
                     email: email,
                     password: password,
                 });
 
                 if (error) {
-                    showNotification("Giriş başarısız: " + error.message, "error"); // ALERT DEĞİŞTİRİLDİ
+                    showNotification("Giriş başarısız: Bilgilerinizi kontrol edin.", "error");
                 } else {
-                    showNotification("Giriş yapıldı! Başarılar dileriz.", "success"); // ALERT DEĞİŞTİRİLDİ
+                    showNotification("Giriş yapıldı! Başarılar dileriz.", "success");
                     setTimeout(() => {
                         window.location.href = "index.html";
-                    }, 1000); // Bildirimi görmesi için 1 saniye bekle
+                    }, 1000);
                 }
             }
 
@@ -422,7 +339,5 @@
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
     </script>
-    <script src="auth.js"></script>
 </body>
 </html>
-
