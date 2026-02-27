@@ -247,9 +247,12 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="auth.js"></script>
+    
     <script src="bildirimler.js"></script> 
+    
     <script>
-
         let currentUser = null;
 
         // --- HEADER SCROLL ---
@@ -263,13 +266,14 @@
         }, false);
 
         async function handleLogout() {
-            await _supabase.auth.signOut();
+            await supabase.auth.signOut();
             window.location.href = 'kayit.html';
         }
 
         // --- INIT PROFILE ---
         async function initProfile() {
-            const { data: { user } } = await _supabase.auth.getUser();
+            // auth.js'den gelen "supabase" kullanılıyor
+            const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
                 document.getElementById('profileNameDisplay').innerText = "GİRİŞ YAPILMADI";
                 document.getElementById('userBio').innerText = "Lütfen giriş yapın.";
@@ -293,11 +297,11 @@
 
             await loadProfileData();
             await loadInvitations();
-            subscribeToInvites(); // Gerçek zamanlı dinleyiciyi başlat
+            subscribeToInvites(); 
         }
 
         async function loadProfileData() {
-            const { data, error } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+            const { data, error } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
             if (data) {
                 if(data.username) document.getElementById('profileNameDisplay').innerText = data.username.toUpperCase();
                 if(data.bio) document.getElementById('userBio').innerText = data.bio;
@@ -325,21 +329,18 @@
 
             try {
                 const fileExt = file.name.split('.').pop();
-                
-                // --- DOSYA ADI KULLANICI ID'SİNE SABİTLENDİ ---
                 const fileName = `avatar-${currentUser.id}.${fileExt}`;
                 const filePath = `${currentUser.id}/${fileName}`;
 
-                // --- UPSERT: TRUE EKLENDİ ---
-                const { error: uploadError } = await _supabase.storage
+                const { error: uploadError } = await supabase.storage
                     .from('avatars')
                     .upload(filePath, file, { cacheControl: '3600', upsert: true });
 
                 if (uploadError) throw uploadError;
 
-                const { data } = _supabase.storage.from('avatars').getPublicUrl(filePath);
+                const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
                 
-                const { error: updateError } = await _supabase
+                const { error: updateError } = await supabase
                     .from('profiles')
                     .update({ avatar_url: data.publicUrl })
                     .eq('id', currentUser.id);
@@ -355,7 +356,7 @@
 
         // --- BİLDİRİM VE SİNYAL SİSTEMİ ---
         async function loadInvitations() {
-            const { data, error } = await _supabase
+            const { data, error } = await supabase
                 .from('application_members')
                 .select(`id, role, tournament_applications ( team_name, team_tag )`)
                 .eq('user_id', currentUser.id)
@@ -395,13 +396,13 @@
         async function respondInvite(memberId, action, teamName) {
             try {
                 if (action === 'accepted') {
-                    const { error } = await _supabase.from('application_members').update({ status: 'accepted' }).eq('id', memberId);
+                    const { error } = await supabase.from('application_members').update({ status: 'accepted' }).eq('id', memberId);
                     if (!error) {
                         localStorage.setItem('teamInviteSignal', JSON.stringify({ id: memberId, status: 'accepted', timestamp: Date.now() }));
                         showNotification(`${teamName} takımının davetini kabul ettin.`, "success");
                     }
                 } else {
-                    await _supabase.from('application_members').delete().eq('id', memberId);
+                    await supabase.from('application_members').delete().eq('id', memberId);
                     localStorage.setItem('teamInviteSignal', JSON.stringify({ id: memberId, status: 'rejected', timestamp: Date.now() }));
                     showNotification(`${teamName} takımının davetini reddettin.`, "error");
                 }
@@ -411,7 +412,7 @@
         }
 
         function subscribeToInvites() {
-            _supabase.channel('custom-invites-channel')
+            supabase.channel('custom-invites-channel')
                 .on('postgres_changes', { 
                     event: '*', schema: 'public', table: 'application_members', filter: `user_id=eq.${currentUser.id}` 
                 }, (payload) => {
@@ -424,7 +425,7 @@
             const newBio = prompt("Profil açıklamanızı güncelleyin:", bioEl.innerText);
             if (newBio !== null) {
                 bioEl.innerText = newBio.trim() || "Açıklama bulunmuyor.";
-                await _supabase.from('profiles').update({ bio: newBio.trim() }).eq('id', currentUser.id);
+                await supabase.from('profiles').update({ bio: newBio.trim() }).eq('id', currentUser.id);
                 showNotification("Açıklamanız güncellendi.", "info");
             }
         }
@@ -439,7 +440,7 @@
                 img.onclick = async function() { 
                     document.getElementById('currentBanner').style.backgroundImage = `url('${this.src}')`;
                     closeBannerModal();
-                    await _supabase.from('profiles').update({ banner_url: this.src }).eq('id', currentUser.id);
+                    await supabase.from('profiles').update({ banner_url: this.src }).eq('id', currentUser.id);
                     showNotification("Kapak resmi güncellendi.", "success");
                 };
                 grid.appendChild(img);
