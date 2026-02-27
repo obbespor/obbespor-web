@@ -247,7 +247,8 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="bildirimler.js"></script> <script>
+    <script src="bildirimler.js"></script> 
+    <script>
         const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -312,13 +313,13 @@
             }
         }
 
-        // --- AVATAR YÜKLEME ---
+        // --- GÜNCELLENEN AVATAR YÜKLEME KODU (YÖNTEM 2) ---
         document.getElementById('avatarUpload').addEventListener('change', async function(e) {
             const file = e.target.files[0];
             if (!file) return;
 
             if (file.size / 1024 / 1024 > 2) {
-                return showNotification("Fotoğraf çok büyük! (Max 2MB)", "error"); // ALERT DEĞİŞTİRİLDİ
+                return showNotification("Fotoğraf çok büyük! (Max 2MB)", "error");
             }
 
             const preview = document.getElementById('userAvatar');
@@ -326,9 +327,12 @@
 
             try {
                 const fileExt = file.name.split('.').pop();
-                const fileName = `avatar-${Date.now()}.${fileExt}`;
+                
+                // --- DOSYA ADI KULLANICI ID'SİNE SABİTLENDİ ---
+                const fileName = `avatar-${currentUser.id}.${fileExt}`;
                 const filePath = `${currentUser.id}/${fileName}`;
 
+                // --- UPSERT: TRUE EKLENDİ ---
                 const { error: uploadError } = await _supabase.storage
                     .from('avatars')
                     .upload(filePath, file, { cacheControl: '3600', upsert: true });
@@ -344,9 +348,9 @@
 
                 if (updateError) throw updateError;
                 
-                showNotification("Profil fotoğrafı başarıyla güncellendi!", "success"); // ALERT DEĞİŞTİRİLDİ
+                showNotification("Profil fotoğrafı başarıyla güncellendi!", "success");
             } catch (err) {
-                showNotification("Fotoğraf yüklenirken hata oluştu.", "error"); // ALERT DEĞİŞTİRİLDİ
+                showNotification("Fotoğraf yüklenirken hata oluştu.", "error");
                 console.error(err);
             }
         });
@@ -396,12 +400,12 @@
                     const { error } = await _supabase.from('application_members').update({ status: 'accepted' }).eq('id', memberId);
                     if (!error) {
                         localStorage.setItem('teamInviteSignal', JSON.stringify({ id: memberId, status: 'accepted', timestamp: Date.now() }));
-                        showNotification(`${teamName} takımının davetini kabul ettin.`, "success"); // YENİ BİLDİRİM
+                        showNotification(`${teamName} takımının davetini kabul ettin.`, "success");
                     }
                 } else {
                     await _supabase.from('application_members').delete().eq('id', memberId);
                     localStorage.setItem('teamInviteSignal', JSON.stringify({ id: memberId, status: 'rejected', timestamp: Date.now() }));
-                    showNotification(`${teamName} takımının davetini reddettin.`, "error"); // YENİ BİLDİRİM
+                    showNotification(`${teamName} takımının davetini reddettin.`, "error");
                 }
                 
                 await loadInvitations();
@@ -423,7 +427,7 @@
             if (newBio !== null) {
                 bioEl.innerText = newBio.trim() || "Açıklama bulunmuyor.";
                 await _supabase.from('profiles').update({ bio: newBio.trim() }).eq('id', currentUser.id);
-                showNotification("Açıklamanız güncellendi.", "info"); // YENİ BİLDİRİM
+                showNotification("Açıklamanız güncellendi.", "info");
             }
         }
 
@@ -438,7 +442,7 @@
                     document.getElementById('currentBanner').style.backgroundImage = `url('${this.src}')`;
                     closeBannerModal();
                     await _supabase.from('profiles').update({ banner_url: this.src }).eq('id', currentUser.id);
-                    showNotification("Kapak resmi güncellendi.", "success"); // YENİ BİLDİRİM
+                    showNotification("Kapak resmi güncellendi.", "success");
                 };
                 grid.appendChild(img);
             }
