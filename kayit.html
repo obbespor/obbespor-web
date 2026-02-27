@@ -316,10 +316,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="bildirimler.js"></script> <script>
         // 1. Supabase Bağlantısı
-        const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
         // 2. Auth Toggle Fonksiyonu (Tasarımı yönetir)
         function toggleAuth() {
             const header = document.querySelector('#authHeader h1');
@@ -429,3 +425,4 @@
     <script src="auth.js"></script>
 </body>
 </html>
+
