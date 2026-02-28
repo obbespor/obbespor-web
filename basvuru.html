@@ -367,44 +367,47 @@
                     document.getElementById('teamForm').style.display = 'block';
                     startCountdown();
                 }
-                return; 
+                return; // Kaptan olduğu için burada işlemi bitir
             }
 
             // 2. ADIM: KULLANICI KAPTAN DEĞİLSE, BAŞKA TAKIMA OYUNCU OLARAK KATILMIŞ MI?
+            // Supabase Join sorunlarını aşmak için iki aşamalı kesin sorgu yapıyoruz.
             const { data: memberships } = await _supabase.from('application_members')
-                .select('application_id, tournament_applications(status)')
+                .select('application_id')
                 .eq('user_id', currentUser.id)
                 .eq('status', 'accepted');
 
-            let activePlayerTeam = null;
             if (memberships && memberships.length > 0) {
-                activePlayerTeam = memberships.find(m => {
-                    const tApp = Array.isArray(m.tournament_applications) ? m.tournament_applications[0] : m.tournament_applications;
-                    return tApp && (tApp.status === 'draft' || tApp.status === 'pending');
-                });
-            }
+                const appIds = memberships.map(m => m.application_id);
 
-            if (activePlayerTeam) {
-                // --- KULLANICI SADECE OYUNCU ---
-                document.getElementById('teamForm').style.display = 'none';
-                document.getElementById('draftInfoBox').style.display = 'none';
-                document.getElementById('pendingScreen').style.display = 'block';
+                const { data: activeTeams } = await _supabase.from('tournament_applications')
+                    .select('*')
+                    .in('id', appIds)
+                    .neq('captain_id', currentUser.id)
+                    .in('status', ['draft', 'pending']);
 
-                const editBtn = document.getElementById('editDraftBtn');
-                if (editBtn) editBtn.style.display = 'none';
-                
-                const editInfo = document.querySelector('#pendingScreen p');
-                if (editInfo) editInfo.style.display = 'none';
+                if (activeTeams && activeTeams.length > 0) {
+                    const activePlayerTeam = activeTeams[0];
 
-                const tApp = Array.isArray(activePlayerTeam.tournament_applications) ? activePlayerTeam.tournament_applications[0] : activePlayerTeam.tournament_applications;
-                const pendingTitle = document.querySelector('#pendingScreen h3');
-                
-                if (tApp.status === 'draft') {
-                    if(pendingTitle) pendingTitle.innerText = "Takım kaptanınızın başvuruyu tamamlaması bekleniyor.";
-                } else {
-                    if(pendingTitle) pendingTitle.innerText = "Takım başvurunuz turnuva yöneticileri tarafından inceleniyor.";
+                    // --- KULLANICI SADECE OYUNCU ---
+                    document.getElementById('teamForm').style.display = 'none';
+                    document.getElementById('draftInfoBox').style.display = 'none';
+                    document.getElementById('pendingScreen').style.display = 'block';
+
+                    const editBtn = document.getElementById('editDraftBtn');
+                    if (editBtn) editBtn.style.display = 'none';
+                    
+                    const editInfo = document.querySelector('#pendingScreen p');
+                    if (editInfo) editInfo.style.display = 'none';
+
+                    const pendingTitle = document.querySelector('#pendingScreen h3');
+                    if (activePlayerTeam.status === 'draft') {
+                        if(pendingTitle) pendingTitle.innerText = "Takım kaptanınızın başvuruyu tamamlaması bekleniyor.";
+                    } else {
+                        if(pendingTitle) pendingTitle.innerText = "Takım başvurunuz turnuva yöneticileri tarafından inceleniyor.";
+                    }
+                    return; // Oyuncu olduğu için burada işlemi bitir, YENİ FORM OLUŞTURMASINI ENGELLİYORUZ.
                 }
-                return; 
             }
 
             // 3. ADIM: HİÇBİR TAKIMDA DEĞİLSE YENİ TASLAK OLUŞTUR
@@ -412,18 +415,20 @@
                 captain_id: currentUser.id, team_name: '', team_tag: '', status: 'draft'
             }).select().single();
             
-            currentDraftId = newDraft.id;
-            draftCreatedAt = new Date(newDraft.created_at).getTime();
-            
-            document.getElementById('draftInfoBox').style.display = 'block';
-            document.getElementById('teamForm').style.display = 'block';
-            startCountdown();
+            if (newDraft) {
+                currentDraftId = newDraft.id;
+                draftCreatedAt = new Date(newDraft.created_at).getTime();
+                
+                document.getElementById('draftInfoBox').style.display = 'block';
+                document.getElementById('teamForm').style.display = 'block';
+                startCountdown();
 
-            await _supabase.from('application_members').insert({
-                application_id: currentDraftId, user_id: currentUser.id, role: 'main', status: 'accepted'
-            });
-            
-            fillCaptainSlot(username);
+                await _supabase.from('application_members').insert({
+                    application_id: currentDraftId, user_id: currentUser.id, role: 'main', status: 'accepted'
+                });
+                
+                fillCaptainSlot(username);
+            }
         }
 
         async function enableEditMode() {
