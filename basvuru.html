@@ -9,7 +9,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Takım Kaydı | OBB E-SPOR</title>
+    <title>Takım Kaydı | BOSS E-SPOR</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -85,8 +85,8 @@
         .cancel-draft-btn { flex: 1; background: transparent; border: 1px solid var(--red-reject); color: var(--red-reject); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: bold; transition: 0.3s; text-align: center; }
         .cancel-draft-btn:hover { background: var(--red-reject); color: white; }
 
-        .edit-mode-btn { flex: 1; padding: 12px 25px; background: transparent; border: 2px solid var(--mavi-onay); color: var(--mavi-onay); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 800; transition: 0.3s; font-size: 14px; text-transform: uppercase; }
-        .edit-mode-btn:hover { background: var(--mavi-onay); color: #000; box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); transform: translateY(-2px); }
+        .edit-mode-btn { flex: 1; padding: 12px 25px; background: transparent; border: 2px solid var(--red-reject); color: var(--red-reject); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 800; transition: 0.3s; font-size: 14px; text-transform: uppercase; }
+        .edit-mode-btn:hover { background: var(--red-reject); color: #000; box-shadow: 0 0 20px rgba(255, 75, 75, 0.4); transform: translateY(-2px); }
 
         /* --- 5. FOOTER --- */
         footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 100px; }
@@ -131,7 +131,7 @@
 <body>
 
     <header class="main-nav" id="mainHeader">
-        <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
+        <a href="index.html" class="logo">BOSS <span>E-SPOR</span></a>
         <nav>
             <ul>
                 <li><a href="index.html">ANA SAYFA</a></li>
@@ -144,7 +144,7 @@
 
     <div class="main-content">
         <div class="form-container">
-            <h2 class="section-title">OBB 1.TOPLULUK <span>TURNUVASI</span> LOBİSİ</h2>
+            <h2 class="section-title">BOSS 1.TOPLULUK <span>TURNUVASI</span> LOBİSİ</h2>
             
             <div id="draftInfoBox" style="display:none; background:rgba(96,29,194,0.2); border:1px solid var(--neon-mor); padding:15px; border-radius:10px; margin-bottom:20px; font-size:13px;">
                 <i class="fas fa-info-circle" style="color:var(--neon-mor);"></i> 
@@ -154,8 +154,8 @@
 
             <div class="auth-card">
                 <div id="pendingScreen" style="display: none; padding: 20px 0; text-align: center; animation: menuFadeIn 0.4s ease-out;">
-                    <i class="fas fa-hourglass-half fa-3x" style="color: var(--mavi-onay); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--mavi-onay));"></i>
-                    <h3 style="color: var(--mavi-onay); font-size: 22px; font-weight: 800; margin-bottom: 35px; letter-spacing: 0.5px;">Başvurunuz turnuva yöneticileri tarafından inceleniyor.</h3>
+                    <i class="fas fa-hourglass-half fa-3x" style="color: var(--red-reject); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--red-reject));"></i>
+                    <h3 style="color: var(--red-reject); font-size: 22px; font-weight: 800; margin-bottom: 35px; letter-spacing: 0.5px;">Başvurunuz turnuva yöneticileri tarafından inceleniyor.</h3>
                     
                     <div id="pendingBtnGroup" style="display: flex; gap: 15px; justify-content: center; align-items: stretch;">
                         <a href="profil.html" class="save-btn" style="padding: 12px 30px; font-size: 14px; flex: unset;"><i class="fas fa-user-circle"></i> Profile Dön</a>
@@ -168,11 +168,11 @@
                     <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                         <div class="input-group" style="flex: 2; min-width: 200px;">
                             <label>Takım Adı *</label>
-                            <input type="text" id="teamName" placeholder="Örn: Team Obbe" required>
+                            <input type="text" id="teamName" placeholder="Örn: Team Boss" required>
                         </div>
                         <div class="input-group" style="flex: 1; min-width: 100px;">
                             <label>Takım Kısaltması *</label>
-                            <input type="text" id="teamTag" placeholder="OBB" required maxlength="5">
+                            <input type="text" id="teamTag" placeholder="BOSS" required maxlength="5">
                         </div>
                     </div>
 
@@ -200,7 +200,7 @@
     <footer>
         <div class="footer-grid">
             <div class="footer-brand">
-                <h2>OBB <span style="color:white">E-SPOR</span></h2>
+                <h2>BOSS <span style="color:white">E-SPOR</span></h2>
                 <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
                 <div class="social-icons">
                     <a href="#"><i class="fab fa-instagram"></i></a>
@@ -221,13 +221,13 @@
             <div class="footer-column">
                 <h3>İletişim</h3>
                 <ul>
-                    <li class="contact-item"><i class="fas fa-envelope"></i> info@obbesports.com</li>
+                    <li class="contact-item"><i class="fas fa-envelope"></i> info@bossesports.com</li>
                     <li class="contact-item"><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
                     <li class="contact-item"><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom"><p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p></div>
+        <div class="footer-bottom"><p>&copy; 2026 BOSS E-SPOR. Tüm Hakları Saklıdır.</p></div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -321,6 +321,39 @@
         }
 
         async function loadOrCreateDraft(username) {
+            // 1. KULLANICI BİR TAKIMA DAVET EDİLMİŞ VE KABUL ETMİŞ Mİ?
+            const { data: memberships } = await _supabase.from('application_members')
+                .select('application_id, tournament_applications(captain_id, status)')
+                .eq('user_id', currentUser.id)
+                .eq('status', 'accepted');
+
+            let activePlayerTeam = null;
+            if (memberships && memberships.length > 0) {
+                activePlayerTeam = memberships.find(m => 
+                    m.tournament_applications && 
+                    m.tournament_applications.captain_id !== currentUser.id && 
+                    (m.tournament_applications.status === 'draft' || m.tournament_applications.status === 'pending')
+                );
+            }
+
+            // EĞER KULLANICI SADECE OYUNCUYSA
+            if (activePlayerTeam) {
+                document.getElementById('teamForm').style.display = 'none';
+                document.getElementById('draftInfoBox').style.display = 'none';
+                document.getElementById('pendingScreen').style.display = 'block';
+
+                const editBtn = document.getElementById('editDraftBtn');
+                if (editBtn) editBtn.style.display = 'none';
+
+                if (activePlayerTeam.tournament_applications.status === 'draft') {
+                    const pendingTitle = document.querySelector('#pendingScreen h3');
+                    if (pendingTitle) pendingTitle.innerText = "Takım kaptanınızın başvuruyu tamamlaması bekleniyor.";
+                }
+
+                return; 
+            }
+
+            // 2. KULLANICI KAPTAN İSE VEYA HİÇBİR TAKIMA KATILMAMIŞSA
             const { data: drafts } = await _supabase.from('tournament_applications')
                 .select('*')
                 .eq('captain_id', currentUser.id)
@@ -342,6 +375,9 @@
                     document.getElementById('teamForm').style.display = 'none';
                     document.getElementById('draftInfoBox').style.display = 'none';
                     document.getElementById('pendingScreen').style.display = 'block';
+                    
+                    const editBtn = document.getElementById('editDraftBtn');
+                    if(editBtn) editBtn.style.display = 'inline-block';
                 } else {
                     document.getElementById('draftInfoBox').style.display = 'block';
                     document.getElementById('teamForm').style.display = 'block';
