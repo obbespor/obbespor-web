@@ -15,7 +15,16 @@
     
     <style>
         /* --- 1. TEMEL AYARLAR --- */
-        :root { --ana-siyah: #000000; --nav-bg: #000000; --neon-mor: #601dc2; --yazi-beyaz: #ffffff; --gri-yazi: #a0a0a0; --mavi-onay: #00d2ff; --red-reject: #ff4b4b; }
+        :root { 
+            --ana-siyah: #000000; 
+            --nav-bg: #000000; 
+            --neon-mor: #601dc2; 
+            --yazi-beyaz: #ffffff; 
+            --gri-yazi: #a0a0a0; 
+            --mavi-onay: #00d2ff; 
+            --yesil-guven: #00e676; /* Yeni Güven Veren Yeşil */
+            --kirmizi-iptal: #ff4b4b; /* Silme işlemleri için korunan kırmızı */
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
         body { background: radial-gradient(circle at top, #1a052d 0%, #000000 100%); background-attachment: fixed; color: var(--yazi-beyaz); font-family: 'Poppins', sans-serif; line-height: 1.6; padding-top: 80px; }
@@ -45,7 +54,7 @@
         .user-dropdown:hover .dropdown-content { display: block; }
         .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
         .logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
-        .logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
+        .logout-link:hover { color: var(--kirmizi-iptal) !important; background: rgba(255, 75, 75, 0.1) !important; }
         @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- 4. FORM TASARIMI VE İKONLAR --- */
@@ -67,8 +76,8 @@
         .status-tick.grey { display: block; color: #444; }
         .status-tick.blue { display: block; color: var(--mavi-onay); filter: drop-shadow(0 0 5px var(--mavi-onay)); }
         
-        .remove-player { position: absolute; right: 10px; font-size: 16px; color: var(--red-reject); cursor: pointer; display: none; transition: 0.3s; }
-        .remove-player:hover { transform: scale(1.2); filter: drop-shadow(0 0 5px var(--red-reject)); }
+        .remove-player { position: absolute; right: 10px; font-size: 16px; color: var(--kirmizi-iptal); cursor: pointer; display: none; transition: 0.3s; }
+        .remove-player:hover { transform: scale(1.2); filter: drop-shadow(0 0 5px var(--kirmizi-iptal)); }
 
         .autocomplete-items { position: absolute; border: 1px solid var(--neon-mor); border-top: none; z-index: 99; top: 100%; left: 0; right: 0; background-color: #0a0a0a; max-height: 200px; overflow-y: auto; border-radius: 0 0 8px 8px; }
         .autocomplete-items div { padding: 10px; cursor: pointer; border-bottom: 1px solid #222; font-size: 13px; }
@@ -82,11 +91,11 @@
         .save-btn:disabled { background: #222; color: #555; cursor: not-allowed; }
         .save-btn:hover:not(:disabled) { box-shadow: 0 0 15px var(--neon-mor); transform: translateY(-2px); }
         
-        .cancel-draft-btn { flex: 1; background: transparent; border: 1px solid var(--red-reject); color: var(--red-reject); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: bold; transition: 0.3s; text-align: center; }
-        .cancel-draft-btn:hover { background: var(--red-reject); color: white; }
+        .cancel-draft-btn { flex: 1; background: transparent; border: 1px solid var(--kirmizi-iptal); color: var(--kirmizi-iptal); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: bold; transition: 0.3s; text-align: center; }
+        .cancel-draft-btn:hover { background: var(--kirmizi-iptal); color: white; }
 
-        .edit-mode-btn { flex: 1; padding: 12px 25px; background: transparent; border: 2px solid var(--red-reject); color: var(--red-reject); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 800; transition: 0.3s; font-size: 14px; text-transform: uppercase; }
-        .edit-mode-btn:hover { background: var(--red-reject); color: #000; box-shadow: 0 0 20px rgba(255, 75, 75, 0.4); transform: translateY(-2px); }
+        .edit-mode-btn { flex: 1; padding: 12px 25px; background: transparent; border: 2px solid var(--yesil-guven); color: var(--yesil-guven); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 800; transition: 0.3s; font-size: 14px; text-transform: uppercase; }
+        .edit-mode-btn:hover { background: var(--yesil-guven); color: #000; box-shadow: 0 0 20px rgba(0, 230, 118, 0.4); transform: translateY(-2px); }
 
         /* --- 5. FOOTER --- */
         footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 100px; }
@@ -149,13 +158,13 @@
             <div id="draftInfoBox" style="display:none; background:rgba(96,29,194,0.2); border:1px solid var(--neon-mor); padding:15px; border-radius:10px; margin-bottom:20px; font-size:13px;">
                 <i class="fas fa-info-circle" style="color:var(--neon-mor);"></i> 
                 Bu form <b>canlı bir taslaktır</b>. Sayfadan çıksanız bile verileriniz 3 saat boyunca korunur. Seçtiğiniz oyunculara anında davet gider.
-                <span id="timeLeft" style="float:right; font-weight:bold; color:var(--red-reject);"></span>
+                <span id="timeLeft" style="float:right; font-weight:bold; color:var(--kirmizi-iptal);"></span>
             </div>
 
             <div class="auth-card">
                 <div id="pendingScreen" style="display: none; padding: 20px 0; text-align: center; animation: menuFadeIn 0.4s ease-out;">
-                    <i class="fas fa-hourglass-half fa-3x" style="color: var(--red-reject); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--red-reject));"></i>
-                    <h3 style="color: var(--red-reject); font-size: 22px; font-weight: 800; margin-bottom: 35px; letter-spacing: 0.5px;">Başvurunuz turnuva yöneticileri tarafından inceleniyor.</h3>
+                    <i class="fas fa-hourglass-half fa-3x" style="color: var(--yesil-guven); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--yesil-guven));"></i>
+                    <h3 style="color: var(--yesil-guven); font-size: 22px; font-weight: 800; margin-bottom: 35px; letter-spacing: 0.5px;">Başvurunuz turnuva yöneticileri tarafından inceleniyor.</h3>
                     
                     <div id="pendingBtnGroup" style="display: flex; gap: 15px; justify-content: center; align-items: stretch;">
                         <a href="profil.html" class="save-btn" style="padding: 12px 30px; font-size: 14px; flex: unset;"><i class="fas fa-user-circle"></i> Profile Dön</a>
@@ -321,86 +330,100 @@
         }
 
         async function loadOrCreateDraft(username) {
-            // 1. KULLANICI BİR TAKIMA DAVET EDİLMİŞ VE KABUL ETMİŞ Mİ?
+            // 1. ADIM: KULLANICI KENDİ KURDUĞU BİR TAKIMIN KAPTANI MI?
+            const { data: captainDrafts } = await _supabase.from('tournament_applications')
+                .select('*')
+                .eq('captain_id', currentUser.id)
+                .in('status', ['draft', 'pending']);
+
+            let captainDraft = captainDrafts && captainDrafts.length > 0 ? captainDrafts[0] : null;
+
+            if (captainDraft) {
+                // --- KULLANICI KAPTAN ---
+                currentDraftId = captainDraft.id;
+                draftCreatedAt = new Date(captainDraft.created_at).getTime();
+                
+                document.getElementById('teamName').value = captainDraft.team_name || '';
+                document.getElementById('teamTag').value = captainDraft.team_tag || '';
+                
+                fillCaptainSlot(username); 
+                await loadDraftMembers(); 
+
+                if (captainDraft.status === 'pending') {
+                    document.getElementById('teamForm').style.display = 'none';
+                    document.getElementById('draftInfoBox').style.display = 'none';
+                    document.getElementById('pendingScreen').style.display = 'block';
+                    
+                    const pendingTitle = document.querySelector('#pendingScreen h3');
+                    if(pendingTitle) pendingTitle.innerText = "Başvurunuz turnuva yöneticileri tarafından inceleniyor.";
+                    
+                    const editBtn = document.getElementById('editDraftBtn');
+                    if(editBtn) editBtn.style.display = 'inline-block';
+
+                    const editInfo = document.querySelector('#pendingScreen p');
+                    if(editInfo) editInfo.style.display = 'block';
+                } else {
+                    document.getElementById('draftInfoBox').style.display = 'block';
+                    document.getElementById('teamForm').style.display = 'block';
+                    startCountdown();
+                }
+                return; 
+            }
+
+            // 2. ADIM: KULLANICI KAPTAN DEĞİLSE, BAŞKA TAKIMA OYUNCU OLARAK KATILMIŞ MI?
             const { data: memberships } = await _supabase.from('application_members')
-                .select('application_id, tournament_applications(captain_id, status)')
+                .select('application_id, tournament_applications(status)')
                 .eq('user_id', currentUser.id)
                 .eq('status', 'accepted');
 
             let activePlayerTeam = null;
             if (memberships && memberships.length > 0) {
-                activePlayerTeam = memberships.find(m => 
-                    m.tournament_applications && 
-                    m.tournament_applications.captain_id !== currentUser.id && 
-                    (m.tournament_applications.status === 'draft' || m.tournament_applications.status === 'pending')
-                );
+                activePlayerTeam = memberships.find(m => {
+                    const tApp = Array.isArray(m.tournament_applications) ? m.tournament_applications[0] : m.tournament_applications;
+                    return tApp && (tApp.status === 'draft' || tApp.status === 'pending');
+                });
             }
 
-            // EĞER KULLANICI SADECE OYUNCUYSA
             if (activePlayerTeam) {
+                // --- KULLANICI SADECE OYUNCU ---
                 document.getElementById('teamForm').style.display = 'none';
                 document.getElementById('draftInfoBox').style.display = 'none';
                 document.getElementById('pendingScreen').style.display = 'block';
 
                 const editBtn = document.getElementById('editDraftBtn');
                 if (editBtn) editBtn.style.display = 'none';
+                
+                const editInfo = document.querySelector('#pendingScreen p');
+                if (editInfo) editInfo.style.display = 'none';
 
-                if (activePlayerTeam.tournament_applications.status === 'draft') {
-                    const pendingTitle = document.querySelector('#pendingScreen h3');
-                    if (pendingTitle) pendingTitle.innerText = "Takım kaptanınızın başvuruyu tamamlaması bekleniyor.";
+                const tApp = Array.isArray(activePlayerTeam.tournament_applications) ? activePlayerTeam.tournament_applications[0] : activePlayerTeam.tournament_applications;
+                const pendingTitle = document.querySelector('#pendingScreen h3');
+                
+                if (tApp.status === 'draft') {
+                    if(pendingTitle) pendingTitle.innerText = "Takım kaptanınızın başvuruyu tamamlaması bekleniyor.";
+                } else {
+                    if(pendingTitle) pendingTitle.innerText = "Takım başvurunuz turnuva yöneticileri tarafından inceleniyor.";
                 }
-
                 return; 
             }
 
-            // 2. KULLANICI KAPTAN İSE VEYA HİÇBİR TAKIMA KATILMAMIŞSA
-            const { data: drafts } = await _supabase.from('tournament_applications')
-                .select('*')
-                .eq('captain_id', currentUser.id)
-                .in('status', ['draft', 'pending']);
+            // 3. ADIM: HİÇBİR TAKIMDA DEĞİLSE YENİ TASLAK OLUŞTUR
+            const { data: newDraft } = await _supabase.from('tournament_applications').insert({
+                captain_id: currentUser.id, team_name: '', team_tag: '', status: 'draft'
+            }).select().single();
+            
+            currentDraftId = newDraft.id;
+            draftCreatedAt = new Date(newDraft.created_at).getTime();
+            
+            document.getElementById('draftInfoBox').style.display = 'block';
+            document.getElementById('teamForm').style.display = 'block';
+            startCountdown();
 
-            let draft = drafts && drafts.length > 0 ? drafts[0] : null;
-
-            if (draft) {
-                currentDraftId = draft.id;
-                draftCreatedAt = new Date(draft.created_at).getTime();
-                
-                document.getElementById('teamName').value = draft.team_name || '';
-                document.getElementById('teamTag').value = draft.team_tag || '';
-                
-                fillCaptainSlot(username); 
-                await loadDraftMembers(); 
-
-                if (draft.status === 'pending') {
-                    document.getElementById('teamForm').style.display = 'none';
-                    document.getElementById('draftInfoBox').style.display = 'none';
-                    document.getElementById('pendingScreen').style.display = 'block';
-                    
-                    const editBtn = document.getElementById('editDraftBtn');
-                    if(editBtn) editBtn.style.display = 'inline-block';
-                } else {
-                    document.getElementById('draftInfoBox').style.display = 'block';
-                    document.getElementById('teamForm').style.display = 'block';
-                    startCountdown();
-                }
-            } else {
-                const { data: newDraft } = await _supabase.from('tournament_applications').insert({
-                    captain_id: currentUser.id, team_name: '', team_tag: '', status: 'draft'
-                }).select().single();
-                
-                currentDraftId = newDraft.id;
-                draftCreatedAt = new Date(newDraft.created_at).getTime();
-                
-                document.getElementById('draftInfoBox').style.display = 'block';
-                document.getElementById('teamForm').style.display = 'block';
-                startCountdown();
-
-                await _supabase.from('application_members').insert({
-                    application_id: currentDraftId, user_id: currentUser.id, role: 'main', status: 'accepted'
-                });
-                
-                fillCaptainSlot(username);
-            }
+            await _supabase.from('application_members').insert({
+                application_id: currentDraftId, user_id: currentUser.id, role: 'main', status: 'accepted'
+            });
+            
+            fillCaptainSlot(username);
         }
 
         async function enableEditMode() {
