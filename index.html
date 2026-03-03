@@ -98,7 +98,7 @@
         .card-body { padding: 25px; }
         .card-body h3 { color: var(--neon-mor); margin-bottom: 12px; font-size: 20px; font-weight: 700; }
         .card-body p { color: var(--gri-yazi); font-size: 14px; line-height: 1.6; }
-        .card-link { display: inline-block; margin-top: 18px; color: var(--yazi-beyaz); text-decoration: none; font-weight: bold; font-size: 13px; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; transition: 0.3s; }
+        .card-link { display: inline-block; margin-top: 18px; color: var(--yazi-beyaz); text-decoration: none; font-weight: bold; font-size: 13px; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; transition: 0.3s; cursor: pointer; }
 
         /* --- 5. FOOTER (KORUNAN YAPI) --- */
         footer {
@@ -147,117 +147,211 @@
             .footer-column { text-align: left; }
             footer { padding: 60px 8% 30px; }
         }
-   /* --- PRO OYUNCU MENÜSÜ VE SABİTLEME FİXİ --- */
-.user-dropdown {
-    position: relative;
-    display: inline-block;
-}
 
-.dropdown-trigger {
-    background: rgba(96, 29, 194, 0.1);
-    border: 1px solid var(--neon-mor);
-    padding: 8px 18px;
-    border-radius: 50px;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: 0.3s;
-    font-family: 'Poppins', sans-serif;
-    z-index: 1001;
-}
+        /* --- PRO OYUNCU MENÜSÜ VE SABİTLEME FİXİ --- */
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
 
-.dropdown-trigger:hover {
-    box-shadow: 0 0 15px rgba(96, 29, 194, 0.4);
-    background: rgba(96, 29, 194, 0.2);
-}
+        .dropdown-trigger {
+            background: rgba(96, 29, 194, 0.1);
+            border: 1px solid var(--neon-mor);
+            padding: 8px 18px;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+            font-family: 'Poppins', sans-serif;
+            z-index: 1001;
+        }
 
-.user-name-text {
-    font-weight: 800;
-    font-size: 13px;
-    letter-spacing: 1px;
-}
+        .dropdown-trigger:hover {
+            box-shadow: 0 0 15px rgba(96, 29, 194, 0.4);
+            background: rgba(96, 29, 194, 0.2);
+        }
 
-.arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
+        .user-name-text {
+            font-weight: 800;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
 
-/* Menü İçeriği */
-.dropdown-content {
-    display: none;
-    position: absolute;
-    right: 0;
-    /* Butona tam sıfırladık, aradaki boşluk kapandı */
-    top: 100%; 
-    background: #0d0d0d;
-    min-width: 200px;
-    border: 1px solid var(--neon-mor);
-    border-radius: 12px;
-    padding: 5px 0;
-    z-index: 9999;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.9);
-    animation: menuFadeIn 0.2s ease-out;
-}
+        .arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
 
-/* KAPANMA SORUNUNU ÇÖZEN GÖRÜNMEZ KÖPRÜ */
-/* Fare butondan menüye geçerken bu alan üzerinden geçtiği için menü açık kalır */
-.dropdown-content::before {
-    content: "";
-    position: absolute;
-    top: -20px; 
-    left: 0;
-    width: 100%;
-    height: 20px;
-    background: transparent;
-}
+        /* Menü İçeriği */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%; 
+            background: #0d0d0d;
+            min-width: 200px;
+            border: 1px solid var(--neon-mor);
+            border-radius: 12px;
+            padding: 5px 0;
+            z-index: 9999;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+            animation: menuFadeIn 0.2s ease-out;
+        }
 
-.dropdown-content a {
-    color: #fff;
-    padding: 12px 20px;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    font-weight: 500;
-    transition: 0.2s;
-}
+        .dropdown-content::before {
+            content: "";
+            position: absolute;
+            top: -20px; 
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: transparent;
+        }
 
-.dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
+        .dropdown-content a {
+            color: #fff;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
 
-.dropdown-content a:hover { 
-    background: rgba(96, 29, 194, 0.2); 
-    color: var(--neon-mor); 
-    padding-left: 25px; /* Şık bir kayma efekti */
-}
+        .dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
 
-/* Hover Kontrolleri */
-.user-dropdown:hover .dropdown-content { display: block; }
-.user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
+        .dropdown-content a:hover { 
+            background: rgba(96, 29, 194, 0.2); 
+            color: var(--neon-mor); 
+            padding-left: 25px; 
+        }
 
-.logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
-.logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
+        .user-dropdown:hover .dropdown-content { display: block; }
+        .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
 
-/* Animasyon */
-@keyframes menuFadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+        .logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
+        .logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
 
-/* --- MOBİL UYUMLULUK --- */
-@media (max-width: 768px) {
-    .user-name-text, .arrow-icon { display: none; } 
-    .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
-    .dropdown-content { 
-        position: fixed; 
-        right: 15px; 
-        top: 75px; 
-        width: 180px; 
-    }
-}
-.logout-minimal-btn:hover {
-    transform: scale(1.2);
-    color: #ff0000;
-}
+        @keyframes menuFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .user-name-text, .arrow-icon { display: none; } 
+            .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
+            .dropdown-content { 
+                position: fixed; 
+                right: 15px; 
+                top: 75px; 
+                width: 180px; 
+            }
+        }
+        .logout-minimal-btn:hover {
+            transform: scale(1.2);
+            color: #ff0000;
+        }
+
+        /* --- 7. MODAL (AÇILIR PENCERE) AYARLARI --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            background: #0a0a0a;
+            border: 2px solid var(--neon-mor);
+            border-radius: 15px;
+            padding: 40px 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 30px rgba(96, 29, 194, 0.4);
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: var(--gri-yazi);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .close-btn:hover {
+            color: #ff4b4b;
+        }
+        .modal-title {
+            color: var(--neon-mor);
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .modal-social-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .modal-social-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #111;
+            border: 1px solid #222;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--yazi-beyaz);
+            font-weight: 700;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+        .modal-social-item:hover {
+            background: rgba(96, 29, 194, 0.1);
+            border-color: var(--neon-mor);
+            transform: translateX(5px);
+            box-shadow: 0 0 15px rgba(96, 29, 194, 0.2);
+            color: var(--neon-mor);
+        }
+        .icon-wrapper {
+            width: 40px;
+            height: 40px;
+            background: var(--nav-bg);
+            border: 1px solid #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+        .modal-social-item:hover .icon-wrapper {
+            background: var(--neon-mor);
+            border-color: var(--neon-mor);
+            color: white;
+            box-shadow: 0 0 10px var(--neon-mor);
+        }
     </style>
 </head>
 <body>
@@ -290,7 +384,7 @@
                 <div class="card-img">OBB E-SPOR</div>
                 <div class="card-body">
                     <h3>OBB E-SPORTS ÇOK YAKINDA!</h3>
-                    <p>Bu sezon, Ordu’ya yeni bir soluk getiriyoruz!    
+                    <p>Bu sezon, Ordu’ya yeni bir soluk getiriyoruz!   
 Gençlerin yanındayız, yeteneklerini destekliyoruz ve birlikte büyük bir topluluk yaratıyoruz. 
 Hazır mısınız? Macera başlıyor! </p>
                     <a href="#" class="card-link">DETAYLARI GÖR</a>
@@ -311,7 +405,7 @@ Hazır mısınız? Macera başlıyor! </p>
                     <h3>TOPLULUK</h3>
                     <p>Sizleri de aramızda görmek istiyoruz! Tek hedefimiz sadece bir takım kurmak değil; gençler 
 için bir buluşma noktası oluşturmak ve bunu sizsiz asla gerçekleştiremeyiz</p>
-                    <a href="#" class="card-link">SUNUCUYA GİT</a>
+                    <a href="#" class="card-link" onclick="openSocialModal(event)">SUNUCUYA GİT</a>
                 </div>
             </div>
         </div>
@@ -354,6 +448,35 @@ için bir buluşma noktası oluşturmak ve bunu sizsiz asla gerçekleştiremeyiz
         </div>
     </footer>
 
+    <div id="socialModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeSocialModal()">&times;</span>
+            <h3 class="modal-title">Bize Katılın</h3>
+            <div class="modal-social-links">
+                <a href="#" target="_blank" class="modal-social-item">
+                    <span class="icon-wrapper"><i class="fab fa-youtube"></i></span>
+                    <span class="social-text">YouTube</span>
+                </a>
+                <a href="#" target="_blank" class="modal-social-item">
+                    <span class="icon-wrapper"><i class="fab fa-instagram"></i></span>
+                    <span class="social-text">Instagram</span>
+                </a>
+                <a href="#" target="_blank" class="modal-social-item">
+                    <span class="icon-wrapper"><i class="fab fa-x-twitter"></i></span>
+                    <span class="social-text">Twitter</span>
+                </a>
+                <a href="#" target="_blank" class="modal-social-item">
+                    <span class="icon-wrapper"><i class="fab fa-facebook-f"></i></span>
+                    <span class="social-text">Facebook</span>
+                </a>
+                <a href="#" target="_blank" class="modal-social-item">
+                    <span class="icon-wrapper"><i class="fab fa-discord"></i></span>
+                    <span class="social-text">Discord</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
     <script>
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
@@ -367,22 +490,35 @@ için bir buluşma noktası oluşturmak ve bunu sizsiz asla gerçekleştiremeyiz
             }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script src="auth.js"></script>
+        // --- MODAL (AÇILIR PENCERE) JAVASCRIPT KODLARI ---
+        function openSocialModal(e) {
+            e.preventDefault(); // Sayfanın yukarı zıplamasını engeller
+            const modal = document.getElementById('socialModal');
+            modal.classList.add('active');
+            // Menü açılınca alttaki sayfanın kaymasını engellemek için
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        function closeSocialModal() {
+            const modal = document.getElementById('socialModal');
+            modal.classList.remove('active');
+            // Kapatıldığında kaydırmayı geri aç
+            document.body.style.overflow = 'auto';
+        }
+
+        // Pencerenin dışındaki karanlık alana tıklandığında menüyü kapatma
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('socialModal');
+            if (e.target === modal) {
+                closeSocialModal();
+            }
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
     <script src="bildirimler.js"></script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
