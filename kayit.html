@@ -224,9 +224,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <script src="auth.js"></script>
-    
     <script src="bildirimler.js"></script> 
     
     <script>
@@ -281,6 +279,8 @@
             if (isRegister) {
                 // Kayıt Olma
                 const confirmPass = document.getElementById('confirmPass').value;
+                const usernameInput = document.getElementById('username').value.trim(); // Boşlukları temizle
+                
                 if (password !== confirmPass) {
                     showNotification("Şifreler uyuşmuyor!", "error");
                     submitBtn.disabled = false;
@@ -288,13 +288,34 @@
                     return;
                 }
 
-                // DÜZELTİLEN KISIM BURASI (_supabase yerine supabase)
+                if (!usernameInput) {
+                    showNotification("Kullanıcı adı boş bırakılamaz!", "error");
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "HESABI OLUŞTUR";
+                    return;
+                }
+
+                // YENİ EKLENEN KISIM: BÜYÜK/KÜÇÜK HARF DUYARSIZ KULLANICI ADI KONTROLÜ
+                const { data: existingUsers, error: checkError } = await supabase
+                    .from('profiles')
+                    .select('username')
+                    .ilike('username', usernameInput) // ilike sayesinde OBB_kral ve obb_kral aynı kabul edilir
+                    .limit(1);
+
+                if (existingUsers && existingUsers.length > 0) {
+                    showNotification("Bu kullanıcı adı zaten alınmış! Lütfen başka bir ad seçin.", "error");
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "HESABI OLUŞTUR";
+                    return;
+                }
+
+                // Kayıt işlemine devam et
                 const { data, error } = await supabase.auth.signUp({
                     email: email,
                     password: password,
                     options: {
                         data: {
-                            username: document.getElementById('username').value,
+                            username: usernameInput, // Kullanıcının yazdığı orijinal haliyle kaydolur (Örn: OBB_kral)
                             phone: document.getElementById('phone').value
                         }
                     }
@@ -304,12 +325,11 @@
                     showNotification("Kayıt hatası: " + error.message, "error");
                 } else {
                     showNotification("Kayıt başarılı! Giriş yapabilirsiniz.", "success");
-                    // Kayıt başarılıysa otomatik giriş sayfasına atalım
                     setTimeout(() => toggleAuth(), 1500); 
                 }
 
             } else {
-                // Giriş Yapma - DÜZELTİLEN KISIM BURASI
+                // Giriş Yapma
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email: email,
                     password: password,
@@ -341,4 +361,3 @@
     </script>
 </body>
 </html>
-
