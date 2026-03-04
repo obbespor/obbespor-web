@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yönetici Paneli | BOSS E-SPOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* --- TEMEL AYARLAR --- */
+        :root { 
+            --ana-siyah: #000000; 
+            --nav-bg: #000000; 
+            --neon-mor: #601dc2; 
+            --yazi-beyaz: #ffffff; 
+            --gri-yazi: #a0a0a0; 
+            --mavi-onay: #00d2ff; 
+            --yesil-guven: #00e676; 
+            --kirmizi-iptal: #ff4b4b; 
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
+        body { background: radial-gradient(circle at top, #1a052d 0%, #000000 100%); background-attachment: fixed; color: var(--yazi-beyaz); font-family: 'Poppins', sans-serif; line-height: 1.6; padding-top: 80px; }
+        
+        /* --- HEADER --- */
+        header.main-nav { background-color: var(--nav-bg); padding: 0 10%; display: flex; justify-content: space-between; align-items: center; height: 80px; border-bottom: 3px solid var(--neon-mor); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
+        .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
+        .logo span { color: var(--neon-mor); text-shadow: 0 0 10px var(--neon-mor); }
+        nav ul { list-style: none; display: flex; align-items: center; gap: 25px; }
+        nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; cursor: pointer; }
+        nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
+        .admin-badge { background: rgba(96, 29, 194, 0.2); border: 1px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: var(--neon-mor); font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; cursor: default; }
+
+        /* --- GENEL DÜZEN --- */
+        .admin-container { padding: 40px 10%; min-height: 80vh; display: none; }
+        .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
+        .section-title span { color: var(--neon-mor); }
+
+        /* --- ONAY (PENDING) KARTLARI --- */
+        .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; }
+        .team-card { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .team-card:hover { border-color: var(--neon-mor); transform: translateY(-5px); box-shadow: 0 15px 40px rgba(96, 29, 194, 0.2); }
+        .team-logo-area { height: 120px; background: #111; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid #222; }
+        .team-logo-area img { max-height: 90px; max-width: 90%; object-fit: contain; }
+        .team-card-body { padding: 20px; }
+        .team-card-title { font-size: 20px; font-weight: 900; color: white; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .team-card-tag { font-size: 12px; background: var(--neon-mor); padding: 3px 8px; border-radius: 4px; }
+        .player-list-mini { list-style: none; margin-bottom: 20px; }
+        .player-list-mini li { font-size: 13px; color: var(--gri-yazi); padding: 5px 0; border-bottom: 1px dashed #222; display: flex; justify-content: space-between; }
+        .player-list-mini li span { color: white; font-weight: bold; }
+        
+        .action-buttons { display: flex; gap: 10px; }
+        .btn-approve { flex: 1; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--yesil-guven); color: var(--yesil-guven); padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-approve:hover { background: var(--yesil-guven); color: #000; box-shadow: 0 0 15px var(--yesil-guven); }
+        .btn-reject { flex: 1; background: rgba(255, 75, 75, 0.1); border: 1px solid var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-reject:hover { background: var(--kirmizi-iptal); color: #fff; box-shadow: 0 0 15px var(--kirmizi-iptal); }
+
+        /* --- ONAYLANAN TAKIMLAR LİSTESİ --- */
+        .approved-list { display: flex; flex-direction: column; gap: 10px; }
+        .approved-item { display: flex; align-items: center; background: #0a0a0a; border: 1px solid #222; padding: 15px 25px; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+        .approved-item:hover { border-color: var(--neon-mor); background: #111; transform: translateX(10px); }
+        .approved-number { font-size: 20px; font-weight: 900; color: var(--neon-mor); width: 40px; }
+        .approved-name { font-size: 16px; font-weight: bold; color: white; flex: 1; }
+        .approved-tag { font-size: 12px; color: var(--gri-yazi); border: 1px solid #333; padding: 2px 8px; border-radius: 4px; margin-left: 10px; }
+
+        /* --- DETAY MODALI (GLASSMORPHISM) --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+        .modal-content { background: rgba(15, 15, 15, 0.9); border: 1px solid var(--neon-mor); border-radius: 20px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 0; box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(96, 29, 194, 0.1); position: relative; }
+        .modal-header { padding: 30px; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 20px; position: relative; }
+        .modal-header img { width: 80px; height: 80px; object-fit: contain; background: #000; border-radius: 10px; border: 1px solid #333; }
+        .modal-title-area h2 { font-size: 24px; font-weight: 900; color: white; margin-bottom: 5px; }
+        .modal-title-area span { background: var(--neon-mor); color: white; padding: 3px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; }
+        .close-modal { position: absolute; top: 20px; right: 25px; font-size: 30px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; }
+        .close-modal:hover { color: var(--kirmizi-iptal); }
+        
+        .modal-body { padding: 30px; }
+        .info-card { background: #050505; border: 1px solid #222; border-radius: 10px; padding: 20px; margin-bottom: 25px; }
+        .info-card h4 { color: var(--neon-mor); font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 8px; }
+        .info-row { display: flex; margin-bottom: 10px; font-size: 14px; }
+        .info-label { color: var(--gri-yazi); width: 120px; font-weight: bold; }
+        .info-data { color: white; font-weight: 500; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        
+        /* Yükleniyor Ekranı */
+        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
+        
+        @media (max-width: 768px) {
+            header.main-nav { padding: 15px 5%; flex-direction: column; height: auto; gap: 15px; }
+            body { padding-top: 140px; }
+            .admin-container { padding: 20px 5%; }
+            .modal-header { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loadingScreen">
+        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
+        <h2>Güvenlik Kontrolü Yapılıyor...</h2>
+    </div>
+
+    <header class="main-nav" id="mainHeader">
+        <a href="index.html" class="logo">BOSS <span>ADMIN</span></a>
+        <nav>
+            <ul>
+                <li><a href="index.html">ANA SAYFA</a></li>
+                <li><a id="tab-onay" class="active-tab" onclick="switchTab('onay')">ONAY</a></li>
+                <li><a id="tab-takimlar" onclick="switchTab('takimlar')">TAKIMLAR</a></li>
+                <li><div class="admin-badge"><i class="fas fa-shield-alt"></i> ADMİN</div></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="admin-container" id="onaySection" style="display: block;">
+        <h2 class="section-title">ONAY BEKLEYEN <span>TAKIMLAR</span></h2>
+        <div class="teams-grid" id="pendingTeamsGrid">
+            </div>
+    </main>
+
+    <main class="admin-container" id="takimlarSection">
+        <h2 class="section-title">ONAYLI <span>TAKIM LİSTESİ</span></h2>
+        <div class="approved-list" id="approvedTeamsList">
+            </div>
+    </main>
+
+    <div class="modal-overlay" id="teamModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <img id="modalLogo" src="" alt="Team Logo">
+                <div class="modal-title-area">
+                    <h2 id="modalTeamName">TAKIM ADI</h2>
+                    <span id="modalTeamTag">TAG</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="info-card">
+                    <h4><i class="fas fa-user-shield"></i> İLETİŞİM (KAPTAN BİLGİLERİ)</h4>
+                    <div class="info-row"><div class="info-label">Kaptan Adı:</div><div class="info-data" id="modalCaptainName">-</div></div>
+                    <div class="info-row"><div class="info-label">Telefon:</div><div class="info-data" id="modalCaptainPhone">-</div></div>
+                    <div class="info-row"><div class="info-label">E-Posta:</div><div class="info-data" id="modalCaptainEmail">-</div></div>
+                </div>
+
+                <div class="info-card">
+                    <h4><i class="fas fa-users"></i> TAKIM KADROSU</h4>
+                    <ul class="player-list-mini" id="modalRosterList" style="margin-bottom: 0;">
+                        </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="bildirimler.js"></script>
+    
+    <script>
+        const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // --- GÜVENLİK DUVARI (SADECE ADMİN GİREBİLİR) ---
+        async function checkAdminAccess() {
+            try {
+                const { data: { user }, error: authError } = await _supabase.auth.getUser();
+                if (authError || !user) throw new Error("Giriş yapılmadı.");
+
+                const { data: profile, error: profileError } = await _supabase.from('profiles').select('role').eq('id', user.id).single();
+                
+                if (profileError || profile.role !== 'admin') {
+                    throw new Error("Yetkisiz erişim.");
+                }
+
+                // Admin ise ekranı aç
+                document.getElementById('loadingScreen').style.display = 'none';
+                loadPendingTeams();
+                loadApprovedTeams();
+
+            } catch (err) {
+                // Hata varsa veya yetki yoksa anasayfaya fırlat
+                window.location.replace("index.html");
+            }
+        }
+
+        // --- SEKMELERİ DEĞİŞTİRME ---
+        function switchTab(tabName) {
+            document.getElementById('onaySection').style.display = tabName === 'onay' ? 'block' : 'none';
+            document.getElementById('takimlarSection').style.display = tabName === 'takimlar' ? 'block' : 'none';
+            
+            document.getElementById('tab-onay').className = tabName === 'onay' ? 'active-tab' : '';
+            document.getElementById('tab-takimlar').className = tabName === 'takimlar' ? 'active-tab' : '';
+        }
+
+        // --- ONAY BEKLEYEN TAKIMLARI ÇEK ---
+        async function loadPendingTeams() {
+            const { data: teams, error } = await _supabase
+                .from('tournament_applications')
+                .select(`
+                    id, team_name, team_tag, logo_url, created_at,
+                    profiles!captain_id (username),
+                    application_members ( role, status, profiles(username) )
+                `)
+                .eq('status', 'pending');
+
+            const grid = document.getElementById('pendingTeamsGrid');
+            grid.innerHTML = '';
+
+            if (teams && teams.length > 0) {
+                teams.forEach(team => {
+                    // Oyuncuları listelemek için HTML oluştur (Sadece kabul edenleri asil/yedek ayır)
+                    let playersHtml = '';
+                    const members = team.application_members || [];
+                    members.forEach(m => {
+                        const name = m.profiles?.username || 'Bilinmiyor';
+                        const role = m.role === 'main' ? 'Asil' : 'Yedek';
+                        const statusIcon = m.status === 'accepted' ? '<i class="fas fa-check text-success" style="color:var(--yesil-guven);"></i>' : '<i class="fas fa-clock" style="color:var(--mavi-onay);"></i>';
+                        playersHtml += `<li>${role}: <span>${name}</span> ${statusIcon}</li>`;
+                    });
+
+                    const card = document.createElement('div');
+                    card.className = 'team-card';
+                    card.innerHTML = `
+                        <div class="team-logo-area">
+                            <img src="${team.logo_url || 'https://via.placeholder.com/100'}" alt="Logo">
+                        </div>
+                        <div class="team-card-body">
+                            <div class="team-card-title">
+                                <span class="team-card-tag">[${team.team_tag}]</span> ${team.team_name}
+                            </div>
+                            <ul class="player-list-mini">
+                                ${playersHtml}
+                            </ul>
+                            <div class="action-buttons">
+                                <button class="btn-approve" onclick="updateTeamStatus('${team.id}', 'approved')"><i class="fas fa-check"></i> ONAYLA</button>
+                                <button class="btn-reject" onclick="rejectTeam('${team.id}')"><i class="fas fa-times"></i> REDDET</button>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            } else {
+                grid.innerHTML = '<p style="color: var(--gri-yazi);">Şu an onay bekleyen takım bulunmuyor.</p>';
+            }
+        }
+
+        // --- ONAYLANMIŞ TAKIMLARI ÇEK VE SIRALA ---
+        async function loadApprovedTeams() {
+            const { data: teams, error } = await _supabase
+                .from('tournament_applications')
+                .select(`
+                    id, team_name, team_tag, logo_url, captain_id,
+                    profiles!captain_id (username, email, phone),
+                    application_members ( role, status, profiles(username) )
+                `)
+                .eq('status', 'approved')
+                .order('created_at', { ascending: true }); // İlk başvuran ilk sırada
+
+            const list = document.getElementById('approvedTeamsList');
+            list.innerHTML = '';
+
+            if (teams && teams.length > 0) {
+                teams.forEach((team, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'approved-item';
+                    
+                    // Datayı HTML attribute olarak gömüyoruz ki tıklayınca modal'da açabilelim
+                    item.onclick = () => openTeamModal(team);
+
+                    item.innerHTML = `
+                        <div class="approved-number">${index + 1}</div>
+                        <div class="approved-name">${team.team_name.toUpperCase()} <span class="approved-tag">[${team.team_tag}]</span></div>
+                        <i class="fas fa-chevron-right" style="color: var(--neon-mor);"></i>
+                    `;
+                    list.appendChild(item);
+                });
+            } else {
+                list.innerHTML = '<p style="color: var(--gri-yazi);">Onaylanmış takım bulunmuyor.</p>';
+            }
+        }
+
+        // --- TAKIM DURUMUNU GÜNCELLE (ONAYLA) ---
+        async function updateTeamStatus(teamId, status) {
+            const { error } = await _supabase.from('tournament_applications').update({ status: status }).eq('id', teamId);
+            if (!error) {
+                alert("Takım başarıyla " + (status === 'approved' ? "onaylandı!" : "reddedildi."));
+                loadPendingTeams();
+                loadApprovedTeams();
+            } else {
+                alert("Bir hata oluştu: " + error.message);
+            }
+        }
+
+        // --- REDDETME VE SEBEP YAZMA ---
+        async function rejectTeam(teamId) {
+            const reason = prompt("Lütfen ret sebebini yazın (Örn: Logo uygunsuz, Eksik kadro):");
+            if (reason !== null) {
+                // Şimdilik sadece status = rejected yapıyoruz. Eğer veritabanında 'reject_reason' diye bir sütun açarsan oraya da kaydedebiliriz.
+                updateTeamStatus(teamId, 'rejected');
+            }
+        }
+
+        // --- MODAL İŞLEMLERİ (TAKIM DETAYLARI) ---
+        function openTeamModal(team) {
+            document.getElementById('modalLogo').src = team.logo_url || 'https://via.placeholder.com/100';
+            document.getElementById('modalTeamName').innerText = team.team_name.toUpperCase();
+            document.getElementById('modalTeamTag').innerText = `[${team.team_tag}]`;
+
+            // Kaptan Bilgileri (Eğer DB'de null ise 'Belirtilmemiş' yazar)
+            const captain = team.profiles;
+            document.getElementById('modalCaptainName').innerText = captain?.username || 'Bilinmiyor';
+            document.getElementById('modalCaptainPhone').innerText = captain?.phone || 'Belirtilmemiş';
+            document.getElementById('modalCaptainEmail').innerText = captain?.email || 'Belirtilmemiş';
+
+            // Kadro Listesi
+            const rosterList = document.getElementById('modalRosterList');
+            rosterList.innerHTML = '';
+            
+            const members = team.application_members || [];
+            members.forEach(m => {
+                const name = m.profiles?.username || 'Bilinmiyor';
+                let roleStr = 'Yedek';
+                let color = 'var(--gri-yazi)';
+                
+                // Kaptanı ayrı belirtelim
+                if (m.role === 'main') {
+                    // Application members içinde user_id si captain_id'ye eşitse o kaptandır (Tablo yapına göre)
+                    // Ama basitçe 'Asil' diyebiliriz
+                    roleStr = 'Asil Oyuncu';
+                    color = 'var(--yazi-beyaz)';
+                }
+
+                rosterList.innerHTML += `<li><span style="color:${color}; font-weight:normal;">${roleStr}:</span> <span style="color:var(--neon-mor);">${name}</span></li>`;
+            });
+
+            document.getElementById('teamModal').classList.add('active');
+            document.body.style.overflow = 'hidden'; // Arka plan kaymasını engelle
+        }
+
+        function closeModal() {
+            document.getElementById('teamModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Modal dışına tıklayınca kapatma
+        window.addEventListener('click', function(e) {
+            if (e.target === document.getElementById('teamModal')) closeModal();
+        });
+
+        // Sayfa Yüklendiğinde Güvenlik Kontrolünü Başlat
+        document.addEventListener('DOMContentLoaded', checkAdminAccess);
+    </script>
+</body>
+</html>
