@@ -79,7 +79,7 @@
         .stat-value { display: block; font-size: 24px; font-weight: 900; color: var(--neon-mor); }
         .stat-label { font-size: 12px; color: var(--gri-yazi); text-transform: uppercase; font-weight: bold; }
 
-        /* --- BİLDİRİM PANELİ (Güncellendi: display: none; kaldırıldı) --- */
+        /* --- BİLDİRİM PANELİ --- */
         .notifications-section { display: block; background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 30px; animation: menuFadeIn 0.4s ease-out; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .notifications-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #222; padding-bottom: 15px; margin-bottom: 20px; }
         .notifications-header h3 { font-size: 18px; color: white; }
@@ -247,9 +247,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <script src="auth.js"></script>
-    
     <script src="bildirimler.js"></script> 
     
     <script>
@@ -272,7 +270,6 @@
 
         // --- INIT PROFILE ---
         async function initProfile() {
-            // auth.js'den gelen "supabase" kullanılıyor
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
                 document.getElementById('profileNameDisplay').innerText = "GİRİŞ YAPILMADI";
@@ -282,11 +279,12 @@
             currentUser = user;
 
             const username = user.user_metadata?.username || "OYUNCU";
+            // YENİ EKLENEN KISIM: .toUpperCase() KALDIRILDI. Orjinal harflerle görünecek.
             document.getElementById('authAction').innerHTML = `
                 <div class="user-dropdown">
                     <button class="dropdown-trigger">
                         <i class="fas fa-user"></i>
-                        <span class="user-name-text">${username.toUpperCase()}</span>
+                        <span class="user-name-text">${username}</span>
                         <i class="fas fa-chevron-down arrow-icon"></i>
                     </button>
                     <div class="dropdown-content">
@@ -303,7 +301,8 @@
         async function loadProfileData() {
             const { data, error } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
             if (data) {
-                if(data.username) document.getElementById('profileNameDisplay').innerText = data.username.toUpperCase();
+                // YENİ EKLENEN KISIM: .toUpperCase() KALDIRILDI
+                if(data.username) document.getElementById('profileNameDisplay').innerText = data.username;
                 if(data.bio) document.getElementById('userBio').innerText = data.bio;
                 if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
                 
@@ -354,7 +353,7 @@
             }
         });
 
-        // --- BİLDİRİM VE SİNYAL SİSTEMİ (GÜNCELLENDİ) ---
+        // --- BİLDİRİM VE SİNYAL SİSTEMİ ---
         async function loadInvitations() {
             const { data, error } = await supabase
                 .from('application_members')
@@ -367,7 +366,6 @@
             const badge = document.getElementById('notifBadge');
             notifList.innerHTML = '';
 
-            // Davet varsa listele
             if (data && data.length > 0) {
                 badge.innerText = data.length;
                 data.forEach(invite => {
@@ -389,7 +387,6 @@
                     notifList.appendChild(div);
                 });
             } else {
-                // YENİ: Davet yoksa paneli gizleme, boş mesajını göster
                 badge.innerText = "0";
                 notifList.innerHTML = `
                     <div class="notif-item" style="justify-content: center; text-align: center; border-left: 4px solid #333;">
