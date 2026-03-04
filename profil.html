@@ -55,6 +55,8 @@
         .dropdown-content a:hover { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); padding-left: 25px; }
         .user-dropdown:hover .dropdown-content { display: block; }
         .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
+        .logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
+        .logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
         @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- PROFİL TASARIMI --- */
@@ -278,8 +280,18 @@
             }
             currentUser = user;
 
-            const username = user.user_metadata?.username || "OYUNCU";
-            // YENİ EKLENEN KISIM: .toUpperCase() KALDIRILDI. Orjinal harflerle görünecek.
+            // Rol ve kullanıcı adını çek
+            const { data: profileData } = await supabase.from('profiles').select('username, role').eq('id', user.id).single();
+            const username = profileData?.username || user.user_metadata?.username || "OYUNCU";
+            const isAdmin = profileData?.role === 'admin';
+
+            // Admin Paneli Linki (Sadece Adminlere Görünür)
+            let adminLinkHTML = '';
+            if (isAdmin) {
+                adminLinkHTML = `<a href="admin.html" style="color: var(--neon-mor); font-weight: 900; border-bottom: 1px solid #222; margin-bottom: 5px;"><i class="fas fa-shield-alt"></i> YÖNETİM PANELİ</a>`;
+            }
+
+            // GÜNCELLENDİ: Birebir standartlaştırılmış simgeler ve yapı
             document.getElementById('authAction').innerHTML = `
                 <div class="user-dropdown">
                     <button class="dropdown-trigger">
@@ -288,8 +300,10 @@
                         <i class="fas fa-chevron-down arrow-icon"></i>
                     </button>
                     <div class="dropdown-content">
+                        ${adminLinkHTML}
                         <a href="profil.html"><i class="fas fa-user-circle"></i> Profil</a>
-                        <a href="#" onclick="handleLogout(); return false;"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
+                        <a href="my-tournaments.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
+                        <a href="#" onclick="handleLogout(); return false;" class="logout-link"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
                     </div>
                 </div>`;
 
@@ -301,7 +315,6 @@
         async function loadProfileData() {
             const { data, error } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
             if (data) {
-                // YENİ EKLENEN KISIM: .toUpperCase() KALDIRILDI
                 if(data.username) document.getElementById('profileNameDisplay').innerText = data.username;
                 if(data.bio) document.getElementById('userBio').innerText = data.bio;
                 if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
@@ -314,7 +327,7 @@
             }
         }
 
-        // --- GÜNCELLENEN AVATAR YÜKLEME KODU (YÖNTEM 2) ---
+        // --- AVATAR YÜKLEME ---
         document.getElementById('avatarUpload').addEventListener('change', async function(e) {
             const file = e.target.files[0];
             if (!file) return;
