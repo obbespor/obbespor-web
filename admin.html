@@ -46,7 +46,7 @@
         .team-card-body { padding: 20px; }
         .team-card-title { font-size: 20px; font-weight: 900; color: white; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
         .team-card-tag { font-size: 12px; background: var(--neon-mor); padding: 3px 8px; border-radius: 4px; }
-        .player-list-mini { list-style: none; margin-bottom: 20px; }
+        .player-list-mini { list-style: none; margin-bottom: 20px; padding: 0; }
         .player-list-mini li { font-size: 13px; color: var(--gri-yazi); padding: 5px 0; border-bottom: 1px dashed #222; display: flex; justify-content: space-between; }
         .player-list-mini li span { color: white; font-weight: bold; }
         
@@ -146,7 +146,7 @@
 
                 <div class="info-card">
                     <h4><i class="fas fa-users"></i> TAKIM KADROSU</h4>
-                    <ul class="player-list-mini" id="modalRosterList" style="margin-bottom: 0;">
+                    <ul class="player-list-mini" id="modalRosterList" style="margin-bottom: 0; padding: 0;">
                         </ul>
                 </div>
             </div>
@@ -193,27 +193,20 @@
             document.getElementById('tab-takimlar').className = tabName === 'takimlar' ? 'active-tab' : '';
         }
 
-        // --- ONAY BEKLEYEN TAKIMLARI ÇEK ---
+        // --- ONAY BEKLEYEN TAKIMLARI ÇEK (YENİ GÜVENLİ RPC SİSTEMİ) ---
         async function loadPendingTeams() {
-            const { data: teams, error } = await _supabase
-                .from('tournament_applications')
-                .select(`
-                    id, team_name, team_tag, logo_url, created_at,
-                    profiles!captain_id (username),
-                    application_members ( role, status, profiles(username) )
-                `)
-                .eq('status', 'pending');
+            // F12 sızıntısına kapalı güvenli RPC fonksiyonunu çağırıyoruz
+            const { data: teams, error } = await _supabase.rpc('get_admin_teams', { p_status: 'pending' });
 
             const grid = document.getElementById('pendingTeamsGrid');
             grid.innerHTML = '';
 
             if (teams && teams.length > 0) {
                 teams.forEach(team => {
-                    // Oyuncuları listelemek için HTML oluştur (Sadece kabul edenleri asil/yedek ayır)
                     let playersHtml = '';
-                    const members = team.application_members || [];
+                    const members = team.members || [];
                     members.forEach(m => {
-                        const name = m.profiles?.username || 'Bilinmiyor';
+                        const name = m.username || 'Bilinmiyor';
                         const role = m.role === 'main' ? 'Asil' : 'Yedek';
                         const statusIcon = m.status === 'accepted' ? '<i class="fas fa-check text-success" style="color:var(--yesil-guven);"></i>' : '<i class="fas fa-clock" style="color:var(--mavi-onay);"></i>';
                         playersHtml += `<li>${role}: <span>${name}</span> ${statusIcon}</li>`;
@@ -245,17 +238,10 @@
             }
         }
 
-        // --- ONAYLANMIŞ TAKIMLARI ÇEK VE SIRALA ---
+        // --- ONAYLANMIŞ TAKIMLARI ÇEK VE SIRALA (YENİ GÜVENLİ RPC SİSTEMİ) ---
         async function loadApprovedTeams() {
-            const { data: teams, error } = await _supabase
-                .from('tournament_applications')
-                .select(`
-                    id, team_name, team_tag, logo_url, captain_id,
-                    profiles!captain_id (username, email, phone),
-                    application_members ( role, status, profiles(username) )
-                `)
-                .eq('status', 'approved')
-                .order('created_at', { ascending: true }); // İlk başvuran ilk sırada
+            // F12 sızıntısına kapalı güvenli RPC fonksiyonunu çağırıyoruz
+            const { data: teams, error } = await _supabase.rpc('get_admin_teams', { p_status: 'approved' });
 
             const list = document.getElementById('approvedTeamsList');
             list.innerHTML = '';
@@ -264,8 +250,6 @@
                 teams.forEach((team, index) => {
                     const item = document.createElement('div');
                     item.className = 'approved-item';
-                    
-                    // Datayı HTML attribute olarak gömüyoruz ki tıklayınca modal'da açabilelim
                     item.onclick = () => openTeamModal(team);
 
                     item.innerHTML = `
@@ -280,7 +264,7 @@
             }
         }
 
-        // --- TAKIM DURUMUNU GÜNCELLE (ONAYLA) ---
+        // --- TAKIM DURUMUNU GÜNCELLE (ONAYLA/REDDET) ---
         async function updateTeamStatus(teamId, status) {
             const { error } = await _supabase.from('tournament_applications').update({ status: status }).eq('id', teamId);
             if (!error) {
@@ -296,41 +280,32 @@
         async function rejectTeam(teamId) {
             const reason = prompt("Lütfen ret sebebini yazın (Örn: Logo uygunsuz, Eksik kadro):");
             if (reason !== null) {
-                // Şimdilik sadece status = rejected yapıyoruz. Eğer veritabanında 'reject_reason' diye bir sütun açarsan oraya da kaydedebiliriz.
+                // Şimdilik sadece status = rejected yapıyoruz.
                 updateTeamStatus(teamId, 'rejected');
             }
         }
 
-        // --- MODAL İŞLEMLERİ (TAKIM DETAYLARI) ---
+        // --- MODAL İŞLEMLERİ (TAKIM DETAYLARI GÜNCELLENDİ) ---
         function openTeamModal(team) {
             document.getElementById('modalLogo').src = team.logo_url || 'https://via.placeholder.com/100';
             document.getElementById('modalTeamName').innerText = team.team_name.toUpperCase();
             document.getElementById('modalTeamTag').innerText = `[${team.team_tag}]`;
 
-            // Kaptan Bilgileri (Eğer DB'de null ise 'Belirtilmemiş' yazar)
-            const captain = team.profiles;
-            document.getElementById('modalCaptainName').innerText = captain?.username || 'Bilinmiyor';
-            document.getElementById('modalCaptainPhone').innerText = captain?.phone || 'Belirtilmemiş';
-            document.getElementById('modalCaptainEmail').innerText = captain?.email || 'Belirtilmemiş';
+            // RPC'den gelen iletişim bilgileri (F12 ile çalınamaz)
+            document.getElementById('modalCaptainName').innerText = team.captain_name || 'Bilinmiyor';
+            document.getElementById('modalCaptainPhone').innerText = team.captain_phone || 'Belirtilmemiş';
+            document.getElementById('modalCaptainEmail').innerText = team.captain_email || 'Belirtilmemiş';
 
             // Kadro Listesi
             const rosterList = document.getElementById('modalRosterList');
             rosterList.innerHTML = '';
             
-            const members = team.application_members || [];
+            const members = team.members || [];
             members.forEach(m => {
-                const name = m.profiles?.username || 'Bilinmiyor';
-                let roleStr = 'Yedek';
-                let color = 'var(--gri-yazi)';
+                const name = m.username || 'Bilinmiyor';
+                let roleStr = m.role === 'main' ? 'Asil Oyuncu' : 'Yedek';
+                let color = m.role === 'main' ? 'var(--yazi-beyaz)' : 'var(--gri-yazi)';
                 
-                // Kaptanı ayrı belirtelim
-                if (m.role === 'main') {
-                    // Application members içinde user_id si captain_id'ye eşitse o kaptandır (Tablo yapına göre)
-                    // Ama basitçe 'Asil' diyebiliriz
-                    roleStr = 'Asil Oyuncu';
-                    color = 'var(--yazi-beyaz)';
-                }
-
                 rosterList.innerHTML += `<li><span style="color:${color}; font-weight:normal;">${roleStr}:</span> <span style="color:var(--neon-mor);">${name}</span></li>`;
             });
 
