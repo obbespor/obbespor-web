@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yönetici Paneli | BOSS E-SPOR</title>
+    <title>Yönetici Paneli | OBB E-SPOR</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -21,19 +21,45 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
-        body { background: radial-gradient(circle at top, #1a052d 0%, #000000 100%); background-attachment: fixed; color: var(--yazi-beyaz); font-family: 'Poppins', sans-serif; line-height: 1.6; padding-top: 80px; }
+        body { background: radial-gradient(circle at top, #1a052d 0%, #000000 100%); background-attachment: fixed; color: var(--yazi-beyaz); font-family: 'Poppins', sans-serif; line-height: 1.6; padding-top: 80px; display: flex; flex-direction: column; min-height: 100vh; }
         
-        /* --- HEADER --- */
-        header.main-nav { background-color: var(--nav-bg); padding: 0 10%; display: flex; justify-content: space-between; align-items: center; height: 80px; border-bottom: 3px solid var(--neon-mor); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
+        /* --- KUSURSUZ HEADER (INDEX İLE BİREBİR AYNI) --- */
+        header.main-nav {
+            background-color: var(--nav-bg);
+            padding: 0 10%; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            border-bottom: 3px solid var(--neon-mor);
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            z-index: 1000;
+            transition: transform 0.4s ease-in-out;
+        }
+        header.main-nav.nav-hidden { transform: translateY(-110%); }
+
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); text-shadow: 0 0 10px var(--neon-mor); }
-        nav ul { list-style: none; display: flex; align-items: center; gap: 25px; }
+        
+        nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
         nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; cursor: pointer; }
         nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
-        .admin-badge { background: rgba(96, 29, 194, 0.2); border: 1px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; color: var(--neon-mor); font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; cursor: default; }
+        
+        .admin-badge { 
+            border: 2px solid var(--neon-mor); 
+            padding: 8px 20px; 
+            border-radius: 5px; 
+            color: var(--neon-mor) !important; 
+            background: rgba(96, 29, 194, 0.1); 
+            transition: 0.3s;
+            font-weight: 900;
+            display: flex; align-items: center; gap: 8px;
+            cursor: default;
+        }
 
         /* --- GENEL DÜZEN --- */
-        .admin-container { padding: 40px 10%; min-height: 80vh; display: none; }
+        .admin-container { padding: 40px 10%; flex: 1; display: none; } /* flex: 1 sayesinde footer her zaman en altta kalır */
         .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
         .section-title span { color: var(--neon-mor); }
 
@@ -87,11 +113,42 @@
         /* Yükleniyor Ekranı */
         #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
         
+        /* --- KUSURSUZ FOOTER --- */
+        footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: auto; }
+        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+        .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
+        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
+        .social-icons { display: flex; gap: 15px; }
+        .social-icons a { width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; }
+        .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
+        .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
+        .footer-column ul { list-style: none; }
+        .footer-column ul li { margin-bottom: 12px; }
+        .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
+        .footer-column ul li a:hover { color: var(--neon-mor); }
+        .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
+        .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
+        .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
+
+        /* --- MOBİL UYUMLULUK (INDEX İLE BİREBİR AYNI) --- */
         @media (max-width: 768px) {
             header.main-nav { padding: 15px 5%; flex-direction: column; height: auto; gap: 15px; }
             body { padding-top: 140px; }
+            nav { width: 100%; }
+            nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 10px; white-space: nowrap; }
+            .admin-badge { padding: 6px 12px; font-size: 10px !important; }
+            
             .admin-container { padding: 20px 5%; }
             .modal-header { flex-direction: column; text-align: center; }
+
+            /* Mobil Footer Düzeni */
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+            .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
+            .footer-brand p { max-width: 100%; }
+            .social-icons { justify-content: center; }
+            .footer-column { text-align: left; }
+            footer { padding: 60px 8% 30px; }
         }
     </style>
 </head>
@@ -103,7 +160,7 @@
     </div>
 
     <header class="main-nav" id="mainHeader">
-        <a href="index.html" class="logo">BOSS <span>ADMIN</span></a>
+        <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
         <nav>
             <ul>
                 <li><a href="index.html">ANA SAYFA</a></li>
@@ -153,6 +210,43 @@
         </div>
     </div>
 
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h2>OBB <span style="color:white">E-SPOR</span></h2>
+                <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h3>Hızlı Menü</h3>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="tournaments.html">Turnuvalar</a></li>
+                    <li><a href="canli.html">Canlı</a></li>
+                    <li><a href="kayit.html">Kayıt Ol</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>İletişim</h3>
+                <ul>
+                    <li class="contact-item"><i class="fas fa-envelope"></i> info@obbesports.com</li>
+                    <li class="contact-item"><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
+                    <li class="contact-item"><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
+        </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="bildirimler.js"></script>
     
@@ -160,6 +254,16 @@
         const SUPABASE_URL = 'https://zvhtznxretxgofnbcbko.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6PnSRl0JTSPvdgI0JbP4yw_h4iXEb85';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // --- HEADER SCROLL EFEKTİ (INDEX GİBİ) ---
+        let lastScrollTop = 0;
+        const mainHeader = document.getElementById("mainHeader");
+        window.addEventListener("scroll", function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 100) { mainHeader.classList.add("nav-hidden"); }
+            else { mainHeader.classList.remove("nav-hidden"); }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+        }, false);
 
         // --- GÜVENLİK DUVARI (SADECE ADMİN GİREBİLİR) ---
         async function checkAdminAccess() {
@@ -193,9 +297,8 @@
             document.getElementById('tab-takimlar').className = tabName === 'takimlar' ? 'active-tab' : '';
         }
 
-        // --- ONAY BEKLEYEN TAKIMLARI ÇEK (YENİ GÜVENLİ RPC SİSTEMİ) ---
+        // --- ONAY BEKLEYEN TAKIMLARI ÇEK ---
         async function loadPendingTeams() {
-            // F12 sızıntısına kapalı güvenli RPC fonksiyonunu çağırıyoruz
             const { data: teams, error } = await _supabase.rpc('get_admin_teams', { p_status: 'pending' });
 
             const grid = document.getElementById('pendingTeamsGrid');
@@ -238,9 +341,8 @@
             }
         }
 
-        // --- ONAYLANMIŞ TAKIMLARI ÇEK VE SIRALA (YENİ GÜVENLİ RPC SİSTEMİ) ---
+        // --- ONAYLANMIŞ TAKIMLARI ÇEK VE SIRALA ---
         async function loadApprovedTeams() {
-            // F12 sızıntısına kapalı güvenli RPC fonksiyonunu çağırıyoruz
             const { data: teams, error } = await _supabase.rpc('get_admin_teams', { p_status: 'approved' });
 
             const list = document.getElementById('approvedTeamsList');
@@ -268,11 +370,11 @@
         async function updateTeamStatus(teamId, status) {
             const { error } = await _supabase.from('tournament_applications').update({ status: status }).eq('id', teamId);
             if (!error) {
-                alert("Takım başarıyla " + (status === 'approved' ? "onaylandı!" : "reddedildi."));
-                loadPendingTeams();
-                loadApprovedTeams();
+                showNotification("Takım başarıyla " + (status === 'approved' ? "onaylandı!" : "reddedildi."), "success");
+                loadPendingTeams(); 
+                loadApprovedTeams(); 
             } else {
-                alert("Bir hata oluştu: " + error.message);
+                showNotification("Bir hata oluştu: " + error.message, "error");
             }
         }
 
@@ -280,23 +382,20 @@
         async function rejectTeam(teamId) {
             const reason = prompt("Lütfen ret sebebini yazın (Örn: Logo uygunsuz, Eksik kadro):");
             if (reason !== null) {
-                // Şimdilik sadece status = rejected yapıyoruz.
                 updateTeamStatus(teamId, 'rejected');
             }
         }
 
-        // --- MODAL İŞLEMLERİ (TAKIM DETAYLARI GÜNCELLENDİ) ---
+        // --- MODAL İŞLEMLERİ (TAKIM DETAYLARI) ---
         function openTeamModal(team) {
             document.getElementById('modalLogo').src = team.logo_url || 'https://via.placeholder.com/100';
             document.getElementById('modalTeamName').innerText = team.team_name.toUpperCase();
             document.getElementById('modalTeamTag').innerText = `[${team.team_tag}]`;
 
-            // RPC'den gelen iletişim bilgileri (F12 ile çalınamaz)
             document.getElementById('modalCaptainName').innerText = team.captain_name || 'Bilinmiyor';
             document.getElementById('modalCaptainPhone').innerText = team.captain_phone || 'Belirtilmemiş';
             document.getElementById('modalCaptainEmail').innerText = team.captain_email || 'Belirtilmemiş';
 
-            // Kadro Listesi
             const rosterList = document.getElementById('modalRosterList');
             rosterList.innerHTML = '';
             
@@ -310,7 +409,7 @@
             });
 
             document.getElementById('teamModal').classList.add('active');
-            document.body.style.overflow = 'hidden'; // Arka plan kaymasını engelle
+            document.body.style.overflow = 'hidden'; 
         }
 
         function closeModal() {
@@ -318,7 +417,6 @@
             document.body.style.overflow = 'auto';
         }
 
-        // Modal dışına tıklayınca kapatma
         window.addEventListener('click', function(e) {
             if (e.target === document.getElementById('teamModal')) closeModal();
         });
