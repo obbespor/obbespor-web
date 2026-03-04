@@ -368,7 +368,7 @@
                 <li><a href="index.html">ANA SAYFA</a></li>
                 <li><a href="tournaments.html">TURNUVALAR</a></li>
                 <li><a href="canli.html">CANLI</a></li>
-                <li><a href="kayit.html" class="nav-btn">KATIL</a></li>
+                <li id="authAction"><a href="kayit.html" class="nav-btn">KATIL</a></li>
             </ul>
         </nav>
     </header>
@@ -488,6 +488,10 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+    <script src="bildirimler.js"></script>
+
     <script>
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
@@ -504,36 +508,72 @@
 
         // --- MODAL (AÇILIR PENCERE) JAVASCRIPT KODLARI ---
         function openSocialModal(e) {
-            e.preventDefault(); // Sayfanın yukarı zıplamasını engeller
+            e.preventDefault(); 
             const modal = document.getElementById('socialModal');
             modal.classList.add('active');
-            // Menü açılınca alttaki sayfanın kaymasını engellemek için
             document.body.style.overflow = 'hidden'; 
         }
 
         function closeSocialModal() {
             const modal = document.getElementById('socialModal');
             modal.classList.remove('active');
-            // Kapatıldığında kaydırmayı geri aç
             document.body.style.overflow = 'auto';
         }
 
-        // Pencerenin dışındaki karanlık alana tıklandığında menüyü kapatma
         window.addEventListener('click', function(e) {
             const modal = document.getElementById('socialModal');
             if (e.target === modal) {
                 closeSocialModal();
             }
         });
-    </script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="auth.js"></script>
-    <script src="bildirimler.js"></script>
 
+        // --- GİRİŞ KONTROLÜ VE YÖNETİCİ MENÜSÜ EKLENTİSİ ---
+        async function checkLoginStatus() {
+            try {
+                // auth.js'deki supabase değişkenini kullanıyoruz
+                const { data: { user }, error } = await supabase.auth.getUser();
+                
+                if (user && !error) {
+                    // Kullanıcı giriş yapmışsa rolünü kontrol et
+                    const { data: profileData } = await supabase.from('profiles').select('username, role').eq('id', user.id).single();
+                    
+                    const username = profileData?.username || user.user_metadata?.username || "OYUNCU";
+                    const isAdmin = profileData?.role === 'admin'; 
+
+                    // Sadece adminse görünecek HTML kodunu hazırlıyoruz
+                    let adminLinkHTML = '';
+                    if (isAdmin) {
+                        adminLinkHTML = `<a href="admin.html" style="color: var(--neon-mor); font-weight: 900; border-bottom: 1px solid #222; margin-bottom: 5px;"><i class="fas fa-shield-alt"></i> YÖNETİM PANELİ</a>`;
+                    }
+
+                    // Menüyü (authAction li etiketinin içini) giriş yapmış kullanıcı için değiştiriyoruz
+                    document.getElementById('authAction').innerHTML = `
+                        <div class="user-dropdown">
+                            <button class="dropdown-trigger">
+                                <i class="fas fa-user"></i>
+                                <span class="user-name-text">${username}</span>
+                                <i class="fas fa-chevron-down arrow-icon"></i>
+                            </button>
+                            <div class="dropdown-content">
+                                ${adminLinkHTML}
+                                <a href="profil.html"><i class="fas fa-user-circle"></i> Profil</a>
+                                <a href="#" onclick="handleLogoutIndex(); return false;" class="logout-link"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
+                            </div>
+                        </div>`;
+                }
+            } catch (err) {
+                console.log("Kullanıcı kontrolü sırasında hata: ", err);
+            }
+        }
+
+        // Index sayfası için özel çıkış fonksiyonu
+        async function handleLogoutIndex() {
+            await supabase.auth.signOut();
+            window.location.reload(); // Çıkış yapınca sayfayı yenile ki menü eski haline ("KATIL") dönsün
+        }
+
+        // Sayfa yüklendiğinde kontrolü başlat
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+    </script>
 </body>
 </html>
-
-
-
-
