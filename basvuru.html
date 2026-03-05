@@ -96,136 +96,30 @@
 
         .edit-mode-btn { flex: 1; padding: 12px 25px; background: transparent; border: 2px solid var(--mavi-onay); color: var(--mavi-onay); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 800; transition: 0.3s; font-size: 14px; text-transform: uppercase; }
         .edit-mode-btn:hover { background: var(--mavi-onay); color: #000; box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); transform: translateY(-2px); }
+        
+        .warning-btn { flex: 1; padding: 12px 25px; background: transparent; border: 2px solid var(--kirmizi-iptal); color: var(--kirmizi-iptal); border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 800; transition: 0.3s; font-size: 14px; text-transform: uppercase; }
+        .warning-btn:hover { background: var(--kirmizi-iptal); color: #fff; box-shadow: 0 0 20px rgba(255, 75, 75, 0.4); transform: translateY(-2px); }
 
         /* --- YENİ E-SPOR KADRO TABLOSU CSS --- */
-        .roster-box {
-            background: rgba(15, 15, 15, 0.6);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(96, 29, 194, 0.3);
-            border-radius: 16px;
-            padding: 25px;
-            margin: 35px 0;
-            text-align: left;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(96, 29, 194, 0.05);
-        }
+        .roster-box { background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(96, 29, 194, 0.3); border-radius: 16px; padding: 25px; margin: 35px 0; text-align: left; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(96, 29, 194, 0.05); }
+        .roster-title { color: var(--neon-mor); border-bottom: 2px solid rgba(96, 29, 194, 0.3); padding-bottom: 12px; margin-bottom: 20px; font-size: 18px; letter-spacing: 1px; text-transform: uppercase; font-weight: 900; display: flex; align-items: center; gap: 12px; text-shadow: 0 0 10px rgba(96, 29, 194, 0.5); }
+        .roster-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .roster-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: linear-gradient(90deg, #111 0%, #0a0a0a 100%); border-radius: 12px; border: 1px solid #222; transition: all 0.3s ease; opacity: 0; animation: slideInUp 0.4s ease forwards; }
+        .roster-item:hover { transform: translateX(8px); border-color: var(--neon-mor); background: linear-gradient(90deg, #181818 0%, #0a0a0a 100%); box-shadow: -5px 0 20px rgba(96, 29, 194, 0.2); }
         
-        .roster-title {
-            color: var(--neon-mor);
-            border-bottom: 2px solid rgba(96, 29, 194, 0.3);
-            padding-bottom: 12px;
-            margin-bottom: 20px;
-            font-size: 18px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-shadow: 0 0 10px rgba(96, 29, 194, 0.5);
-        }
+        .player-info { display: flex; align-items: center; gap: 15px; }
+        .player-avatar { width: 38px; height: 38px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 2px solid #333; display: flex; justify-content: center; align-items: center; font-size: 14px; transition: 0.3s; }
+        .roster-item:hover .player-avatar { box-shadow: 0 0 12px currentColor; }
+        .player-name { font-weight: 800; font-size: 15px; letter-spacing: 0.5px; }
 
-        .roster-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        @keyframes slideInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .roster-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 20px;
-            background: linear-gradient(90deg, #111 0%, #0a0a0a 100%);
-            border-radius: 12px;
-            border: 1px solid #222;
-            transition: all 0.3s ease;
-            opacity: 0; 
-            animation: slideInUp 0.4s ease forwards;
-        }
-
-        .roster-item:hover {
-            transform: translateX(8px);
-            border-color: var(--neon-mor);
-            background: linear-gradient(90deg, #181818 0%, #0a0a0a 100%);
-            box-shadow: -5px 0 20px rgba(96, 29, 194, 0.2);
-        }
-
-        .player-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .player-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.5);
-            border: 2px solid #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-
-        .roster-item:hover .player-avatar {
-            box-shadow: 0 0 12px currentColor;
-        }
-
-        .player-name {
-            font-weight: 800;
-            font-size: 15px;
-            letter-spacing: 0.5px;
-        }
-
-        .role-badge {
-            font-size: 10px;
-            padding: 4px 10px;
-            border-radius: 30px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        .role-captain {
-            background: linear-gradient(135deg, var(--neon-mor), #a020f0);
-            color: white;
-            box-shadow: 0 0 10px rgba(160, 32, 240, 0.4);
-            border: 1px solid #c77dff;
-        }
-
-        .role-main {
-            background: #222;
-            color: var(--yazi-beyaz);
-            border: 1px solid #444;
-        }
-
-        .role-sub {
-            background: transparent;
-            color: var(--gri-yazi);
-            border: 1px dashed #555;
-        }
-
-        .status-icon-box {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0,0,0,0.4);
-            padding: 8px;
-            border-radius: 50%;
-            border: 1px solid #222;
-        }
+        .role-badge { font-size: 10px; padding: 4px 10px; border-radius: 30px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .role-captain { background: linear-gradient(135deg, var(--neon-mor), #a020f0); color: white; box-shadow: 0 0 10px rgba(160, 32, 240, 0.4); border: 1px solid #c77dff; }
+        .role-main { background: #222; color: var(--yazi-beyaz); border: 1px solid #444; }
+        .role-sub { background: transparent; color: var(--gri-yazi); border: 1px dashed #555; }
+        .status-icon-box { display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); padding: 8px; border-radius: 50%; border: 1px solid #222; }
 
         /* --- 5. FOOTER --- */
         footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 100px; }
@@ -302,7 +196,6 @@
 
             <div class="auth-card">
                 <div id="pendingScreen" style="display: none; padding: 10px 0; text-align: center; animation: menuFadeIn 0.4s ease-out;">
-                    
                     <div id="rosterHeader">
                         </div>
 
@@ -315,9 +208,13 @@
                     
                     <div id="pendingBtnGroup" style="display: flex; gap: 15px; justify-content: center; align-items: stretch;">
                         <a href="profil.html" class="save-btn" style="padding: 12px 30px; font-size: 14px; flex: unset;"><i class="fas fa-user-circle"></i> Profile Dön</a>
+                        
                         <button type="button" id="editDraftBtn" onclick="enableEditMode()" class="edit-mode-btn" style="display:none;"><i class="fas fa-edit"></i> Takımı Düzenle</button>
                     </div>
-                    <p id="pendingInfoText" style="color: var(--gri-yazi); font-size: 12px; margin-top: 25px; display:none;"><i class="fas fa-info-circle"></i> Düzenleme moduna geçtiğinizde halihazırda onay vermiş oyuncuların durumları bozulmaz.</p>
+                    
+                    <p id="pendingInfoText" style="color: var(--gri-yazi); font-size: 12px; margin-top: 25px; display:none;">
+                        <i class="fas fa-info-circle"></i> Düzenleme moduna geçtiğinizde halihazırda onay vermiş oyuncuların durumları bozulmaz.
+                    </p>
                 </div>
 
                 <form id="teamForm" style="display: none;">
@@ -398,6 +295,7 @@
         let currentDraftId = null; 
         let draftCreatedAt = null;
         let saveTimeout = null;
+        let currentStatus = null;
 
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
@@ -419,8 +317,14 @@
                 if (authError || !user) { window.location.href = 'kayit.html'; return; }
                 currentUser = user;
 
-                const { data: profileData } = await _supabase.from('profiles').select('username').eq('id', user.id).maybeSingle();
+                const { data: profileData } = await _supabase.from('profiles').select('username, role').eq('id', user.id).maybeSingle();
                 const realUsername = profileData?.username || user.user_metadata?.username || "KAPTAN";
+                const isAdmin = profileData?.role === 'admin';
+
+                let adminLinkHTML = '';
+                if (isAdmin) {
+                    adminLinkHTML = `<a href="admin.html" style="color: var(--neon-mor); font-weight: 900; border-bottom: 1px solid #222; margin-bottom: 5px;"><i class="fas fa-shield-alt"></i> YÖNETİM PANELİ</a>`;
+                }
 
                 document.getElementById('authAction').innerHTML = `
                     <div class="user-dropdown">
@@ -430,6 +334,7 @@
                             <i class="fas fa-chevron-down arrow-icon"></i>
                         </button>
                         <div class="dropdown-content">
+                            ${adminLinkHTML}
                             <a href="profil.html"><i class="fas fa-user-circle"></i> Profil</a>
                             <a href="my-tournaments.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
                             <a href="#" onclick="handleLogout(); return false;"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
@@ -445,11 +350,13 @@
             }
         }
 
-        // GÜNCELLENDİ: [TAG] TAKIM ADI GÖSTERİMİ
+        // AKILLI EKRAN YÖNETİCİSİ (4 DURUMU DA TANIR)
         async function showRosterScreen(appId, isCaptain, status, captainId, teamName, teamTag) {
             document.getElementById('teamForm').style.display = 'none';
             document.getElementById('draftInfoBox').style.display = 'none';
             document.getElementById('pendingScreen').style.display = 'block';
+            
+            currentStatus = status;
 
             const headerDiv = document.getElementById('rosterHeader');
             const rosterList = document.getElementById('rosterList');
@@ -457,7 +364,6 @@
             const editBtn = document.getElementById('editDraftBtn');
             const infoText = document.getElementById('pendingInfoText');
 
-            // Başlık Formatı Ayarlama
             let displayName = "TAKIM KADROSU";
             if (teamName && teamTag) {
                 displayName = `[${teamTag.toUpperCase()}] ${teamName.toUpperCase()}`;
@@ -466,18 +372,46 @@
             }
             rosterTitleElement.innerHTML = `<i class="fas fa-users"></i> ${displayName}`;
 
+            // DURUMA GÖRE EKRANA ÇİZİM YAPILIR (DRAFT, PENDING, APPROVED, REJECTED)
             if (status === 'draft') {
                 headerDiv.innerHTML = `
                     <i class="fas fa-tools fa-3x" style="color: var(--mavi-onay); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--mavi-onay));"></i>
                     <h3 style="color: var(--mavi-onay); font-size: 22px; font-weight: 900; letter-spacing: 0.5px;">Takım Kurulum Aşamasında</h3>
                     <p style="color: var(--gri-yazi); font-size: 14px; margin-top: 10px;">Kaptanınız kadroyu ayarlıyor ve başvuruyu tamamlaması bekleniyor.</p>
                 `;
-            } else {
+                editBtn.className = "edit-mode-btn";
+                editBtn.innerHTML = `<i class="fas fa-edit"></i> Takımı Düzenle`;
+                infoText.innerHTML = `<i class="fas fa-info-circle"></i> Düzenleme moduna geçtiğinizde halihazırda onay vermiş oyuncuların durumları bozulmaz.`;
+
+            } else if (status === 'pending') {
                 headerDiv.innerHTML = `
-                    <i class="fas fa-check-circle fa-3x" style="color: var(--yesil-guven); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--yesil-guven));"></i>
-                    <h3 style="color: var(--yesil-guven); font-size: 22px; font-weight: 900; letter-spacing: 0.5px;">Başvuru İncelemede</h3>
+                    <i class="fas fa-clock fa-3x" style="color: var(--mavi-onay); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--mavi-onay));"></i>
+                    <h3 style="color: var(--mavi-onay); font-size: 22px; font-weight: 900; letter-spacing: 0.5px;">Başvuru İncelemede</h3>
                     <p style="color: var(--gri-yazi); font-size: 14px; margin-top: 10px;">Takım başvurunuz turnuva yöneticileri tarafından inceleniyor.</p>
                 `;
+                editBtn.className = "warning-btn";
+                editBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Başvuruyu Geri Çek (Düzenle)`;
+                infoText.innerHTML = `<i class="fas fa-info-circle"></i> Takımda değişiklik yaparsanız başvurunuz sıradan çıkar ve tekrar incelenir.`;
+
+            } else if (status === 'approved') {
+                headerDiv.innerHTML = `
+                    <i class="fas fa-check-circle fa-3x" style="color: var(--yesil-guven); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--yesil-guven));"></i>
+                    <h3 style="color: var(--yesil-guven); font-size: 22px; font-weight: 900; letter-spacing: 0.5px;">Tebrikler, Onaylandınız!</h3>
+                    <p style="color: var(--gri-yazi); font-size: 14px; margin-top: 10px;">Takımınız turnuvaya başarıyla kabul edildi. Sahada görüşmek üzere!</p>
+                `;
+                editBtn.className = "warning-btn";
+                editBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Kadroyu/Logoyu Değiştir`;
+                infoText.innerHTML = `<i class="fas fa-exclamation-circle" style="color: var(--kirmizi-iptal);"></i> DİKKAT: Düzenleme yaparsanız onayınız iptal olur ve tekrar inceleme sırasına girersiniz!`;
+
+            } else if (status === 'rejected') {
+                headerDiv.innerHTML = `
+                    <i class="fas fa-times-circle fa-3x" style="color: var(--kirmizi-iptal); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--kirmizi-iptal));"></i>
+                    <h3 style="color: var(--kirmizi-iptal); font-size: 22px; font-weight: 900; letter-spacing: 0.5px;">Başvurunuz Reddedildi</h3>
+                    <p style="color: var(--gri-yazi); font-size: 14px; margin-top: 10px;">Lütfen eksiklerinizi (logo, uygunsuz isim) giderip tekrar başvuru yapın.</p>
+                `;
+                editBtn.className = "edit-mode-btn";
+                editBtn.innerHTML = `<i class="fas fa-edit"></i> Hataları Düzelt ve Yeniden Gönder`;
+                infoText.innerHTML = ``;
             }
 
             if (isCaptain) {
@@ -579,9 +513,10 @@
 
             let activeTeams = [];
             if (memberships && memberships.length > 0) {
+                // Sadece draft değil, HERHANGİ bir takımı (approved/rejected dahil) çekiyoruz ki ekran boş kalmasın.
                 activeTeams = memberships
                     .map(m => Array.isArray(m.tournament_applications) ? m.tournament_applications[0] : m.tournament_applications)
-                    .filter(t => t && (t.status === 'draft' || t.status === 'pending'));
+                    .filter(t => t !== null);
             }
 
             if (activeTeams.length > 0) {
@@ -595,9 +530,8 @@
                 draftCreatedAt = new Date(targetTeam.created_at).getTime();
 
                 if (targetTeam.captain_id === currentUser.id) {
-                    if (targetTeam.status === 'pending') {
-                        await showRosterScreen(currentDraftId, true, 'pending', targetTeam.captain_id, targetTeam.team_name, targetTeam.team_tag);
-                    } else {
+                    // Eğer draft ise düzenleme formunu aç, diğer durumlarda Roster ekranını (Yazıları) bas
+                    if (targetTeam.status === 'draft') {
                         document.getElementById('teamName').value = targetTeam.team_name || '';
                         document.getElementById('teamTag').value = targetTeam.team_tag || '';
                         document.getElementById('draftInfoBox').style.display = 'block';
@@ -605,6 +539,8 @@
                         fillCaptainSlot(username); 
                         await loadDraftMembers(); 
                         startCountdown();
+                    } else {
+                        await showRosterScreen(currentDraftId, true, targetTeam.status, targetTeam.captain_id, targetTeam.team_name, targetTeam.team_tag);
                     }
                 } else {
                     await showRosterScreen(currentDraftId, false, targetTeam.status, targetTeam.captain_id, targetTeam.team_name, targetTeam.team_tag);
@@ -634,6 +570,14 @@
 
         async function enableEditMode() {
             const btn = document.getElementById('editDraftBtn');
+            
+            // Eğer takım onaylıysa uyar, eminsin mi diye sor
+            if (currentStatus === 'approved') {
+                if (!confirm("DİKKAT: Düzenleme ekranına girerseniz turnuva onayınız iptal olur ve tekrar incelenmeniz gerekir. Devam etmek istiyor musunuz?")) {
+                    return; // İptal ettiyse işlem yapma
+                }
+            }
+
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lütfen Bekleyin...';
             btn.disabled = true;
 
@@ -696,6 +640,7 @@
             }
         }
 
+        // BÜYÜK KÜÇÜK HARF DUYARSIZ ARAMA SİSTEMİ EKLENDİ (.ilike kullanıldı)
         function attachSearchEvents() {
             document.querySelectorAll('.player-search').forEach(input => {
                 
@@ -720,7 +665,7 @@
 
                     const { data } = await _supabase.from('profiles')
                                                     .select('username, id')
-                                                    .ilike('username', `%${query}%`)
+                                                    .ilike('username', `%${query}%`) // CASE-INSENSITIVE (Büyük/Küçük harf farketmez)
                                                     .is('team_id', null)
                                                     .limit(15); 
                     
@@ -898,6 +843,7 @@
                     logoUrl = data.publicUrl;
                 }
 
+                // Ekranda değişiklik yapıp gönderdiğinde tekrar "pending" durumuna döner
                 const { error: teamError } = await _supabase.from('tournament_applications').update({
                     status: 'pending',
                     logo_url: logoUrl
