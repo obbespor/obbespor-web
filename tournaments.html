@@ -1,14 +1,13 @@
-<!DOCTYPE html><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-9VH0LHNCS3');
-</script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-9VH0LHNCS3');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Turnuvalar | OBB E-SPOR</title>
@@ -33,7 +32,7 @@
             color: var(--yazi-beyaz);
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
-            padding-top: 80px; /* Akıllı Header için */
+            padding-top: 80px;
         }
 
         /* --- 2. AKILLI HEADER (KORUNAN YAPI) --- */
@@ -46,16 +45,10 @@
             height: 80px;
             border-bottom: 3px solid var(--neon-mor);
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
+            top: 0; left: 0; width: 100%; z-index: 1000;
             transition: transform 0.4s ease-in-out;
         }
-
-        header.main-nav.nav-hidden {
-            transform: translateY(-110%);
-        }
+        header.main-nav.nav-hidden { transform: translateY(-110%); }
 
         .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--neon-mor); }
@@ -70,16 +63,39 @@
             border-radius: 5px; 
             color: white !important; 
             background: transparent; 
-            transition: 0.3s;
-            text-decoration: none;
-            font-weight: bold;
+            transition: 0.3s; text-decoration: none; font-weight: bold;
         }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
+        /* --- PRO OYUNCU MENÜSÜ --- */
+        .user-dropdown { position: relative; display: inline-block; }
+        .dropdown-trigger {
+            background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor); padding: 8px 18px; border-radius: 50px;
+            color: white; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s;
+            font-family: 'Poppins', sans-serif; z-index: 1001;
+        }
+        .dropdown-trigger:hover { box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); background: rgba(96, 29, 194, 0.2); }
+        .user-name-text { font-weight: 800; font-size: 13px; letter-spacing: 1px; }
+        .arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
+        .dropdown-content {
+            display: none; position: absolute; right: 0; top: 100%; background: #0d0d0d; min-width: 200px;
+            border: 1px solid var(--neon-mor); border-radius: 12px; padding: 5px 0; z-index: 9999;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9); animation: menuFadeIn 0.2s ease-out;
+        }
+        .dropdown-content::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
+        .dropdown-content a { color: #fff; padding: 12px 20px; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; transition: 0.2s; }
+        .dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
+        .dropdown-content a:hover { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); padding-left: 25px; }
+        .user-dropdown:hover .dropdown-content { display: block; }
+        .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
+        .logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
+        .logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
+
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         /* --- 3. TURNUVA BANNER --- */
         .t-header-banner {
-            text-align: center;
-            padding: 80px 20px;
+            text-align: center; padding: 80px 20px;
             background: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(35,8,62,0.8) 50%, rgba(0,0,0,1) 100%);
             border-bottom: 1px solid rgba(96, 29, 194, 0.3);
         }
@@ -89,25 +105,14 @@
         /* --- 4. TURNUVA LİSTESİ --- */
         .t-container { max-width: 1200px; margin: 0 auto; padding: 60px 10%; }
         .filters { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
-        .filter-btn {
-            background: #111; border: 1px solid #333; color: white;
-            padding: 10px 25px; border-radius: 25px; cursor: pointer; transition: 0.3s; font-weight: bold;
-        }
+        .filter-btn { background: #111; border: 1px solid #333; color: white; padding: 10px 25px; border-radius: 25px; cursor: pointer; transition: 0.3s; font-weight: bold; }
         .filter-btn.active, .filter-btn:hover { background: var(--neon-mor); border-color: var(--neon-mor); }
 
         .t-list-grid { display: flex; flex-direction: column; gap: 25px; }
-        .t-wide-card {
-            background: linear-gradient(145deg, #0a0a0a, #16072b);
-            border: 1px solid #222; border-radius: 15px;
-            display: flex; align-items: center; padding: 25px; transition: 0.4s;
-        }
+        .t-wide-card { background: linear-gradient(145deg, #0a0a0a, #16072b); border: 1px solid #222; border-radius: 15px; display: flex; align-items: center; padding: 25px; transition: 0.4s; }
         .t-wide-card:hover { border-color: var(--neon-mor); transform: translateX(10px); box-shadow: 0 0 20px rgba(96,29,194,0.2); }
 
-        .t-image {
-            width: 100px; height: 100px; background: var(--neon-mor);
-            border-radius: 12px; display: flex; align-items: center;
-            justify-content: center; font-weight: 900; font-size: 20px; flex-shrink: 0;
-        }
+        .t-image { width: 100px; height: 100px; background: var(--neon-mor); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; flex-shrink: 0; }
         .t-details { flex: 1; padding: 0 40px; }
         .t-details h2 { font-size: 22px; margin-bottom: 5px; color: #fff; }
         .tag { font-size: 11px; padding: 4px 10px; border-radius: 5px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
@@ -116,41 +121,28 @@
         .t-meta { margin-top: 15px; display: flex; gap: 25px; color: var(--gri-yazi); font-size: 14px; }
         .t-meta strong { color: white; }
 
-        .view-btn, .register-btn {
-            padding: 12px 30px; border-radius: 6px; border: none;
-            font-weight: 900; cursor: pointer; transition: 0.3s; text-transform: uppercase; min-width: 150px;
-        }
+        .view-btn, .register-btn { padding: 12px 30px; border-radius: 6px; border: none; font-weight: 900; cursor: pointer; transition: 0.3s; text-transform: uppercase; min-width: 150px; }
         .view-btn { background: white; color: black; }
         .register-btn { background: var(--neon-mor); color: white; }
 
+        /* Sayaç Animasyonu */
+        .counter-highlight { color: var(--neon-mor) !important; font-size: 16px; font-weight: 900; transition: 0.3s; }
+
         /* --- 5. FOOTER --- */
-        footer {
-            background-color: var(--nav-bg);
-            border-top: 2px solid var(--neon-mor);
-            padding: 80px 10% 40px;
-            margin-top: 100px;
-        }
+        footer { background-color: var(--nav-bg); border-top: 2px solid var(--neon-mor); padding: 80px 10% 40px; margin-top: 100px; }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
-        
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
         .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
-        
         .social-icons { display: flex; gap: 15px; }
-        .social-icons a {
-            width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s;
-        }
+        .social-icons a { width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; }
         .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
-
         .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
         .footer-column ul { list-style: none; }
         .footer-column ul li { margin-bottom: 12px; }
         .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
         .footer-column ul li a:hover { color: var(--neon-mor); }
-
         .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
         .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
-
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
         /* --- 6. MOBİL UYUMLULUK --- */
@@ -161,124 +153,20 @@
             nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
             nav ul li a { font-size: 10px; white-space: nowrap; }
             .nav-btn { padding: 6px 12px; font-size: 10px !important; }
-
             .t-container { padding: 40px 5%; }
             .t-wide-card { flex-direction: column; text-align: center; padding: 30px 20px; }
             .t-details { padding: 20px 0; }
             .t-meta { justify-content: center; flex-direction: column; gap: 8px; }
             .view-btn, .register-btn { width: 100%; }
-
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
             .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
             .footer-brand p { max-width: 100%; }
             .social-icons { justify-content: center; }
             .footer-column { text-align: left; }
+            .user-name-text, .arrow-icon { display: none; } 
+            .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
+            .dropdown-content { position: fixed; right: 15px; top: 75px; width: 180px; }
         }
-     /* --- PRO OYUNCU MENÜSÜ --- */
-.user-dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-trigger {
-    background: rgba(96, 29, 194, 0.1);
-    border: 1px solid var(--neon-mor);
-    padding: 8px 18px;
-    border-radius: 50px;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: 0.3s;
-    font-family: 'Poppins', sans-serif;
-    z-index: 1001;
-}
-
-.dropdown-trigger:hover {
-    box-shadow: 0 0 15px rgba(96, 29, 194, 0.4);
-    background: rgba(96, 29, 194, 0.2);
-}
-
-.user-name-text {
-    font-weight: 800;
-    font-size: 13px;
-    letter-spacing: 1px;
-}
-
-.arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 100%; 
-    background: #0d0d0d;
-    min-width: 200px;
-    border: 1px solid var(--neon-mor);
-    border-radius: 12px;
-    padding: 5px 0;
-    z-index: 9999;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.9);
-    animation: menuFadeIn 0.2s ease-out;
-}
-
-.dropdown-content::before {
-    content: "";
-    position: absolute;
-    top: -20px; 
-    left: 0;
-    width: 100%;
-    height: 20px;
-    background: transparent;
-}
-
-.dropdown-content a {
-    color: #fff;
-    padding: 12px 20px;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    font-weight: 500;
-    transition: 0.2s;
-}
-
-.dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
-
-.dropdown-content a:hover { 
-    background: rgba(96, 29, 194, 0.2); 
-    color: var(--neon-mor); 
-    padding-left: 25px;
-}
-
-.user-dropdown:hover .dropdown-content { display: block; }
-.user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
-
-.logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
-.logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
-
-@keyframes menuFadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 768px) {
-    .user-name-text, .arrow-icon { display: none; } 
-    .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
-    .dropdown-content { 
-        position: fixed; 
-        right: 15px; 
-        top: 75px; 
-        width: 180px; 
-    }
-}
-
-.logout-minimal-btn:hover {
-    transform: scale(1.2);
-    color: #ff0000;
-}
     </style>
 </head>
 <body>
@@ -290,7 +178,7 @@
                 <li><a href="index.html">ANA SAYFA</a></li>
                 <li><a href="tournaments.html">TURNUVALAR</a></li>
                 <li><a href="canli.html">CANLI</a></li>
-                <li><a href="kayit.html" class="nav-btn">KATIL</a></li>
+                <li id="authAction"><a href="kayit.html" class="nav-btn">KATIL</a></li>
             </ul>
         </nav>
     </header>
@@ -313,11 +201,11 @@
                 <div class="t-image">VALO</div>
                 <div class="t-details">
                     <span class="tag live">ÇOK YAKINDA</span>
-                    <h2>OBB 1.TOPLULUK TURNUVASI</h2>
+                    <h2>OBB 1. TOPLULUK TURNUVASI</h2>
                     <p>Ordu'nun en iyileri belli oluyor!</p>
                     <div class="t-meta">
                         <span><strong>Ödül:</strong> Belirtilmemiş</span>
-                        <span><strong>Kayıtlı:</strong> 64/0</span>
+                        <span><strong>Kayıtlı:</strong> <span id="valoCounter" class="counter-highlight">Yükleniyor...</span></span>
                     </div>
                 </div>
                 <div class="t-action">
@@ -329,12 +217,11 @@
                 <div class="t-image" style="background: #1d4ed8;">CSGO</div>
                 <div class="t-details">
                     <span class="tag open">YAKINDA</span>
-                    <h2>>OBB 2.TOPLULUK TURNUVASI</h2>
-                    <p>Ordu Büyükşehir Belediyesi valorant turnuvası</p>
+                    <h2>OBB 2. TOPLULUK TURNUVASI</h2>
+                    <p>Ordu Büyükşehir Belediyesi turnuvası</p>
                     <div class="t-meta">
                         <span><strong>Ödül:</strong> Belirtilmemiş</span>
-                        <span><strong>Kayıtlı:</strong> 32/0</span>
-                    </div>
+                        <span><strong>Kayıtlı:</strong> 32/0</span> </div>
                 </div>
                 <div class="t-action">
                     <button class="register-btn">BELİRTİLMEMİŞ</button>
@@ -380,25 +267,86 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+    <script src="bildirimler.js"></script>
+
     <script>
+        // --- 1. HEADER SCROLL EFEKTİ ---
         let lastScrollTop = 0;
         const header = document.getElementById("mainHeader");
 
         window.addEventListener("scroll", function() {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            if (scrollTop > lastScrollTop && scrollTop > 100) {
-                header.classList.add("nav-hidden");
-            } else {
-                header.classList.remove("nav-hidden");
-            }
+            if (scrollTop > lastScrollTop && scrollTop > 100) { header.classList.add("nav-hidden"); } 
+            else { header.classList.remove("nav-hidden"); }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
+
+        // --- 2. GİRİŞ KONTROLÜ VE YÖNETİCİ MENÜSÜ EKLENTİSİ ---
+        async function checkLoginStatus() {
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                if (user && !error) {
+                    const { data: profileData } = await supabase.from('profiles').select('username, role').eq('id', user.id).single();
+                    const username = profileData?.username || user.user_metadata?.username || "OYUNCU";
+                    const isAdmin = profileData?.role === 'admin'; 
+
+                    let adminLinkHTML = '';
+                    if (isAdmin) {
+                        adminLinkHTML = `<a href="admin.html" style="color: var(--neon-mor); font-weight: 900; border-bottom: 1px solid #222; margin-bottom: 5px;"><i class="fas fa-shield-alt"></i> YÖNETİM PANELİ</a>`;
+                    }
+
+                    document.getElementById('authAction').innerHTML = `
+                        <div class="user-dropdown">
+                            <button class="dropdown-trigger">
+                                <i class="fas fa-user"></i>
+                                <span class="user-name-text">${username}</span>
+                                <i class="fas fa-chevron-down arrow-icon"></i>
+                            </button>
+                            <div class="dropdown-content">
+                                ${adminLinkHTML}
+                                <a href="profil.html"><i class="fas fa-user-circle"></i> Profil</a>
+                                <a href="my-tournaments.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
+                                <a href="#" onclick="handleLogoutIndex(); return false;" class="logout-link"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
+                            </div>
+                        </div>`;
+                }
+            } catch (err) { console.log("Menü yüklenirken hata:", err); }
+        }
+
+        async function handleLogoutIndex() {
+            await supabase.auth.signOut();
+            window.location.reload(); 
+        }
+
+        // --- 3. DİNAMİK TAKIM SAYACI (VERİTABANINDAN ÇEKME) ---
+        async function loadApprovedCount() {
+            try {
+                // status'u 'approved' olan takımların sayısını Supabase'den çekiyoruz
+                // count: 'exact' parametresi bize verileri değil, sadece toplam sayıyı döndürür (Çok daha hızlıdır)
+                const { count, error } = await supabase
+                    .from('tournament_applications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'approved');
+
+                if (!error) {
+                    // Sayıyı alıp HTML'deki id'si "valoCounter" olan yere yazdırıyoruz.
+                    const registeredCount = count || 0;
+                    document.getElementById('valoCounter').innerText = `64/${registeredCount}`;
+                } else {
+                    document.getElementById('valoCounter').innerText = `64/0`;
+                }
+            } catch (err) {
+                console.error("Sayaç hatası:", err);
+            }
+        }
+
+        // Sayfa yüklendiğinde hem menüyü kontrol et hem de sayacı çalıştır
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLoginStatus();
+            loadApprovedCount();
+        });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="auth.js"></script>
-    <script src="bildirimler.js"></script>
-
 </body>
 </html>
-
