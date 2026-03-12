@@ -3,6 +3,13 @@
    ------------------------------------------------------- */
 
 // 1. TÜM CSS KODLARINI (TOAST + ZİL PANELİ) DİNAMİK EKLİYORUZ
+// Dinamik Favicon Ekleme
+const favicon = document.createElement('link');
+favicon.rel = 'icon';
+favicon.type = 'image/png';
+favicon.href = 'assets/bossespor-logo.png'; // Dosya yolunun bildirim.js'ye göre değil, HTML sayfalarına göre doğru olduğundan emin ol.
+
+document.head.appendChild(favicon);
 const style = document.createElement('style');
 style.textContent = `
     /* ================= TOAST (ANLIK BİLDİRİM) CSS ================= */
