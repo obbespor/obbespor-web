@@ -1,131 +1,381 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-9VH0LHNCS3');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duyurular - OBB E-Sports</title>
+    <title>Duyurular | OBB E-SPOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
-        /* Sadece Duyurular Sayfasına Özel Stiller */
-        .duyurular-container {
-            max-width: 1000px;
-            margin: 50px auto;
-            padding: 0 20px;
+        /* --- 1. TEMEL AYARLAR --- */
+        :root {
+            --ana-siyah: #000000;
+            --nav-bg: #000000;
+            --neon-mor: #601dc2; 
+            --yazi-beyaz: #ffffff;
+            --gri-yazi: #a0a0a0;
         }
 
-        .sayfa-basligi {
-            text-align: center;
-            font-size: 2.5rem;
-            color: #ffffff; /* Sitenin ana metin rengine göre ayarlayabilirsin */
-            margin-bottom: 40px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; overflow-x: hidden; background-color: var(--ana-siyah); }
+        body {
+            background: radial-gradient(circle at top, #1a052d 0%, #000000 100%);
+            background-attachment: fixed;
+            color: var(--yazi-beyaz);
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            padding-top: 80px;
         }
 
-        .duyuru-karti {
-            background-color: #1a1a1a; /* Koyu tema arka planı */
-            border-radius: 12px;
-            padding: 40px;
-            margin-bottom: 40px;
+        /* --- 2. AKILLI HEADER --- */
+        header.main-nav {
+            background-color: var(--nav-bg);
+            padding: 0 10%; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            border-bottom: 3px solid var(--neon-mor);
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            z-index: 1000;
+            transition: transform 0.4s ease-in-out;
+        }
+        header.main-nav.nav-hidden { transform: translateY(-110%); }
+
+        .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
+        .logo span { color: var(--neon-mor); }
+        
+        nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
+        nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
+        nav ul li a:hover { color: var(--neon-mor); }
+        
+        .nav-btn { 
+            border: 2px solid var(--neon-mor); 
+            padding: 8px 20px; 
+            border-radius: 5px; 
+            color: white !important; 
+            background: transparent; 
+            transition: 0.3s;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
+
+        /* --- 3. DUYURULAR ÖZEL TASARIMI --- */
+        .container { padding: 60px 10%; min-height: 70vh; }
+        .section-title { margin-bottom: 50px; border-left: 5px solid var(--neon-mor); padding-left: 15px; font-size: 28px; font-weight: 900; text-transform: uppercase; text-align: left; }
+        
+        .duyuru-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .duyuru-detay-karti {
+            background-color: #0a0a0a;
+            border: 1px solid #222;
+            border-left: 5px solid var(--neon-mor);
+            border-radius: 15px;
+            padding: 50px;
+            margin-bottom: 50px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border-left: 5px solid #ff4655; /* OBB E-sports vurgu rengi */
-            
             /* Sayfa içi linkle gelindiğinde header'ın altında kalmasını engeller */
-            scroll-margin-top: 120px; 
-            transition: transform 0.3s ease;
+            scroll-margin-top: 130px; 
+            transition: transform 0.3s ease, border-color 0.3s ease;
         }
 
-        .duyuru-karti:hover {
-            transform: translateY(-5px);
+        .duyuru-detay-karti:hover {
+            border-color: var(--neon-mor);
+            box-shadow: 0 10px 30px rgba(96, 29, 194, 0.2);
         }
 
         .duyuru-tarih {
-            color: #ff4655;
-            font-size: 0.9rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .duyuru-karti h2 {
-            color: #ffffff;
-            font-size: 1.8rem;
-            margin-top: 0;
-            margin-bottom: 25px;
-        }
-
-        .duyuru-icerik p {
-            color: #cccccc;
-            line-height: 1.8;
-            font-size: 1.05rem;
+            color: var(--neon-mor);
+            font-weight: 900;
             margin-bottom: 15px;
+            display: inline-block;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
         }
 
-        .duyuru-icerik blockquote {
-            background: #242424;
-            border-left: 4px solid #ff4655;
-            margin: 30px 0;
-            padding: 20px 25px;
+        .duyuru-detay-karti h1 {
+            color: var(--yazi-beyaz);
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            font-weight: 900;
+            line-height: 1.3;
+        }
+
+        .duyuru-metin p {
+            color: var(--gri-yazi);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .duyuru-metin blockquote {
+            background: rgba(96, 29, 194, 0.05);
+            border-left: 4px solid var(--neon-mor);
+            padding: 25px 30px;
+            margin: 40px 0;
+            border-radius: 0 10px 10px 0;
             font-style: italic;
-            color: #e0e0e0;
-            border-radius: 0 8px 8px 0;
+            color: var(--yazi-beyaz);
+            font-size: 1.1rem;
+            line-height: 1.8;
         }
 
-        .duyuru-icerik blockquote strong {
+        .duyuru-metin blockquote strong {
             display: block;
-            margin-top: 15px;
-            color: #ff4655;
+            margin-top: 20px;
+            color: var(--neon-mor);
             font-style: normal;
+            font-weight: 900;
         }
 
-        .basvuru-link {
-            color: #ff4655;
+        .basvuru-link-btn {
+            display: inline-block;
+            background: var(--neon-mor);
+            color: white;
+            padding: 15px 35px;
+            border-radius: 8px;
             text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s;
+            font-weight: 900;
+            margin-top: 20px;
+            transition: 0.3s;
+            text-transform: uppercase;
         }
 
-        .basvuru-link:hover {
-            color: #ffffff;
-            text-decoration: underline;
+        .basvuru-link-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--neon-mor);
+        }
+
+        /* --- 4. FOOTER --- */
+        footer {
+            background-color: var(--nav-bg);
+            border-top: 2px solid var(--neon-mor);
+            padding: 80px 10% 40px;
+            margin-top: 100px;
+        }
+        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+        
+        .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
+        .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
+        
+        .social-icons { display: flex; gap: 15px; }
+        .social-icons a {
+            width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s;
+        }
+        .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
+
+        .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
+        .footer-column ul { list-style: none; }
+        .footer-column ul li { margin-bottom: 12px; }
+        .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
+        .footer-column ul li a:hover { color: var(--neon-mor); }
+
+        .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
+        .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
+
+        .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
+
+        /* --- 5. MOBİL UYUMLULUK --- */
+        @media (max-width: 768px) {
+            header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
+            body { padding-top: 125px; }
+            nav { width: 100%; }
+            nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 10px; white-space: nowrap; }
+            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
+
+            .container { padding: 40px 5%; }
+            .duyuru-detay-karti { padding: 30px 20px; }
+            .duyuru-detay-karti h1 { font-size: 1.8rem; }
+
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+            .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
+            .footer-brand p { max-width: 100%; }
+            .social-icons { justify-content: center; }
+            .footer-column { text-align: left; }
+            footer { padding: 60px 8% 30px; }
+        }
+
+        /* --- 6. PRO OYUNCU MENÜSÜ --- */
+        .user-dropdown { position: relative; display: inline-block; }
+        .dropdown-trigger { background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor); padding: 8px 18px; border-radius: 50px; color: white; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; font-family: 'Poppins', sans-serif; z-index: 1001; }
+        .dropdown-trigger:hover { box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); background: rgba(96, 29, 194, 0.2); }
+        .user-name-text { font-weight: 800; font-size: 13px; letter-spacing: 1px; }
+        .arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: #0d0d0d; min-width: 200px; border: 1px solid var(--neon-mor); border-radius: 12px; padding: 5px 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9); animation: menuFadeIn 0.2s ease-out; }
+        .dropdown-content::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
+        .dropdown-content a { color: #fff; padding: 12px 20px; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; transition: 0.2s; }
+        .dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
+        .dropdown-content a:hover { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); padding-left: 25px; }
+        .user-dropdown:hover .dropdown-content { display: block; }
+        .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
+        .logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
+        .logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 768px) {
+            .user-name-text, .arrow-icon { display: none; } 
+            .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
+            .dropdown-content { position: fixed; right: 15px; top: 75px; width: 180px; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        </header>
+    <header class="main-nav" id="mainHeader">
+        <a href="index.html" class="logo">OBB <span>E-SPOR</span></a>
+        <nav>
+            <ul>
+                <li><a href="index.html">ANA SAYFA</a></li>
+                <li><a href="tournaments.html">TURNUVALAR</a></li>
+                <li><a href="canli.html">CANLI</a></li>
+                <li id="authAction"><a href="kayit.html" class="nav-btn">KATIL</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <main class="duyurular-container">
-        <h1 class="sayfa-basligi">Duyurular</h1>
-
-        <article id="duyuru-1" class="duyuru-karti">
-            <span class="duyuru-tarih">YENİ PROJE</span>
-            <h2>Ordu Büyükşehir Belediyesi E-Spor Takımı Kuruluyor!</h2>
-            
-            <div class="duyuru-icerik">
-                <p>Ordu Büyükşehir Belediye Başkanı Dr. Mehmet Hilmi GÜLER’in öncülüğünde, Ordu Büyükşehir Belediyesi bünyesinde E-Spor Takımı kuruluyor.</p>
-                
-                <p>Gençliğe, spora ve sporculara verdiği destekle bilinen Ordu Büyükşehir Belediyesi, sporu daha geniş kitlelere ulaştırmak amacıyla yeni bir projeyi hayata geçiriyor. Şehrin gençleri için tasarlanan bu projeyle, teknoloji ve oyun dünyasına ilgisi olan gençler bir araya gelerek hem eğlenecek hem de yeteneklerini geliştirecek.</p>
-                
-                <p>E-Spor takımına katılmak isteyen gençler için seçmeler düzenlenecek. Seçmeleri başarıyla geçen adaylar, alanında uzman profesyonel eğitmenler tarafından eğitim alacak. Eğitim süreci tamamlandıktan sonra, Ordu Büyükşehir Belediyesi E-Spor Takımı, Türkiye genelinde düzenlenen turnuvalarda <strong>OBB E-SPOR</strong>’u temsil edecek.</p>
-                
-                <p>Projenin ilk aşamasında şehrimizin gençleri bir araya gelirken, sonraki aşamalarda online takımlar kurulacak ve Ordu’nun adını bu alanda da temsil edeceğine inanıyoruz.</p>
-                
-                <p>Başkan Dr. Mehmet Hilmi GÜLER, gençlere yönelik projelerle ilgili olarak şunları ifade etti:</p>
-                
-                <blockquote>
-                    "Ordu Büyükşehir Belediyesi olarak her zaman sporun ve sporcunun yanında olduk. Şehrimizde spor aktivitelerini artırmak ve gençlerimizi desteklemek amacıyla E-Spor takımımızı kuruyoruz. Gençlerimiz burada hem eğlenecek hem de kendilerini geliştirecek. Biz, gençlerimizin olduğu her alanda varız. Vatanını ve milletini yürekten seven, sorumluluk bilinci yüksek gençlerimizle, ülkemizi umut ve inançla daha aydınlık yarınlara taşıyacağımıza gönülden inanıyoruz. Gençlerimiz için üretmeye ve projeler geliştirmeye devam edeceğiz."
-                    <strong>- Dr. Mehmet Hilmi GÜLER</strong>
-                </blockquote>
-                
-                <p>Ordu Büyükşehir Belediyesi E-Spor Takımı’na katılmak isteyen gençler, <a href="https://www.obbesports.com/" class="basvuru-link">www.obbesports.com</a> adresinden başvuru yapabilirler.</p>
-            </div>
-        </article>
+    <main class="container">
         
-        </main>
+        <div class="duyuru-wrapper">
+            <h2 class="section-title">HABERLER & DUYURULAR</h2>
+
+            <article id="duyuru-1" class="duyuru-detay-karti">
+                <span class="duyuru-tarih">YENİ PROJE LANSMAI</span>
+                <h1>Ordu Büyükşehir Belediyesi E-Spor Takımı Kuruluyor!</h1>
+                
+                <div class="duyuru-metin">
+                    <p>Ordu Büyükşehir Belediye Başkanı Dr. Mehmet Hilmi GÜLER’in öncülüğünde, Ordu Büyükşehir Belediyesi bünyesinde E-Spor Takımı kuruluyor.</p>
+                    
+                    <p>Gençliğe, spora ve sporculara verdiği destekle bilinen Ordu Büyükşehir Belediyesi, sporu daha geniş kitlelere ulaştırmak amacıyla yeni bir projeyi hayata geçiriyor. Şehrin gençleri için tasarlanan bu projeyle, teknoloji ve oyun dünyasına ilgisi olan gençler bir araya gelerek hem eğlenecek hem de yeteneklerini geliştirecek.</p>
+                    
+                    <p>E-Spor takımına katılmak isteyen gençler için seçmeler düzenlenecek. Seçmeleri başarıyla geçen adaylar, alanında uzman profesyonel eğitmenler tarafından eğitim alacak. Eğitim süreci tamamlandıktan sonra, Ordu Büyükşehir Belediyesi E-Spor Takımı, Türkiye genelinde düzenlenen turnuvalarda <strong>OBB E-SPOR</strong>’u temsil edecek.</p>
+                    
+                    <p>Projenin ilk aşamasında şehrimizin gençleri bir araya gelirken, sonraki aşamalarda online takımlar kurulacak ve Ordu’nun adını bu alanda da temsil edeceğine inanıyoruz.</p>
+                    
+                    <p>Başkan Dr. Mehmet Hilmi GÜLER, gençlere yönelik projelerle ilgili olarak şunları ifade etti:</p>
+                    
+                    <blockquote>
+                        "Ordu Büyükşehir Belediyesi olarak her zaman sporun ve sporcunun yanında olduk. Şehrimizde spor aktivitelerini artırmak ve gençlerimizi desteklemek amacıyla E-Spor takımımızı kuruyoruz. Gençlerimiz burada hem eğlenecek hem de kendilerini geliştirecek. Biz, gençlerimizin olduğu her alanda varız. Vatanını ve milletini yürekten seven, sorumluluk bilinci yüksek gençlerimizle, ülkemizi umut ve inançla daha aydınlık yarınlara taşıyacağımıza gönülden inanıyoruz. Gençlerimiz için üretmeye ve projeler geliştirmeye devam edeceğiz."
+                        <strong>- Dr. Mehmet Hilmi GÜLER</strong>
+                    </blockquote>
+                    
+                    <p>Ordu Büyükşehir Belediyesi E-Spor Takımı’na katılmak için hemen arenaya adım atın.</p>
+                    
+                    <a href="kayit.html" class="basvuru-link-btn">HEMEN BAŞVURU YAP</a>
+                </div>
+            </article>
+        </div>
+
+    </main>
 
     <footer>
-        </footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h2>OBB <span style="color:white">E-SPOR</span></h2>
+                <p>Türkiye'nin en dinamik e-spor platformu. Rekabete katıl, yeteneğini göster ve ödülleri topla.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
 
+            <div class="footer-column">
+                <h3>Hızlı Menü</h3>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="tournaments.html">Turnuvalar</a></li>
+                    <li><a href="canli.html">Canlı</a></li>
+                    <li><a href="kayit.html">Kayıt Ol</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>İletişim</h3>
+                <ul>
+                    <li class="contact-item"><i class="fas fa-envelope"></i> info@obbesports.com</li>
+                    <li class="contact-item"><i class="fas fa-location-dot"></i> Ordu, Türkiye</li>
+                    <li class="contact-item"><i class="fas fa-headset"></i> 7/24 Destek Ekibi</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 OBB E-SPOR. Tüm Hakları Saklıdır.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+    <script src="bildirimler.js"></script>
+
+    <script>
+        let lastScrollTop = 0;
+        const header = document.getElementById("mainHeader");
+
+        window.addEventListener("scroll", function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                header.classList.add("nav-hidden");
+            } else {
+                header.classList.remove("nav-hidden");
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+        }, false);
+
+        // Giriş Kontrolü
+        async function checkLoginStatus() {
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                if (user && !error) {
+                    const { data: profileData } = await supabase.from('profiles').select('username, role').eq('id', user.id).single();
+                    const username = profileData?.username || user.user_metadata?.username || "OYUNCU";
+                    const isAdmin = profileData?.role === 'admin'; 
+
+                    let adminLinkHTML = '';
+                    if (isAdmin) {
+                        adminLinkHTML = `<a href="admin.html" style="color: var(--neon-mor); font-weight: 900; border-bottom: 1px solid #222; margin-bottom: 5px;"><i class="fas fa-shield-alt"></i> YÖNETİM PANELİ</a>`;
+                    }
+
+                    document.getElementById('authAction').innerHTML = `
+                        <div class="user-dropdown">
+                            <button class="dropdown-trigger">
+                                <i class="fas fa-user"></i>
+                                <span class="user-name-text">${username}</span>
+                                <i class="fas fa-chevron-down arrow-icon"></i>
+                            </button>
+                            <div class="dropdown-content">
+                                ${adminLinkHTML}
+                                <a href="profil.html"><i class="fas fa-user-circle"></i> Profil</a>
+                                <a href="my-tournaments.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
+                                <a href="#" onclick="handleLogoutIndex(); return false;" class="logout-link"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
+                            </div>
+                        </div>`;
+                }
+            } catch (err) {
+                console.log("Kullanıcı kontrolü sırasında hata: ", err);
+            }
+        }
+
+        async function handleLogoutIndex() {
+            await supabase.auth.signOut();
+            window.location.reload(); 
+        }
+
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+    </script>
 </body>
 </html>
