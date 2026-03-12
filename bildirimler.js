@@ -42,12 +42,12 @@ style.textContent = `
     .custom-toast.hide { transform: translateX(120%); opacity: 0; }
     .toast-icon { font-size: 20px; }
 
-    .toast-success { border-left: 4px solid #00d2ff; }
-    .toast-success .toast-icon { color: #00d2ff; }
+    .toast-success { border-left: 4px solid #00e676; } /* Daha canlı bir yeşil */
+    .toast-success .toast-icon { color: #00e676; }
     .toast-error { border-left: 4px solid #ff4b4b; }
     .toast-error .toast-icon { color: #ff4b4b; }
-    .toast-info { border-left: 4px solid #601dc2; }
-    .toast-info .toast-icon { color: #601dc2; }
+    .toast-info { border-left: 4px solid #00d2ff; }
+    .toast-info .toast-icon { color: #00d2ff; }
 
     /* ================= BİLDİRİM MERKEZİ (ZİL VE PANEL) CSS ================= */
     .desktop-only { display: block; }
@@ -71,9 +71,11 @@ style.textContent = `
     .clear-btn { background: none; border: none; color: #ff4b4b; font-size: 12px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: bold; transition: 0.3s; }
     .clear-btn:hover { text-decoration: underline; color: #ff0000; }
     .notif-body { max-height: 300px; overflow-y: auto; }
+    
+    /* Dinamik Renkli İkonlar İçin Özel Sınıflar */
     .notif-item { padding: 15px 20px; border-bottom: 1px solid #1a1a1a; display: flex; gap: 15px; font-size: 13px; color: #ccc; transition: 0.3s; cursor: pointer;}
     .notif-item:hover { background: rgba(96, 29, 194, 0.1); }
-    .notif-item i { color: var(--neon-mor); font-size: 18px; margin-top: 3px; }
+    .notif-item i { font-size: 18px; margin-top: 3px; }
     .notif-item-content strong { color: white; display: block; margin-bottom: 3px; }
     .notif-empty { padding: 40px 20px; text-align: center; color: var(--gri-yazi); font-size: 13px; }
     
@@ -143,12 +145,19 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.body.appendChild(mobileBellDiv);
 
-    // Sayfa açıldığında panel listesini çiz
-    if(typeof window.renderNotifications === 'function'){
-        window.renderNotifications();
-    }
+    // Supabase kütüphanesi hazır olduğunda gerçek bildirimleri çekmeye başla
+    setTimeout(() => {
+        if (typeof supabase !== 'undefined') {
+            window.fetchRealNotifications();
+        } else {
+            // Eğer Supabase yüklenememişse (veya admin panelinden bu dosya çağrılıyorsa ve supabase değişkeni "_supabase" olarak adlandırılmışsa)
+            if (typeof _supabase !== 'undefined') {
+                window.supabaseClientForNotifs = _supabase;
+                window.fetchRealNotifications();
+            }
+        }
+    }, 500);
 });
-
 
 // 3. FONKSİYONLAR (GLOBAL ERİŞİM İÇİN)
 
@@ -183,13 +192,63 @@ window.showNotification = function(message, type = 'info') {
     }, 4000);
 };
 
-// B. Panel Bildirim Verileri
-window.myNotifications = [
-    { icon: "fa-users", title: "Takım Daveti", text: "BOSSESPOR takımından davet aldın!" },
-    { icon: "fa-trophy", title: "Turnuva", text: "Valorant Turnuvası kayıtları açıldı." }
-];
+// B. Gerçek Zamanlı Bildirim Dizisi
+window.myNotifications = [];
 
-// C. Paneli Render Etme Fonksiyonu
+// Tipe Göre İkon ve Renk Belirleyici
+function getIconForType(tip) {
+    switch(tip) {
+        case 'onay': return { icon: 'fa-check-circle', color: '#00e676' }; // Yeşil
+        case 'red': return { icon: 'fa-times-circle', color: '#ff4b4b' }; // Kırmızı
+        case 'sistem': return { icon: 'fa-bullhorn', color: '#601dc2' }; // Mor
+        case 'davet': return { icon: 'fa-envelope-open-text', color: '#f39c12' }; // Turuncu
+        default: return { icon: 'fa-bell', color: '#00d2ff' }; // Mavi
+    }
+}
+
+// C. Supabase'den Gerçek Bildirimleri Çekme
+window.fetchRealNotifications = async function() {
+    try {
+        // Admin paneli _supabase kullanıyor olabilir, front-end supabase kullanıyor olabilir. İkisini de destekler.
+        const dbClient = window.supabaseClientForNotifs || window.supabase; 
+        if (!dbClient) return;
+
+        const { data: { user }, error: authError } = await dbClient.auth.getUser();
+        if (!user || authError) return;
+
+        // Okunmamış bildirimleri çek
+        const { data, error } = await dbClient
+            .from('bildirimler')
+            .select('*')
+            .eq('kullanici_id', user.id)
+            .eq('okundu', false)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+            window.myNotifications = data.map(item => {
+                const styleObj = getIconForType(item.tip);
+                return {
+                    id: item.id,
+                    icon: styleObj.icon,
+                    color: styleObj.color,
+                    title: item.baslik,
+                    text: item.mesaj
+                };
+            });
+        } else {
+            window.myNotifications = [];
+        }
+
+        window.renderNotifications();
+
+    } catch (err) {
+        console.error("Bildirimler veritabanından çekilemedi:", err);
+    }
+};
+
+// D. Paneli Ekrana Çizme
 window.renderNotifications = function() {
     const deskList = document.getElementById("notif-list-desktop");
     const mobList = document.getElementById("notif-list-mobile");
@@ -206,7 +265,7 @@ window.renderNotifications = function() {
         window.myNotifications.forEach(notif => {
             htmlContent += `
                 <div class="notif-item">
-                    <i class="fas ${notif.icon}"></i>
+                    <i class="fas ${notif.icon}" style="color: ${notif.color};"></i>
                     <div class="notif-item-content">
                         <strong>${notif.title}</strong>
                         <span>${notif.text}</span>
@@ -222,26 +281,55 @@ window.renderNotifications = function() {
     if (mobList) mobList.innerHTML = htmlContent;
 };
 
-// D. Paneli Aç/Kapa Fonksiyonu
+// E. Paneli Aç/Kapa Fonksiyonu
 window.toggleNotifPanel = function(panelId, event) {
     event.preventDefault();
     const panel = document.getElementById(panelId);
+    if (!panel) return;
+    
     const isActive = panel.classList.contains("active");
     
     // Açık olan tüm panelleri kapat
     document.querySelectorAll('.notif-panel').forEach(p => p.classList.remove('active'));
     
     // Eğer zaten açık değilse tıklandığında aç
-    if (!isActive && panel) {
+    if (!isActive) {
         panel.classList.add("active");
     }
 };
 
-// E. Tüm Bildirimleri Temizleme
-window.clearNotifications = function(event) {
-    if(event) event.stopPropagation(); // Butona tıklayınca panelin kapanmasını engeller
-    window.myNotifications = [];
-    window.renderNotifications();
+// F. Tüm Bildirimleri Temizleme (Ve Supabase'de Okundu İşaretleme)
+window.clearNotifications = async function(event) {
+    if(event) event.stopPropagation();
+
+    try {
+        const dbClient = window.supabaseClientForNotifs || window.supabase; 
+        if (!dbClient) return;
+
+        const { data: { user } } = await dbClient.auth.getUser();
+        if (!user) return;
+
+        // Veritabanındaki tüm okunmamış bildirimleri okundu yap
+        const { error } = await dbClient
+            .from('bildirimler')
+            .update({ okundu: true })
+            .eq('kullanici_id', user.id)
+            .eq('okundu', false);
+            
+        if (error) throw error;
+
+        // Arayüzü anında temizle
+        window.myNotifications = [];
+        window.renderNotifications();
+        
+        // Sağ alttan toast bildirimi göster
+        if(typeof window.showNotification === 'function') {
+            window.showNotification("Tüm bildirimler temizlendi.", "success");
+        }
+
+    } catch (err) {
+        console.error("Bildirimler temizlenirken hata oluştu:", err);
+    }
 };
 
 // Dışarı tıklanınca açık panelleri kapat
