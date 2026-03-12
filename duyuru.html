@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duyurular - OBB E-Sports</title>
+    <style>
+        /* Sadece Duyurular Sayfasına Özel Stiller */
+        .duyurular-container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .sayfa-basligi {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #ffffff; /* Sitenin ana metin rengine göre ayarlayabilirsin */
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .duyuru-karti {
+            background-color: #1a1a1a; /* Koyu tema arka planı */
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-left: 5px solid #ff4655; /* OBB E-sports vurgu rengi */
+            
+            /* Sayfa içi linkle gelindiğinde header'ın altında kalmasını engeller */
+            scroll-margin-top: 120px; 
+            transition: transform 0.3s ease;
+        }
+
+        .duyuru-karti:hover {
+            transform: translateY(-5px);
+        }
+
+        .duyuru-tarih {
+            color: #ff4655;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .duyuru-karti h2 {
+            color: #ffffff;
+            font-size: 1.8rem;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .duyuru-icerik p {
+            color: #cccccc;
+            line-height: 1.8;
+            font-size: 1.05rem;
+            margin-bottom: 15px;
+        }
+
+        .duyuru-icerik blockquote {
+            background: #242424;
+            border-left: 4px solid #ff4655;
+            margin: 30px 0;
+            padding: 20px 25px;
+            font-style: italic;
+            color: #e0e0e0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .duyuru-icerik blockquote strong {
+            display: block;
+            margin-top: 15px;
+            color: #ff4655;
+            font-style: normal;
+        }
+
+        .basvuru-link {
+            color: #ff4655;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .basvuru-link:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        </header>
+
+    <main class="duyurular-container">
+        <h1 class="sayfa-basligi">Duyurular</h1>
+
+        <article id="duyuru-1" class="duyuru-karti">
+            <span class="duyuru-tarih">YENİ PROJE</span>
+            <h2>Ordu Büyükşehir Belediyesi E-Spor Takımı Kuruluyor!</h2>
+            
+            <div class="duyuru-icerik">
+                <p>Ordu Büyükşehir Belediye Başkanı Dr. Mehmet Hilmi GÜLER’in öncülüğünde, Ordu Büyükşehir Belediyesi bünyesinde E-Spor Takımı kuruluyor.</p>
+                
+                <p>Gençliğe, spora ve sporculara verdiği destekle bilinen Ordu Büyükşehir Belediyesi, sporu daha geniş kitlelere ulaştırmak amacıyla yeni bir projeyi hayata geçiriyor. Şehrin gençleri için tasarlanan bu projeyle, teknoloji ve oyun dünyasına ilgisi olan gençler bir araya gelerek hem eğlenecek hem de yeteneklerini geliştirecek.</p>
+                
+                <p>E-Spor takımına katılmak isteyen gençler için seçmeler düzenlenecek. Seçmeleri başarıyla geçen adaylar, alanında uzman profesyonel eğitmenler tarafından eğitim alacak. Eğitim süreci tamamlandıktan sonra, Ordu Büyükşehir Belediyesi E-Spor Takımı, Türkiye genelinde düzenlenen turnuvalarda <strong>OBB E-SPOR</strong>’u temsil edecek.</p>
+                
+                <p>Projenin ilk aşamasında şehrimizin gençleri bir araya gelirken, sonraki aşamalarda online takımlar kurulacak ve Ordu’nun adını bu alanda da temsil edeceğine inanıyoruz.</p>
+                
+                <p>Başkan Dr. Mehmet Hilmi GÜLER, gençlere yönelik projelerle ilgili olarak şunları ifade etti:</p>
+                
+                <blockquote>
+                    "Ordu Büyükşehir Belediyesi olarak her zaman sporun ve sporcunun yanında olduk. Şehrimizde spor aktivitelerini artırmak ve gençlerimizi desteklemek amacıyla E-Spor takımımızı kuruyoruz. Gençlerimiz burada hem eğlenecek hem de kendilerini geliştirecek. Biz, gençlerimizin olduğu her alanda varız. Vatanını ve milletini yürekten seven, sorumluluk bilinci yüksek gençlerimizle, ülkemizi umut ve inançla daha aydınlık yarınlara taşıyacağımıza gönülden inanıyoruz. Gençlerimiz için üretmeye ve projeler geliştirmeye devam edeceğiz."
+                    <strong>- Dr. Mehmet Hilmi GÜLER</strong>
+                </blockquote>
+                
+                <p>Ordu Büyükşehir Belediyesi E-Spor Takımı’na katılmak isteyen gençler, <a href="https://www.obbesports.com/" class="basvuru-link">www.obbesports.com</a> adresinden başvuru yapabilirler.</p>
+            </div>
+        </article>
+        
+        </main>
+
+    <footer>
+        </footer>
+
+</body>
+</html>
