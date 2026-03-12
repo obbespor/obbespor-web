@@ -6,6 +6,7 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
+
       gtag('config', 'G-9VH0LHNCS3');
     </script>
     <meta charset="UTF-8">
@@ -15,7 +16,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* --- 1. TEMEL AYARLAR --- */
+        /* ==========================================================
+           1. TEMEL AYARLAR (Sizin kodunuzla birebir aynı)
+           ========================================================== */
         :root {
             --ana-siyah: #000000;
             --nav-bg: #000000;
@@ -35,7 +38,9 @@
             padding-top: 80px;
         }
 
-        /* --- 2. AKILLI HEADER --- */
+        /* ==========================================================
+           2. AKILLI HEADER (Sizin kodunuzla birebir aynı)
+           ========================================================== */
         header.main-nav {
             background-color: var(--nav-bg);
             padding: 0 10%; 
@@ -70,9 +75,11 @@
         }
         .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-        /* --- 3. DUYURULAR ÖZEL TASARIMI --- */
-        .container { padding: 60px 10%; min-height: 70vh; }
-        .section-title { margin-bottom: 50px; border-left: 5px solid var(--neon-mor); padding-left: 15px; font-size: 28px; font-weight: 900; text-transform: uppercase; text-align: left; }
+        /* ==========================================================
+           3. DUYURULAR ÖZEL TASARIMI (Bu sayfaya özel)
+           ========================================================== */
+        .container { padding: 80px 10%; min-height: 70vh; }
+        .section-title { margin-bottom: 40px; border-left: 5px solid var(--neon-mor); padding-left: 15px; font-size: 28px; font-weight: 900; text-transform: uppercase; }
         
         .duyuru-wrapper { max-width: 900px; margin: 0 auto; }
 
@@ -85,11 +92,12 @@
             margin-bottom: 50px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             scroll-margin-top: 130px; 
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            transition: 0.4s ease;
         }
 
         .duyuru-detay-karti:hover {
             border-color: var(--neon-mor);
+            transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(96, 29, 194, 0.2);
         }
 
@@ -116,16 +124,20 @@
             background: var(--neon-mor);
             color: white;
             padding: 15px 35px;
+            border: none;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 900;
             margin-top: 20px;
             transition: 0.3s;
             text-transform: uppercase;
+            cursor: pointer;
         }
         .basvuru-link-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--neon-mor); }
 
-        /* --- 4. FOOTER --- */
+        /* ==========================================================
+           4. FOOTER (Sizin kodunuzla birebir aynı)
+           ========================================================== */
         footer {
             background-color: var(--nav-bg);
             border-top: 2px solid var(--neon-mor);
@@ -133,86 +145,260 @@
             margin-top: 100px;
         }
         .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+        
         .footer-brand h2 { font-size: 28px; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid var(--neon-mor); display: inline-block; text-transform: uppercase; }
         .footer-brand p { color: var(--gri-yazi); font-size: 15px; max-width: 350px; margin-bottom: 25px; }
+        
         .social-icons { display: flex; gap: 15px; }
-        .social-icons a { width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; }
+        .social-icons a {
+            width: 45px; height: 45px; background: #111; border: 1px solid #222; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s;
+        }
         .social-icons a:hover { background: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 0 15px var(--neon-mor); }
+
         .footer-column h3 { font-size: 20px; font-weight: 700; color: var(--neon-mor); margin-bottom: 25px; text-transform: uppercase; }
         .footer-column ul { list-style: none; }
         .footer-column ul li { margin-bottom: 12px; }
         .footer-column ul li a { color: white; text-decoration: none; font-size: 15px; transition: 0.3s; }
         .footer-column ul li a:hover { color: var(--neon-mor); }
+
         .contact-item { display: flex; align-items: center; gap: 12px; color: var(--gri-yazi); font-size: 15px; margin-bottom: 15px; }
         .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
+
         .footer-bottom { text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; color: #555; font-size: 13px; }
 
-        /* --- 6. PRO OYUNCU MENÜSÜ --- */
-        .user-dropdown { position: relative; display: inline-block; }
-        .dropdown-trigger { background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor); padding: 8px 18px; border-radius: 50px; color: white; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; font-family: 'Poppins', sans-serif; z-index: 1001; }
-        .dropdown-trigger:hover { box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); background: rgba(96, 29, 194, 0.2); }
-        .user-name-text { font-weight: 800; font-size: 13px; letter-spacing: 1px; }
+        /* ==========================================================
+           5. MOBİL UYUMLULUK (Sizin kodunuzla birebir aynı)
+           ========================================================== */
+        @media (max-width: 768px) {
+            header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
+            body { padding-top: 125px; }
+            nav { width: 100%; }
+            nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
+            nav ul li a { font-size: 10px; white-space: nowrap; }
+            .nav-btn { padding: 6px 12px; font-size: 10px !important; }
+
+            /* Footer Yan Yana Mobil Düzeni */
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+            .footer-brand { grid-column: span 2; text-align: center; border-bottom: 1px solid #111; padding-bottom: 30px; }
+            .footer-brand p { max-width: 100%; }
+            .social-icons { justify-content: center; }
+            .footer-column { text-align: left; }
+            footer { padding: 60px 8% 30px; }
+
+            /* Sadece bu sayfadaki duyuru kartı mobil görünümü */
+            .duyuru-detay-karti { padding: 30px 20px; }
+            .duyuru-detay-karti h1 { font-size: 1.8rem; }
+            .duyuru-metin blockquote { padding: 15px; font-size: 1rem; }
+        }
+
+        /* ==========================================================
+           6. PRO OYUNCU MENÜSÜ VE SABİTLEME FİXİ (Sizin kodunuzla aynı)
+           ========================================================== */
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-trigger {
+            background: rgba(96, 29, 194, 0.1);
+            border: 1px solid var(--neon-mor);
+            padding: 8px 18px;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+            font-family: 'Poppins', sans-serif;
+            z-index: 1001;
+        }
+
+        .dropdown-trigger:hover {
+            box-shadow: 0 0 15px rgba(96, 29, 194, 0.4);
+            background: rgba(96, 29, 194, 0.2);
+        }
+
+        .user-name-text {
+            font-weight: 800;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
         .arrow-icon { font-size: 10px; color: var(--neon-mor); transition: 0.3s; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: #0d0d0d; min-width: 200px; border: 1px solid var(--neon-mor); border-radius: 12px; padding: 5px 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9); animation: menuFadeIn 0.2s ease-out; }
-        .dropdown-content::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
-        .dropdown-content a { color: #fff; padding: 12px 20px; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; transition: 0.2s; }
+
+        /* Menü İçeriği */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%; 
+            background: #0d0d0d;
+            min-width: 200px;
+            border: 1px solid var(--neon-mor);
+            border-radius: 12px;
+            padding: 5px 0;
+            z-index: 9999;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+            animation: menuFadeIn 0.2s ease-out;
+        }
+
+        .dropdown-content::before {
+            content: "";
+            position: absolute;
+            top: -20px; 
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: transparent;
+        }
+
+        .dropdown-content a {
+            color: #fff;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
         .dropdown-content a i { color: var(--neon-mor); width: 18px; text-align: center; }
-        .dropdown-content a:hover { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); padding-left: 25px; }
+
+        .dropdown-content a:hover { 
+            background: rgba(96, 29, 194, 0.2); 
+            color: var(--neon-mor); 
+            padding-left: 25px; 
+        }
+
         .user-dropdown:hover .dropdown-content { display: block; }
         .user-dropdown:hover .arrow-icon { transform: rotate(180deg); }
+
         .logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
         .logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
-        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- 5. GELİŞTİRİLMİŞ MOBİL UYUMLULUK --- */
+        @keyframes menuFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         @media (max-width: 768px) {
-            /* Header Mobil Düzeni */
-            header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
-            body { padding-top: 130px; } /* Mobilde header daha çok yer kaplıyor, boşluk artırıldı */
-            nav { width: 100%; overflow-x: auto; padding-bottom: 5px; }
-            nav ul { gap: 15px; flex-wrap: nowrap; justify-content: center; width: max-content; margin: 0 auto; }
-            nav ul li a { font-size: 12px; white-space: nowrap; }
-            .nav-btn { padding: 6px 12px; font-size: 11px !important; }
-
-            /* Duyurular İçerik Mobil Düzeni */
-            .container { padding: 30px 5%; }
-            .section-title { font-size: 22px; margin-bottom: 30px; }
-            
-            .duyuru-detay-karti { 
-                padding: 25px 20px; 
-                margin-bottom: 40px; 
-                scroll-margin-top: 150px; /* Header'ın altında kalmaması için artırıldı */
-            }
-            .duyuru-detay-karti h1 { font-size: 1.6rem; margin-bottom: 20px; }
-            .duyuru-metin p { font-size: 0.95rem; line-height: 1.6; }
-            
-            .duyuru-metin blockquote { 
-                padding: 15px 20px; 
-                margin: 25px 0; 
-                font-size: 1rem; 
-            }
-
-            .basvuru-link-btn {
-                display: block;
-                text-align: center;
-                width: 100%;
-                padding: 15px 0;
-            }
-
-            /* Footer Mobil Düzeni */
-            .footer-grid { grid-template-columns: 1fr; gap: 40px; text-align: center; }
-            .footer-brand { border-bottom: 1px solid #111; padding-bottom: 30px; }
-            .footer-brand h2 { font-size: 24px; }
-            .footer-brand p { margin: 0 auto 20px auto; }
-            .social-icons { justify-content: center; }
-            .footer-column h3 { font-size: 18px; margin-bottom: 15px; }
-            .contact-item { justify-content: center; }
-            footer { padding: 50px 8% 30px; margin-top: 60px; }
-
-            /* Pro Oyuncu Menüsü Mobil */
             .user-name-text, .arrow-icon { display: none; } 
             .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
-            .dropdown-content { position: fixed; right: 15px; top: 125px; width: 180px; }
+            .dropdown-content { 
+                position: fixed; 
+                right: 15px; 
+                top: 75px; 
+                width: 180px; 
+            }
+        }
+        .logout-minimal-btn:hover {
+            transform: scale(1.2);
+            color: #ff0000;
+        }
+
+        /* ==========================================================
+           7. MODAL (AÇILIR PENCERE) AYARLARI (Sizin kodunuzla aynı)
+           ========================================================== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            background: #0a0a0a;
+            border: 2px solid var(--neon-mor);
+            border-radius: 15px;
+            padding: 40px 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 30px rgba(96, 29, 194, 0.4);
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: var(--gri-yazi);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .close-btn:hover {
+            color: #ff4b4b;
+        }
+        .modal-title {
+            color: var(--neon-mor);
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .modal-social-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .modal-social-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #111;
+            border: 1px solid #222;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--yazi-beyaz);
+            font-weight: 700;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+        .modal-social-item:hover {
+            background: rgba(96, 29, 194, 0.1);
+            border-color: var(--neon-mor);
+            transform: translateX(5px);
+            box-shadow: 0 0 15px rgba(96, 29, 194, 0.2);
+            color: var(--neon-mor);
+        }
+        .icon-wrapper {
+            width: 40px;
+            height: 40px;
+            background: var(--nav-bg);
+            border: 1px solid #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+        .modal-social-item:hover .icon-wrapper {
+            background: var(--neon-mor);
+            border-color: var(--neon-mor);
+            color: white;
+            box-shadow: 0 0 10px var(--neon-mor);
         }
     </style>
 </head>
@@ -230,7 +416,7 @@
         </nav>
     </header>
 
-    <main class="container">
+    <section class="container">
         
         <div class="duyuru-wrapper">
             <h2 class="section-title">HABERLER & DUYURULAR</h2>
@@ -262,7 +448,7 @@
             </article>
         </div>
 
-    </main>
+    </section>
 
     <footer>
         <div class="footer-grid">
@@ -301,6 +487,35 @@
         </div>
     </footer>
 
+    <div id="socialModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeSocialModal()">&times;</span>
+            <h3 class="modal-title">Bize Katılın</h3>
+            <div class="modal-social-links">
+                <a href="#" target="_blank" class="modal-social-item">
+                    <span class="icon-wrapper"><i class="fab fa-youtube"></i></span>
+                    <span class="social-text">YouTube</span>
+                </a>
+                <a href="#" target="_blank" class="modal-social-item">
+                    <span class="icon-wrapper"><i class="fab fa-instagram"></i></span>
+                    <span class="social-text">Instagram</span>
+                </a>
+                <a href="#" target="_blank" class="modal-social-item">
+                    <span class="icon-wrapper"><i class="fab fa-x-twitter"></i></span>
+                    <span class="social-text">Twitter</span>
+                </a>
+                <a href="#" target="_blank" class="modal-social-item">
+                    <span class="icon-wrapper"><i class="fab fa-facebook-f"></i></span>
+                    <span class="social-text">Facebook</span>
+                </a>
+                <a href="#" target="_blank" class="modal-social-item">
+                    <span class="icon-wrapper"><i class="fab fa-discord"></i></span>
+                    <span class="social-text">Discord</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="auth.js"></script>
     <script src="bildirimler.js"></script>
@@ -319,20 +534,47 @@
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
         }, false);
 
-        // Giriş Kontrolü
+        // --- MODAL (AÇILIR PENCERE) JAVASCRIPT KODLARI ---
+        function openSocialModal(e) {
+            e.preventDefault(); 
+            const modal = document.getElementById('socialModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        function closeSocialModal() {
+            const modal = document.getElementById('socialModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('socialModal');
+            if (e.target === modal) {
+                closeSocialModal();
+            }
+        });
+
+        // --- GİRİŞ KONTROLÜ VE YÖNETİCİ MENÜSÜ EKLENTİSİ ---
         async function checkLoginStatus() {
             try {
+                // auth.js'deki supabase değişkenini kullanıyoruz
                 const { data: { user }, error } = await supabase.auth.getUser();
+                
                 if (user && !error) {
+                    // Kullanıcı giriş yapmışsa rolünü kontrol et
                     const { data: profileData } = await supabase.from('profiles').select('username, role').eq('id', user.id).single();
+                    
                     const username = profileData?.username || user.user_metadata?.username || "OYUNCU";
                     const isAdmin = profileData?.role === 'admin'; 
 
+                    // Sadece adminse görünecek HTML kodunu hazırlıyoruz
                     let adminLinkHTML = '';
                     if (isAdmin) {
                         adminLinkHTML = `<a href="admin.html" style="color: var(--neon-mor); font-weight: 900; border-bottom: 1px solid #222; margin-bottom: 5px;"><i class="fas fa-shield-alt"></i> YÖNETİM PANELİ</a>`;
                     }
 
+                    // GÜNCELLENDİ: Simgeler ve sıralama profil.html ile birebir aynı yapıldı
                     document.getElementById('authAction').innerHTML = `
                         <div class="user-dropdown">
                             <button class="dropdown-trigger">
@@ -353,11 +595,13 @@
             }
         }
 
+        // Index sayfası için özel çıkış fonksiyonu
         async function handleLogoutIndex() {
             await supabase.auth.signOut();
-            window.location.reload(); 
+            window.location.reload(); // Çıkış yapınca sayfayı yenile ki menü eski haline ("KATIL") dönsün
         }
 
+        // Sayfa yüklendiğinde kontrolü başlat
         document.addEventListener('DOMContentLoaded', checkLoginStatus);
     </script>
 </body>
