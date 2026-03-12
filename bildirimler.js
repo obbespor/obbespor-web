@@ -7,7 +7,7 @@
 const favicon = document.createElement('link');
 favicon.rel = 'icon';
 favicon.type = 'img/png';
-favicon.href = 'img/obbmorlogo.png'; // Dosya yolunun bildirim.js'ye göre değil, HTML sayfalarına göre doğru olduğundan emin ol.
+favicon.href = 'img/obblogo.png'; // Dosya yolunun bildirim.js'ye göre değil, HTML sayfalarına göre doğru olduğundan emin ol.
 
 document.head.appendChild(favicon);
 const style = document.createElement('style');
