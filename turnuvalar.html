@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-9VH0LHNCS3');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turnuvalar | OBB E-SPOR</title>
+    <link rel="icon" type="image/png" href="img/obblogo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    
+    <style>
+        /* BU SAYFAYA ÖZEL CSS */
+        .t-header-banner { text-align: center; padding: 80px 20px; background: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(35,8,62,0.8) 50%, rgba(0,0,0,1) 100%); border-bottom: 1px solid rgba(96, 29, 194, 0.3); }
+        .t-header-banner h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; }
+        .purple-text { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
+
+        .t-container { max-width: 1200px; margin: 0 auto; padding: 60px 10%; }
+        .filters { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .filter-btn { background: #111; border: 1px solid #333; color: white; padding: 10px 25px; border-radius: 25px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .filter-btn.active, .filter-btn:hover { background: var(--neon-mor); border-color: var(--neon-mor); }
+
+        .t-list-grid { display: flex; flex-direction: column; gap: 25px; }
+        .t-wide-card { background: linear-gradient(145deg, #0a0a0a, #16072b); border: 1px solid #222; border-radius: 15px; display: flex; align-items: center; padding: 25px; transition: 0.4s; }
+        .t-wide-card:hover { border-color: var(--neon-mor); transform: translateX(10px); box-shadow: 0 0 20px rgba(96,29,194,0.2); }
+
+        .t-image { width: 100px; height: 100px; background: var(--neon-mor); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; flex-shrink: 0; }
+        .t-details { flex: 1; padding: 0 40px; }
+        .t-details h2 { font-size: 22px; margin-bottom: 5px; color: #fff; }
+        .tag { font-size: 11px; padding: 4px 10px; border-radius: 5px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
+        .live { background: #ff0044; box-shadow: 0 0 10px #ff0044; }
+        .open { background: var(--neon-mor); }
+        .t-meta { margin-top: 15px; display: flex; gap: 25px; color: var(--gri-yazi); font-size: 14px; }
+        .t-meta strong { color: white; }
+
+        .view-btn, .register-btn { padding: 12px 30px; border-radius: 6px; border: none; font-weight: 900; cursor: pointer; transition: 0.3s; text-transform: uppercase; min-width: 150px; }
+        .view-btn { background: white; color: black; }
+        .register-btn { background: var(--neon-mor); color: white; }
+        .counter-highlight { color: var(--neon-mor) !important; font-size: 16px; font-weight: 900; transition: 0.3s; }
+
+        @media (max-width: 768px) {
+            .t-container { padding: 40px 5%; }
+            .t-wide-card { flex-direction: column; text-align: center; padding: 30px 20px; }
+            .t-details { padding: 20px 0; }
+            .t-meta { justify-content: center; flex-direction: column; gap: 8px; }
+            .view-btn, .register-btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-alani"></div>
+
+    <section class="t-header-banner">
+        <h1>AKTİF <span class="purple-text">TURNUVALAR</span></h1>
+        <p>Yeteneklerini sergile, ödülleri topla ve efsane ol.</p>
+    </section>
+
+    <main class="t-container">
+        <div class="filters">
+            <button class="filter-btn active">FPS</button>
+            <button class="filter-btn">MOBA</button>
+            <button class="filter-btn">Mobil</button>
+        </div>
+
+        <div class="t-list-grid">
+            <div class="t-wide-card">
+                <div class="t-image">VALO</div>
+                <div class="t-details">
+                    <span class="tag live">ÇOK YAKINDA</span>
+                    <h2>OBB 1. TOPLULUK TURNUVASI</h2>
+                    <p>Ordu'nun en iyileri belli oluyor!</p>
+                    <div class="t-meta">
+                        <span><strong>Ödül:</strong> Belirtilmemiş</span>
+                        <span><strong>Kayıtlı:</strong> <span id="valoCounter" class="counter-highlight">Yükleniyor...</span></span>
+                    </div>
+                </div>
+                <div class="t-action">
+                    <button class="view-btn" onclick="window.location.href='basvuru.html'">ÇOK YAKINDA</button>
+                </div>
+            </div>
+            
+            <div class="t-wide-card">
+                <div class="t-image" style="background: #1d4ed8;">CSGO</div>
+                <div class="t-details">
+                    <span class="tag open">YAKINDA</span>
+                    <h2>OBB 2. TOPLULUK TURNUVASI</h2>
+                    <p>Ordu Büyükşehir Belediyesi turnuvası</p>
+                    <div class="t-meta">
+                        <span><strong>Ödül:</strong> Belirtilmemiş</span>
+                        <span><strong>Kayıtlı:</strong> 32/0</span> 
+                    </div>
+                </div>
+                <div class="t-action">
+                    <button class="register-btn">BELİRTİLMEMİŞ</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-alani"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/bildirimler.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        // Sadece bu sayfanın ihtiyacı olan Sayaç Fonksiyonu
+        async function loadApprovedCount() {
+            try {
+                const { count, error } = await window.supabaseClient
+                    .from('tournament_applications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'approved');
+
+                if (!error) {
+                    const registeredCount = count || 0;
+                    document.getElementById('valoCounter').innerText = `64/${registeredCount}`;
+                } else {
+                    document.getElementById('valoCounter').innerText = `64/0`;
+                }
+            } catch (err) {
+                console.error("Sayaç hatası:", err);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', loadApprovedCount);
+    </script>
+</body>
+</html>
