@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Profilim | OBB E-SPOR</title>
+    
     <link rel="icon" type="image/png" href="img/obblogo.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -49,8 +51,17 @@
         .banner-option:hover { border-color: var(--neon-mor); }
 
         @media (max-width: 768px) {
-            .stats-grid { grid-template-columns: 1fr; }
+            .profile-container { padding: 10px; margin: 20px auto; } 
+            .profile-card { padding: 0 15px 25px; } 
+            .avatar-wrapper { width: 120px; height: 120px; margin: -60px auto 15px; } 
+            .profile-avatar { width: 120px; height: 120px; }
+            .edit-avatar-btn { width: 32px; height: 32px; font-size: 14px; }
+            
+            .stats-grid { grid-template-columns: 1fr; gap: 10px; } 
+            .notifications-section { padding: 20px 15px; }
             .notif-item { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .notif-actions { width: 100%; display: flex; gap: 10px; }
+            .notif-actions button { flex: 1; justify-content: center; }
         }
     </style>
 </head>
@@ -96,8 +107,8 @@
 
     <div id="bannerModal" class="modal">
         <div class="modal-content">
-            <span style="position:absolute; right:20px; top:15px; cursor:pointer; font-size:24px;" onclick="closeBannerModal()">&times;</span>
-            <h2 style="border-left: 4px solid var(--neon-mor); padding-left: 10px;">Kapak Resmi Seç</h2>
+            <span style="position:absolute; right:20px; top:15px; cursor:pointer; font-size:24px; color:white;" onclick="closeBannerModal()">&times;</span>
+            <h2 style="border-left: 4px solid var(--neon-mor); padding-left: 10px; color:white;">Kapak Resmi Seç</h2>
             <div class="banner-grid" id="bannerOptions"></div>
         </div>
     </div>
