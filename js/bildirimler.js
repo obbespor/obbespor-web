@@ -6,15 +6,43 @@ function initNotifications() {
     listenRealtimeNotifications();
 }
 
+// --- OTOMATİK ÇEVİRMEN FONKSİYONU ---
+function cevirSupabaseHatasi(hataMesaji) {
+    if (!hataMesaji) return "Bilinmeyen bir hata oluştu.";
+    
+    const msg = hataMesaji.toLowerCase();
+
+    // Dinamik Hatalar (18 saniye vb.)
+    const saniyeElesmesi = msg.match(/after (\d+) seconds/i);
+    if (saniyeElesmesi) {
+        return `Güvenlik gereği, yeni bir istek yapmadan önce ${saniyeElesmesi[1]} saniye beklemelisiniz.`;
+    }
+
+    // Sabit Hatalar Sözlüğü
+    if (msg.includes("invalid login credentials")) return "E-posta adresi veya şifre hatalı.";
+    if (msg.includes("email not confirmed")) return "Giriş yapmadan önce e-posta adresinize gelen linkten hesabınızı onaylamalısınız.";
+    if (msg.includes("user already registered")) return "Bu e-posta adresi sistemimizde zaten kayıtlı.";
+    if (msg.includes("password should be at least")) return "Şifreniz çok kısa, en az 6 karakter olmalıdır.";
+    if (msg.includes("email link is invalid or has expired")) return "Doğrulama linkinin süresi dolmuş veya geçersiz. Lütfen yeni bir şifre sıfırlama isteği gönderin.";
+    if (msg.includes("too many requests") || msg.includes("rate limit")) return "Çok fazla deneme yaptınız. Lütfen birkaç dakika bekleyip tekrar deneyin.";
+    if (msg.includes("network error") || msg.includes("failed to fetch")) return "Bağlantı hatası! Lütfen internetinizi kontrol edin.";
+    
+    // Eğer sözlükte yoksa gereksiz İngilizce ön ekleri temizleyip yolla
+    return hataMesaji.replace('Hata: ', '').replace('Error: ', ''); 
+}
+
 window.showNotification = function(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
+
+    // MESAJI EKRANA BASMADAN ÖNCE TÜRKÇEYE ÇEVİR
+    const turkceMesaj = cevirSupabaseHatasi(message);
 
     const toast = document.createElement('div');
     toast.className = `custom-toast toast-${type}`;
     let iconClass = type === 'success' ? 'fas fa-check-circle' : type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-info-circle';
 
-    toast.innerHTML = `<i class="${iconClass} toast-icon"></i><span>${message}</span>`;
+    toast.innerHTML = `<i class="${iconClass} toast-icon"></i><span>${turkceMesaj}</span>`;
     container.appendChild(toast);
 
     requestAnimationFrame(() => toast.classList.add('show'));
