@@ -132,8 +132,11 @@
             btn.disabled = true;
 
             // Supabase Şifre Sıfırlama İsteği (Kullanıcıyı yeni sayfamıza yönlendiriyoruz)
+            let mevcutAdres = window.location.href;
+            let yonlendirilecekAdres = mevcutAdres.substring(0, mevcutAdres.lastIndexOf('/')) + '/sifre-yenile.html';
+
             const { error } = await window.supabaseClient.auth.resetPasswordForEmail(emailInput, {
-                redirectTo: window.location.origin + '/sifre-yenile.html',
+                redirectTo: yonlendirilecekAdres,
             });
 
             if (error) {
