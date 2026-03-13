@@ -31,6 +31,7 @@ function cevirSupabaseHatasi(hataMesaji) {
     return hataMesaji.replace('Hata: ', '').replace('Error: ', ''); 
 }
 
+// --- BİLDİRİM BALONCUĞU (TOAST) GÖSTERİMİ ---
 window.showNotification = function(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
@@ -93,6 +94,7 @@ window.listenRealtimeNotifications = async function() {
       ).subscribe();
 };
 
+// --- AKILLI YÖNLENDİRME İÇEREN RENDER FONKSİYONU ---
 window.renderNotifications = function() {
     const deskList = document.getElementById("notif-list-desktop");
     const mobList = document.getElementById("notif-list-mobile");
@@ -102,10 +104,26 @@ window.renderNotifications = function() {
     let htmlContent = window.myNotifications.length === 0 ? `<div class="notif-empty">Şu an yeni bir bildiriminiz yok.</div>` : "";
 
     window.myNotifications.forEach(notif => {
+        // AKILLI YÖNLENDİRME SİSTEMİ
+        let targetUrl = ""; 
+        let cursorStyle = "cursor: pointer;";
+        
+        if (notif.tip === 'davet') targetUrl = "profil.html"; 
+        else if (notif.tip === 'onay' || notif.tip === 'red') targetUrl = "profil.html"; // Kullanıcının takım durumunu göreceği sayfa
+        else {
+            targetUrl = "javascript:void(0)"; // Sistem veya genel duyuru ise hiçbir yere gitme
+            cursorStyle = "cursor: default;"; // Tıklanabilir el işareti çıkmasın
+        }
+
+        let onClickAttr = targetUrl !== "javascript:void(0)" ? `onclick="window.location.href='${targetUrl}'"` : "";
+
         htmlContent += `
-            <div class="notif-item" onclick="window.location.href='profil.html'">
+            <div class="notif-item" ${onClickAttr} style="${cursorStyle}">
                 <i class="fas ${notif.icon}" style="color: ${notif.color};"></i>
-                <div class="notif-item-content"><strong>${notif.title}</strong><span>${notif.text}</span></div>
+                <div class="notif-item-content">
+                    <strong>${notif.title}</strong>
+                    <span>${notif.text}</span>
+                </div>
             </div>`;
     });
 
@@ -141,7 +159,7 @@ window.clearNotifications = async function(event) {
     } catch (err) { console.error("Temizleme hatası:", err); }
 };
 
-// Global Davet Sistemi (Canlı Dinleyici Eklendi)
+// --- GLOBAL DAVET SİSTEMİ ---
 window.initGlobalInviteSystem = async function(userId) {
     // 1. Sayfa yüklendiğinde birikmiş davetleri kontrol et
     const { data: pendingInvites } = await window.supabaseClient
