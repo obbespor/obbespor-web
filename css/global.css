@@ -41,3 +41,59 @@ main { flex: 1; }
     padding-left: 15px; font-size: 28px; font-weight: 900; text-transform: uppercase; 
 }
 .section-title span { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
+/* --- BİLDİRİM PANELİ İÇİ METİN DÜZENLEMELERİ --- */
+.notif-item-content {
+    flex: 1;
+    min-width: 0; /* Taşmaları engellemek için kritik */
+}
+
+.notif-item-content span {
+    display: block;
+    white-space: normal; /* Yan yana uzamayı iptal et, alt satıra in */
+    word-break: break-word; /* Kelime çok uzunsa böl */
+    line-height: 1.4;
+    margin-top: 4px;
+    font-size: 12px;
+}
+
+/* Bildirim Paneli Çok Dolarsa Kaydırma Çubuğu Çıksın */
+.notif-body {
+    max-height: 350px; /* Ekrandan aşağı taşmaması için */
+    overflow-y: auto;
+    padding-bottom: 10px;
+}
+
+/* --- SAĞ ALT/ÜST TOAST BİLDİRİM BALONLARI İÇİN DÜZEN --- */
+#toast-container {
+    position: fixed;
+    bottom: 20px; 
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column; /* Bildirimleri dikey sırala */
+    gap: 15px; /* Üst üste binmemesi için aralarına 15px boşluk bırak! */
+    max-width: 90vw; /* Mobilde ekranı geçmesin */
+    pointer-events: none; /* Arkadaki butonlara tıklanabilsin */
+}
+
+.custom-toast {
+    pointer-events: auto; /* Toast'un kendisi tıklanabilir olsun */
+    width: max-content;
+    max-width: 100%;
+    word-break: break-word; /* Ekranı yırtmasını önler */
+}
+
+/* Mobilde Toastların daha şık durması için */
+@media (max-width: 768px) {
+    #toast-container {
+        right: 50%;
+        transform: translateX(50%); /* Mobilde tam ortaya al */
+        bottom: 30px;
+        align-items: center;
+        width: 100%;
+    }
+    .custom-toast {
+        width: 90%; /* Mobilde genişliği ayarla */
+        text-align: center;
+    }
+}
