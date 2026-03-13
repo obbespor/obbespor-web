@@ -357,7 +357,7 @@
             } else showNotification("Hata oluştu.", "error");
         }
 
-        // --- YENİ EKLENEN EXCEL AKTARMA FONKSİYONU ---
+        // --- YENİ EKLENEN EXCEL AKTARMA FONKSİYONU (GÜVENLİ SÜRÜM) ---
         async function excelAktar() {
             try {
                 const btn = document.querySelector('.btn-excel');
@@ -365,7 +365,7 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Hazırlanıyor...';
                 btn.disabled = true;
 
-                // Onaylı takımların profil ve iletişim verilerini detaylıca çekiyoruz
+                // Sadece profil username bilgisini çekiyoruz (Mail ve Telefon iptal edildi)
                 const { data: teams, error } = await window.supabaseClient
                     .from('tournament_applications')
                     .select(`
@@ -373,7 +373,7 @@
                         application_members (
                             role,
                             user_id,
-                            profiles ( username, phone, email )
+                            profiles ( username )
                         )
                     `)
                     .eq('status', 'approved');
@@ -389,23 +389,17 @@
                 const excelVerileri = teams.map((team, index) => {
                     let mainPlayers = [];
                     let subPlayers = [];
-                    let kaptanTelefon = "Belirtilmemiş";
-                    let kaptanMail = "Belirtilmemiş";
 
                     team.application_members.forEach(member => {
                         const username = member.profiles?.username || "Bilinmiyor";
                         if (member.role === 'main') {
                             mainPlayers.push(username);
-                            if (member.user_id === team.captain_id) {
-                                kaptanTelefon = member.profiles?.phone || "Belirtilmemiş";
-                                kaptanMail = member.profiles?.email || "Belirtilmemiş";
-                            }
                         } else if (member.role === 'sub') {
                             subPlayers.push(username);
                         }
                     });
 
-                    // Excel Formatı: 2. ve 3. fikirlerine istinaden düzenlendi.
+                    // Excel Formatı: Telefon hücresi tamamen boş, Mail sütunu silindi.
                     return {
                         "Sıra": index + 1,
                         "Takım Adı": team.team_name,
@@ -417,8 +411,7 @@
                         "5. Oyuncu": mainPlayers[4] || "-",
                         "Yedek 1": subPlayers[0] || "-",
                         "Yedek 2": subPlayers[1] || "-",
-                        "Telefon No": kaptanTelefon,
-                        "Mail Adresi": kaptanMail,
+                        "Telefon No": "", 
                         "Logo URL": team.logo_url || "Logo Yok"
                     };
                 });
@@ -428,9 +421,10 @@
                 const workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, "Onaylı Takımlar");
                 
+                // Sütun genişlikleri (Mail silindiği için 12 sütuna düşürüldü)
                 const wscols = [
                     {wch: 5}, {wch: 25}, {wch: 10}, {wch: 20}, {wch: 15}, {wch: 15}, {wch: 15}, {wch: 15}, 
-                    {wch: 15}, {wch: 15}, {wch: 20}, {wch: 25}, {wch: 45}
+                    {wch: 15}, {wch: 15}, {wch: 15}, {wch: 45}
                 ];
                 worksheet['!cols'] = wscols;
 
@@ -448,7 +442,7 @@
             }
         }
 
-        // --- YENİ EKLENEN TAKIM SİLME FONKSİYONU ---
+        // --- TAKIM SİLME FONKSİYONU ---
         async function takimiSil(teamId, teamName) {
             if(!confirm(`DİKKAT: ${teamName} takımını ve tüm oyuncu kayıtlarını kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz!`)) {
                 return;
