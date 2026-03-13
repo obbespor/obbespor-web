@@ -24,12 +24,19 @@
         .auth-header { text-align: center; margin-bottom: 25px; }
         .auth-header h1 { font-size: 2rem; font-weight: 900; text-transform: uppercase; }
         .purple-neon { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
-        .input-group { margin-bottom: 20px; }
+        .input-group { margin-bottom: 20px; position: relative; }
         .input-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--gri-yazi); font-weight: bold; }
         .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; outline: none; transition: 0.3s; }
         .input-group input:focus { border-color: var(--neon-mor); }
+        
+        /* ŞİFREMİ UNUTTUM BUTONU STİLİ */
+        .forgot-pass-link { display: none; text-align: right; margin-top: -10px; margin-bottom: 20px; font-size: 12px; font-weight: bold; color: var(--neon-mor); text-decoration: none; transition: 0.3s; cursor: pointer; }
+        .forgot-pass-link:hover { text-shadow: 0 0 10px var(--neon-mor); }
+
         .register-btn { width: 100%; padding: 15px; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-bottom: 20px; }
-        .register-btn:hover { transform: scale(1.02); box-shadow: 0 0 20px var(--neon-mor); }
+        .register-btn:hover:not(:disabled) { transform: scale(1.02); box-shadow: 0 0 20px var(--neon-mor); }
+        .register-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        
         .auth-toggle-area { text-align: center; border-top: 1px solid #222; padding-top: 20px; }
         .switch-btn { background: transparent; border: 1px solid #23083e; color: var(--neon-mor); padding: 8px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
 
@@ -68,6 +75,9 @@
                         <label>Şifre</label>
                         <input type="password" id="mainPass" placeholder="••••••••" required minlength="6">
                     </div>
+                    
+                    <a class="forgot-pass-link" id="forgotPassBtn" onclick="sifremiUnuttum()">Şifremi Unuttum?</a>
+
                     <div class="input-group" id="confirmPassGroup">
                         <label>Şifre Tekrar</label>
                         <input type="password" id="confirmPass" placeholder="••••••••" required>
@@ -101,8 +111,39 @@
             document.getElementById('switchBtn').innerText = isReg ? "KAYIT OL" : "GİRİŞ YAP";
             document.getElementById('toggleText').innerText = isReg ? "Henüz bir hesabın yok mu?" : "Zaten bir hesabın var mı?";
             
+            // "Şifremi unuttum" sadece Giriş Yap ekranında görünür
             ['userGroup', 'phoneGroup', 'confirmPassGroup'].forEach(id => document.getElementById(id).style.display = isReg ? "none" : "block");
+            document.getElementById('forgotPassBtn').style.display = isReg ? "block" : "none";
             document.getElementById('confirmPass').required = !isReg;
+        }
+
+        // --- ŞİFRE SIFIRLAMA İSTEĞİ GÖNDERME ---
+        async function sifremiUnuttum() {
+            const emailInput = document.getElementById('email').value.trim();
+            if (!emailInput) {
+                showNotification("Lütfen önce yukarıdaki e-posta alanını doldurun ve tekrar tıklayın.", "error");
+                document.getElementById('email').focus();
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerText;
+            btn.innerText = "LÜTFEN BEKLEYİN...";
+            btn.disabled = true;
+
+            // Supabase Şifre Sıfırlama İsteği (Kullanıcıyı yeni sayfamıza yönlendiriyoruz)
+            const { error } = await window.supabaseClient.auth.resetPasswordForEmail(emailInput, {
+                redirectTo: window.location.origin + '/sifre-yenile.html',
+            });
+
+            if (error) {
+                showNotification("Hata: " + error.message, "error");
+            } else {
+                showNotification("Şifre sıfırlama bağlantısı e-postanıza gönderildi!", "success");
+            }
+
+            btn.innerText = originalText;
+            btn.disabled = false;
         }
 
         document.getElementById('authForm').addEventListener('submit', async (e) => {
@@ -134,7 +175,6 @@
                 if (error) {
                     showNotification("Hata: " + error.message, "error");
                 } else { 
-                    // EMAIL ONAYI İÇİN GÜNCELLENMİŞ BAŞARI MESAJI
                     showNotification("Kayıt başarılı! Lütfen e-postanıza (Gereksiz/Spam kutusu dahil) gelen linke tıklayarak hesabınızı doğrulayın.", "success"); 
                     setTimeout(toggleAuth, 2500); 
                 }
@@ -144,7 +184,6 @@
                 const { error } = await window.supabaseClient.auth.signInWithPassword({ email: email, password: password });
                 
                 if (error) {
-                    // EĞER KULLANICI MAİLİNİ ONAYLAMADAN GİRMEYE ÇALIŞIYORSA YAKALA VE UYAR
                     if (error.message === "Email not confirmed") {
                         showNotification("Giriş başarısız! Lütfen önce e-postanıza gelen doğrulama linkine tıklayın.", "error");
                     } else {
