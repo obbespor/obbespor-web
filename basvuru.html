@@ -458,7 +458,6 @@
                     list.innerHTML = '';
                     if (query.length < 2) return;
 
-                    // 1. O an formda yazılı olan oyuncuların kimliklerini ve isimlerini topla (Aynı forma çift eklemeyi engeller)
                     const selectedIds = Array.from(document.querySelectorAll('input[id^="main_"], input[id^="sub_"]'))
                                              .map(el => el.getAttribute('data-user-id'))
                                              .filter(id => id && id.trim() !== "");
@@ -466,7 +465,6 @@
                                              .map(el => el.value.trim().toLowerCase())
                                              .filter(name => name !== "");
 
-                    // 2. Veritabanından ismi uyanları bul (Zaten tam onaylanmış bir takımı olmayanlar)
                     const { data: profiles } = await window.supabaseClient.from('profiles')
                                                     .select('username, id')
                                                     .ilike('username', `%${query}%`)
@@ -475,16 +473,19 @@
                     
                     if (!profiles || profiles.length === 0) return;
 
-                    // 3. EN ÖNEMLİ KISIM: Bulunan oyuncuların başka bir taslak/başvuru sürecinde olup olmadığını DB'den kontrol et
                     const profileIds = profiles.map(p => p.id);
-                    const { data: busyMembers } = await window.supabaseClient.from('application_members')
-                                                        .select('user_id')
-                                                        .in('user_id', profileIds)
-                                                        .neq('status', 'rejected'); // 'Reddedildi' durumunda olmayan herkes 'meşgul' kabul edilir.
                     
-                    const busyUserIds = busyMembers ? busyMembers.map(m => m.user_id) : [];
+                    // 1. ADIM: Arama filtresinde "Draft" (Taslak) takımları meşgul saymıyoruz!
+                    const { data: busyMembers } = await window.supabaseClient.from('application_members')
+                                                        .select('user_id, tournament_applications(status)')
+                                                        .in('user_id', profileIds)
+                                                        .neq('status', 'rejected');
+                    
+                    // Sadece statüsü 'pending' veya 'approved' olan (yani gerçek bir takıma giren) kişileri ele.
+                    const busyUserIds = busyMembers ? busyMembers.filter(m => 
+                        m.tournament_applications && m.tournament_applications.status !== 'draft'
+                    ).map(m => m.user_id) : [];
 
-                    // 4. Son Filtre: Ne bu formda seçili olsun, ne de başka takımın application_members tablosunda meşgul olsun!
                     const filteredPlayers = profiles.filter(u => 
                         !selectedIds.includes(u.id) && 
                         !selectedUsernames.includes(u.username.toLowerCase()) &&
@@ -503,6 +504,12 @@
                             const tick = document.getElementById(input.id + '-tick');
                             tick.style.display = 'block';
                             tick.className = 'fas fa-spinner fa-spin status-tick grey';
+
+                            // 2. ADIM: DAVET ÖNCELİĞİ - Davet edilen kişinin boş "Draft" takımını anında sil
+                            await window.supabaseClient.from('tournament_applications')
+                                .delete()
+                                .eq('captain_id', u.id)
+                                .eq('status', 'draft');
 
                             const role = input.id.startsWith('main') ? 'main' : 'sub';
                             
