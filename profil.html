@@ -168,27 +168,48 @@
             }
         }
 
-        // Davetler
+        // Zırhlı Davetler Yükleme Fonksiyonu
         async function loadInvitations() {
-            const { data } = await window.supabaseClient.from('application_members').select(`id, role, tournament_applications(team_name, team_tag)`).eq('user_id', currentUser.id).eq('status', 'pending');
-            const list = document.getElementById('notificationsList');
-            list.innerHTML = '';
-            
-            if (data && data.length > 0) {
-                document.getElementById('notifBadge').innerText = data.length;
-                data.forEach(inv => {
-                    list.innerHTML += `
-                        <div class="notif-item">
-                            <div class="notif-text"><span class="team-tag">[${inv.tournament_applications.team_tag}]</span> <b>${inv.tournament_applications.team_name}</b> takımına ${inv.role==='main'?'Asil':'Yedek'} olarak davetlisin.</div>
-                            <div class="notif-actions">
-                                <button class="btn-accept" onclick="respondInvite('${inv.id}', 'accepted')">Kabul Et</button>
-                                <button class="btn-reject" onclick="respondInvite('${inv.id}', 'rejected')">Reddet</button>
-                            </div>
-                        </div>`;
-                });
-            } else {
-                document.getElementById('notifBadge').innerText = "0";
-                list.innerHTML = `<div style="text-align:center; color:#777; padding:20px;">Bekleyen davet yok.</div>`;
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('application_members')
+                    .select(`id, role, tournament_applications(team_name, team_tag)`)
+                    .eq('user_id', currentUser.id)
+                    .eq('status', 'pending');
+                
+                if (error) throw error;
+
+                const list = document.getElementById('notificationsList');
+                list.innerHTML = '';
+                
+                // HATA ÇÖZÜMÜ 1: Takımı silinmiş veya boş gelen (null) "hayalet" davetleri ele.
+                const validInvites = data ? data.filter(inv => inv.tournament_applications !== null) : [];
+
+                if (validInvites.length > 0) {
+                    document.getElementById('notifBadge').innerText = validInvites.length;
+                    
+                    validInvites.forEach(inv => {
+                        // HATA ÇÖZÜMÜ 2: Kaptan henüz takım adını yazmadıysa formülün patlamasını engelle.
+                        const teamName = inv.tournament_applications.team_name || "İsimsiz Takım";
+                        const teamTag = inv.tournament_applications.team_tag || "LOBİ";
+                        const roleText = inv.role === 'main' ? 'Asil' : 'Yedek';
+
+                        list.innerHTML += `
+                            <div class="notif-item">
+                                <div class="notif-text"><span class="team-tag">[${teamTag}]</span> <b>${teamName}</b> takımına ${roleText} olarak davetlisin.</div>
+                                <div class="notif-actions">
+                                    <button class="btn-accept" onclick="respondInvite('${inv.id}', 'accepted')">Kabul Et</button>
+                                    <button class="btn-reject" onclick="respondInvite('${inv.id}', 'rejected')">Reddet</button>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    document.getElementById('notifBadge').innerText = "0";
+                    list.innerHTML = `<div style="text-align:center; color:#777; padding:20px;">Bekleyen davet yok.</div>`;
+                }
+            } catch (err) {
+                console.error("Davetler yüklenirken hata:", err);
+                document.getElementById('notificationsList').innerHTML = `<div style="text-align:center; color:#ff4b4b; padding:20px;">Davetler şu an yüklenemiyor. Lütfen sayfayı yenileyin.</div>`;
             }
         }
 
