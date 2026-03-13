@@ -126,17 +126,36 @@
                     showNotification("Bu kullanıcı adı zaten alınmış!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return;
                 }
 
-                const { error } = await window.supabaseClient.auth.signUp({
+                // Supabase Kayıt İşlemi
+                const { data, error } = await window.supabaseClient.auth.signUp({
                     email: email, password: password, options: { data: { username: usernameInput, phone: document.getElementById('phone').value } }
                 });
 
-                if (error) showNotification("Hata: " + error.message, "error");
-                else { showNotification("Kayıt başarılı! Giriş yapabilirsiniz.", "success"); setTimeout(toggleAuth, 1500); }
+                if (error) {
+                    showNotification("Hata: " + error.message, "error");
+                } else { 
+                    // EMAIL ONAYI İÇİN GÜNCELLENMİŞ BAŞARI MESAJI
+                    showNotification("Kayıt başarılı! Lütfen e-postanıza (Gereksiz/Spam kutusu dahil) gelen linke tıklayarak hesabınızı doğrulayın.", "success"); 
+                    setTimeout(toggleAuth, 2500); 
+                }
+
             } else {
+                // GİRİŞ YAPMA İŞLEMİ
                 const { error } = await window.supabaseClient.auth.signInWithPassword({ email: email, password: password });
-                if (error) showNotification("Giriş başarısız.", "error");
-                else { showNotification("Giriş yapıldı!", "success"); setTimeout(() => window.location.href = "index.html", 1000); }
+                
+                if (error) {
+                    // EĞER KULLANICI MAİLİNİ ONAYLAMADAN GİRMEYE ÇALIŞIYORSA YAKALA VE UYAR
+                    if (error.message === "Email not confirmed") {
+                        showNotification("Giriş başarısız! Lütfen önce e-postanıza gelen doğrulama linkine tıklayın.", "error");
+                    } else {
+                        showNotification("Giriş başarısız. Lütfen bilgilerinizi kontrol edin.", "error");
+                    }
+                } else { 
+                    showNotification("Giriş yapıldı!", "success"); 
+                    setTimeout(() => window.location.href = "index.html", 1000); 
+                }
             }
+            
             submitBtn.disabled = false;
             submitBtn.innerText = isRegister ? "HESABI OLUŞTUR" : "GİRİŞ YAP";
         });
