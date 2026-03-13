@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
@@ -41,6 +43,11 @@
         .btn-reject:hover { background: var(--kirmizi-iptal); color: #fff; box-shadow: 0 0 15px var(--kirmizi-iptal); }
 
         /* --- ONAYLANAN LİSTESİ --- */
+        .header-with-btn { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
+        .header-with-btn .section-title { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+        .btn-excel { background: #1f8536; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; font-family: 'Poppins', sans-serif; }
+        .btn-excel:hover { background: #28a745; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4); }
+        
         .approved-list { display: flex; flex-direction: column; gap: 10px; }
         .approved-item { display: flex; align-items: center; background: #0a0a0a; border: 1px solid #222; padding: 15px 25px; border-radius: 10px; cursor: pointer; transition: 0.3s; }
         .approved-item:hover { border-color: var(--neon-mor); background: #111; transform: translateX(10px); }
@@ -74,6 +81,9 @@
         .info-row { display: flex; margin-bottom: 10px; font-size: 14px; }
         .info-label { color: var(--gri-yazi); width: 120px; font-weight: bold; }
         .info-data { color: white; font-weight: 500; }
+        
+        .btn-delete-team { background: rgba(255, 75, 75, 0.05); border: 1px dashed var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px; }
+        .btn-delete-team:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 0 15px rgba(255, 75, 75, 0.4); border-style: solid; }
 
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
@@ -81,6 +91,7 @@
 
         @media (max-width: 768px) {
             .admin-container { padding: 20px 5%; }
+            .header-with-btn { flex-direction: column; gap: 15px; align-items: flex-start; }
             .modal-header { flex-direction: column; text-align: center; }
             .teams-grid { grid-template-columns: 1fr; }
         }
@@ -141,7 +152,10 @@
     </main>
 
     <main class="admin-container" id="takimlarSection">
-        <h2 class="section-title">ONAYLI <span>TAKIM LİSTESİ</span></h2>
+        <div class="header-with-btn">
+            <h2 class="section-title">ONAYLI <span>TAKIM LİSTESİ</span></h2>
+            <button class="btn-excel" onclick="excelAktar()"><i class="fas fa-file-excel"></i> Excel'e Aktar</button>
+        </div>
         <div class="approved-list" id="approvedTeamsList"></div>
     </main>
 
@@ -182,6 +196,8 @@
                     <h4><i class="fas fa-users"></i> TAKIM KADROSU</h4>
                     <ul class="player-list-mini" id="modalRosterList" style="margin-bottom: 0; padding: 0;"></ul>
                 </div>
+                
+                <button class="btn-delete-team" id="modalDeleteBtn"><i class="fas fa-trash"></i> BU TAKIMI SİL</button>
             </div>
         </div>
     </div>
@@ -341,6 +357,129 @@
             } else showNotification("Hata oluştu.", "error");
         }
 
+        // --- YENİ EKLENEN EXCEL AKTARMA FONKSİYONU ---
+        async function excelAktar() {
+            try {
+                const btn = document.querySelector('.btn-excel');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Hazırlanıyor...';
+                btn.disabled = true;
+
+                // Onaylı takımların profil ve iletişim verilerini detaylıca çekiyoruz
+                const { data: teams, error } = await window.supabaseClient
+                    .from('tournament_applications')
+                    .select(`
+                        id, team_name, team_tag, logo_url, captain_id,
+                        application_members (
+                            role,
+                            user_id,
+                            profiles ( username, phone, email )
+                        )
+                    `)
+                    .eq('status', 'approved');
+
+                if (error) throw error;
+                if (!teams || teams.length === 0) {
+                    showNotification("Dışa aktarılacak takım bulunamadı.", "error");
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    return;
+                }
+
+                const excelVerileri = teams.map((team, index) => {
+                    let mainPlayers = [];
+                    let subPlayers = [];
+                    let kaptanTelefon = "Belirtilmemiş";
+                    let kaptanMail = "Belirtilmemiş";
+
+                    team.application_members.forEach(member => {
+                        const username = member.profiles?.username || "Bilinmiyor";
+                        if (member.role === 'main') {
+                            mainPlayers.push(username);
+                            if (member.user_id === team.captain_id) {
+                                kaptanTelefon = member.profiles?.phone || "Belirtilmemiş";
+                                kaptanMail = member.profiles?.email || "Belirtilmemiş";
+                            }
+                        } else if (member.role === 'sub') {
+                            subPlayers.push(username);
+                        }
+                    });
+
+                    // Excel Formatı: 2. ve 3. fikirlerine istinaden düzenlendi.
+                    return {
+                        "Sıra": index + 1,
+                        "Takım Adı": team.team_name,
+                        "Kısaltma": team.team_tag,
+                        "1. Oyuncu (Kaptan)": mainPlayers[0] || "-",
+                        "2. Oyuncu": mainPlayers[1] || "-",
+                        "3. Oyuncu": mainPlayers[2] || "-",
+                        "4. Oyuncu": mainPlayers[3] || "-",
+                        "5. Oyuncu": mainPlayers[4] || "-",
+                        "Yedek 1": subPlayers[0] || "-",
+                        "Yedek 2": subPlayers[1] || "-",
+                        "Telefon No": kaptanTelefon,
+                        "Mail Adresi": kaptanMail,
+                        "Logo URL": team.logo_url || "Logo Yok"
+                    };
+                });
+
+                // Tablo oluştur ve indir
+                const worksheet = XLSX.utils.json_to_sheet(excelVerileri);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Onaylı Takımlar");
+                
+                const wscols = [
+                    {wch: 5}, {wch: 25}, {wch: 10}, {wch: 20}, {wch: 15}, {wch: 15}, {wch: 15}, {wch: 15}, 
+                    {wch: 15}, {wch: 15}, {wch: 20}, {wch: 25}, {wch: 45}
+                ];
+                worksheet['!cols'] = wscols;
+
+                XLSX.writeFile(workbook, "OBB_Onayli_Takimlar.xlsx");
+                
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showNotification("Excel başarıyla indirildi.", "success");
+
+            } catch (err) {
+                console.error("Excel Hatası:", err);
+                showNotification("Excel oluşturulamadı.", "error");
+                document.querySelector('.btn-excel').innerHTML = '<i class="fas fa-file-excel"></i> Excel\'e Aktar';
+                document.querySelector('.btn-excel').disabled = false;
+            }
+        }
+
+        // --- YENİ EKLENEN TAKIM SİLME FONKSİYONU ---
+        async function takimiSil(teamId, teamName) {
+            if(!confirm(`DİKKAT: ${teamName} takımını ve tüm oyuncu kayıtlarını kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz!`)) {
+                return;
+            }
+            
+            try {
+                const btn = document.getElementById('modalDeleteBtn');
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SİLİNİYOR...';
+                btn.disabled = true;
+
+                // 1. Önce takıma ait oyuncuları sil
+                await window.supabaseClient.from('application_members').delete().eq('application_id', teamId);
+                
+                // 2. Sonra takımın kendisini sil
+                const { error } = await window.supabaseClient.from('tournament_applications').delete().eq('id', teamId);
+                
+                if(error) throw error;
+
+                showNotification(`${teamName} başarıyla silindi.`, "success");
+                closeModal();
+                loadApprovedTeams(); // Listeyi güncelle
+
+            } catch (err) {
+                console.error("Silme Hatası:", err);
+                showNotification("Silme işlemi sırasında hata oluştu.", "error");
+                const btn = document.getElementById('modalDeleteBtn');
+                btn.innerHTML = '<i class="fas fa-trash"></i> BU TAKIMI SİL';
+                btn.disabled = false;
+            }
+        }
+
         // Modal Detayları
         function openTeamModal(team) {
             document.getElementById('modalLogo').src = team.logo_url || 'https://via.placeholder.com/100';
@@ -358,13 +497,22 @@
                 const color = m.role === 'main' ? 'var(--yazi-beyaz)' : 'var(--gri-yazi)';
                 rl.innerHTML += `<li><span style="color:${color}; font-weight:normal;">${m.role==='main'?'Asil Oyuncu':'Yedek'}:</span> <span style="color:var(--neon-mor);">${m.username}</span></li>`;
             });
+
+            // SİLME BUTONUNA ID VE İSİM ATAMA
+            const deleteBtn = document.getElementById('modalDeleteBtn');
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i> BU TAKIMI SİL';
+            deleteBtn.disabled = false;
+            deleteBtn.onclick = () => takimiSil(team.id, team.team_name);
+
             document.getElementById('teamModal').classList.add('active');
             document.body.style.overflow = 'hidden'; 
         }
+        
         function closeModal() { 
             document.getElementById('teamModal').classList.remove('active'); 
             document.body.style.overflow = 'auto'; 
         }
+        
         window.addEventListener('click', function(e) {
             if (e.target === document.getElementById('teamModal')) closeModal();
         });
