@@ -28,7 +28,7 @@ function renderCachedHeader() {
             </div>`;
     } else {
         // Önbellekte kimse yoksa, varsayılan KATIL butonunu göster
-        authAction.innerHTML = `<a href="kayit.html" class="nav-btn">KATIL / GİRİŞ</a>`;
+        authAction.innerHTML = `<a href="kayit.html" class="nav-btn">KAYIT / GİRİŞ</a>`;
     }
     
     // Yükleme bittikten sonra görünürlüğü aç (FOUC engellemesi için)
