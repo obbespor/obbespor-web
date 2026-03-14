@@ -30,7 +30,8 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
     display: none; position: absolute; right: 0; top: 100%; background: #0d0d0d;
     min-width: 200px; border: 1px solid var(--neon-mor); border-radius: 12px;
     padding: 5px 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9);
-    animation: menuFadeIn 0.2s ease-out, preventGhostClick 0.4s forwards;
+    /* NİNJALAR İÇİN MASAÜSTÜNDE GECİKME KALDIRILDI! Sadece normal açılma efekti var. */
+    animation: menuFadeIn 0.2s ease-out;
 }
 .dropdown-content::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
 .dropdown-content a { color: #fff; padding: 12px 20px; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; transition: 0.2s; }
@@ -92,7 +93,7 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
 /* ANİMASYONLAR */
 @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* YENİ: MOBİL HAYALET TIKLAMA KORUYUCUSU */
+/* YENİ: MOBİL HAYALET TIKLAMA KORUYUCUSU (Masaüstünü Etkilemez) */
 @keyframes preventGhostClick {
     0% { pointer-events: none; }
     99% { pointer-events: none; }
@@ -109,14 +110,19 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
     .nav-btn { padding: 6px 12px; font-size: 10px !important; }
     .user-name-text, .arrow-icon { display: none; } 
     .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
-    .dropdown-content { position: fixed; right: 15px; top: 85px; width: 180px; }
+    
+    /* GHOST CLICK KORUMASI SADECE MOBİLDE AKTİF! */
+    .dropdown-content { 
+        position: fixed; right: 15px; top: 85px; width: 180px; 
+        animation: menuFadeIn 0.2s ease-out, preventGhostClick 0.4s forwards;
+    }
 
     /* Mobil Bildirim Sınıfları */
     .desktop-only { display: none !important; }
     .mobile-only { display: flex !important; }
     #toast-container { bottom: 100px; right: 20px; z-index: 999999 !important; } 
 
-    /* ÇÖZÜM: ZİLİN BÜYÜME EFEKTİNİ İPTAL ET (PANELİ HAPSETMESİN DİYE) */
+    /* ZİLİN BÜYÜME EFEKTİNİ İPTAL ET (PANELİ HAPSETMESİN DİYE) */
     .floating-bell { transform: none !important; transition: none !important; }
     .floating-bell:hover { transform: none !important; background: var(--neon-mor); }
 
