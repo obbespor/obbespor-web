@@ -157,6 +157,8 @@
                 document.getElementById('profileNameDisplay').innerText = data.username || "İsimsiz";
                 document.getElementById('userBio').innerText = data.bio || "Açıklama eklenmemiş.";
                 if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
+                
+                // Cache buster ile her seferinde resmin güncel halini göster
                 if(data.avatar_url) document.getElementById('userAvatar').src = data.avatar_url + "?t=" + Date.now();
             }
 
@@ -164,30 +166,54 @@
             subscribeToInvites();
         }
 
-        // Avatar Yükleme
+        // ==========================================
+        // OPTİMİZE EDİLMİŞ AVATAR YÜKLEME (ÇÖP OLUŞTURMAZ)
+        // ==========================================
         document.getElementById('avatarUpload').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
             if (file.size > 2 * 1024 * 1024) return showNotification("Dosya 2MB'den küçük olmalı.", "error");
 
             document.getElementById('userAvatar').src = URL.createObjectURL(file);
-            const path = `${currentUser.id}/avatar-${Date.now()}.${file.name.split('.').pop()}`;
+            
+            // DİKKAT: Artık Date.now() kullanmıyoruz. Sabit bir isim veriyoruz ki hep eskisini ezsin.
+            // Dosya uzantısını koruyoruz (örn: .jpg veya .png)
+            const ext = file.name.split('.').pop();
+            const path = `${currentUser.id}/profil_resmi.${ext}`;
 
-            const { error } = await window.supabaseClient.storage.from('avatars').upload(path, file);
+            // UPSERT komutu ile eski resmi silip üstüne yazmasını söylüyoruz
+            const { error } = await window.supabaseClient.storage.from('avatars').upload(path, file, {
+                upsert: true,
+                cacheControl: '0' // Tarayıcının eski resmi hatırlamasını engeller
+            });
+            
             if (!error) {
                 const { data } = window.supabaseClient.storage.from('avatars').getPublicUrl(path);
-                await window.supabaseClient.from('profiles').update({ avatar_url: data.publicUrl }).eq('id', currentUser.id);
+                // Resmi veritabanına kaydederken sonuna yine bir cache buster koyuyoruz ki ekranda anında güncellensin
+                const cleanUrl = data.publicUrl.split('?')[0]; 
+                await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
                 showNotification("Profil resmi güncellendi!", "success");
+            } else {
+                showNotification("Resim yüklenirken hata oluştu: " + error.message, "error");
             }
         });
 
-        // Bio Düzenleme
+        // ==========================================
+        // GÜVENLİ BİO DÜZENLEME (150 KARAKTER SINIRI)
+        // ==========================================
         async function editBio() {
             const el = document.getElementById('userBio');
-            const newBio = prompt("Açıklamanızı yazın:", el.innerText);
+            const newBio = prompt("Açıklamanızı yazın (Max 150 Karakter):", el.innerText);
+            
             if (newBio !== null) {
+                if (newBio.length > 150) {
+                    showNotification("Biyografi çok uzun! En fazla 150 karakter yazabilirsiniz.", "error");
+                    return; // Sınır aşıldıysa işlemi iptal et, veritabanını yorma
+                }
+                
                 el.innerText = newBio;
                 await window.supabaseClient.from('profiles').update({ bio: newBio }).eq('id', currentUser.id);
+                showNotification("Açıklama başarıyla güncellendi.", "success");
             }
         }
 
@@ -205,14 +231,12 @@
                 const list = document.getElementById('notificationsList');
                 list.innerHTML = '';
                 
-                // HATA ÇÖZÜMÜ 1: Takımı silinmiş veya boş gelen (null) "hayalet" davetleri ele.
                 const validInvites = data ? data.filter(inv => inv.tournament_applications !== null) : [];
 
                 if (validInvites.length > 0) {
                     document.getElementById('notifBadge').innerText = validInvites.length;
                     
                     validInvites.forEach(inv => {
-                        // HATA ÇÖZÜMÜ 2: Kaptan henüz takım adını yazmadıysa formülün patlamasını engelle.
                         const teamName = inv.tournament_applications.team_name || "İsimsiz Takım";
                         const teamTag = inv.tournament_applications.team_tag || "LOBİ";
                         const roleText = inv.role === 'main' ? 'Asil' : 'Yedek';
@@ -257,7 +281,7 @@
         function openBannerModal() {
             const grid = document.getElementById('bannerOptions'); grid.innerHTML = ""; 
             for(let i=1; i<=4; i++) {
-                const img = document.createElement('img'); img.src = 'img/banner+.jpg'; img.className = 'banner-option';
+                const img = document.createElement('img'); img.src = `img/banner+.jpg`; img.className = 'banner-option';
                 img.onclick = async function() { 
                     document.getElementById('currentBanner').style.backgroundImage = `url('${this.src}')`;
                     closeBannerModal();
