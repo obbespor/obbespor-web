@@ -50,8 +50,8 @@ main { flex: 1; }
 
 .notif-item-content span {
     display: block;
-    white-space: normal; /* Yan yana uzamayı iptal et, alt satıra in */
-    word-break: break-word; /* Kelime çok uzunsa böl */
+    white-space: normal; 
+    word-break: break-word; 
     line-height: 1.4;
     margin-top: 4px;
     font-size: 12px;
@@ -59,7 +59,7 @@ main { flex: 1; }
 
 /* Bildirim Paneli Çok Dolarsa Kaydırma Çubuğu Çıksın */
 .notif-body {
-    max-height: 350px; /* Ekrandan aşağı taşmaması için */
+    max-height: 350px; 
     overflow-y: auto;
     padding-bottom: 10px;
 }
@@ -69,51 +69,64 @@ main { flex: 1; }
     position: fixed;
     bottom: 20px; 
     right: 20px;
-    z-index: 9999;
+    z-index: 999999;
     display: flex;
-    flex-direction: column; /* Bildirimleri dikey sırala */
-    gap: 15px; /* Üst üste binmemesi için aralarına 15px boşluk bırak! */
-    max-width: 90vw; /* Mobilde ekranı geçmesin */
-    pointer-events: none; /* Arkadaki butonlara tıklanabilsin */
+    flex-direction: column; 
+    gap: 15px; 
+    max-width: 90vw; 
+    pointer-events: none; 
 }
 
 .custom-toast {
-    pointer-events: auto; /* Toast'un kendisi tıklanabilir olsun */
+    pointer-events: auto; 
     width: max-content;
     max-width: 100%;
-    word-break: break-word; /* Ekranı yırtmasını önler */
+    word-break: break-word; 
 }
 
 /* =======================================================
-   MOBİL CİHAZLAR İÇİN KUSURSUZ BİLDİRİM VE TOAST DÜZENİ
+   MOBİL CİHAZLAR İÇİN KUSURSUZ BİLDİRİM PANELİ DÜZENİ
 ======================================================== */
 @media (max-width: 768px) {
     
-    /* 1. BİLDİRİM PANELİ (AÇILIR SİYAH KUTU) DÜZELTMESİ */
+    /* 1. Bildirim Kutusunu "Arenaya Katıl" Butonunu Ezecek Şekilde Sabitle */
     .notif-panel {
         position: fixed !important;
-        bottom: 80px !important; /* Zilin tam üstüne yerleştirir */
-        right: 5% !important;
-        left: 5% !important;
-        width: 90% !important; /* Ekranı ortalar, sağdan soldan taşmaz */
+        top: auto !important;
+        bottom: 100px !important; /* Zilin üzerinde durur */
+        left: 5vw !important; /* Ekranın soluyla bağını kesin olarak kopartır */
+        right: 5vw !important; /* Ekranın sağıyla bağını kesin olarak kopartır */
+        width: 90vw !important; /* Ekranın %90'ını kaplar */
+        min-width: 90vw !important; /* Herhangi bir butonun onu SIKIŞTIRMASINI ENGELLER */
         max-width: none !important;
-        border-radius: 15px !important;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.9) !important;
+        transform: none !important; /* Ortadaki butonla girdiği çatışmayı bitirir */
         margin: 0 !important;
-        transform: none !important; 
+        padding: 0 !important;
+        z-index: 999999 !important; /* "Arenaya Giriş Yap" butonunun KESİNLİKLE üstüne çıkar */
+        border-radius: 15px !important;
+        box-shadow: 0 10px 50px rgba(0,0,0,0.95) !important;
+        background-color: rgba(10, 10, 10, 0.98) !important; /* Arka planı iyice koyulaştırdık ki alttaki buton görünmesin */
+    }
+
+    /* Kutu İçindeki İçeriklerin Sıkışmasını Engelle */
+    .notif-panel .notif-body {
+        max-height: 50vh !important; 
+        overflow-y: auto !important;
+        padding: 10px !important;
     }
 
     /* 2. TOAST BİLDİRİMLERİ (YEŞİL/KIRMIZI BALONLAR) DÜZELTMESİ */
     #toast-container {
-        bottom: auto !important; /* Aşağıdaki hizalamayı iptal et (Zille çakışmasın) */
-        top: 20px !important; /* EKRANIN ÜSTÜNE AL */
+        bottom: auto !important; 
+        top: 20px !important; 
         right: 0 !important;
         left: 0 !important;
         transform: none !important;
         width: 100% !important;
         align-items: center !important;
         padding: 0 20px !important;
-        flex-direction: column-reverse !important; /* Yeni bildirim en üste gelsin */
+        flex-direction: column-reverse !important; 
+        z-index: 999999 !important;
     }
 
     .custom-toast {
@@ -122,7 +135,6 @@ main { flex: 1; }
         margin-bottom: 0 !important;
         margin-top: 10px !important;
         text-align: center;
-        /* Sağdan sola değil, Yukarıdan aşağı inme animasyonu */
         animation: slideDownMobileToast 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
     }
 
