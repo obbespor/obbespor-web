@@ -40,8 +40,10 @@
         
         .notif-item { background: #111; border-left: 4px solid var(--neon-mor); padding: 15px 20px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
         .notif-text .team-tag { color: var(--neon-mor); background: rgba(96, 29, 194, 0.2); padding: 2px 6px; border-radius: 4px; font-size: 12px; margin-right: 5px; }
-        .btn-accept { background: rgba(0, 210, 255, 0.1); color: var(--mavi-onay); border: 1px solid var(--mavi-onay); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-reject { background: rgba(255, 75, 75, 0.1); color: var(--kirmizi-iptal); border: 1px solid var(--kirmizi-iptal); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-accept { background: rgba(0, 210, 255, 0.1); color: var(--mavi-onay); border: 1px solid var(--mavi-onay); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-reject { background: rgba(255, 75, 75, 0.1); color: var(--kirmizi-iptal); border: 1px solid var(--kirmizi-iptal); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-accept:hover { background: rgba(0, 210, 255, 0.2); }
+        .btn-reject:hover { background: rgba(255, 75, 75, 0.2); }
 
         /* Modal */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
@@ -50,18 +52,39 @@
         .banner-option { width: 100%; height: 120px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; object-fit: cover; }
         .banner-option:hover { border-color: var(--neon-mor); }
 
+        /* =========================================
+           KUSURSUZ MOBİL GÖRÜNÜM OPTİMİZASYONU
+        ========================================= */
         @media (max-width: 768px) {
-            .profile-container { padding: 10px; margin: 20px auto; } 
-            .profile-card { padding: 0 15px 25px; } 
-            .avatar-wrapper { width: 120px; height: 120px; margin: -60px auto 15px; } 
-            .profile-avatar { width: 120px; height: 120px; }
-            .edit-avatar-btn { width: 32px; height: 32px; font-size: 14px; }
+            .profile-container { padding: 15px 10px; margin: 10px auto; width: 100%; } 
             
-            .stats-grid { grid-template-columns: 1fr; gap: 10px; } 
-            .notifications-section { padding: 20px 15px; }
-            .notif-item { flex-direction: column; align-items: flex-start; gap: 15px; }
+            /* Banner ve Kartın Orantılanması */
+            .profile-banner { height: 150px; border-radius: 15px 15px 0 0; }
+            .profile-card { padding: 0 20px 25px; border-radius: 0 0 15px 15px; }
+            
+            /* Avatar Boyutu ve Hizalaması */
+            .avatar-wrapper { width: 110px; height: 110px; margin: -55px auto 15px; } 
+            .profile-avatar { width: 110px; height: 110px; border-width: 4px; }
+            .edit-avatar-btn { width: 30px; height: 30px; font-size: 12px; bottom: 0; right: 0; }
+            
+            /* Yazıların Ekrana Sığması */
+            #profileNameDisplay { font-size: 22px !important; }
+            .rank-badge { font-size: 11px; padding: 4px 12px; margin-bottom: 10px; }
+            .bio-container { flex-direction: column; text-align: center; gap: 5px; margin-bottom: 20px; }
+            .profile-bio { font-size: 13px; line-height: 1.4; }
+            
+            /* İstatistiklerin Yan Yana Ama Derli Toplu Durması */
+            .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; } 
+            .stat-item { padding: 10px 5px; border-radius: 10px; border-bottom-width: 1px; }
+            .stat-value { font-size: 18px; }
+            .stat-label { font-size: 10px; }
+            
+            /* Bildirimler ve Butonların Ferahlatılması */
+            .notifications-section { padding: 20px 15px; border-radius: 15px; }
+            .notif-item { flex-direction: column; align-items: flex-start; gap: 12px; padding: 15px; }
+            .notif-text { font-size: 13px; line-height: 1.5; text-align: center; width: 100%; }
             .notif-actions { width: 100%; display: flex; gap: 10px; }
-            .notif-actions button { flex: 1; justify-content: center; }
+            .notif-actions button { flex: 1; justify-content: center; padding: 10px; font-size: 13px; }
         }
     </style>
 </head>
