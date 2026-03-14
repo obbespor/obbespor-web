@@ -30,7 +30,6 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
     display: none; position: absolute; right: 0; top: 100%; background: #0d0d0d;
     min-width: 200px; border: 1px solid var(--neon-mor); border-radius: 12px;
     padding: 5px 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9);
-    /* GHOST CLICK KORUMASI EKLENDİ (preventGhostClick) */
     animation: menuFadeIn 0.2s ease-out, preventGhostClick 0.4s forwards;
 }
 .dropdown-content::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
@@ -110,12 +109,26 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
     .user-name-text, .arrow-icon { display: none; } 
     .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
     
-    /* Menüyü biraz daha aşağı kaydırdık ki parmağa tam değmesin */
     .dropdown-content { position: fixed; right: 15px; top: 85px; width: 180px; }
 
-    /* Mobil Bildirim */
+    /* Mobil Bildirim Sınıfları */
     .desktop-only { display: none !important; }
     .mobile-only { display: flex !important; }
-    #toast-container { bottom: 100px; right: 20px; } 
-    .notif-panel.mobile-panel { position: fixed; top: auto; bottom: 100px; right: 20px; width: calc(100vw - 40px); max-width: 350px; z-index: 9999; }
+    #toast-container { bottom: 100px; right: 20px; z-index: 999999 !important; } 
+
+    /* İŞTE ÇÖZÜM BURADA: KUTUYU ZORLA ORTAYA ALIYORUZ */
+    .notif-panel, .notif-panel.mobile-panel {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translate(-50%, -50%) !important;
+        width: 90vw !important;
+        max-width: 400px !important;
+        z-index: 9999999 !important; /* HER ŞEYİN ÜSTÜNE ÇIKMASINI GARANTİLER */
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: 0 0 50px rgba(96, 29, 194, 0.4), 0 0 200px rgba(0,0,0,0.95) !important;
+    }
 }
