@@ -50,6 +50,7 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
 .nav-bell a:hover { color: var(--neon-mor); }
 .notif-badge { position: absolute; top: -8px; right: -12px; background: #ff0000; color: white; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 50%; display: none; }
 
+/* YÜZER ZİL (MASAÜSTÜ) */
 .floating-bell { 
     position: fixed; bottom: 30px; right: 20px; width: 55px; height: 55px; 
     background: #0d0d0d; border: 2px solid var(--neon-mor); border-radius: 50%; 
@@ -100,7 +101,7 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
 
 /* HEADER MOBİL UYUMLULUK */
 @media (max-width: 768px) {
-    header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; }
+    header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; transform: none !important; }
     body { padding-top: 125px; }
     nav { width: 100%; overflow-x: auto; padding-bottom: 5px;}
     nav ul { gap: 10px; flex-wrap: nowrap; justify-content: space-between; width: 100%; }
@@ -108,7 +109,6 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
     .nav-btn { padding: 6px 12px; font-size: 10px !important; }
     .user-name-text, .arrow-icon { display: none; } 
     .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
-    
     .dropdown-content { position: fixed; right: 15px; top: 85px; width: 180px; }
 
     /* Mobil Bildirim Sınıfları */
@@ -116,17 +116,21 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
     .mobile-only { display: flex !important; }
     #toast-container { bottom: 100px; right: 20px; z-index: 999999 !important; } 
 
-    /* İŞTE ÇÖZÜM BURADA: KUTUYU ZORLA ORTAYA ALIYORUZ */
+    /* ÇÖZÜM: ZİLİN BÜYÜME EFEKTİNİ İPTAL ET (PANELİ HAPSETMESİN DİYE) */
+    .floating-bell { transform: none !important; transition: none !important; }
+    .floating-bell:hover { transform: none !important; background: var(--neon-mor); }
+
+    /* PANELİ ZORLA VE KUSURSUZCA ORTAYA AL */
     .notif-panel, .notif-panel.mobile-panel {
         position: fixed !important;
-        top: 50% !important;
-        left: 50% !important;
+        top: 50vh !important;
+        left: 50vw !important;
         right: auto !important;
         bottom: auto !important;
         transform: translate(-50%, -50%) !important;
         width: 90vw !important;
         max-width: 400px !important;
-        z-index: 9999999 !important; /* HER ŞEYİN ÜSTÜNE ÇIKMASINI GARANTİLER */
+        z-index: 9999999 !important; 
         margin: 0 !important;
         padding: 0 !important;
         box-shadow: 0 0 50px rgba(96, 29, 194, 0.4), 0 0 200px rgba(0,0,0,0.95) !important;
