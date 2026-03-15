@@ -30,7 +30,7 @@
     <div id="header-alani"></div>
 
     <div class="auth-wrapper">
-        <div class="auth-card">
+        <div class="auth-card" id="authCardContainer">
             <div class="auth-header">
                 <h1>ŞİFREYİ <span class="purple-neon">YENİLE</span></h1>
                 <p style="color: var(--gri-yazi); font-size: 14px; margin-bottom: 25px;">Lütfen yeni hesabınız için güçlü bir şifre belirleyin.</p>
@@ -58,6 +58,31 @@
     <script src="js/app.js"></script>
 
     <script>
+        // --- 1. SAYFA YÜKLENDİĞİNDE GÜVENLİK KONTROLÜ ---
+        window.addEventListener('DOMContentLoaded', async () => {
+            // URL'deki hash parçalarını temizlemek Supabase için biraz vakit alabilir,
+            // bu yüzden kısa bir gecikme ile session'ı kontrol ediyoruz.
+            setTimeout(async () => {
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                
+                // Eğer geçerli bir oturum (yani geçerli bir şifre sıfırlama linki) yoksa
+                if (!session) {
+                    const authCard = document.getElementById('authCardContainer');
+                    if(authCard) authCard.style.display = 'none'; // Formu anında gizle
+
+                    if (typeof showNotification === 'function') {
+                        showNotification("Bu sayfaya erişim yetkiniz yok veya bağlantı süresi dolmuş.", "error");
+                    }
+                    
+                    // Kullanıcıyı saniyeler içinde anasayfaya/giriş sayfasına şutla
+                    setTimeout(() => {
+                        window.location.href = 'index.html'; 
+                    }, 3000);
+                }
+            }, 500); // Yarım saniye bekle ki Supabase token'ı işleyebilsin
+        });
+
+        // --- 2. FORM GÖNDERİMİ VE ÇİFTE GÜVENLİK ---
         document.getElementById('resetForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -73,8 +98,16 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GÜNCELLENİYOR...';
 
-            // E-postadaki linke tıklandığı için kullanıcı arka planda geçici olarak oturum açmış sayılır.
-            // Bu yüzden direkt updateUser ile şifresini değiştirebiliriz.
+            // GÜVENLİK KONTROLÜ: İşlem yapılmadan hemen önce oturum hala geçerli mi diye tekrar bak
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            
+            if (!session) {
+                showNotification("Güvenlik hatası! Geçerli bir oturum bulunamadı.", "error");
+                setTimeout(() => window.location.href = "index.html", 3000);
+                return;
+            }
+
+            // Oturum geçerliyse şifreyi güncelle
             const { error } = await window.supabaseClient.auth.updateUser({
                 password: newPass
             });
@@ -84,9 +117,11 @@
                 btn.disabled = false;
                 btn.innerHTML = "ŞİFREMİ GÜNCELLE";
             } else {
-                showNotification("Şifreniz başarıyla güncellendi! Profilinize yönlendiriliyorsunuz.", "success");
+                showNotification("Şifreniz başarıyla güncellendi! Giriş yapabilirsiniz.", "success");
+                
+                // Şifre yenilendikten sonra kullanıcıyı giriş ekranına (index.html) yönlendiriyoruz
                 setTimeout(() => {
-                    window.location.href = "profil.html";
+                    window.location.href = "index.html"; 
                 }, 2000);
             }
         });
