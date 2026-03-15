@@ -502,7 +502,7 @@
             const deleteBtn = document.getElementById('modalDeleteBtn');
             deleteBtn.innerHTML = '<i class="fas fa-trash"></i> BU TAKIMI SİL';
             deleteBtn.disabled = false;
-            deleteBtn.onclick = () => takimiSil(team.id, team.team_name);
+            deleteBtn.onclick = () => takimiSil(team.id, team.team_name, team.logo_url);
 
             document.getElementById('teamModal').classList.add('active');
             document.body.style.overflow = 'hidden'; 
