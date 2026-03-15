@@ -223,3 +223,37 @@ window.initGlobalInviteSystem = async function(userId) {
         })
         .subscribe();
 }
+// --- URL KONTROLÜ: E-POSTA ONAYI VE OTOMATİK GİRİŞ ---
+window.addEventListener('DOMContentLoaded', () => {
+    // 1. Bizim eklediğimiz "?verified=true" parametresi var mı?
+    const urlParams = new URLSearchParams(window.location.search);
+    const isVerified = urlParams.get('verified') === 'true';
+
+    // 2. Supabase'in eklediği "#access_token=...&type=signup" parametreleri var mı?
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const isSupabaseSignup = hashParams.get('type') === 'signup';
+    const isPasswordRecovery = hashParams.get('type') === 'recovery';
+
+    if (isVerified || isSupabaseSignup) {
+        setTimeout(() => {
+            if (typeof showNotification === 'function') {
+                showNotification("E-postanız başarıyla onaylandı ve giriş yapıldı!", "success");
+            } else {
+                alert("E-postanız başarıyla onaylandı ve giriş yapıldı!");
+            }
+        }, 500);
+
+        // URL'deki o uzun ve karmaşık yazıları (tokenleri) temizle ki adres çubuğu temiz görünsün
+        // Ve kullanıcı sayfayı yenilediğinde tekrar bildirim çıkmasın
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    // Şifre sıfırlama ekranı için ekstra kontrol (Şimdiden hazır olsun)
+    if (isPasswordRecovery) {
+        setTimeout(() => {
+            if (typeof showNotification === 'function') {
+                showNotification("Lütfen yeni şifrenizi belirleyin.", "success");
+            }
+        }, 500);
+    }
+});
