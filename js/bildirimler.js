@@ -223,37 +223,55 @@ window.initGlobalInviteSystem = async function(userId) {
         })
         .subscribe();
 }
-// --- URL KONTROLÜ: E-POSTA ONAYI VE OTOMATİK GİRİŞ ---
+
+// --- URL KONTROLÜ: E-POSTA ONAYI, OTOMATİK GİRİŞ VE HATA YAKALAMA ---
 window.addEventListener('DOMContentLoaded', () => {
     // 1. Bizim eklediğimiz "?verified=true" parametresi var mı?
     const urlParams = new URLSearchParams(window.location.search);
     const isVerified = urlParams.get('verified') === 'true';
 
-    // 2. Supabase'in eklediği "#access_token=...&type=signup" parametreleri var mı?
+    // 2. Supabase'in eklediği "#" (hash) parametrelerini al
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const isSupabaseSignup = hashParams.get('type') === 'signup';
     const isPasswordRecovery = hashParams.get('type') === 'recovery';
+    
+    // 3. Supabase'den gelen bir HATA var mı?
+    const errorDescription = hashParams.get('error_description');
 
+    // EĞER HATA VARSA:
+    if (errorDescription) {
+        setTimeout(() => {
+            if (errorDescription.includes('expired')) {
+                showNotification("Bu onay bağlantısının süresi dolmuş veya daha önce kullanılmış. Lütfen yeni bir bağlantı isteyin.", "error");
+            } else {
+                showNotification("Bir hata oluştu: " + decodeURIComponent(errorDescription).replace(/\+/g, ' '), "error");
+            }
+        }, 500);
+        
+        // URL'yi temizle ki hata mesajı ekranda asılı kalmasın
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return; // Hata varsa kodu burada kes, aşağıdaki başarılı mesajlarını gösterme
+    }
+
+    // EĞER İŞLEM BAŞARILIYSA:
     if (isVerified || isSupabaseSignup) {
         setTimeout(() => {
             if (typeof showNotification === 'function') {
                 showNotification("E-postanız başarıyla onaylandı ve giriş yapıldı!", "success");
-            } else {
-                alert("E-postanız başarıyla onaylandı ve giriş yapıldı!");
             }
         }, 500);
 
-        // URL'deki o uzun ve karmaşık yazıları (tokenleri) temizle ki adres çubuğu temiz görünsün
-        // Ve kullanıcı sayfayı yenilediğinde tekrar bildirim çıkmasın
+        // URL'yi temizle
         window.history.replaceState({}, document.title, window.location.pathname);
     }
     
-    // Şifre sıfırlama ekranı için ekstra kontrol (Şimdiden hazır olsun)
+    // Şifre sıfırlama ekranı için ekstra kontrol
     if (isPasswordRecovery) {
         setTimeout(() => {
             if (typeof showNotification === 'function') {
                 showNotification("Lütfen yeni şifrenizi belirleyin.", "success");
             }
         }, 500);
+        // İsteğe bağlı olarak recovery durumunda da URL'yi temizleyebilirsin.
     }
 });
