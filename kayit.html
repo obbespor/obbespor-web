@@ -103,28 +103,6 @@
     <script src="js/app.js"></script>
 
     <script>
-        // --- SAYFA YÜKLENDİĞİNDE URL KONTROLÜ (YENİ EKLENEN KISIM) ---
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            // Eğer URL'de ?verified=true varsa:
-            if (urlParams.get('verified') === 'true') {
-                // 1. Ekranın "Giriş Yap" modunda olduğundan emin ol
-                const submitBtnText = document.getElementById('submitBtn').innerText;
-                if (submitBtnText === "HESABI OLUŞTUR") {
-                    toggleAuth(); // Kayıt ol ekranındaysa giriş yapa çevir
-                }
-                
-                // 2. Başarılı bildirimini göster
-                setTimeout(() => {
-                    showNotification("E-postanız başarıyla onaylandı! Şimdi giriş yapabilirsiniz.", "success");
-                }, 500); // Sayfa yüklendikten yarım saniye sonra göster (animasyon daha şık durur)
-
-                // 3. Kullanıcı sayfayı yenilerse tekrar bildirim çıkmasın diye URL'yi temizle
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-        });
-
         function toggleAuth() {
             const isReg = document.getElementById('submitBtn').innerText === "HESABI OLUŞTUR";
             document.querySelector('#authHeader h1').innerHTML = isReg ? 'HOŞ <span class="purple-neon">GELDİN</span>' : 'ARENAYA <span class="purple-neon">KATIL</span>';
