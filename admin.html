@@ -442,9 +442,13 @@
             }
         }
 
-        // --- TAKIM SİLME FONKSİYONU (ZİNCİRLEME SİLME İLE GÜNCELLENDİ) ---
-        async function takimiSil(teamId, teamName) {
-            if(!confirm(`DİKKAT: ${teamName} takımını kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz!`)) {
+        // --- TAKIM SİLME VE STORAGE TEMİZLEME FONKSİYONU ---
+        async function takimiSil(teamId, teamName, logoUrl, captainId) {
+            const reason = prompt(`DİKKAT: ${teamName} takımını kalıcı olarak silmek üzeresiniz. Lütfen takım kaptanına iletilecek silinme sebebini yazın:\n(Bu işlem geri alınamaz!)`);
+            
+            if (reason === null) return; // Kullanıcı iptal'e bastıysa işlemi durdur
+            if (reason.trim() === "") {
+                showNotification("Silme sebebini boş bırakamazsınız.", "error");
                 return;
             }
             
@@ -453,8 +457,33 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SİLİNİYOR...';
                 btn.disabled = true;
 
-                // "ON DELETE CASCADE" aktif olduğu için sadece takımın kendisini silmemiz yeterli.
-                // Supabase, bu takıma bağlı 'application_members' kayıtlarını otomatik temizleyecektir.
+                // 1. HAYALET LOGOYU SİL (STORAGE TEMİZLİĞİ)
+                if (logoUrl && logoUrl.includes('/storage/v1/object/public/')) {
+                    try {
+                        const parts = logoUrl.split('/storage/v1/object/public/')[1].split('/');
+                        const bucketName = parts[0]; 
+                        const filePath = parts.slice(1).join('/');
+
+                        if (bucketName && filePath) {
+                            await window.supabaseClient.storage.from(bucketName).remove([filePath]);
+                            console.log("Logo storage'dan silindi.");
+                        }
+                    } catch (e) {
+                        console.warn("Logo URL parçalama hatası:", e);
+                    }
+                }
+
+                // 2. KAPTANA BİLDİRİM GÖNDER (Eğer kaptan ID'si varsa)
+                if (captainId) {
+                    await window.supabaseClient.from('bildirimler').insert([{
+                        kullanici_id: captainId,
+                        baslik: "Takımınız Sistemden Kaldırıldı!",
+                        mesaj: `${teamName} adlı takımınız yönetici tarafından silinmiştir. Sebep: ${reason}`,
+                        tip: 'red'
+                    }]);
+                }
+
+                // 3. TAKIMI VERİTABANINDAN SİL (ON DELETE CASCADE devrede)
                 const { error: teamError } = await window.supabaseClient
                     .from('tournament_applications')
                     .delete()
@@ -462,10 +491,9 @@
                 
                 if (teamError) throw new Error("Takım silinirken hata: " + teamError.message);
 
-                showNotification(`${teamName} başarıyla silindi.`, "success");
+                showNotification(`${teamName} başarıyla silindi ve kaptana bildirildi.`, "success");
                 closeModal();
                 
-                // Silinen takımı listeden kaldırmak için sayfayı yenile
                 loadApprovedTeams(); 
                 loadPendingTeams();
 
@@ -473,7 +501,6 @@
                 console.error("Silme Hatası:", err);
                 showNotification(err.message || "Silme işlemi sırasında hata oluştu.", "error");
                 
-                // Hata alırsak butonu eski haline getir
                 const btn = document.getElementById('modalDeleteBtn');
                 btn.innerHTML = '<i class="fas fa-trash"></i> BU TAKIMI SİL';
                 btn.disabled = false;
@@ -488,6 +515,9 @@
             
             // Kaptan bilgilerini bul ve yazdır
             const captData = (team.members || []).find(m => m.user_id === team.captain_id || m.id === team.captain_id);
+            // Kaptanın ID'sini garanti altına alalım (user_id veya captain_id)
+            const resolvedCaptainId = captData ? (captData.user_id || team.captain_id) : team.captain_id;
+            
             document.getElementById('modalCaptainName').innerText = captData ? captData.username : 'Bilinmiyor';
             document.getElementById('modalCaptainPhone').innerText = team.captain_phone || 'Belirtilmemiş';
 
@@ -498,11 +528,11 @@
                 rl.innerHTML += `<li><span style="color:${color}; font-weight:normal;">${m.role==='main'?'Asil Oyuncu':'Yedek'}:</span> <span style="color:var(--neon-mor);">${m.username}</span></li>`;
             });
 
-            // SİLME BUTONUNA ID VE İSİM ATAMA
+            // SİLME BUTONUNA ID VE İSİM ATAMA (Kaptan ID'sini de gönderiyoruz)
             const deleteBtn = document.getElementById('modalDeleteBtn');
             deleteBtn.innerHTML = '<i class="fas fa-trash"></i> BU TAKIMI SİL';
             deleteBtn.disabled = false;
-            deleteBtn.onclick = () => takimiSil(team.id, team.team_name, team.logo_url);
+            deleteBtn.onclick = () => takimiSil(team.id, team.team_name, team.logo_url, resolvedCaptainId);
 
             document.getElementById('teamModal').classList.add('active');
             document.body.style.overflow = 'hidden'; 
