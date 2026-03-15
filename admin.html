@@ -74,7 +74,6 @@
         .modal-title-area h2 { font-size: 24px; font-weight: 900; color: white; margin-bottom: 5px; }
         .modal-title-area span { background: var(--neon-mor); color: white; padding: 3px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; }
         
-        /* ÇARPI BUTONU Z-INDEX DÜZELTMESİ (ÜSTE ALINDI) */
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 30px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; z-index: 100; }
         .close-modal:hover { color: var(--kirmizi-iptal); }
         
@@ -443,9 +442,9 @@
             }
         }
 
-        // --- TAKIM SİLME FONKSİYONU ---
+        // --- TAKIM SİLME FONKSİYONU (ZİNCİRLEME SİLME İLE GÜNCELLENDİ) ---
         async function takimiSil(teamId, teamName) {
-            if(!confirm(`DİKKAT: ${teamName} takımını ve tüm oyuncu kayıtlarını kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz!`)) {
+            if(!confirm(`DİKKAT: ${teamName} takımını kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz!`)) {
                 return;
             }
             
@@ -454,21 +453,27 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SİLİNİYOR...';
                 btn.disabled = true;
 
-                // 1. Önce takıma ait oyuncuları sil
-                await window.supabaseClient.from('application_members').delete().eq('application_id', teamId);
+                // "ON DELETE CASCADE" aktif olduğu için sadece takımın kendisini silmemiz yeterli.
+                // Supabase, bu takıma bağlı 'application_members' kayıtlarını otomatik temizleyecektir.
+                const { error: teamError } = await window.supabaseClient
+                    .from('tournament_applications')
+                    .delete()
+                    .eq('id', teamId);
                 
-                // 2. Sonra takımın kendisini sil
-                const { error } = await window.supabaseClient.from('tournament_applications').delete().eq('id', teamId);
-                
-                if(error) throw error;
+                if (teamError) throw new Error("Takım silinirken hata: " + teamError.message);
 
                 showNotification(`${teamName} başarıyla silindi.`, "success");
                 closeModal();
-                loadApprovedTeams(); // Listeyi güncelle
+                
+                // Silinen takımı listeden kaldırmak için sayfayı yenile
+                loadApprovedTeams(); 
+                loadPendingTeams();
 
             } catch (err) {
                 console.error("Silme Hatası:", err);
-                showNotification("Silme işlemi sırasında hata oluştu.", "error");
+                showNotification(err.message || "Silme işlemi sırasında hata oluştu.", "error");
+                
+                // Hata alırsak butonu eski haline getir
                 const btn = document.getElementById('modalDeleteBtn');
                 btn.innerHTML = '<i class="fas fa-trash"></i> BU TAKIMI SİL';
                 btn.disabled = false;
