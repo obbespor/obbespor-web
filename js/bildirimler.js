@@ -250,6 +250,21 @@ window.addEventListener('DOMContentLoaded', () => {
         
         // URL'yi temizle ki hata mesajı ekranda asılı kalmasın
         window.history.replaceState({}, document.title, window.location.pathname);
+        
+        // GÜVENLİK ÖNLEMİ: Eğer kullanıcı şifre yenileme sayfasındaysa ve link hatalıysa, onu giriş sayfasına at!
+        if (window.location.pathname.includes('sifre-yenile')) {
+            // Formu veya auth kartını anında gizle ki işlem yapamasın
+            const authCard = document.querySelector('.auth-card');
+            const form = document.querySelector('form');
+            if(authCard) authCard.style.display = 'none';
+            else if(form) form.style.display = 'none';
+
+            // 3 saniye sonra zorla ana sayfaya/giriş sayfasına yolla
+            setTimeout(() => {
+                window.location.href = 'index.html'; 
+            }, 3000);
+        }
+        
         return; // Hata varsa kodu burada kes, aşağıdaki başarılı mesajlarını gösterme
     }
 
@@ -272,6 +287,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 showNotification("Lütfen yeni şifrenizi belirleyin.", "success");
             }
         }, 500);
-        // İsteğe bağlı olarak recovery durumunda da URL'yi temizleyebilirsin.
+        window.history.replaceState({}, document.title, window.location.pathname);
     }
 });
