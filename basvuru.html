@@ -475,13 +475,11 @@
 
                     const profileIds = profiles.map(p => p.id);
                     
-                    // 1. ADIM: Arama filtresinde "Draft" (Taslak) takımları meşgul saymıyoruz!
                     const { data: busyMembers } = await window.supabaseClient.from('application_members')
                                                         .select('user_id, tournament_applications(status)')
                                                         .in('user_id', profileIds)
                                                         .neq('status', 'rejected');
                     
-                    // Sadece statüsü 'pending' veya 'approved' olan (yani gerçek bir takıma giren) kişileri ele.
                     const busyUserIds = busyMembers ? busyMembers.filter(m => 
                         m.tournament_applications && m.tournament_applications.status !== 'draft'
                     ).map(m => m.user_id) : [];
@@ -505,7 +503,6 @@
                             tick.style.display = 'block';
                             tick.className = 'fas fa-spinner fa-spin status-tick grey';
 
-                            // 2. ADIM: DAVET ÖNCELİĞİ - Davet edilen kişinin boş "Draft" takımını anında sil
                             await window.supabaseClient.from('tournament_applications')
                                 .delete()
                                 .eq('captain_id', u.id)
@@ -664,13 +661,22 @@
             try {
                 const logoFile = document.getElementById('teamLogo').files[0];
                 let logoUrl = "";
+                
                 if(logoFile) {
                     const fileExt = logoFile.name.split('.').pop();
-                    const fileName = `team_${Date.now()}.${fileExt}`;
-                    const { error: uploadError } = await window.supabaseClient.storage.from('team-logos').upload(fileName, logoFile);
+                    const fileName = `logo_${currentDraftId}.${fileExt}`; 
+
+                    const { error: uploadError } = await window.supabaseClient.storage
+                        .from('team-logos') // Kendi logo klasörünün adı 'team-logos' değilse burayı düzelt
+                        .upload(fileName, logoFile, {
+                            cacheControl: '3600',
+                            upsert: true 
+                        });
+
                     if (uploadError) throw uploadError;
+
                     const { data } = window.supabaseClient.storage.from('team-logos').getPublicUrl(fileName);
-                    logoUrl = data.publicUrl;
+                    logoUrl = `${data.publicUrl}?t=${new Date().getTime()}`;
                 }
 
                 const { error: teamError } = await window.supabaseClient.from('tournament_applications').update({
