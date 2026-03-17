@@ -33,6 +33,7 @@
         .round-list-wrapper { margin-bottom: 50px; }
         .round-list-title { display: flex; align-items: center; gap: 15px; font-size: 20px; font-weight: 900; color: white; margin-bottom: 25px; border-bottom: 2px solid #222; padding-bottom: 10px; }
         .round-list-title span { background: var(--neon-mor); padding: 2px 10px; border-radius: 5px; font-size: 14px; }
+        
         .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
 
         /* --- 2. AŞAMA: AĞAÇ (BRACKET) STİLLERİ --- */
@@ -65,7 +66,7 @@
         .team.winner { background: rgba(96, 29, 194, 0.1); border-left: 3px solid var(--neon-mor); }
         .team.winner .team-name, .team.winner .score { color: var(--neon-mor); text-shadow: 0 0 10px rgba(96, 29, 194, 0.4); }
         .team.loser { opacity: 0.5; }
-        
+
         /* BOŞ SLOT (Eşleşme Bekleniyor) STİLİ */
         .match-card.empty-slot { border: 1px dashed #333; cursor: default; }
         .match-card.empty-slot:hover { border-color: #555; transform: none; box-shadow: none; }
@@ -92,6 +93,7 @@
         .modal-score.winner { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
         .modal-vs { font-size: 16px; color: #555; font-weight: bold; }
 
+        /* YÜKLEME EKRANI (Supabase Veri Çekerken) */
         #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050505; display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
 
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
@@ -121,8 +123,8 @@
         <p class="page-subtitle">Toplam Ödül Havuzu: 10.000 TL | 64 Takım</p>
         
         <div class="stage-tabs">
-            <button class="stage-btn active" onclick="switchTab('group', this)"><i class="fas fa-list-ul"></i> GRUP AŞAMASI (R1 & R2)</button>
-            <button class="stage-btn" onclick="switchTab('playoff', this)"><i class="fas fa-sitemap"></i> PLAYOFF AĞACI (Son 16)</button>
+            <button class="stage-btn active" onclick="switchStage('group', this)"><i class="fas fa-list-ul"></i> GRUP AŞAMASI (R1 & R2)</button>
+            <button class="stage-btn" onclick="switchStage('playoff', this)"><i class="fas fa-sitemap"></i> PLAYOFF AĞACI (Son 16)</button>
         </div>
     </div>
 
@@ -143,7 +145,7 @@
                 <span style="font-size: 12px; font-weight: 900; color: var(--gri-yazi); letter-spacing: 2px;">MAÇ DETAYLARI</span>
                 <div class="scoreboard">
                     <div class="modal-team">
-                        <img src="img/obblogo.png" alt="Takım A">
+                        <img src="img/obblogo.png">
                         <span class="modal-team-name" id="mTeamA">TAKIM A</span>
                     </div>
                     <div style="display:flex; align-items:center; gap:15px;">
@@ -152,14 +154,14 @@
                         <span class="modal-score" id="mScoreB">0</span>
                     </div>
                     <div class="modal-team">
-                        <img src="img/obblogo.png" alt="Takım B">
+                        <img src="img/obblogo.png">
                         <span class="modal-team-name" id="mTeamB">TAKIM B</span>
                     </div>
                 </div>
             </div>
             <div style="padding: 40px; text-align: center; color: var(--gri-yazi);">
                 <i class="fas fa-chart-bar fa-3x" style="margin-bottom: 15px; color: #333;"></i>
-                <p>Yakında detaylı oyuncu (K/D/A) istatistikleri bu alana entegre edilecektir.</p>
+                <p>Detaylı K/D/A istatistikleri ve harita sonuçları çok yakında buraya entegre edilecektir.</p>
             </div>
         </div>
     </div>
@@ -168,6 +170,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
+    <script src="js/auth.js"></script> 
 
     <script>
         // --- HEADER FOOTER YÜKLEME ---
@@ -175,21 +178,23 @@
             try {
                 const headerRes = await fetch("components/header.html");
                 if(headerRes.ok) document.getElementById('header-alani').innerHTML = await headerRes.text();
+                
                 const footerRes = await fetch("components/footer.html");
                 if(footerRes.ok) document.getElementById('footer-alani').innerHTML = await footerRes.text();
             } catch(e) { console.error("Komponent yüklenemedi", e); }
         }
 
         // --- SEKME DEĞİŞTİRİCİ ---
-        window.switchTab = function(tabId, btnElement) {
+        function switchStage(tabId, btnElement) {
             document.querySelectorAll('.stage-btn').forEach(btn => btn.classList.remove('active'));
             btnElement.classList.add('active');
             
             document.querySelectorAll('.stage-content').forEach(content => content.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-        };
+        }
 
         // --- TURNUVA MİMARİSİ (BOŞ SLOTLARI GARANTİLER) ---
+        // Veritabanında maç olmasa bile ekranda yer tutacak yapı:
         const TOURNAMENT_STRUCTURE = {
             group: [
                 { id: 'R1', title: 'SON 64 EŞLEŞMELERİ (BO1)', count: 32, format: 'BO1' },
@@ -203,9 +208,9 @@
             ]
         };
 
-        // Kart HTML Üretici (Gerçek veri varsa doldurur, yoksa boş "TBD" çizer)
+        // --- KART HTML ÜRETİCİ ---
         function createMatchCardHTML(matchData, format, isFinal = false) {
-            // Eğer maç verisi yoksa veya TBD ise BOŞ SLOT çiz.
+            // Veri Yoksa BOŞ SLOT Çizilir (Çökmeyi Önleyen Kalkan)
             if (!matchData || matchData.isDummy) {
                 return `
                     <div class="match-card empty-slot ${isFinal ? 'final-match' : ''}">
@@ -216,7 +221,7 @@
                 `;
             }
 
-            // Maç oynanmış veya devam ediyorsa gerçek kartı çiz.
+            // Veri Varsa Kartı Çiz
             const tA = matchData.teamA || 'Bilinmeyen Takım';
             const tB = matchData.teamB || 'Bilinmeyen Takım';
             const sA = matchData.scoreA !== null ? matchData.scoreA : '-';
@@ -228,8 +233,7 @@
             if (matchData.status === 'finished') {
                 classA = matchData.winnerId === matchData.teamAId ? 'winner' : 'loser';
                 classB = matchData.winnerId === matchData.teamBId ? 'winner' : 'loser';
-                // Winner_id yoksa skora göre basit belirleme
-                if(!matchData.winnerId) {
+                if(!matchData.winnerId) { // Fallback (Admin sadece skor girdiyse)
                     if (sA > sB) { classA = 'winner'; classB = 'loser'; }
                     else if (sB > sA) { classB = 'winner'; classA = 'loser'; }
                 }
@@ -256,21 +260,21 @@
             `;
         }
 
-        // SUPABASE'DEN VERİLERİ ÇEK VE YAPIYI İNŞA ET
+        // --- SUPABASE'DEN VERİLERİ ÇEK VE YAPIYI İNŞA ET ---
         async function fetchAndRenderBracket() {
             try {
-                // 1. Önce Takımları Çekelim (Eşleştirme Kolaylığı İçin)
+                // 1. Takımları Çek
                 const { data: teamsData, error: teamsErr } = await window.supabaseClient.from('tournament_applications').select('id, team_name');
                 if (teamsErr) throw teamsErr;
                 
                 const teamMap = {};
                 if (teamsData) teamsData.forEach(t => teamMap[t.id] = t.team_name);
 
-                // 2. Fikstür Maçlarını Çekelim
+                // 2. Fikstür Maçlarını Çek
                 const { data: matchesData, error: matchesErr } = await window.supabaseClient.from('bracket_matches').select('*').order('round_order', { ascending: true });
                 if (matchesErr) throw matchesErr;
 
-                // Maçları Rauntlara Göre Gruplandıralım
+                // Maçları Rauntlara Göre Gruplandır
                 const roundsData = {};
                 if (matchesData) {
                     matchesData.forEach(m => {
@@ -294,10 +298,9 @@
                 const groupStageDiv = document.getElementById('groupStage');
                 let groupHtml = '';
                 TOURNAMENT_STRUCTURE.group.forEach(round => {
-                    groupHtml += `<div class="round-list-wrapper"><h3 class="round-list-title"><span>${round.key}</span> ${round.title}</h3><div class="match-grid">`;
-                    const dbMatches = roundsData[round.key] || [];
+                    groupHtml += `<div class="round-list-wrapper"><h3 class="round-list-title"><span>${round.id}</span> ${round.title}</h3><div class="match-grid">`;
+                    const dbMatches = roundsData[round.id] || [];
                     
-                    // Veritabanında o rauntta maç varsa onu bas, eksik kalan sayı kadar boş kart bas (Boş slot garantisi)
                     for (let i = 0; i < round.count; i++) {
                         if (dbMatches[i]) {
                             groupHtml += createMatchCardHTML(dbMatches[i], round.format);
@@ -331,22 +334,26 @@
                 });
                 playoffDiv.innerHTML = playoffHtml;
 
-                // Yükleme Ekranını Gizle
-                document.getElementById('loadingScreen').style.display = 'none';
-
             } catch (err) {
-                console.error("Fikstür yüklenirken hata:", err);
-                document.getElementById('loadingScreen').innerHTML = `
+                console.error("Fikstür yüklenirken hata oluştu:", err);
+                const loader = document.getElementById('loadingScreen');
+                loader.innerHTML = `
                     <i class="fas fa-exclamation-triangle fa-3x" style="color:var(--kirmizi-iptal); margin-bottom:15px;"></i>
                     <h2>Bağlantı Hatası!</h2>
-                    <p style="color:white; font-size:14px; margin-top:10px;">Lütfen veritabanı bağlantınızı kontrol edin.</p>
+                    <p style="color:white; font-size:14px; margin-top:10px;">Veritabanından veriler çekilemedi.</p>
                 `;
+            } finally {
+                // Ne olursa olsun eğer hata yoksa yükleme ekranını gizle (Çökmeyi önler)
+                const loader = document.getElementById('loadingScreen');
+                if(!loader.innerHTML.includes('Bağlantı Hatası')) {
+                    loader.style.display = 'none';
+                }
             }
         }
 
         // --- MODAL YÖNETİMİ ---
         function openModal(tA, tB, sA, sB, status) {
-            if(status === 'pending' || sA === '-' || sA === 'undefined') return; // Oynanmamış maça tıklanamaz
+            if(status === 'undefined' || status === 'pending' || sA === '-') return; 
             
             document.getElementById('mTeamA').innerText = tA;
             document.getElementById('mTeamB').innerText = tB;
@@ -360,18 +367,25 @@
             scoreBEl.className = parseInt(sB) > parseInt(sA) ? 'modal-score winner' : 'modal-score';
 
             document.getElementById('matchModal').classList.add('active');
-            document.body.style.overflow = 'hidden'; // Arka plan kaymasını engelle
+            document.body.style.overflow = 'hidden'; 
         }
 
-        // Kapatma Tuşu Arka Plan Kaymasını Düzeltsin
         document.querySelector('.close-btn').addEventListener('click', () => { document.body.style.overflow = 'auto'; });
         document.getElementById('matchModal').addEventListener('click', (e) => { 
             if(e.target === document.getElementById('matchModal')) document.body.style.overflow = 'auto'; 
         });
 
-        // Sayfa Yüklendiğinde Algoritmayı Çalıştır
-        window.addEventListener('DOMContentLoaded', () => {
-            loadComponents();
+        // --- SAYFA BAŞLATICI ---
+        window.addEventListener('DOMContentLoaded', async () => {
+            // 1. Önce UI komponentlerini yükle
+            await loadComponents();
+            
+            // 2. Header geldikten hemen sonra Auth kontrolü yap (Giriş Yap/Profil)
+            if (typeof checkUserStatus === 'function') { 
+                checkUserStatus(); 
+            }
+            
+            // 3. En son fikstür ağacını Supabase'den çek
             fetchAndRenderBracket();
         });
     </script>
