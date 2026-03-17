@@ -36,19 +36,37 @@
         
         .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
 
-        /* --- 2. AŞAMA: AĞAÇ (BRACKET) STİLLERİ --- */
+        /* --- 2. AŞAMA: AĞAÇ (BRACKET) SIFIRDAN DÜZELTİLEN CSS --- */
         .bracket-scroll-area { width: 100%; overflow-x: auto; padding-bottom: 40px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; }
         .bracket-container { display: flex; align-items: stretch; justify-content: center; gap: 60px; min-width: max-content; }
-        .bracket-column { display: flex; flex-direction: column; justify-content: space-around; width: 250px; position: relative; }
-        .round-header { text-align: center; color: var(--neon-mor); font-weight: 900; text-transform: uppercase; font-size: 16px; letter-spacing: 2px; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
+        
+        /* Kaymayı Önleyen Merkezleme Mantığı */
+        .bracket-column { display: flex; flex-direction: column; justify-content: center; /* Eskiden space-around idi, kaymaya sebepti */ width: 250px; position: relative; }
+        
+        .round-header { text-align: center; color: var(--neon-mor); font-weight: 900; text-transform: uppercase; font-size: 16px; letter-spacing: 2px; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; z-index: 10; }
 
-        /* Ağaç Çizgileri */
-        .bracket-column .match-wrapper { position: relative; margin: 15px 0; }
-        .bracket-column .match-wrapper::after { content: ''; position: absolute; right: -30px; top: 50%; width: 30px; border-bottom: 2px solid #333; z-index: 1; }
+        /* Maç Kartı Spacing (Sabitleyici) */
+        .bracket-column .match-wrapper { position: relative; z-index: 5; margin: 0; padding: 10px 0; }
+        
+        /* Dinamik Boşluk Mantığı (Raund İlerledikçe Boşluk Artar) */
+        /* Son 16 */ .bracket-column:nth-child(1) .match-wrapper { margin-bottom: 20px; }
+        /* Çeyrek */ .bracket-column:nth-child(2) .match-wrapper { margin-bottom: 120px; }
+        /* Yarı */   .bracket-column:nth-child(3) .match-wrapper { margin-bottom: 320px; }
+        /* Final */  .bracket-column:nth-child(4) .match-wrapper { margin-bottom: 0; }
+        .bracket-column .match-wrapper:last-child { margin-bottom: 0; } /* Son kartta boşluk yok */
+
+        /* Ağaç Çizgileri - Milimetrik Ayar */
+        .bracket-column .match-wrapper::after { content: ''; position: absolute; right: -30px; top: calc(50% - 1px); width: 30px; border-bottom: 2px solid #333; z-index: 1; }
         .bracket-column:last-child .match-wrapper::after { display: none; }
-        .bracket-column:not(:first-child) .match-wrapper::before { content: ''; position: absolute; left: -30px; width: 30px; z-index: 1; }
-        .bracket-column:not(:first-child) .match-wrapper:nth-child(odd)::before { border-left: 2px solid #333; height: calc(50% + 15px); top: 50%; border-top: 2px solid #333; border-bottom: none; }
-        .bracket-column:not(:first-child) .match-wrapper:nth-child(even)::before { border-left: 2px solid #333; height: calc(50% + 15px); bottom: 50%; border-bottom: 2px solid #333; border-top: none; }
+        
+        .bracket-column:not(:first-child) .match-wrapper::before { content: ''; position: absolute; left: -30px; width: 30px; border-left: 2px solid #333; z-index: 1; }
+        
+        /* logic needs to skip round-header. Match-wrappers are 2, 3, 4, etc. Even connects from top, odd connects from bottom. */
+        .bracket-column:not(:first-child) .match-wrapper:nth-child(even)::before { top: 50%; height: calc(50% + 5px); border-top: 2px solid #333; }
+        .bracket-column:not(:first-child) .match-wrapper:nth-child(odd)::before { bottom: 50%; height: calc(50% + 5px); border-bottom: 2px solid #333; }
+
+        /* R1 Compact bo1 style (opsiyonel compact görünüm) */
+        #bracketContainer:has(.match-grid) .bracket-column .match-wrapper { margin-bottom: 15px; }
 
         /* --- ORTAK MAÇ KARTI TASARIMI --- */
         .match-card { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; overflow: hidden; position: relative; z-index: 5; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
@@ -62,7 +80,6 @@
         .team-name { font-size: 13px; font-weight: 700; color: white; }
         .score { font-size: 16px; font-weight: 900; color: white; }
         
-        /* Kazanan / Kaybeden / Boş Slot */
         .team.winner { background: rgba(96, 29, 194, 0.1); border-left: 3px solid var(--neon-mor); }
         .team.winner .team-name, .team.winner .score { color: var(--neon-mor); text-shadow: 0 0 10px rgba(96, 29, 194, 0.4); }
         .team.loser { opacity: 0.5; }
@@ -81,7 +98,7 @@
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
         .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
         
-        /* Scrollbar for Modal */
+        /* Modal Scrollbar */
         .modal-content::-webkit-scrollbar { width: 8px; }
         .modal-content::-webkit-scrollbar-track { background: #111; border-radius: 0 15px 15px 0; }
         .modal-content::-webkit-scrollbar-thumb { background: var(--neon-mor); border-radius: 8px; }
@@ -98,9 +115,9 @@
         .modal-score.winner { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
         .modal-vs { font-size: 16px; color: #555; font-weight: bold; }
 
-        /* Yeni Eklenen: Modal İçi İstatistik Tabloları */
+        /* Modal İçi İstatistik Tabloları (VCT Style) */
         .map-stats-block { margin: 20px; background: #111; border-radius: 12px; border: 1px solid #222; overflow: hidden; animation: fadeIn 0.4s ease; }
-        .map-name-header { background: var(--neon-mor); color: white; padding: 12px; margin: 0; font-size: 14px; font-weight: 900; text-align: center; letter-spacing: 1px; }
+        .map-name-header { background: var(--neon-mor); color: white; padding: 12px; margin: 0; font-size: 14px; font-weight: 900; text-align: center; letter-spacing: 1px; text-transform: uppercase; }
         .stats-tables-container { display: flex; flex-direction: column; gap: 0; }
         .table-half { width: 100%; border-bottom: 1px solid #222; }
         .table-half:last-child { border-bottom: none; }
@@ -232,7 +249,6 @@
             ]
         };
 
-        // Kart HTML Üretici (ID'LERİ MODALA İLETİR)
         function createMatchCardHTML(matchData, format, isFinal = false) {
             if (!matchData || matchData.isDummy) {
                 return `
@@ -267,7 +283,6 @@
             const finalClass = isFinal ? 'final-match' : '';
             const safeTA = tA.replace(/'/g, ""); const safeTB = tB.replace(/'/g, "");
 
-            // DİKKAT: Artık openModal'a matchData.id ve takım id'leri de gidiyor!
             return `
                 <div class="match-card ${finalClass}" onclick="openModal('${matchData.id}', '${matchData.teamAId}', '${matchData.teamBId}', '${safeTA}', '${safeTB}', '${sA}', '${sB}', '${matchData.status}')">
                     <div class="match-info-bar"><span>${matchData.format || format}</span>${statusText}</div>
@@ -349,11 +364,10 @@
             }
         }
 
-        // --- GÜNCELLENMİŞ HARİKA MODAL (İSTATİSTİKLERİ GETİRİR) ---
+        // --- GÜNCELLENMİŞ MODAL (GERÇEK PNG'LERİ GETİRİR) ---
         async function openModal(matchId, teamAId, teamBId, tA, tB, sA, sB, status) {
             if(status === 'undefined' || status === 'pending' || sA === '-') return; 
             
-            // Üst kısımdaki genel skoru doldur
             document.getElementById('mTeamA').innerText = tA;
             document.getElementById('mTeamB').innerText = tB;
             
@@ -368,92 +382,68 @@
             document.getElementById('matchModal').classList.add('active');
             document.body.style.overflow = 'hidden'; 
 
-            // Modal içi yükleniyor efekti
             const detailsBox = document.getElementById('modalDetailsContent');
             detailsBox.innerHTML = `
                 <div style="padding: 60px; text-align: center;">
                     <i class="fas fa-circle-notch fa-spin fa-3x" style="color:var(--neon-mor); margin-bottom: 20px;"></i>
-                    <p style="color: var(--gri-yazi); font-weight: bold; letter-spacing: 1px;">İstatistikler Supabase'den Çekiliyor...</p>
-                </div>
-            `;
+                    <p style="color: var(--gri-yazi); font-weight: bold;">İstatistikler Yükleniyor...</p>
+                </div>`;
 
             try {
-                // 1. Bu Maça Ait Haritaları Çek
-                const { data: maps, error: mapsErr } = await window.supabaseClient
-                    .from('match_maps')
-                    .select('*')
-                    .eq('match_id', matchId)
-                    .order('map_order', { ascending: true });
-
+                const { data: maps, error: mapsErr } = await window.supabaseClient.from('match_maps').select('*').eq('match_id', matchId).order('map_order', { ascending: true });
                 if (mapsErr) throw mapsErr;
 
                 if (!maps || maps.length === 0) {
-                    detailsBox.innerHTML = `
-                        <div style="padding: 40px; text-align: center; color: var(--gri-yazi);">
-                            <i class="fas fa-info-circle fa-3x" style="margin-bottom: 15px; color: #555;"></i>
-                            <p>Bu maç için detaylı harita ve K/D/A istatistiği sisteme girilmemiş.</p>
-                        </div>`;
+                    detailsBox.innerHTML = '<p style="padding:40px; text-align:center; color:#555;">Maç istatistiği girilmemiş.</p>';
                     return;
                 }
 
-                let html = '';
+                const { data: stats, error: statsErr } = await window.supabaseClient.from('match_player_stats').select('*').eq('map_id', maps[0].id);
+                if (statsErr) throw statsErr;
 
-                // 2. Her Harita İçin Oyuncu Verilerini Çek ve Tablola
-                for (const map of maps) {
-                    const { data: stats, error: statsErr } = await window.supabaseClient
-                        .from('match_player_stats')
-                        .select('*')
-                        .eq('map_id', map.id);
+                const teamAStats = stats.filter(s => s.team_id === teamAId).sort((a,b) => b.kills - a.kills);
+                const teamBStats = stats.filter(s => s.team_id === teamBId).sort((a,b) => b.kills - a.kills);
 
-                    if (statsErr) throw statsErr;
+                // DÜZELTME BURADA: İsimleri WebP'ye Göre Temizleyen Satır Çizici
+                const renderRow = (stat) => {
+                    // KAY/O -> kayo, Reyna -> reyna yapar
+                    const cleanAgentName = stat.agent_name.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    
+                    return `
+                    <tr>
+                        <td><img src="img/imgagents/${cleanAgentName}.webp" class="stat-agent-img" title="${stat.agent_name.toUpperCase()}" alt="${stat.agent_name}" onerror="this.src='img/agents/unknown.png'"></td>
+                        <td class="stat-ign-cell">${stat.in_game_name}</td>
+                        <td style="font-weight:900; color:#00d2ff;">${stat.kills}</td>
+                        <td style="font-weight:900; color:#ff4b4b;">${stat.deaths}</td>
+                        <td style="font-weight:900; color:#888;">${stat.assists}</td>
+                    </tr>`;
+                };
 
-                    // Oyuncuları takımlara göre ayır ve Kill (Öldürme) sayısına göre büyükten küçüğe sırala
-                    const teamAStats = stats.filter(s => s.team_id === teamAId).sort((a,b) => b.kills - a.kills);
-                    const teamBStats = stats.filter(s => s.team_id === teamBId).sort((a,b) => b.kills - a.kills);
-
-                    // Satır çizici fonksiyon (UI Avatars ile ajan resmi oluşturur)
-                    const renderRow = (stat) => `
-                        <tr>
-                            <td><img src="https://ui-avatars.com/api/?name=${stat.agent_name}&background=222&color=fff" class="stat-agent-img" title="${stat.agent_name.toUpperCase()}"></td>
-                            <td class="stat-ign-cell">${stat.in_game_name}</td>
-                            <td style="font-weight:900; color:#00d2ff;">${stat.kills}</td>
-                            <td style="font-weight:900; color:#ff4b4b;">${stat.deaths}</td>
-                            <td style="font-weight:900; color:#888;">${stat.assists}</td>
-                        </tr>
-                    `;
-
-                    html += `
-                        <div class="map-stats-block">
-                            <h4 class="map-name-header">HARİTA: ${map.map_name.toUpperCase()} <span style="opacity:0.7; margin-left:5px;">[ ${map.score_a} - ${map.score_b} ]</span></h4>
-                            <div class="stats-tables-container">
-                                <div class="table-half">
-                                    <div class="team-header-bar team-a-bar">${tA}</div>
-                                    <table class="stats-table">
-                                        <thead><tr><th>AJAN</th><th class="stat-ign-cell">OYUNCU</th><th>K</th><th>D</th><th>A</th></tr></thead>
-                                        <tbody>${teamAStats.length > 0 ? teamAStats.map(renderRow).join('') : '<tr><td colspan="5" style="color:#555;">Veri Yok</td></tr>'}</tbody>
-                                    </table>
-                                </div>
-                                <div class="table-half">
-                                    <div class="team-header-bar team-b-bar">${tB}</div>
-                                    <table class="stats-table">
-                                        <thead><tr><th>AJAN</th><th class="stat-ign-cell">OYUNCU</th><th>K</th><th>D</th><th>A</th></tr></thead>
-                                        <tbody>${teamBStats.length > 0 ? teamBStats.map(renderRow).join('') : '<tr><td colspan="5" style="color:#555;">Veri Yok</td></tr>'}</tbody>
-                                    </table>
-                                </div>
+                // Sadece ilk haritayı gösteriyoruz (BO1 varsayımıyla, BO3 için döngüye alınabilir)
+                detailsBox.innerHTML = `
+                    <div class="map-stats-block">
+                        <h4 class="map-name-header">HARİTA: ${maps[0].map_name.toUpperCase()}</h4>
+                        <div class="stats-tables-container">
+                            <div class="table-half">
+                                <div class="team-header-bar team-a-bar">${tA}</div>
+                                <table class="stats-table">
+                                    <thead><tr><th>AJAN</th><th class="stat-ign-cell">OYUNCU</th><th>K</th><th>D</th><th>A</th></tr></thead>
+                                    <tbody>${teamAStats.map(renderRow).join('')}</tbody>
+                                </table>
+                            </div>
+                            <div class="table-half">
+                                <div class="team-header-bar team-b-bar">${tB}</div>
+                                <table class="stats-table">
+                                    <thead><tr><th>AJAN</th><th class="stat-ign-cell">OYUNCU</th><th>K</th><th>D</th><th>A</th></tr></thead>
+                                    <tbody>${teamBStats.map(renderRow).join('')}</tbody>
+                                </table>
                             </div>
                         </div>
-                    `;
-                }
-
-                detailsBox.innerHTML = html;
+                    </div>`;
 
             } catch (err) {
-                console.error("İstatistik Çekme Hatası:", err);
-                detailsBox.innerHTML = `
-                    <div style="padding: 40px; text-align: center; color: var(--kirmizi-iptal);">
-                        <i class="fas fa-exclamation-triangle fa-3x" style="margin-bottom: 15px;"></i>
-                        <p>İstatistikler yüklenirken bir hata oluştu.</p>
-                    </div>`;
+                console.error("Hata:", err);
+                detailsBox.innerHTML = '<p style="padding:40px; text-align:center; color:red;">Veri çekilemedi.</p>';
             }
         }
 
@@ -462,7 +452,6 @@
             if(e.target === document.getElementById('matchModal')) document.body.style.overflow = 'auto'; 
         });
 
-        // --- SAYFA BAŞLATICI ---
         window.addEventListener('DOMContentLoaded', async () => {
             await loadComponents();
             if (typeof checkUserStatus === 'function') { checkUserStatus(); }
