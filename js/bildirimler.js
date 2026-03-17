@@ -12,13 +12,9 @@ function cevirSupabaseHatasi(hataMesaji) {
     
     const msg = hataMesaji.toLowerCase();
 
-    // Dinamik Hatalar (18 saniye vb.)
     const saniyeElesmesi = msg.match(/after (\d+) seconds/i);
-    if (saniyeElesmesi) {
-        return `Güvenlik gereği, yeni bir istek yapmadan önce ${saniyeElesmesi[1]} saniye beklemelisiniz.`;
-    }
+    if (saniyeElesmesi) return `Güvenlik gereği, yeni bir istek yapmadan önce ${saniyeElesmesi[1]} saniye beklemelisiniz.`;
 
-    // Sabit Hatalar Sözlüğü
     if (msg.includes("invalid login credentials")) return "E-posta adresi veya şifre hatalı.";
     if (msg.includes("email not confirmed")) return "Giriş yapmadan önce e-posta adresinize gelen linkten hesabınızı onaylamalısınız.";
     if (msg.includes("user already registered")) return "Bu e-posta adresi sistemimizde zaten kayıtlı.";
@@ -27,7 +23,6 @@ function cevirSupabaseHatasi(hataMesaji) {
     if (msg.includes("too many requests") || msg.includes("rate limit")) return "Çok fazla deneme yaptınız. Lütfen birkaç dakika bekleyip tekrar deneyin.";
     if (msg.includes("network error") || msg.includes("failed to fetch")) return "Bağlantı hatası! Lütfen internetinizi kontrol edin.";
     
-    // Eğer sözlükte yoksa gereksiz İngilizce ön ekleri temizleyip yolla
     return hataMesaji.replace('Hata: ', '').replace('Error: ', ''); 
 }
 
@@ -36,9 +31,7 @@ window.showNotification = function(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
 
-    // MESAJI EKRANA BASMADAN ÖNCE TÜRKÇEYE ÇEVİR
     const turkceMesaj = cevirSupabaseHatasi(message);
-
     const toast = document.createElement('div');
     toast.className = `custom-toast toast-${type}`;
     let iconClass = type === 'success' ? 'fas fa-check-circle' : type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-info-circle';
@@ -57,44 +50,114 @@ function getIconForType(tip) {
     switch(tip) {
         case 'onay': return { icon: 'fa-check-circle', color: '#00e676' }; 
         case 'red': return { icon: 'fa-times-circle', color: '#ff4b4b' }; 
-        case 'sistem': return { icon: 'fa-bullhorn', color: '#601dc2' }; 
+        case 'sistem': return { icon: 'fa-bullhorn', color: '#601dc2' }; // Genel duyurular için ikon
         case 'davet': return { icon: 'fa-envelope-open-text', color: '#f39c12' }; 
         default: return { icon: 'fa-bell', color: '#00d2ff' }; 
     }
 }
 
+// --- HİBRİT VERİ ÇEKME VE HARMANLAMA SİSTEMİ ---
 window.fetchRealNotifications = async function() {
     try {
         const { data: { user } } = await window.supabaseClient.auth.getUser();
         if (!user) return;
 
-        const { data } = await window.supabaseClient.from('bildirimler').select('*').eq('kullanici_id', user.id).eq('okundu', false).order('created_at', { ascending: false });
-        
-        window.myNotifications = data ? data.map(item => {
+        // 1. Kişisel Bildirimleri Çek
+        const { data: kisiselData } = await window.supabaseClient
+            .from('bildirimler')
+            .select('*')
+            .eq('kullanici_id', user.id); 
+
+        // 2. Genel Duyuruları Çek
+        const { data: duyuruData } = await window.supabaseClient
+            .from('duyurular')
+            .select('*'); 
+
+        // 3. Local Storage'dan gizlenmiş duyuruları al (Önbellek)
+        let gizlenenDuyurular = JSON.parse(localStorage.getItem('gizlenenDuyurular') || '[]');
+        let harmanlanmisList = [];
+
+        // Kişisel bildirimleri listeye ekle
+        if (kisiselData) {
+            kisiselData.forEach(item => {
+                harmanlanmisList.push({
+                    id: item.id,
+                    tablo: 'bildirimler',
+                    tip: item.tip,
+                    title: item.baslik,
+                    text: item.mesaj,
+                    created_at: item.created_at
+                });
+            });
+        }
+
+        // Genel duyuruları listeye ekle (Sadece Gizlenmemiş olanları)
+        if (duyuruData) {
+            duyuruData.forEach(item => {
+                if (!gizlenenDuyurular.includes(item.id)) {
+                    harmanlanmisList.push({
+                        id: item.id,
+                        tablo: 'duyurular',
+                        tip: 'sistem', 
+                        title: item.baslik,
+                        text: item.mesaj,
+                        created_at: item.created_at
+                    });
+                }
+            });
+        }
+
+        // 4. Tarihe göre yeniden eskiye (descending) KUSURSUZ SIRALAMA
+        harmanlanmisList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        // 5. Render formatına dönüştür ve ekrana bas
+        window.myNotifications = harmanlanmisList.map(item => {
             const styleObj = getIconForType(item.tip);
-            return { id: item.id, tip: item.tip, icon: styleObj.icon, color: styleObj.color, title: item.baslik, text: item.mesaj };
-        }) : [];
+            return { ...item, icon: styleObj.icon, color: styleObj.color };
+        });
+
         renderNotifications();
     } catch (err) { console.error("Bildirim çekilemedi:", err); }
 };
 
+// --- İKİ KANALDAN GERÇEK ZAMANLI (REALTIME) DİNLEME ---
 window.listenRealtimeNotifications = async function() {
     const { data: { user } } = await window.supabaseClient.auth.getUser();
     if (!user) return;
 
-    window.supabaseClient.channel('realtime-bildirimler')
+    // 1. Kanal: Kişisel Bildirimler
+    window.supabaseClient.channel('kisisel-bildirimler')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bildirimler', filter: `kullanici_id=eq.${user.id}` },
         (payload) => {
             const yeni = payload.new;
             const styleObj = getIconForType(yeni.tip);
-            window.myNotifications.unshift({ id: yeni.id, tip: yeni.tip, icon: styleObj.icon, color: styleObj.color, title: yeni.baslik, text: yeni.mesaj });
+            window.myNotifications.unshift({
+                id: yeni.id, tablo: 'bildirimler', tip: yeni.tip, icon: styleObj.icon, color: styleObj.color,
+                title: yeni.baslik, text: yeni.mesaj, created_at: yeni.created_at
+            });
+            window.myNotifications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             renderNotifications();
             showNotification(yeni.baslik, "info");
         }
       ).subscribe();
+
+    // 2. Kanal: Genel Duyurular (Tüm kullanıcılara anlık düşer)
+    window.supabaseClient.channel('genel-duyurular')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'duyurular' },
+        (payload) => {
+            const yeni = payload.new;
+            const styleObj = getIconForType('sistem');
+            window.myNotifications.unshift({
+                id: yeni.id, tablo: 'duyurular', tip: 'sistem', icon: styleObj.icon, color: styleObj.color,
+                title: yeni.baslik, text: yeni.mesaj, created_at: yeni.created_at
+            });
+            window.myNotifications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            renderNotifications();
+            showNotification(yeni.baslik, "info"); 
+        }
+      ).subscribe();
 };
 
-// --- AKILLI YÖNLENDİRME İÇEREN RENDER FONKSİYONU ---
 window.renderNotifications = function() {
     const deskList = document.getElementById("notif-list-desktop");
     const mobList = document.getElementById("notif-list-mobile");
@@ -104,15 +167,14 @@ window.renderNotifications = function() {
     let htmlContent = window.myNotifications.length === 0 ? `<div class="notif-empty">Şu an yeni bir bildiriminiz yok.</div>` : "";
 
     window.myNotifications.forEach(notif => {
-        // AKILLI YÖNLENDİRME SİSTEMİ
         let targetUrl = ""; 
         let cursorStyle = "cursor: pointer;";
         
         if (notif.tip === 'davet') targetUrl = "profil.html"; 
-        else if (notif.tip === 'onay' || notif.tip === 'red') targetUrl = "profil.html"; // Kullanıcının takım durumunu göreceği sayfa
+        else if (notif.tip === 'onay' || notif.tip === 'red') targetUrl = "profil.html"; 
         else {
-            targetUrl = "javascript:void(0)"; // Sistem veya genel duyuru ise hiçbir yere gitme
-            cursorStyle = "cursor: default;"; // Tıklanabilir el işareti çıkmasın
+            targetUrl = "javascript:void(0)";
+            cursorStyle = "cursor: default;"; 
         }
 
         let onClickAttr = targetUrl !== "javascript:void(0)" ? `onclick="window.location.href='${targetUrl}'"` : "";
@@ -147,12 +209,26 @@ window.toggleNotifPanel = function(panelId, event) {
     if (!isActive) panel.classList.add("active");
 };
 
+// --- ÇİFT KARAKTERLİ SİLME İŞLEMİ (Veritabanı + Önbellek) ---
 window.clearNotifications = async function(event) {
     if(event) event.stopPropagation();
     try {
         const { data: { user } } = await window.supabaseClient.auth.getUser();
         if (!user) return;
-        await window.supabaseClient.from('bildirimler').update({ okundu: true }).eq('kullanici_id', user.id).eq('okundu', false);
+
+        // 1. KİŞİSEL BİLDİRİMLERİ VERİTABANINDAN SİL (DELETE)
+        await window.supabaseClient.from('bildirimler').delete().eq('kullanici_id', user.id);
+
+        // 2. GENEL DUYURULARI ÖNBELLEĞE YAZ (Tarayıcıda Gizle)
+        let gizlenenDuyurular = JSON.parse(localStorage.getItem('gizlenenDuyurular') || '[]');
+        window.myNotifications.forEach(notif => {
+            if (notif.tablo === 'duyurular' && !gizlenenDuyurular.includes(notif.id)) {
+                gizlenenDuyurular.push(notif.id);
+            }
+        });
+        localStorage.setItem('gizlenenDuyurular', JSON.stringify(gizlenenDuyurular));
+
+        // 3. Ekranı sıfırla
         window.myNotifications = [];
         renderNotifications();
         showNotification("Tüm bildirimler temizlendi.", "success");
@@ -161,7 +237,6 @@ window.clearNotifications = async function(event) {
 
 // --- GLOBAL DAVET SİSTEMİ ---
 window.initGlobalInviteSystem = async function(userId) {
-    // 1. Sayfa yüklendiğinde birikmiş davetleri kontrol et
     const { data: pendingInvites } = await window.supabaseClient
         .from('application_members')
         .select('id, tournament_applications(team_name)')
@@ -182,7 +257,6 @@ window.initGlobalInviteSystem = async function(userId) {
         if (newAlertsFound) sessionStorage.setItem('alertedInvites', JSON.stringify(alertedInvites));
     }
 
-    // 2. KULLANICI SİTEDE AKTİFKEN (Canlı) DAVET GELİRSE EKRANA DÜŞÜR
     window.supabaseClient.channel('global-invite-listener')
         .on('postgres_changes', {
             event: 'INSERT', 
@@ -190,7 +264,6 @@ window.initGlobalInviteSystem = async function(userId) {
             table: 'application_members',
             filter: `user_id=eq.${userId}`
         }, async (payload) => {
-            // Takım ID'sinden takım adını bul
             const appId = payload.new.application_id;
             const { data: teamData } = await window.supabaseClient
                 .from('tournament_applications')
@@ -200,25 +273,25 @@ window.initGlobalInviteSystem = async function(userId) {
 
             const teamName = teamData ? teamData.team_name : "Bir takım";
             
-            // Aktif anlık bildirimi çıkar
             if (typeof showNotification === "function") {
                 showNotification(`🔔 YENİ DAVET: ${teamName} seni takımına çağırıyor! Hemen profiline göz at.`, "success");
             }
 
-            // Sayfa yenilenirse tekrar göstermesin diye kaydet
             let alertedInvites = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
             alertedInvites.push(payload.new.id);
             sessionStorage.setItem('alertedInvites', JSON.stringify(alertedInvites));
             
-            // Zili / Bildirim Panelini anlık güncelle
             window.myNotifications.unshift({ 
                 id: payload.new.id, 
+                tablo: 'bildirimler', // Ekstra mantık için
                 tip: 'davet', 
                 icon: 'fa-envelope-open-text', 
                 color: '#f39c12', 
                 title: 'Yeni Davet!', 
-                text: `${teamName} seni çağırıyor.` 
+                text: `${teamName} seni çağırıyor.`,
+                created_at: new Date().toISOString()
             });
+            window.myNotifications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             window.renderNotifications();
         })
         .subscribe();
@@ -226,19 +299,15 @@ window.initGlobalInviteSystem = async function(userId) {
 
 // --- URL KONTROLÜ: E-POSTA ONAYI, OTOMATİK GİRİŞ VE HATA YAKALAMA ---
 window.addEventListener('DOMContentLoaded', () => {
-    // 1. Bizim eklediğimiz "?verified=true" parametresi var mı?
     const urlParams = new URLSearchParams(window.location.search);
     const isVerified = urlParams.get('verified') === 'true';
 
-    // 2. Supabase'in eklediği "#" (hash) parametrelerini al
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const isSupabaseSignup = hashParams.get('type') === 'signup';
     const isPasswordRecovery = hashParams.get('type') === 'recovery';
     
-    // 3. Supabase'den gelen bir HATA var mı?
     const errorDescription = hashParams.get('error_description');
 
-    // EĞER HATA VARSA:
     if (errorDescription) {
         setTimeout(() => {
             if (errorDescription.includes('expired')) {
@@ -248,39 +317,28 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         }, 500);
         
-        // URL'yi temizle ki hata mesajı ekranda asılı kalmasın
         window.history.replaceState({}, document.title, window.location.pathname);
         
-        // GÜVENLİK ÖNLEMİ: Eğer kullanıcı şifre yenileme sayfasındaysa ve link hatalıysa, onu giriş sayfasına at!
         if (window.location.pathname.includes('sifre-yenile')) {
-            // Formu veya auth kartını anında gizle ki işlem yapamasın
             const authCard = document.querySelector('.auth-card');
             const form = document.querySelector('form');
             if(authCard) authCard.style.display = 'none';
             else if(form) form.style.display = 'none';
 
-            // 3 saniye sonra zorla ana sayfaya/giriş sayfasına yolla
-            setTimeout(() => {
-                window.location.href = 'index.html'; 
-            }, 3000);
+            setTimeout(() => { window.location.href = 'index.html'; }, 3000);
         }
-        
-        return; // Hata varsa kodu burada kes, aşağıdaki başarılı mesajlarını gösterme
+        return; 
     }
 
-    // EĞER İŞLEM BAŞARILIYSA:
     if (isVerified || isSupabaseSignup) {
         setTimeout(() => {
             if (typeof showNotification === 'function') {
                 showNotification("E-postanız başarıyla onaylandı ve giriş yapıldı!", "success");
             }
         }, 500);
-
-        // URL'yi temizle
         window.history.replaceState({}, document.title, window.location.pathname);
     }
     
-    // Şifre sıfırlama ekranı için ekstra kontrol
     if (isPasswordRecovery) {
         setTimeout(() => {
             if (typeof showNotification === 'function') {
