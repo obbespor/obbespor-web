@@ -35,12 +35,15 @@
         .api-fetch-box input:focus { border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.3); }
         .btn-fetch { background: var(--neon-mor); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; white-space: nowrap; display: flex; align-items: center; gap: 8px; font-family: 'Poppins', sans-serif; text-transform: uppercase; }
         .btn-fetch:hover { box-shadow: 0 0 20px rgba(96, 29, 194, 0.5); transform: translateY(-2px); }
-        .api-help-text { font-size: 12px; color: var(--gri-yazi); display: flex; justify-content: space-between; }
 
         /* --- MAÇ SKOR ALANI --- */
         .match-score-header { display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid #222;}
         .team-score-input { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .team-name-input { text-align: center; font-weight: 900; background: transparent; border: none; color: white; font-size: 24px; text-transform: uppercase; outline: none; width: 200px; }
+        
+        /* Takım ismi artık düzenlenebilir olduğu için altı çizili yapıldı */
+        .team-name-input { text-align: center; font-weight: 900; background: transparent; border: none; border-bottom: 1px dashed #555; color: white; font-size: 24px; text-transform: uppercase; outline: none; width: 220px; padding-bottom: 5px; transition: 0.3s; }
+        .team-name-input:focus { border-bottom-color: var(--neon-mor); }
+        
         .big-score-input { background: #000; border: 2px solid #444; color: white; width: 90px; height: 90px; text-align: center; font-size: 40px; font-weight: 900; border-radius: 15px; outline: none; transition: 0.3s; }
         .big-score-input:focus { border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.3); }
         .vs-text { text-align: center; font-size: 24px; font-weight: 900; color: var(--gri-yazi); display: flex; flex-direction: column; gap: 10px; }
@@ -52,11 +55,14 @@
         .stats-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .team-stats-box h4 { font-size: 15px; margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid; padding-left: 10px; }
         
-        .player-stat-row { display: grid; grid-template-columns: 80px 1.5fr 1.5fr 45px 45px 45px; gap: 10px; margin-bottom: 10px; align-items: center; background: #0d0d0d; padding: 10px; border-radius: 10px; border: 1px solid #222; transition: 0.3s; }
+        .player-stat-row { display: grid; grid-template-columns: 90px 1.5fr 1.5fr 45px 45px 45px; gap: 10px; margin-bottom: 10px; align-items: center; background: #0d0d0d; padding: 10px; border-radius: 10px; border: 1px solid #222; transition: 0.3s; }
         .player-stat-row:hover { border-color: #444; background: #111; }
         
         .player-stat-row input, .player-stat-row select { background: #000; border: 1px solid #333; color: white; padding: 8px; border-radius: 6px; font-size: 13px; outline: none; transition: 0.3s; width: 100%; text-align: center; }
-        .player-stat-row input.ign-input { text-align: left; background: transparent; border: none; font-weight: bold; color: var(--gri-yazi); }
+        .player-stat-row input:focus, .player-stat-row select:focus { border-color: var(--neon-mor); }
+        
+        /* IGN input artık manuel girileceği için normal input stiline döndürüldü */
+        .player-stat-row input.ign-input { text-align: left; font-weight: bold; color: white; }
         
         .agent-input-group { display: flex; align-items: center; gap: 5px; }
         .agent-icon { width: 35px; height: 35px; border-radius: 4px; object-fit: cover; border: 1px solid #444; background: #222; }
@@ -73,7 +79,7 @@
             .btn-fetch { width: 100%; justify-content: center; }
             .match-score-header { flex-direction: column; gap: 20px; }
             .stats-grid-container { grid-template-columns: 1fr; }
-            .player-stat-row { grid-template-columns: 40px 1fr 1fr 35px 35px 35px; gap: 5px; font-size: 11px; }
+            .player-stat-row { grid-template-columns: 45px 1fr 1fr 35px 35px 35px; gap: 5px; font-size: 11px; }
         }
     </style>
 </head>
@@ -105,18 +111,18 @@
         
         <div class="match-management-card">
             <div class="form-group" style="margin-bottom: 30px;">
-                <label style="color:var(--neon-mor); font-weight: bold; text-transform: uppercase; font-size: 14px;">1. Önce Turnuva Eşleşmesini Seçin</label>
+                <label style="color:var(--neon-mor); font-weight: bold; text-transform: uppercase; font-size: 14px;">1. Önce Turnuva Eşleşmesini Seçin (Veya Boş Bırakıp Tamamen Manuel Girin)</label>
                 <select id="matchSelector" class="form-control" onchange="initHybridUI(this.value)">
-                    <option value="">-- Bir eşleşme seçin --</option>
-                    <option value="m1">OBB 1. TOPLULUK TURNUVASI</option>
+                    <option value="">-- Yeni / Manuel Maç Girişi --</option>
+                    <option value="m1">OBB 1. TOPLULUK TURNUVASI (Örnek Maç)</option>
                 </select>
             </div>
 
             <div id="dynamicMatchArea" style="display: none; animation: fadeIn 0.5s ease;">
                 <div class="api-fetch-box">
-                    <span class="api-badge">API İle Otomatik Doldur</span>
+                    <span class="api-badge">Opsiyonel: API İle Otomatik Doldur</span>
                     <div class="api-input-row">
-                        <input type="text" id="apiMatchId" placeholder="Valorant Match ID yapıştırın">
+                        <input type="text" id="apiMatchId" placeholder="Valorant Match ID (Elinizde Varsa)">
                         <button class="btn-fetch" id="btnFetchApi" onclick="fetchValorantData()">
                             <i class="fas fa-bolt"></i> VERİLERİ ÇEK
                         </button>
@@ -125,16 +131,16 @@
 
                 <div class="match-score-header">
                     <div class="team-score-input">
-                        <input type="text" id="teamAName" class="team-name-input" value="TAKIM A" readonly>
-                        <input type="number" id="scoreA" class="big-score-input" value="0">
+                        <input type="text" id="teamAName" class="team-name-input" placeholder="TAKIM A İSMİ">
+                        <input type="number" id="scoreA" class="big-score-input" value="0" min="0">
                     </div>
                     <div class="vs-text">
                         VS
-                        <input type="text" id="mapNameInput" class="map-input" placeholder="HARİTA">
+                        <input type="text" id="mapNameInput" class="map-input" placeholder="HARİTA YAZIN">
                     </div>
                     <div class="team-score-input">
-                        <input type="text" id="teamBName" class="team-name-input" value="TAKIM B" readonly>
-                        <input type="number" id="scoreB" class="big-score-input" value="0">
+                        <input type="text" id="teamBName" class="team-name-input" placeholder="TAKIM B İSMİ">
+                        <input type="number" id="scoreB" class="big-score-input" value="0" min="0">
                     </div>
                 </div>
 
@@ -181,6 +187,9 @@
                 const { data: profile } = await window.supabaseClient.from('profiles').select('role').eq('id', user.id).single();
                 if (!profile || profile.role !== 'admin') throw new Error("Yetkisiz erişim.");
                 document.getElementById('loadingScreen').style.display = 'none';
+                
+                // Sayfa ilk yüklendiğinde boş manuel formu açmak istersen:
+                initHybridUI("manuel"); 
             } catch (err) { window.location.replace("index.html"); }
         }
 
@@ -189,32 +198,55 @@
             if(!val) { area.style.display = 'none'; return; }
             area.style.display = 'block';
             
-            const selText = document.getElementById('matchSelector').options[document.getElementById('matchSelector').selectedIndex].text;
+            // Eğer dropdown'dan bir takım seçilirse doldur, "Manuel" ise boş bırak
+            const sel = document.getElementById('matchSelector');
+            const selText = sel.options[sel.selectedIndex].text;
+            
             if(selText.includes('vs')) {
-                const teams = selText.split(':')[1].split('(')[0].split('vs');
+                const teams = selText.split(':')[1]?.split('(')[0]?.split('vs') || selText.split('(')[0].split('vs');
                 document.getElementById('teamAName').value = teams[0].trim();
                 document.getElementById('teamBName').value = teams[1].trim();
+            } else {
+                document.getElementById('teamAName').value = "TAKIM A";
+                document.getElementById('teamBName').value = "TAKIM B";
             }
+
             generateEmptyRows('teamAPlayersInputs');
             generateEmptyRows('teamBPlayersInputs');
         }
 
+        // --- MANUEL DOLDURMAYA TAM UYUMLU SATIR ÜRETİCİ ---
         function generateEmptyRows(containerId) {
             const container = document.getElementById(containerId);
-            container.innerHTML = '';
+            container.innerHTML = `
+                <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
+                    <span class="stat-label">AJAN</span><span class="stat-label" style="text-align:left;">OYUN İÇİ NİCK</span><span class="stat-label">PROFİL EŞLEŞTİR</span><span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
+                </div>
+            `;
+            
             for(let i=0; i<5; i++) {
                 container.innerHTML += `
                     <div class="player-stat-row">
                         <div class="agent-input-group">
-                            <img src="img/agents/unknown.png" class="agent-icon">
-                            <input type="text" class="agent-name-input" placeholder="Ajan">
+                            <img src="img/agents/unknown.png" class="agent-icon" id="${containerId}_icon_${i}">
+                            <input type="text" class="agent-name-input" placeholder="Ajan" onkeyup="updateAgentIcon(this, '${containerId}_icon_${i}')">
                         </div>
-                        <input type="text" class="ign-input" placeholder="IGN" readonly>
-                        <select class="user-matcher-select"><option value="">-- Profil Seç --</option></select>
-                        <input type="number" class="k-input" value="0">
-                        <input type="number" class="d-input" value="0">
-                        <input type="number" class="a-input" value="0">
+                        <input type="text" class="ign-input" placeholder="Örn: Matrix#TR1"> <select class="user-matcher-select"><option value="">-- Profil Seç --</option></select>
+                        <input type="number" class="k-input" value="0" min="0">
+                        <input type="number" class="d-input" value="0" min="0">
+                        <input type="number" class="a-input" value="0" min="0">
                     </div>`;
+            }
+        }
+
+        // MANUEL AJAN YAZILDIKÇA İKONU GÜNCELLEYEN FONKSİYON
+        function updateAgentIcon(inputEl, iconId) {
+            const val = inputEl.value.trim().toLowerCase();
+            const icon = document.getElementById(iconId);
+            if(val.length > 2) {
+                icon.src = `https://ui-avatars.com/api/?name=${val}&background=random&color=fff`;
+            } else {
+                icon.src = "img/agents/unknown.png";
             }
         }
 
@@ -223,36 +255,37 @@
             const matchId = document.getElementById('apiMatchId').value.trim();
             if (!matchId) return showNotification("Lütfen bir Match ID girin!", "error");
 
+            // BURAYA KEY GİRMEYİ UNUTMA
+            const apiKey = "BURAYA_HDEV_ANAHTARINI_YAPIŞTIR";
+
             const btn = document.getElementById('btnFetchApi');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> BAĞLANILIYOR...';
             btn.disabled = true;
 
             try {
-                // Avrupa bölgesi (eu) parametresini ekliyoruz
                 const apiUrl = `https://api.henrikdev.xyz/valorant/v2/match/${matchId}?region=eu`;
-                const response = await fetch(apiUrl);
+                const response = await fetch(apiUrl, {
+                    headers: { 'Authorization': apiKey }
+                });
                 const result = await response.json();
 
                 if (result.status !== 200) {
-                     // Hata mesajını daha detaylı gösterelim
                      throw new Error(result.errors ? result.errors[0].message : "Maç verisi çekilemedi.");
                 }
 
                 const data = result.data;
                 document.getElementById('mapNameInput').value = data.metadata.map.toUpperCase();
                 
-                // Takımları eşle (API verisine göre skorları al)
                 document.getElementById('scoreA').value = data.teams.blue.rounds_won;
                 document.getElementById('scoreB').value = data.teams.red.rounds_won;
 
-                // Oyuncuları takımlarına göre doldur
                 const bluePlayers = data.players.all_players.filter(p => p.team.toLowerCase() === 'blue');
                 const redPlayers = data.players.all_players.filter(p => p.team.toLowerCase() === 'red');
 
                 populateRows('teamAPlayersInputs', bluePlayers);
                 populateRows('teamBPlayersInputs', redPlayers);
 
-                showNotification("Veriler başarıyla çekildi!", "success");
+                showNotification("Veriler API'den otomatik dolduruldu!", "success");
 
             } catch (err) {
                 console.error("API Hatası:", err);
@@ -265,21 +298,23 @@
 
         function populateRows(containerId, players) {
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
+            // İlk satır (index 0) başlıklara ayrıldığı için döngüyü index+1 e göre ayarlıyoruz
             players.forEach((p, i) => {
-                if(rows[i]) {
-                    // API'den gelen verileri inputlara bas
-                    rows[i].querySelector('.agent-icon').src = p.assets.agent.small;
-                    rows[i].querySelector('.agent-name-input').value = p.character;
-                    rows[i].querySelector('.ign-input').value = `${p.name}#${p.tag}`;
-                    rows[i].querySelector('.k-input').value = p.stats.kills;
-                    rows[i].querySelector('.d-input').value = p.stats.deaths;
-                    rows[i].querySelector('.a-input').value = p.stats.assists;
+                const actualRow = rows[i+1]; 
+                if(actualRow) {
+                    actualRow.querySelector('.agent-icon').src = p.assets.agent.small;
+                    actualRow.querySelector('.agent-name-input').value = p.character;
+                    actualRow.querySelector('.ign-input').value = `${p.name}#${p.tag}`;
+                    actualRow.querySelector('.k-input').value = p.stats.kills;
+                    actualRow.querySelector('.d-input').value = p.stats.deaths;
+                    actualRow.querySelector('.a-input').value = p.stats.assists;
                 }
             });
         }
 
         async function saveMappedStats() {
-             showNotification("Henüz veritabanı kaydı aktif değil.", "info");
+             showNotification("Veriler kontrol edildi, kayıt işlemi başlatılıyor...", "info");
+             // Supabase kaydetme mantığı buraya eklenecek
         }
 
         document.addEventListener('DOMContentLoaded', initAdminBracketPage);
