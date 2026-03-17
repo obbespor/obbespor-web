@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tam Dolu Kış Turnuvası Fikstürü | OBB E-SPOR</title>
+    <title>Kış Turnuvası Fikstürü | OBB E-SPOR</title>
     <link rel="icon" type="image/png" href="img/obblogo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -13,240 +13,283 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        /* --- BRACKET GENEL DÜZENİ --- */
-        body { background-color: #050505; color: white; overflow: hidden; /* Sayfa kaymasını kapat, wrapper kayacak */ }
-        .page-header { text-align: center; padding: 20px; z-index: 100; position: relative; background: #050505; border-bottom: 1px solid #222; }
-        .page-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
+        body { background-color: #050505; color: white; }
+        
+        /* --- SAYFA BAŞLIĞI VE SEKMELER --- */
+        .page-header { text-align: center; padding: 40px 20px 20px; background: radial-gradient(circle at top, #110522 0%, #050505 100%); border-bottom: 1px solid #222; }
+        .page-title { font-size: 36px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; }
         .page-title span { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
-        .page-subtitle { color: var(--gri-yazi); font-size: 14px; font-weight: 500; }
+        .page-subtitle { color: var(--gri-yazi); font-size: 14px; font-weight: 500; margin-bottom: 30px; }
 
-        /* --- 2D SÜRÜKLE BIRAK KAYDIRMA ALANI --- */
-        .bracket-scroll-area {
-            width: 100vw;
-            height: calc(100vh - 120px);
-            overflow: auto; /* Hem dikey hem yatay scroll */
-            cursor: grab;
-            padding: 40px;
-            user-select: none;
-            background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
-        }
-        .bracket-scroll-area:active { cursor: grabbing; }
-        .bracket-scroll-area::-webkit-scrollbar { width: 10px; height: 10px; }
-        .bracket-scroll-area::-webkit-scrollbar-track { background: #111; border-radius: 5px; }
-        .bracket-scroll-area::-webkit-scrollbar-thumb { background: var(--neon-mor); border-radius: 5px; }
+        .stage-tabs { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .stage-btn { background: #111; border: 1px solid #333; color: var(--gri-yazi); padding: 12px 30px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; font-family: 'Poppins', sans-serif; letter-spacing: 1px; }
+        .stage-btn.active, .stage-btn:hover { background: var(--neon-mor); color: white; border-color: var(--neon-mor); box-shadow: 0 0 20px rgba(96, 29, 194, 0.4); transform: translateY(-2px); }
 
-        /* --- AĞAÇ (BRACKET) MİMARİSİ --- */
-        .bracket-container { 
-            display: flex; 
-            align-items: stretch; 
-            gap: 80px; 
-            min-width: max-content; 
-            min-height: max-content;
-            padding-bottom: 50px;
-        }
+        /* --- AŞAMA İÇERİK ALANLARI --- */
+        .stage-content { display: none; padding: 40px 5%; animation: fadeIn 0.4s ease; min-height: 60vh; }
+        .stage-content.active { display: block; }
+
+        /* --- 1. AŞAMA: LİSTE (GRUP) GÖRÜNÜMÜ STİLLERİ --- */
+        .round-list-wrapper { margin-bottom: 50px; }
+        .round-list-title { display: flex; align-items: center; gap: 15px; font-size: 20px; font-weight: 900; color: white; margin-bottom: 25px; border-bottom: 2px solid #222; padding-bottom: 10px; }
+        .round-list-title span { background: var(--neon-mor); padding: 2px 10px; border-radius: 5px; font-size: 14px; }
         
-        .bracket-column {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around; 
-            width: 240px;
-            flex-shrink: 0;
-            position: relative;
-        }
+        .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
 
-        .round-header {
-            text-align: center; color: var(--neon-mor); font-weight: 900; text-transform: uppercase;
-            font-size: 16px; letter-spacing: 2px; margin-bottom: 40px; border-bottom: 2px solid #222; padding-bottom: 10px;
-        }
+        /* --- 2. AŞAMA: AĞAÇ (BRACKET) STİLLERİ --- */
+        .bracket-scroll-area { width: 100%; overflow-x: auto; padding-bottom: 40px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; }
+        .bracket-container { display: flex; align-items: stretch; justify-content: center; gap: 60px; min-width: max-content; }
+        .bracket-column { display: flex; flex-direction: column; justify-content: space-around; width: 250px; position: relative; }
+        .round-header { text-align: center; color: var(--neon-mor); font-weight: 900; text-transform: uppercase; font-size: 16px; letter-spacing: 2px; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
 
-        /* --- MAÇ KARTI VE ÇİZGİLER (CSS SİHRİ) --- */
-        .match-wrapper { position: relative; margin: 10px 0; }
-        
-        /* Sağ Bağlantı Çizgisi */
-        .match-wrapper::after {
-            content: ''; position: absolute; right: -40px; top: 50%; width: 40px; border-bottom: 2px solid #333; z-index: 1;
-        }
+        /* Ağaç Çizgileri */
+        .bracket-column .match-wrapper { position: relative; margin: 15px 0; }
+        .bracket-column .match-wrapper::after { content: ''; position: absolute; right: -30px; top: 50%; width: 30px; border-bottom: 2px solid #333; z-index: 1; }
         .bracket-column:last-child .match-wrapper::after { display: none; }
-        
-        /* Sol Dikey ve Yatay Bağlantı Çizgileri */
-        .bracket-column:not(:first-child) .match-wrapper::before {
-            content: ''; position: absolute; left: -40px; width: 40px; z-index: 1;
-        }
-        /* Üstteki maç için dikey inen çizgi */
-        .bracket-column:not(:first-child) .match-wrapper:nth-child(odd)::before {
-            border-left: 2px solid #333; height: calc(50% + 20px); top: 50%; border-top: 2px solid #333; border-bottom: none;
-        }
-        /* Alttaki maç için dikey çıkan çizgi */
-        .bracket-column:not(:first-child) .match-wrapper:nth-child(even)::before {
-            border-left: 2px solid #333; height: calc(50% + 20px); bottom: 50%; border-bottom: 2px solid #333; border-top: none;
-        }
+        .bracket-column:not(:first-child) .match-wrapper::before { content: ''; position: absolute; left: -30px; width: 30px; z-index: 1; }
+        .bracket-column:not(:first-child) .match-wrapper:nth-child(odd)::before { border-left: 2px solid #333; height: calc(50% + 15px); top: 50%; border-top: 2px solid #333; border-bottom: none; }
+        .bracket-column:not(:first-child) .match-wrapper:nth-child(even)::before { border-left: 2px solid #333; height: calc(50% + 15px); bottom: 50%; border-bottom: 2px solid #333; border-top: none; }
 
-        .match-card {
-            background: #0a0a0a; border: 1px solid #222; border-radius: 8px; overflow: hidden;
-            position: relative; z-index: 5; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.8);
-        }
-        .match-card:hover { border-color: var(--neon-mor); transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 25px rgba(96, 29, 194, 0.5); z-index: 10; }
-
-        .match-info-bar { background: #111; padding: 4px 8px; font-size: 10px; color: var(--gri-yazi); font-weight: bold; display: flex; justify-content: space-between; border-bottom: 1px solid #222; }
+        /* --- ORTAK MAÇ KARTI TASARIMI --- */
+        .match-card { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; overflow: hidden; position: relative; z-index: 5; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .match-card:hover { border-color: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(96, 29, 194, 0.3); z-index: 10; }
+        .match-info-bar { background: #111; padding: 6px 12px; font-size: 11px; color: var(--gri-yazi); font-weight: bold; display: flex; justify-content: space-between; border-bottom: 1px solid #222; }
         
-        .team { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid #1a1a1a; }
+        .team { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #1a1a1a; }
         .team:last-child { border-bottom: none; }
+        .team-info { display: flex; align-items: center; gap: 10px; }
+        .team-logo { width: 20px; height: 20px; object-fit: contain; background: #000; border-radius: 4px; }
+        .team-name { font-size: 13px; font-weight: 700; color: white; }
+        .score { font-size: 16px; font-weight: 900; color: white; }
         
-        .team-info { display: flex; align-items: center; gap: 8px; overflow: hidden; }
-        .team-logo { width: 16px; height: 16px; object-fit: contain; background: #000; border-radius: 3px; flex-shrink: 0; }
-        .team-name { font-size: 12px; font-weight: 700; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
-        
-        .score { font-size: 14px; font-weight: 900; color: white; }
-        
-        /* Kazanan / Kaybeden Stilleri */
-        .team.winner { background: rgba(96, 29, 194, 0.15); border-left: 3px solid var(--neon-mor); }
-        .team.winner .team-name { color: var(--neon-mor); text-shadow: 0 0 5px rgba(96, 29, 194, 0.5); }
-        .team.winner .score { color: var(--neon-mor); }
-        .team.loser { opacity: 0.4; }
+        /* Kazanan / Kaybeden */
+        .team.winner { background: rgba(96, 29, 194, 0.1); border-left: 3px solid var(--neon-mor); }
+        .team.winner .team-name, .team.winner .score { color: var(--neon-mor); text-shadow: 0 0 10px rgba(96, 29, 194, 0.4); }
+        .team.loser { opacity: 0.5; }
+        .final-match { border-color: gold; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
+        .final-match .team.winner { background: rgba(255, 215, 0, 0.1); border-left-color: gold; }
+        .final-match .team.winner .team-name, .final-match .team.winner .score { color: gold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
 
-        .final-match { border-color: gold !important; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3) !important; }
-        .final-match .team.winner { background: rgba(255, 215, 0, 0.15); border-left-color: gold; }
-        .final-match .team.winner .team-name, .final-match .team.winner .score { color: gold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); }
+        /* --- DETAY MODALI --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(8px); padding: 20px; }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 28px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; z-index: 10; }
+        .close-btn:hover { color: var(--kirmizi-iptal); }
 
-        /* Modal Stilleri (Kısaltılmış) */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center; }
-        .modal-overlay.active { display: flex; }
-        .modal-content { background: #111; color: white; padding: 40px; border-radius: 15px; border: 2px solid var(--neon-mor); font-size: 24px; font-weight: 900; text-align: center; }
+        .modal-header { padding: 40px 20px; background: radial-gradient(circle at center, #1a0a2e 0%, #0a0a0a 100%); text-align: center; border-bottom: 1px solid #222; }
+        .scoreboard { display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 15px;}
+        .modal-team { display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1; }
+        .modal-team img { width: 60px; height: 60px; object-fit: contain; }
+        .modal-team-name { font-size: 20px; font-weight: 900; color: white; text-transform: uppercase; }
+        .modal-score { font-size: 48px; font-weight: 900; color: white; }
+        .modal-score.winner { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
+        .modal-vs { font-size: 16px; color: #555; font-weight: bold; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        @media (max-width: 768px) {
+            .page-title { font-size: 24px; }
+            .stage-tabs { flex-direction: column; padding: 0 20px; }
+            .match-grid { grid-template-columns: 1fr; }
+            .scoreboard { gap: 10px; }
+            .modal-team img { width: 40px; height: 40px; }
+            .modal-team-name { font-size: 14px; }
+            .modal-score { font-size: 32px; }
+        }
     </style>
 </head>
 <body>
 
+    <div id="header-alani"></div>
+
     <div class="page-header">
         <h1 class="page-title">OBB KIŞ TURNUVASI <span>FİKSTÜRÜ</span></h1>
-        <p class="page-subtitle">64 Takım | Tüm Maçlar Tamamlandı</p>
-    </div>
-
-    <div class="bracket-scroll-area" id="bracketWrapper">
-        <div class="bracket-container" id="bracketContainer">
-            </div>
-    </div>
-
-    <div class="modal-overlay" id="matchModal" onclick="this.classList.remove('active')">
-        <div class="modal-content">
-            Maç Detayları ve K/D/A İstatistikleri Burada Görünecek.
-            <div style="font-size: 14px; color: var(--gri-yazi); margin-top: 15px; font-weight: normal;">(Kapatmak için tıklayın)</div>
+        <p class="page-subtitle">Toplam Ödül Havuzu: 10.000 TL | 64 Takım</p>
+        
+        <div class="stage-tabs">
+            <button class="stage-btn active" onclick="switchStage('group', this)"><i class="fas fa-list-ul"></i> GRUP AŞAMASI (R1 & R2)</button>
+            <button class="stage-btn" onclick="switchStage('playoff', this)"><i class="fas fa-sitemap"></i> PLAYOFF AĞACI (Son 16)</button>
         </div>
     </div>
 
+    <div id="groupStage" class="stage-content active">
+        </div>
+
+    <div id="playoffStage" class="stage-content">
+        <div class="bracket-scroll-area">
+            <div class="bracket-container" id="bracketContainer">
+                </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="matchModal" onclick="this.classList.remove('active')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-btn" onclick="document.getElementById('matchModal').classList.remove('active')">&times;</span>
+            <div class="modal-header">
+                <span style="font-size: 12px; font-weight: 900; color: var(--gri-yazi); letter-spacing: 2px;">MAÇ DETAYLARI</span>
+                <div class="scoreboard">
+                    <div class="modal-team">
+                        <img src="img/obblogo.png">
+                        <span class="modal-team-name" id="mTeamA">TAKIM A</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <span class="modal-score winner" id="mScoreA">0</span>
+                        <span class="modal-vs">-</span>
+                        <span class="modal-score" id="mScoreB">0</span>
+                    </div>
+                    <div class="modal-team">
+                        <img src="https://via.placeholder.com/100">
+                        <span class="modal-team-name" id="mTeamB">TAKIM B</span>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 40px; text-align: center; color: var(--gri-yazi);">
+                <i class="fas fa-chart-bar fa-3x" style="margin-bottom: 15px; color: #333;"></i>
+                <p>Detaylı K/D/A istatistikleri ve harita sonuçları maç tamamlandığında burada listelenecektir.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-alani"></div>
+
+    <script src="js/app.js"></script>
     <script>
-        // --- 1. SAHTE TAKIM ÜRETİCİ (64 TAKIM) ---
-        const proTeams = ["BOSSESPOR", "BBL ESPORTS", "FUT ESPORTS", "S2G ESPORTS", "FIRE FLUX", "GALATASARAY", "FENERBAHÇE", "BEŞİKTAŞ", "HOWL", "SURVIVOR", "TEAM LIQUID", "NAVI"];
+        // --- HEADER FOOTER YÜKLEME ---
+        async function loadComponents() {
+            try {
+                const headerRes = await fetch("components/header.html");
+                if(headerRes.ok) document.getElementById('header-alani').innerHTML = await headerRes.text();
+                const footerRes = await fetch("components/footer.html");
+                if(footerRes.ok) document.getElementById('footer-alani').innerHTML = await footerRes.text();
+            } catch(e) { console.error("Komponent yüklenemedi", e); }
+        }
+        loadComponents();
+
+        // --- SEKME DEĞİŞTİRİCİ ---
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.stage-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            document.querySelectorAll('.stage-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+        window.switchStage = switchTab; // Global erişim
+
+        // --- SİMÜLASYON VERİ ÜRETİCİ (64 TAKIM) ---
+        const proTeams = ["BOSSESPOR", "BBL", "FUT", "S2G", "FIRE FLUX", "GALATASARAY", "FENERBAHÇE", "BEŞİKTAŞ", "HOWL", "SURVIVOR", "LIQUID", "NAVI", "FNATIC", "LOUD", "SENTINELS", "PRX"];
         let allTeams = [];
         for(let i = 0; i < 64; i++) {
-            if(proTeams[i]) allTeams.push(proTeams[i]);
-            else allTeams.push(`TAKIM ${i + 1}`);
+            allTeams.push(proTeams[i] ? proTeams[i] : `TAKIM ${i + 1}`);
         }
 
-        // --- 2. RASTGELE SKOR VE KAZANAN HESAPLAYICI ---
-        function simulateMatch(teamA, teamB, format) {
-            const isBo3 = format === 'BO3' || format === 'BO5';
+        function simulateMatch(teamA, teamB, isBo3) {
             const winScore = isBo3 ? 2 : 13;
             const loseScore = isBo3 ? Math.floor(Math.random() * 2) : Math.floor(Math.random() * 12);
-            
             const aWins = Math.random() > 0.5;
             return {
-                winner: aWins ? teamA : teamB,
-                loser: aWins ? teamB : teamA,
-                scoreA: aWins ? winScore : loseScore,
-                scoreB: aWins ? loseScore : winScore
+                winner: aWins ? teamA : teamB, loser: aWins ? teamB : teamA,
+                scoreA: aWins ? winScore : loseScore, scoreB: aWins ? loseScore : winScore
             };
         }
 
-        // --- 3. AĞAÇ OLUŞTURUCU MOTOR ---
-        function generateFullBracket() {
-            const container = document.getElementById('bracketContainer');
-            
-            const roundsConfig = [
-                { name: 'SON 64 (R1)', format: 'BO1' },
-                { name: 'SON 32 (R2)', format: 'BO1' },
-                { name: 'SON 16 (R3)', format: 'BO3' },
-                { name: 'ÇEYREK FİNAL', format: 'BO3' },
-                { name: 'YARI FİNAL', format: 'BO3' },
-                { name: 'BÜYÜK FİNAL 🏆', format: 'BO5' }
-            ];
+        function createMatchCardHTML(tA, tB, res, format, isFinal = false) {
+            const classA = res.winner === tA ? 'winner' : 'loser';
+            const classB = res.winner === tB ? 'winner' : 'loser';
+            const finalClass = isFinal ? 'final-match' : '';
+            // Tırnak işaretlerinden kaçmak için
+            const safeTA = tA.replace(/'/g, ""); const safeTB = tB.replace(/'/g, "");
 
-            let currentTeams = [...allTeams];
-            let html = '';
-
-            roundsConfig.forEach((round, roundIndex) => {
-                const isFinal = roundIndex === roundsConfig.length - 1;
-                html += `<div class="bracket-column"><div class="round-header" ${isFinal ? 'style="color:gold;"' : ''}>${round.name}</div>`;
-                
-                let nextRoundTeams = [];
-                
-                for(let i = 0; i < currentTeams.length; i += 2) {
-                    const tA = currentTeams[i];
-                    const tB = currentTeams[i+1];
-                    const result = simulateMatch(tA, tB, round.format);
-                    
-                    nextRoundTeams.push(result.winner);
-
-                    const classA = result.winner === tA ? 'winner' : 'loser';
-                    const classB = result.winner === tB ? 'winner' : 'loser';
-                    const finalClass = isFinal ? 'final-match' : '';
-
-                    html += `
-                        <div class="match-wrapper">
-                            <div class="match-card ${finalClass}" onclick="document.getElementById('matchModal').classList.add('active')">
-                                <div class="match-info-bar"><span>${round.format}</span><span>BİTTİ</span></div>
-                                <div class="team ${classA}">
-                                    <div class="team-info"><img src="https://via.placeholder.com/20" class="team-logo"><span class="team-name">${tA}</span></div>
-                                    <span class="score">${result.scoreA}</span>
-                                </div>
-                                <div class="team ${classB}">
-                                    <div class="team-info"><img src="https://via.placeholder.com/20" class="team-logo"><span class="team-name">${tB}</span></div>
-                                    <span class="score">${result.scoreB}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-                html += `</div>`;
-                currentTeams = nextRoundTeams; // Kazananlar bir sonraki tura geçer
-            });
-
-            container.innerHTML = html;
+            return `
+                <div class="match-card ${finalClass}" onclick="openModal('${safeTA}', '${safeTB}', ${res.scoreA}, ${res.scoreB})">
+                    <div class="match-info-bar"><span>${format}</span><span>TAMAMLANDI</span></div>
+                    <div class="team ${classA}">
+                        <div class="team-info"><img src="https://via.placeholder.com/20" class="team-logo"><span class="team-name">${tA}</span></div>
+                        <span class="score">${res.scoreA}</span>
+                    </div>
+                    <div class="team ${classB}">
+                        <div class="team-info"><img src="https://via.placeholder.com/20" class="team-logo"><span class="team-name">${tB}</span></div>
+                        <span class="score">${res.scoreB}</span>
+                    </div>
+                </div>
+            `;
         }
 
-        // AĞACI EKRANA BAS
-        generateFullBracket();
+        // --- VERİLERİ EKRANA BAS ---
+        function generateTournament() {
+            let currentTeams = [...allTeams];
+            
+            // 1. AŞAMA: LİSTE GÖRÜNÜMÜ (R1 ve R2)
+            const groupStageDiv = document.getElementById('groupStage');
+            let groupHtml = '';
 
-        // --- 4. 2 BOYUTLU (X ve Y) SÜRÜKLE BIRAK KAYDIRMA ---
-        const slider = document.getElementById('bracketWrapper');
-        let isDown = false;
-        let startX, startY;
-        let scrollLeft, scrollTop;
+            // Round 1 (Son 64)
+            groupHtml += `<div class="round-list-wrapper"><h3 class="round-list-title"><span>R1</span> SON 64 EŞLEŞMELERİ (BO1)</h3><div class="match-grid">`;
+            let r2Teams = [];
+            for(let i=0; i<currentTeams.length; i+=2) {
+                const res = simulateMatch(currentTeams[i], currentTeams[i+1], false);
+                r2Teams.push(res.winner);
+                groupHtml += createMatchCardHTML(currentTeams[i], currentTeams[i+1], res, 'BO1');
+            }
+            groupHtml += `</div></div>`;
 
-        slider.addEventListener('mousedown', (e) => {
-            isDown = true;
-            slider.style.cursor = 'grabbing';
-            startX = e.pageX - slider.offsetLeft;
-            startY = e.pageY - slider.offsetTop;
-            scrollLeft = slider.scrollLeft;
-            scrollTop = slider.scrollTop;
-        });
-        slider.addEventListener('mouseleave', () => { isDown = false; slider.style.cursor = 'grab'; });
-        slider.addEventListener('mouseup', () => { isDown = false; slider.style.cursor = 'grab'; });
-        slider.addEventListener('mousemove', (e) => {
-            if (!isDown) return;
-            e.preventDefault();
-            const x = e.pageX - slider.offsetLeft;
-            const y = e.pageY - slider.offsetTop;
-            const walkX = (x - startX) * 2; // Hız çarpanı
-            const walkY = (y - startY) * 2;
-            slider.scrollLeft = scrollLeft - walkX;
-            slider.scrollTop = scrollTop - walkY;
-        });
-        
-        // İlk açılışta ortalamak istersen (Opsiyonel)
-        window.onload = () => {
-            slider.scrollTop = (slider.scrollHeight - slider.clientHeight) / 2;
-        };
+            // Round 2 (Son 32)
+            groupHtml += `<div class="round-list-wrapper"><h3 class="round-list-title"><span>R2</span> SON 32 EŞLEŞMELERİ (BO1)</h3><div class="match-grid">`;
+            let r3Teams = [];
+            for(let i=0; i<r2Teams.length; i+=2) {
+                const res = simulateMatch(r2Teams[i], r2Teams[i+1], false);
+                r3Teams.push(res.winner);
+                groupHtml += createMatchCardHTML(r2Teams[i], r2Teams[i+1], res, 'BO1');
+            }
+            groupHtml += `</div></div>`;
+            groupStageDiv.innerHTML = groupHtml;
+
+            // 2. AŞAMA: PLAYOFF AĞACI (Son 16'dan itibaren)
+            const playoffDiv = document.getElementById('bracketContainer');
+            let playoffHtml = '';
+            
+            const playoffRounds = [
+                { name: 'SON 16', format: 'BO3' }, { name: 'ÇEYREK FİNAL', format: 'BO3' },
+                { name: 'YARI FİNAL', format: 'BO3' }, { name: 'BÜYÜK FİNAL 🏆', format: 'BO5' }
+            ];
+
+            let activeTeams = [...r3Teams]; // Son 16'ya kalanlar
+            playoffRounds.forEach((round, index) => {
+                const isFinal = index === playoffRounds.length - 1;
+                playoffHtml += `<div class="bracket-column"><div class="round-header" ${isFinal?'style="color:gold;"':''}>${round.name}</div>`;
+                
+                let nextTeams = [];
+                for(let i=0; i<activeTeams.length; i+=2) {
+                    const res = simulateMatch(activeTeams[i], activeTeams[i+1], true);
+                    nextTeams.push(res.winner);
+                    playoffHtml += `<div class="match-wrapper">${createMatchCardHTML(activeTeams[i], activeTeams[i+1], res, round.format, isFinal)}</div>`;
+                }
+                playoffHtml += `</div>`;
+                activeTeams = nextTeams;
+            });
+
+            playoffDiv.innerHTML = playoffHtml;
+        }
+
+        // --- MODAL YÖNETİMİ ---
+        function openModal(tA, tB, sA, sB) {
+            document.getElementById('mTeamA').innerText = tA;
+            document.getElementById('mTeamB').innerText = tB;
+            
+            const scoreAEl = document.getElementById('mScoreA');
+            const scoreBEl = document.getElementById('mScoreB');
+            scoreAEl.innerText = sA;
+            scoreBEl.innerText = sB;
+            
+            scoreAEl.className = sA > sB ? 'modal-score winner' : 'modal-score';
+            scoreBEl.className = sB > sA ? 'modal-score winner' : 'modal-score';
+
+            document.getElementById('matchModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Sayfa Yüklendiğinde Algoritmayı Çalıştır
+        window.onload = generateTournament;
     </script>
 </body>
 </html>
