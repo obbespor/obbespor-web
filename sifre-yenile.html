@@ -60,26 +60,31 @@
     <script>
         // --- 1. SAYFA YÜKLENDİĞİNDE GÜVENLİK KONTROLÜ ---
         window.addEventListener('DOMContentLoaded', async () => {
-            // URL'deki hash parçalarını temizlemek Supabase için biraz vakit alabilir,
-            // bu yüzden kısa bir gecikme ile session'ı kontrol ediyoruz.
-            setTimeout(async () => {
+            // URL'de Supabase'in gönderdiği şifre sıfırlama parametreleri var mı kontrol et
+            const hash = window.location.hash;
+            const isRecovery = hash.includes('type=recovery') || hash.includes('access_token');
+
+            // Eğer e-postadan gelen bir kurtarma linkiyle geldiyse, dışarı atma.
+            // Supabase arka planda URL'deki token'ı kullanarak geçici bir oturum açacak.
+            if (!isRecovery) {
+                // Eğer URL'de token yoksa (biri doğrudan tarayıcıya sifre-yenile.html yazdıysa),
+                // o zaman normal oturum kontrolü yapalım.
                 const { data: { session } } = await window.supabaseClient.auth.getSession();
                 
-                // Eğer geçerli bir oturum (yani geçerli bir şifre sıfırlama linki) yoksa
                 if (!session) {
                     const authCard = document.getElementById('authCardContainer');
                     if(authCard) authCard.style.display = 'none'; // Formu anında gizle
 
                     if (typeof showNotification === 'function') {
-                        showNotification("Bu sayfaya erişim yetkiniz yok veya bağlantı süresi dolmuş.", "error");
+                        showNotification("Bu sayfaya erişim yetkiniz yok.", "error");
                     }
                     
-                    // Kullanıcıyı saniyeler içinde anasayfaya/giriş sayfasına şutla
+                    // Kullanıcıyı anasayfaya/giriş sayfasına şutla
                     setTimeout(() => {
                         window.location.href = 'index.html'; 
-                    }, 3000);
+                    }, 2000);
                 }
-            }, 500); // Yarım saniye bekle ki Supabase token'ı işleyebilsin
+            }
         });
 
         // --- 2. FORM GÖNDERİMİ VE ÇİFTE GÜVENLİK ---
@@ -98,11 +103,11 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GÜNCELLENİYOR...';
 
-            // GÜVENLİK KONTROLÜ: İşlem yapılmadan hemen önce oturum hala geçerli mi diye tekrar bak
+            // GÜVENLİK KONTROLÜ: Form gönderilirken artık Supabase URL'deki token'ı okuyup session kurmuş olmalı
             const { data: { session } } = await window.supabaseClient.auth.getSession();
             
             if (!session) {
-                showNotification("Güvenlik hatası! Geçerli bir oturum bulunamadı.", "error");
+                showNotification("Bağlantı süresi dolmuş veya geçersiz. Lütfen tekrar sıfırlama isteği gönderin.", "error");
                 setTimeout(() => window.location.href = "index.html", 3000);
                 return;
             }
@@ -119,7 +124,7 @@
             } else {
                 showNotification("Şifreniz başarıyla güncellendi! Giriş yapabilirsiniz.", "success");
                 
-                // Şifre yenilendikten sonra kullanıcıyı giriş ekranına (index.html) yönlendiriyoruz
+                // Şifre yenilendikten sonra kullanıcıyı giriş ekranına yönlendiriyoruz
                 setTimeout(() => {
                     window.location.href = "index.html"; 
                 }, 2000);
