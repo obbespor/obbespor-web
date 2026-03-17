@@ -1,208 +1,204 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
-    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-9VH0LHNCS3');</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kayıt Ol | OBB E-SPOR</title>
-    <link rel="icon" type="image/png" href="img/obblogo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/header.css">
-    <link rel="stylesheet" href="css/footer.css">
-    
-    <style>
-        .auth-wrapper { min-height: calc(100vh - 160px); display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
-        .main-layout { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 1600px; gap: 20px; }
-        .auth-side-image { flex: 1.2; display: flex; justify-content: center; }
-        .auth-side-image img { width: 100%; max-width: 520px; border-radius: 20px; filter: drop-shadow(0 0 30px rgba(96, 29, 194, 0.4)); animation: float 4s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
-        .auth-card { flex: 1; background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); z-index: 5; }
-        .auth-header { text-align: center; margin-bottom: 25px; }
-        .auth-header h1 { font-size: 2rem; font-weight: 900; text-transform: uppercase; }
-        .purple-neon { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
-        .input-group { margin-bottom: 20px; position: relative; }
-        .input-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--gri-yazi); font-weight: bold; }
-        .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; outline: none; transition: 0.3s; }
-        .input-group input:focus { border-color: var(--neon-mor); }
-        
-        /* ŞİFREMİ UNUTTUM BUTONU STİLİ */
-        .forgot-pass-link { display: none; text-align: right; margin-top: -10px; margin-bottom: 20px; font-size: 12px; font-weight: bold; color: var(--neon-mor); text-decoration: none; transition: 0.3s; cursor: pointer; }
-        .forgot-pass-link:hover { text-shadow: 0 0 10px var(--neon-mor); }
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-9VH0LHNCS3');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kayıt Ol | OBB E-SPOR</title>
+    <link rel="icon" type="image/png" href="img/obblogo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    
+    <style>
+        .auth-wrapper { min-height: calc(100vh - 160px); display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+        .main-layout { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 1600px; gap: 20px; }
+        .auth-side-image { flex: 1.2; display: flex; justify-content: center; }
+        .auth-side-image img { width: 100%; max-width: 520px; border-radius: 20px; filter: drop-shadow(0 0 30px rgba(96, 29, 194, 0.4)); animation: float 4s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+        .auth-card { flex: 1; background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); z-index: 5; }
+        .auth-header { text-align: center; margin-bottom: 25px; }
+        .auth-header h1 { font-size: 2rem; font-weight: 900; text-transform: uppercase; }
+        .purple-neon { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--gri-yazi); font-weight: bold; }
+        .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; outline: none; transition: 0.3s; }
+        .input-group input:focus { border-color: var(--neon-mor); }
+        
+        /* ŞİFREMİ UNUTTUM BUTONU STİLİ */
+        .forgot-pass-link { display: none; text-align: right; margin-top: -10px; margin-bottom: 20px; font-size: 12px; font-weight: bold; color: var(--neon-mor); text-decoration: none; transition: 0.3s; cursor: pointer; }
+        .forgot-pass-link:hover { text-shadow: 0 0 10px var(--neon-mor); }
 
-        .register-btn { width: 100%; padding: 15px; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-bottom: 20px; }
-        .register-btn:hover:not(:disabled) { transform: scale(1.02); box-shadow: 0 0 20px var(--neon-mor); }
-        .register-btn:disabled { opacity: 0.7; cursor: not-allowed; }
-        
-        .auth-toggle-area { text-align: center; border-top: 1px solid #222; padding-top: 20px; }
-        .switch-btn { background: transparent; border: 1px solid #23083e; color: var(--neon-mor); padding: 8px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+        .register-btn { width: 100%; padding: 15px; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-bottom: 20px; }
+        .register-btn:hover:not(:disabled) { transform: scale(1.02); box-shadow: 0 0 20px var(--neon-mor); }
+        .register-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        
+        .auth-toggle-area { text-align: center; border-top: 1px solid #222; padding-top: 20px; }
+        .switch-btn { background: transparent; border: 1px solid #23083e; color: var(--neon-mor); padding: 8px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
 
-        @media (max-width: 768px) {
-            .auth-side-image { display: none; }
-        }
-    </style>
+        @media (max-width: 768px) {
+            .auth-side-image { display: none; }
+        }
+    </style>
 </head>
 <body>
-    <div id="header-alani"></div>
+    <div id="header-alani"></div>
 
-    <div class="auth-wrapper">
-        <div class="main-layout">
-            <div class="auth-side-image"><img src="img/obb jett.webp" alt="Jett"></div>
-            
-            <div class="auth-card">
-                <div class="auth-header" id="authHeader">
-                    <h1>ARENAYA <span class="purple-neon">KATIL</span></h1>
-                    <p id="authSubtext" style="color: var(--gri-yazi); font-size: 14px; margin-top: 5px;">Profilini oluştur ve rekabete dahil ol.</p>
-                </div>
+    <div class="auth-wrapper">
+        <div class="main-layout">
+            <div class="auth-side-image"><img src="img/obb jett.webp" alt="Jett"></div>
+            
+            <div class="auth-card">
+                <div class="auth-header" id="authHeader">
+                    <h1>ARENAYA <span class="purple-neon">KATIL</span></h1>
+                    <p id="authSubtext" style="color: var(--gri-yazi); font-size: 14px; margin-top: 5px;">Profilini oluştur ve rekabete dahil ol.</p>
+                </div>
 
-                <form id="authForm">
-                    <div class="input-group" id="userGroup">
-                        <label>Kullanıcı Adı</label>
-                        <input type="text" id="username" placeholder="gamer123">
-                    </div>
-                    <div class="input-group" id="emailGroup">
-                        <label>E-posta</label>
-                        <input type="email" id="email" placeholder="ornek@mail.com" required>
-                    </div>
-                    <div class="input-group" id="phoneGroup">
-                        <label>Telefon</label>
-                        <input type="tel" id="phone" placeholder="05XX XXX XX XX">
-                    </div>
-                    <div class="input-group">
-                        <label>Şifre</label>
-                        <input type="password" id="mainPass" placeholder="••••••••" required minlength="6">
-                    </div>
-                    
-                    <a class="forgot-pass-link" id="forgotPassBtn" onclick="sifremiUnuttum()">Şifremi Unuttum?</a>
+                <form id="authForm">
+                    <div class="input-group" id="userGroup">
+                        <label>Kullanıcı Adı</label>
+                        <input type="text" id="username" placeholder="gamer123">
+                    </div>
+                    <div class="input-group" id="emailGroup">
+                        <label>E-posta</label>
+                        <input type="email" id="email" placeholder="ornek@mail.com" required>
+                    </div>
+                    <div class="input-group" id="phoneGroup">
+                        <label>Telefon</label>
+                        <input type="tel" id="phone" placeholder="05XX XXX XX XX">
+                    </div>
+                    <div class="input-group">
+                        <label>Şifre</label>
+                        <input type="password" id="mainPass" placeholder="••••••••" required minlength="6">
+                    </div>
+                    
+                    <a class="forgot-pass-link" id="forgotPassBtn" onclick="sifremiUnuttum()">Şifremi Unuttum?</a>
 
-                    <div class="input-group" id="confirmPassGroup">
-                        <label>Şifre Tekrar</label>
-                        <input type="password" id="confirmPass" placeholder="••••••••" required>
-                    </div>
-                    <button type="submit" class="register-btn" id="submitBtn">HESABI OLUŞTUR</button>
-                </form>
+                    <div class="input-group" id="confirmPassGroup">
+                        <label>Şifre Tekrar</label>
+                        <input type="password" id="confirmPass" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="register-btn" id="submitBtn">HESABI OLUŞTUR</button>
+                </form>
 
-                <div class="auth-toggle-area">
-                    <p id="toggleText" style="color: var(--gri-yazi); font-size: 13px; margin-bottom: 10px;">Zaten bir hesabın var mı?</p>
-                    <button class="switch-btn" onclick="toggleAuth()" id="switchBtn">GİRİŞ YAP</button>
-                </div>
-            </div>
-            <div class="auth-side-image"><img src="img/obbchamber.webp" alt="Chamber"></div>
-        </div>
-    </div>
+                <div class="auth-toggle-area">
+                    <p id="toggleText" style="color: var(--gri-yazi); font-size: 13px; margin-bottom: 10px;">Zaten bir hesabın var mı?</p>
+                    <button class="switch-btn" onclick="toggleAuth()" id="switchBtn">GİRİŞ YAP</button>
+                </div>
+            </div>
+            <div class="auth-side-image"><img src="img/obbchamber.webp" alt="Chamber"></div>
+        </div>
+    </div>
 
-    <div id="footer-alani"></div>
+    <div id="footer-alani"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
-    <script src="js/bildirimler.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/bildirimler.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
 
-    <script>
-        function toggleAuth() {
-            const isReg = document.getElementById('submitBtn').innerText === "HESABI OLUŞTUR";
-            document.querySelector('#authHeader h1').innerHTML = isReg ? 'HOŞ <span class="purple-neon">GELDİN</span>' : 'ARENAYA <span class="purple-neon">KATIL</span>';
-            document.getElementById('authSubtext').innerText = isReg ? 'Bilgilerini gir ve arenaya dön.' : 'Profilini oluştur ve rekabete dahil ol.';
-            document.getElementById('submitBtn').innerText = isReg ? "GİRİŞ YAP" : "HESABI OLUŞTUR";
-            document.getElementById('switchBtn').innerText = isReg ? "KAYIT OL" : "GİRİŞ YAP";
-            document.getElementById('toggleText').innerText = isReg ? "Henüz bir hesabın yok mu?" : "Zaten bir hesabın var mı?";
-            
-            // "Şifremi unuttum" sadece Giriş Yap ekranında görünür
-            ['userGroup', 'phoneGroup', 'confirmPassGroup'].forEach(id => document.getElementById(id).style.display = isReg ? "none" : "block");
-            document.getElementById('forgotPassBtn').style.display = isReg ? "block" : "none";
-            document.getElementById('confirmPass').required = !isReg;
-        }
+    <script>
+        function toggleAuth() {
+            const isReg = document.getElementById('submitBtn').innerText === "HESABI OLUŞTUR";
+            document.querySelector('#authHeader h1').innerHTML = isReg ? 'HOŞ <span class="purple-neon">GELDİN</span>' : 'ARENAYA <span class="purple-neon">KATIL</span>';
+            document.getElementById('authSubtext').innerText = isReg ? 'Bilgilerini gir ve arenaya dön.' : 'Profilini oluştur ve rekabete dahil ol.';
+            document.getElementById('submitBtn').innerText = isReg ? "GİRİŞ YAP" : "HESABI OLUŞTUR";
+            document.getElementById('switchBtn').innerText = isReg ? "KAYIT OL" : "GİRİŞ YAP";
+            document.getElementById('toggleText').innerText = isReg ? "Henüz bir hesabın yok mu?" : "Zaten bir hesabın var mı?";
+            
+            // "Şifremi unuttum" sadece Giriş Yap ekranında görünür
+            ['userGroup', 'phoneGroup', 'confirmPassGroup'].forEach(id => document.getElementById(id).style.display = isReg ? "none" : "block");
+            document.getElementById('forgotPassBtn').style.display = isReg ? "block" : "none";
+            document.getElementById('confirmPass').required = !isReg;
+        }
 
-        // --- ŞİFRE SIFIRLAMA İSTEĞİ GÖNDERME ---
-        async function sifremiUnuttum() {
-            const emailInput = document.getElementById('email').value.trim();
-            if (!emailInput) {
-                showNotification("Lütfen önce yukarıdaki e-posta alanını doldurun ve tekrar tıklayın.", "error");
-                document.getElementById('email').focus();
-                return;
-            }
+        // --- ŞİFRE SIFIRLAMA İSTEĞİ GÖNDERME ---
+        async function sifremiUnuttum() {
+            const emailInput = document.getElementById('email').value.trim();
+            if (!emailInput) {
+                showNotification("Lütfen önce yukarıdaki e-posta alanını doldurun ve tekrar tıklayın.", "error");
+                document.getElementById('email').focus();
+                return;
+            }
 
-            const btn = document.getElementById('submitBtn');
-            const originalText = btn.innerText;
-            btn.innerText = "LÜTFEN BEKLEYİN...";
-            btn.disabled = true;
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerText;
+            btn.innerText = "LÜTFEN BEKLEYİN...";
+            btn.disabled = true;
 
-            // Supabase yönlendirme URL'si düzeltildi
-            const { error } = await window.supabaseClient.auth.resetPasswordForEmail(
-                emailInput, 
-                {
-                    redirectTo: 'https://www.obbesports.com/sifre-yenile.html'
-                }
-            );
+            const { error } = await window.supabaseClient.auth.resetPasswordForEmail(emailInput, {
+                redirectTo: 'https://www.obbesports.com/sifre-yenile.html',
+            });
 
-            if (error) {
-                showNotification("Hata: " + error.message, "error");
-            } else {
-                showNotification("Şifre sıfırlama bağlantısı e-postanıza gönderildi!", "success");
-            }
+            if (error) {
+                showNotification("Hata: " + error.message, "error");
+            } else {
+                showNotification("Şifre sıfırlama bağlantısı e-postanıza gönderildi!", "success");
+            }
 
-            btn.innerText = originalText;
-            btn.disabled = false;
-        }
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
 
-        // --- FORM GÖNDERME (KAYIT & GİRİŞ) ---
-        document.getElementById('authForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('mainPass').value;
-            const submitBtn = document.getElementById('submitBtn');
-            const isRegister = submitBtn.innerText === "HESABI OLUŞTUR";
+        // --- FORM GÖNDERME (KAYIT & GİRİŞ) ---
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('mainPass').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const isRegister = submitBtn.innerText === "HESABI OLUŞTUR";
 
-            submitBtn.disabled = true; 
-            submitBtn.innerText = "İŞLEM YAPILIYOR...";
+            submitBtn.disabled = true; 
+            submitBtn.innerText = "İŞLEM YAPILIYOR...";
 
-            if (isRegister) {
-                const confirmPass = document.getElementById('confirmPass').value;
-                const usernameInput = document.getElementById('username').value.trim();
-                
-                if (password !== confirmPass) { showNotification("Şifreler uyuşmuyor!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; }
-                if (!usernameInput) { showNotification("Kullanıcı adı boş bırakılamaz!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; }
+            if (isRegister) {
+                const confirmPass = document.getElementById('confirmPass').value;
+                const usernameInput = document.getElementById('username').value.trim();
+                
+                if (password !== confirmPass) { showNotification("Şifreler uyuşmuyor!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; }
+                if (!usernameInput) { showNotification("Kullanıcı adı boş bırakılamaz!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; }
 
-                const { data: existingUsers } = await window.supabaseClient.from('profiles').select('username').ilike('username', usernameInput).limit(1);
-                if (existingUsers && existingUsers.length > 0) {
-                    showNotification("Bu kullanıcı adı zaten alınmış!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return;
-                }
+                const { data: existingUsers } = await window.supabaseClient.from('profiles').select('username').ilike('username', usernameInput).limit(1);
+                if (existingUsers && existingUsers.length > 0) {
+                    showNotification("Bu kullanıcı adı zaten alınmış!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return;
+                }
 
-                // Supabase Kayıt İşlemi
-                const { data, error } = await window.supabaseClient.auth.signUp({
-                    email: email, password: password, options: { data: { username: usernameInput, phone: document.getElementById('phone').value } }
-                });
+                // Supabase Kayıt İşlemi
+                const { data, error } = await window.supabaseClient.auth.signUp({
+                    email: email, password: password, options: { data: { username: usernameInput, phone: document.getElementById('phone').value } }
+                });
 
-                if (error) {
-                    showNotification("Hata: " + error.message, "error");
-                } else { 
-                    showNotification("Kayıt başarılı! Lütfen e-postanıza (Gereksiz/Spam kutusu dahil) gelen linke tıklayarak hesabınızı doğrulayın.", "success"); 
-                    setTimeout(toggleAuth, 2500); 
-                }
+                if (error) {
+                    showNotification("Hata: " + error.message, "error");
+                } else { 
+                    showNotification("Kayıt başarılı! Lütfen e-postanıza (Gereksiz/Spam kutusu dahil) gelen linke tıklayarak hesabınızı doğrulayın.", "success"); 
+                    setTimeout(toggleAuth, 2500); 
+                }
 
-            } else {
-                // GİRİŞ YAPMA İŞLEMİ
-                const { error } = await window.supabaseClient.auth.signInWithPassword({ email: email, password: password });
-                
-                if (error) {
-                    if (error.message === "Email not confirmed") {
-                        showNotification("Giriş başarısız! Lütfen önce e-postanıza gelen doğrulama linkine tıklayın.", "error");
-                    } else {
-                        showNotification("Giriş başarısız. Lütfen bilgilerinizi kontrol edin.", "error");
-                    }
-                } else { 
-                    showNotification("Giriş yapıldı!", "success"); 
-                    setTimeout(() => window.location.href = "index.html", 1000); 
-                }
-            }
-            
-            submitBtn.disabled = false;
-            submitBtn.innerText = isRegister ? "HESABI OLUŞTUR" : "GİRİŞ YAP";
-        });
-    </script>
+            } else {
+                // GİRİŞ YAPMA İŞLEMİ
+                const { error } = await window.supabaseClient.auth.signInWithPassword({ email: email, password: password });
+                
+                if (error) {
+                    if (error.message === "Email not confirmed") {
+                        showNotification("Giriş başarısız! Lütfen önce e-postanıza gelen doğrulama linkine tıklayın.", "error");
+                    } else {
+                        showNotification("Giriş başarısız. Lütfen bilgilerinizi kontrol edin.", "error");
+                    }
+                } else { 
+                    showNotification("Giriş yapıldı!", "success"); 
+                    setTimeout(() => window.location.href = "index.html", 1000); 
+                }
+            }
+            
+            submitBtn.disabled = false;
+            submitBtn.innerText = isRegister ? "HESABI OLUŞTUR" : "GİRİŞ YAP";
+        });
+    </script>
 </body>
-</html>
+</html> 
