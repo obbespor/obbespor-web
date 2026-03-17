@@ -251,7 +251,6 @@
                 }
 
                 // --- 2. ADIM: APPLICATION_MEMBERS TABLOSUNDAN OYUNCULARI ÇEK ---
-                // Supabase'in İlişkisel Sorgu (Relational Query) gücünü kullanıyoruz!
                 const { data: players, error: playersErr } = await window.supabaseClient
                     .from('application_members')
                     .select(`
@@ -301,7 +300,8 @@
             const matchId = document.getElementById('apiMatchId').value.trim();
             if (!matchId) return showNotification("Lütfen bir Match ID girin!", "error");
 
-            const apiKey = "BURAYA_HDEV_ANAHTARINI_YAPIŞTIR";
+            // ANAHTAR BURAYA EKLENDİ!
+            const apiKey = "HDEV-94ca8d1c-407a-4bf2-a3e7-f2b7b1a1fdfd";
 
             const btn = document.getElementById('btnFetchApi');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> BAĞLANILIYOR...';
