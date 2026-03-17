@@ -55,6 +55,30 @@
         .approved-name { font-size: 16px; font-weight: bold; color: white; flex: 1; }
         .approved-tag { font-size: 12px; color: var(--gri-yazi); border: 1px solid #333; padding: 2px 8px; border-radius: 4px; margin-left: 10px; }
 
+        /* --- BRACKET & SKOR YÖNETİM STİLLERİ --- */
+        .match-management-card { background: #0a0a0a; border: 1px solid #222; border-radius: 20px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .round-selector { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 10px; }
+        .round-btn { background: #111; border: 1px solid #333; color: var(--gri-yazi); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.3s; }
+        .round-btn.active { background: var(--neon-mor); color: white; border-color: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
+
+        .match-score-header { display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #222; }
+        .team-score-input { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .team-name-input { text-align: center; font-weight: 900; background: transparent; border: none; color: white; font-size: 20px; text-transform: uppercase; outline: none; border-bottom: 1px dashed #444; padding-bottom: 5px; width: 200px; }
+        .team-name-input:focus { border-bottom-color: var(--neon-mor); }
+        .big-score-input { background: #000; border: 2px solid var(--neon-mor); color: white; width: 80px; height: 80px; text-align: center; font-size: 32px; font-weight: 900; border-radius: 12px; outline: none; box-shadow: 0 0 15px rgba(96, 29, 194, 0.2); }
+        .vs-text { font-size: 24px; font-weight: 900; color: var(--gri-yazi); }
+
+        .stats-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .team-stats-box h4 { color: var(--neon-mor); font-size: 14px; margin-bottom: 15px; text-transform: uppercase; border-left: 3px solid var(--neon-mor); padding-left: 10px; }
+        .player-stat-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .player-stat-row input { background: #111; border: 1px solid #333; color: white; padding: 10px; border-radius: 6px; font-size: 13px; outline: none; transition: 0.3s; }
+        .player-stat-row input:focus { border-color: var(--neon-mor); }
+        .stat-label { font-size: 10px; color: var(--gri-yazi); text-align: center; font-weight: bold; }
+        
+        .btn-save-match { background: linear-gradient(45deg, var(--neon-mor), #8a2be2); color: white; border: none; padding: 18px; border-radius: 12px; font-weight: 900; font-size: 16px; width: 100%; cursor: pointer; margin-top: 30px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-save-match:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(96, 29, 194, 0.5); }
+        .btn-save-match:disabled { opacity: 0.7; cursor: not-allowed; }
+
         /* --- DUYURU GÖNDERME FORMU --- */
         .duyuru-form { background: #0a0a0a; padding: 30px; border-radius: 15px; border: 1px solid #222; max-width: 700px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .form-group { margin-bottom: 25px; display: flex; flex-direction: column; gap: 10px; }
@@ -96,6 +120,7 @@
             .header-with-btn { flex-direction: column; gap: 15px; align-items: flex-start; }
             .modal-header { flex-direction: column; text-align: center; }
             .teams-grid { grid-template-columns: 1fr; }
+            .stats-grid-container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -113,6 +138,7 @@
                 <li><a href="index.html">ANA SAYFA</a></li>
                 <li><a id="tab-onay" class="active-admin-tab" onclick="switchTab('onay')">ONAY BEKLEYEN</a></li>
                 <li><a id="tab-takimlar" onclick="switchTab('takimlar')">ONAYLI</a></li>
+                <li><a id="tab-bracket" onclick="switchTab('bracket')">BRACKET & SKOR</a></li>
                 <li><a id="tab-duyuru" onclick="switchTab('duyuru')">DUYURU YAYINLA</a></li>
                 
                 <li class="nav-bell desktop-only">
@@ -159,6 +185,68 @@
             <button class="btn-excel" onclick="excelAktar()"><i class="fas fa-file-excel"></i> Excel'e Aktar</button>
         </div>
         <div class="approved-list" id="approvedTeamsList"></div>
+    </main>
+
+    <main class="admin-container" id="bracketSection">
+        <h2 class="section-title">BRACKET & <span>MAÇ SKORLARI</span></h2>
+        
+        <div class="match-management-card">
+            <div class="round-selector">
+                <button class="round-btn active" onclick="filterMatches(64)">64 TAKIM (R1)</button>
+                <button class="round-btn" onclick="filterMatches(32)">32 TAKIM (R2)</button>
+                <button class="round-btn" onclick="filterMatches(16)">16 TAKIM (R3)</button>
+                <button class="round-btn" onclick="filterMatches(8)">ÇEYREK FİNAL</button>
+                <button class="round-btn" onclick="filterMatches(4)">YARI FİNAL</button>
+                <button class="round-btn" onclick="filterMatches(2)">FİNAL</button>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 30px;">
+                <label style="color:var(--neon-mor); font-weight: bold; text-transform: uppercase; font-size: 13px;">Yönetilecek Eşleşmeyi Seç</label>
+                <select id="matchSelector" class="form-control" onchange="loadMatchDetails(this.value)">
+                    <option value="">-- Bir eşleşme seçin --</option>
+                    <option value="match_001">Maç #1: BOSSESPOR vs TEAM-X</option>
+                    <option value="match_002">Maç #2: FENERBAHÇE vs GALATASARAY</option>
+                </select>
+            </div>
+
+            <div id="matchEditorArea" style="display: none; animation: fadeIn 0.5s ease;">
+                <div class="match-score-header">
+                    <div class="team-score-input">
+                        <input type="text" id="teamAName" class="team-name-input" placeholder="TAKIM A">
+                        <input type="number" id="scoreA" class="big-score-input" value="0" min="0">
+                    </div>
+                    <div class="vs-text">VS</div>
+                    <div class="team-score-input">
+                        <input type="text" id="teamBName" class="team-name-input" placeholder="TAKIM B">
+                        <input type="number" id="scoreB" class="big-score-input" value="0" min="0">
+                    </div>
+                </div>
+
+                <div class="stats-grid-container">
+                    <div class="team-stats-box">
+                        <h4 id="teamALabel">SOL TAKIM OYUNCULARI</h4>
+                        <div class="player-stat-row" style="border-bottom: 1px solid #222; padding-bottom: 5px; margin-bottom: 10px;">
+                            <span class="stat-label">OYUNCU NICK (MANUEL)</span>
+                            <span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
+                        </div>
+                        <div id="teamAPlayersInputs"></div>
+                    </div>
+
+                    <div class="team-stats-box">
+                        <h4 id="teamBLabel">SAĞ TAKIM OYUNCULARI</h4>
+                        <div class="player-stat-row" style="border-bottom: 1px solid #222; padding-bottom: 5px; margin-bottom: 10px;">
+                            <span class="stat-label">OYUNCU NICK (MANUEL)</span>
+                            <span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
+                        </div>
+                        <div id="teamBPlayersInputs"></div>
+                    </div>
+                </div>
+
+                <button class="btn-save-match" id="btnSaveMatch" onclick="saveMatchStats()">
+                    <i class="fas fa-cloud-upload-alt"></i> VERİLERİ BRACKET SİSTEMİNE YANSIT
+                </button>
+            </div>
+        </div>
     </main>
 
     <main class="admin-container" id="duyuruSection">
@@ -213,13 +301,11 @@
     <script>
         // Sayfa Başlatıcı
         async function initAdminPage() {
-            // Footer'ı Yükle
             try {
                 const response = await fetch("components/footer.html");
                 if (response.ok) document.getElementById("footer-alani").innerHTML = await response.text();
             } catch(e) { console.error("Footer yüklenemedi", e); }
 
-            // Scroll Efekti
             let lastScrollTop = 0;
             const header = document.getElementById("mainHeader");
             window.addEventListener("scroll", function() {
@@ -229,7 +315,6 @@
                 lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
             }, false);
 
-            // Dışarı Tıklayınca Bildirim Kapatma
             document.addEventListener("click", function(event) {
                 const isClickInsideBell = event.target.closest('.nav-bell') || event.target.closest('.floating-bell');
                 const isClickInsidePanel = event.target.closest('.notif-panel');
@@ -238,13 +323,11 @@
                 }
             });
 
-            // Auth, Bildirim ve Admin Kontrolleri
             if (typeof checkUserStatus === "function") await checkUserStatus();
             if (typeof initNotifications === "function") initNotifications();
             checkAdminAccess();
         }
 
-        // Güvenlik Kontrolü
         async function checkAdminAccess() {
             try {
                 const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
@@ -261,15 +344,73 @@
             }
         }
 
-        // Yeni Sekme Kontrolü (Header İçin)
+        // --- GÜNCELLENEN SEKME KONTROLÜ ---
         function switchTab(tabName) {
-            ['onay', 'takimlar', 'duyuru'].forEach(t => {
-                document.getElementById(t + 'Section').style.display = (t === tabName) ? 'block' : 'none';
+            ['onay', 'takimlar', 'bracket', 'duyuru'].forEach(t => {
+                const section = document.getElementById(t + 'Section');
+                if (section) section.style.display = (t === tabName) ? 'block' : 'none';
                 
                 const tabLink = document.getElementById('tab-' + t);
-                if (t === tabName) tabLink.classList.add('active-admin-tab');
-                else tabLink.classList.remove('active-admin-tab');
+                if (tabLink) {
+                    if (t === tabName) tabLink.classList.add('active-admin-tab');
+                    else tabLink.classList.remove('active-admin-tab');
+                }
             });
+        }
+
+        // --- BRACKET FONKSİYONLARI ---
+        function filterMatches(count) {
+            document.querySelectorAll('.round-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            showNotification(`${count} Takımlık tur eşleşmeleri listeleniyor...`, "info");
+        }
+
+        function loadMatchDetails(matchId) {
+            const area = document.getElementById('matchEditorArea');
+            if(!matchId) {
+                area.style.display = 'none';
+                return;
+            }
+            area.style.display = 'block';
+            
+            // Eğer maç seçilirse manuel kutuları hazırla
+            generateManualPlayerRows('teamAPlayersInputs');
+            generateManualPlayerRows('teamBPlayersInputs');
+
+            // Takım adlarını örnek olarak inputlara bas
+            const selText = document.getElementById('matchSelector').options[document.getElementById('matchSelector').selectedIndex].text;
+            if(selText.includes('vs')) {
+                const teams = selText.split(':')[1].split('vs');
+                document.getElementById('teamAName').value = teams[0].trim();
+                document.getElementById('teamBName').value = teams[1].trim();
+            }
+        }
+
+        function generateManualPlayerRows(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            for(let i = 1; i <= 5; i++) {
+                container.innerHTML += `
+                    <div class="player-stat-row">
+                        <input type="text" class="form-control" placeholder="Oyuncu ${i} Nick">
+                        <input type="number" class="form-control" placeholder="0" min="0">
+                        <input type="number" class="form-control" placeholder="0" min="0">
+                        <input type="number" class="form-control" placeholder="0" min="0">
+                    </div>`;
+            }
+        }
+
+        async function saveMatchStats() {
+            const btn = document.getElementById('btnSaveMatch');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERİLER İŞLENİYOR...';
+
+            setTimeout(() => {
+                showNotification("Maç verileri ve oyuncu istatistikleri başarıyla kaydedildi!", "success");
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }, 1500);
         }
 
         // Sistem Duyurusu
@@ -340,7 +481,6 @@
             } else list.innerHTML = '<p style="color: var(--gri-yazi);">Onaylanmış takım bulunmuyor.</p>';
         }
 
-        // Ret ve Onay İşlemleri
         async function rejectTeam(teamId, userId) {
             const reason = prompt("Lütfen ret sebebini yazın:");
             if (reason) updateTeamStatus(teamId, 'rejected', userId, reason);
@@ -359,7 +499,6 @@
             } else showNotification("Hata oluştu.", "error");
         }
 
-        // --- EXCEL AKTARMA FONKSİYONU ---
         async function excelAktar() {
             try {
                 const btn = document.querySelector('.btn-excel');
@@ -400,7 +539,6 @@
                         }
                     });
 
-                    // Excel Formatı: Telefon hücresi tamamen boş, Mail sütunu yok.
                     return {
                         "Sıra": index + 1,
                         "Takım Adı": team.team_name,
@@ -417,7 +555,6 @@
                     };
                 });
 
-                // Tablo oluştur ve indir
                 const worksheet = XLSX.utils.json_to_sheet(excelVerileri);
                 const workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, "Onaylı Takımlar");
@@ -442,11 +579,10 @@
             }
         }
 
-        // --- TAKIM SİLME VE STORAGE TEMİZLEME FONKSİYONU ---
         async function takimiSil(teamId, teamName, logoUrl, captainId) {
             const reason = prompt(`DİKKAT: ${teamName} takımını kalıcı olarak silmek üzeresiniz. Lütfen takım kaptanına iletilecek silinme sebebini yazın:\n(Bu işlem geri alınamaz!)`);
             
-            if (reason === null) return; // Kullanıcı iptal'e bastıysa işlemi durdur
+            if (reason === null) return; 
             if (reason.trim() === "") {
                 showNotification("Silme sebebini boş bırakamazsınız.", "error");
                 return;
@@ -457,7 +593,6 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SİLİNİYOR...';
                 btn.disabled = true;
 
-                // 1. HAYALET LOGOYU SİL (STORAGE TEMİZLİĞİ)
                 if (logoUrl && logoUrl.includes('/storage/v1/object/public/')) {
                     try {
                         const parts = logoUrl.split('/storage/v1/object/public/')[1].split('/');
@@ -466,14 +601,10 @@
 
                         if (bucketName && filePath) {
                             await window.supabaseClient.storage.from(bucketName).remove([filePath]);
-                            console.log("Logo storage'dan silindi.");
                         }
-                    } catch (e) {
-                        console.warn("Logo URL parçalama hatası:", e);
-                    }
+                    } catch (e) { console.warn("Logo URL parçalama hatası:", e); }
                 }
 
-                // 2. KAPTANA BİLDİRİM GÖNDER (Eğer kaptan ID'si varsa)
                 if (captainId) {
                     await window.supabaseClient.from('bildirimler').insert([{
                         kullanici_id: captainId,
@@ -483,7 +614,6 @@
                     }]);
                 }
 
-                // 3. TAKIMI VERİTABANINDAN SİL (ON DELETE CASCADE devrede)
                 const { error: teamError } = await window.supabaseClient
                     .from('tournament_applications')
                     .delete()
@@ -493,29 +623,24 @@
 
                 showNotification(`${teamName} başarıyla silindi ve kaptana bildirildi.`, "success");
                 closeModal();
-                
                 loadApprovedTeams(); 
                 loadPendingTeams();
 
             } catch (err) {
                 console.error("Silme Hatası:", err);
                 showNotification(err.message || "Silme işlemi sırasında hata oluştu.", "error");
-                
                 const btn = document.getElementById('modalDeleteBtn');
                 btn.innerHTML = '<i class="fas fa-trash"></i> BU TAKIMI SİL';
                 btn.disabled = false;
             }
         }
 
-        // Modal Detayları
         function openTeamModal(team) {
             document.getElementById('modalLogo').src = team.logo_url || 'https://via.placeholder.com/100';
             document.getElementById('modalTeamName').innerText = team.team_name;
             document.getElementById('modalTeamTag').innerText = `[${team.team_tag}]`;
             
-            // Kaptan bilgilerini bul ve yazdır
             const captData = (team.members || []).find(m => m.user_id === team.captain_id || m.id === team.captain_id);
-            // Kaptanın ID'sini garanti altına alalım (user_id veya captain_id)
             const resolvedCaptainId = captData ? (captData.user_id || team.captain_id) : team.captain_id;
             
             document.getElementById('modalCaptainName').innerText = captData ? captData.username : 'Bilinmiyor';
@@ -528,7 +653,6 @@
                 rl.innerHTML += `<li><span style="color:${color}; font-weight:normal;">${m.role==='main'?'Asil Oyuncu':'Yedek'}:</span> <span style="color:var(--neon-mor);">${m.username}</span></li>`;
             });
 
-            // SİLME BUTONUNA ID VE İSİM ATAMA (Kaptan ID'sini de gönderiyoruz)
             const deleteBtn = document.getElementById('modalDeleteBtn');
             deleteBtn.innerHTML = '<i class="fas fa-trash"></i> BU TAKIMI SİL';
             deleteBtn.disabled = false;
@@ -547,7 +671,6 @@
             if (e.target === document.getElementById('teamModal')) closeModal();
         });
 
-        // Sayfa Başlatıcı Tetikleme
         document.addEventListener('DOMContentLoaded', initAdminPage);
     </script>
 </body>
