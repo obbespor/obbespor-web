@@ -58,46 +58,7 @@
     <script src="js/app.js"></script>
 
     <script>
- // --- 1. SAYFA YÜKLENDİĞİNDE GÜVENLİK KONTROLÜ ---
-        window.addEventListener('DOMContentLoaded', async () => {
-            // URL'nin tamamını alıp hem '#' hem de '?' ile gelen tüm şifreli kodları arıyoruz
-            const currentUrl = window.location.href;
-            
-            // Eğer URL'de Supabase'in şifre sıfırlama kodlarından biri varsa içeri al (isRecovery = true)
-            const isRecovery = currentUrl.includes('type=recovery') || 
-                               currentUrl.includes('access_token') || 
-                               currentUrl.includes('code=');
-
-            // Eğer e-postadan gelen link değilse (URL temizse), normal oturum kontrolü yap
-            if (!isRecovery) {
-                const { data: { session } } = await window.supabaseClient.auth.getSession();
-                
-                if (!session) {
-                    const authCard = document.getElementById('authCardContainer');
-                    if(authCard) authCard.style.display = 'none'; // Formu anında gizle
-
-                    if (typeof showNotification === 'function') {
-                        showNotification("Bu sayfaya erişim yetkiniz yok veya link geçersiz.", "error");
-                    }
-                    
-                    // Kullanıcıyı anasayfaya/giriş sayfasına şutla
-                    setTimeout(() => {
-                        window.location.href = 'index.html'; 
-                    }, 2000);
-                }
-            } else {
-                // Eğer URL'de şifreli kod (code= veya access_token=) Varsa:
-                // Supabase'in arka planda oturumu kurması için ona yarım saniye süre tanı
-                setTimeout(async () => {
-                    const { data: { session } } = await window.supabaseClient.auth.getSession();
-                    if (!session) {
-                        console.log("Geçici oturum kurulamadı, token geçersiz olabilir.");
-                    }
-                }, 500);
-            }
-        });
-
-        // --- 2. FORM GÖNDERİMİ VE ÇİFTE GÜVENLİK ---
+        // --- FORM GÖNDERİMİ VE SUPABASE GÜVENLİĞİ ---
         document.getElementById('resetForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -105,6 +66,7 @@
             const confirmPass = document.getElementById('confirmPass').value;
             const btn = document.getElementById('updateBtn');
 
+            // 1. Basit Şifre Kontrolü
             if (newPass !== confirmPass) {
                 showNotification("Şifreler uyuşmuyor. Lütfen kontrol edin.", "error");
                 return;
@@ -113,28 +75,21 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GÜNCELLENİYOR...';
 
-            // GÜVENLİK KONTROLÜ: Form gönderilirken artık Supabase URL'deki token'ı okuyup session kurmuş olmalı
-            const { data: { session } } = await window.supabaseClient.auth.getSession();
-            
-            if (!session) {
-                showNotification("Bağlantı süresi dolmuş veya geçersiz. Lütfen tekrar sıfırlama isteği gönderin.", "error");
-                setTimeout(() => window.location.href = "index.html", 3000);
-                return;
-            }
-
-            // Oturum geçerliyse şifreyi güncelle
+            // 2. Supabase ile Şifreyi Güncelle (Gerçek Güvenlik Burada Çalışır)
+            // Kullanıcının linkinde geçerli bir gizli token (şifre sıfırlama kodu) yoksa, Supabase hata fırlatır!
             const { error } = await window.supabaseClient.auth.updateUser({
                 password: newPass
             });
 
+            // 3. Sonuçları İşle
             if (error) {
-                showNotification("Bir hata oluştu: " + error.message, "error");
+                showNotification("Yetkisiz işlem veya linkin süresi dolmuş! Lütfen tekrar şifre sıfırlama isteği gönderin.", "error");
                 btn.disabled = false;
                 btn.innerHTML = "ŞİFREMİ GÜNCELLE";
             } else {
                 showNotification("Şifreniz başarıyla güncellendi! Giriş yapabilirsiniz.", "success");
                 
-                // Şifre yenilendikten sonra kullanıcıyı giriş ekranına yönlendiriyoruz
+                // Şifre yenilendikten sonra kullanıcıyı giriş ekranına yönlendir
                 setTimeout(() => {
                     window.location.href = "index.html"; 
                 }, 2000);
