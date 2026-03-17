@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kış Turnuvası Fikstürü | OBB E-SPOR</title>
+    <link rel="icon" type="image/png" href="img/obblogo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    
+    <style>
+        /* --- BRACKET GENEL DÜZENİ --- */
+        body { background-color: #050505; color: white; }
+        .page-header { text-align: center; padding: 40px 20px 20px; }
+        .page-title { font-size: 36px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; }
+        .page-title span { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
+        .page-subtitle { color: var(--gri-yazi); font-size: 16px; font-weight: 500; }
+
+        /* --- SÜRÜKLE BIRAK KAYDIRMA ALANI --- */
+        .bracket-scroll-area {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            cursor: grab;
+            padding: 20px 40px 80px 40px;
+            user-select: none;
+            /* Scrollbar Stili */
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-mor) #111;
+        }
+        .bracket-scroll-area:active { cursor: grabbing; }
+        .bracket-scroll-area::-webkit-scrollbar { height: 8px; }
+        .bracket-scroll-area::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
+        .bracket-scroll-area::-webkit-scrollbar-thumb { background: var(--neon-mor); border-radius: 4px; }
+
+        /* --- AĞAÇ (BRACKET) MİMARİSİ --- */
+        .bracket-container { display: flex; align-items: stretch; gap: 60px; min-width: max-content; }
+        
+        .bracket-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around; /* Maçları dikeyde kusursuz ortalar */
+            width: 260px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .round-header {
+            text-align: center;
+            color: var(--neon-mor);
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #222;
+            padding-bottom: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        /* --- MAÇ KARTI TASARIMI --- */
+        .match-wrapper { position: relative; margin: 15px 0; }
+        
+        /* Çizgiler (CSS Sihri) */
+        .match-wrapper::after {
+            content: '';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            width: 30px;
+            border-bottom: 2px solid #333;
+            z-index: 1;
+        }
+        /* Son sütunda çizgi olmasın */
+        .bracket-column:last-child .match-wrapper::after { display: none; }
+        
+        /* Dikey birleştirici çizgiler */
+        .bracket-column:not(:first-child) .match-wrapper::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            width: 30px;
+            border-bottom: 2px solid #333;
+            z-index: 1;
+        }
+        
+        /* Çiftli maçları dikeyde bağla */
+        .bracket-column:not(:first-child) .match-wrapper:nth-child(odd)::before {
+            border-left: 2px solid #333;
+            height: calc(50% + 15px); /* Yüksekliği dinamik ayarlar */
+            top: 50%;
+            border-bottom: none;
+            border-top: 2px solid #333;
+        }
+        .bracket-column:not(:first-child) .match-wrapper:nth-child(even)::before {
+            border-left: 2px solid #333;
+            height: calc(50% + 15px);
+            bottom: 50%;
+            top: auto;
+        }
+
+        .match-card {
+            background: #0a0a0a;
+            border: 1px solid #222;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            z-index: 5;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .match-card:hover { border-color: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(96, 29, 194, 0.3); }
+        .match-card.is-live { border-color: #ff4b4b; box-shadow: 0 0 15px rgba(255, 75, 75, 0.3); }
+
+        .match-info-bar { background: #111; padding: 5px 10px; font-size: 10px; color: var(--gri-yazi); font-weight: bold; display: flex; justify-content: space-between; border-bottom: 1px solid #222; }
+        .live-badge { color: #ff4b4b; animation: blink 1s infinite; }
+        
+        .team { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #1a1a1a; transition: 0.2s; }
+        .team:last-child { border-bottom: none; }
+        
+        .team-info { display: flex; align-items: center; gap: 10px; }
+        .team-logo { width: 20px; height: 20px; object-fit: contain; background: #000; border-radius: 4px; }
+        .team-name { font-size: 13px; font-weight: 700; color: white; }
+        
+        .score { font-size: 16px; font-weight: 900; color: white; }
+        
+        /* Durum Renklendirmeleri */
+        .team.winner { background: rgba(96, 29, 194, 0.1); }
+        .team.winner .team-name { color: var(--neon-mor); }
+        .team.winner .score { color: var(--neon-mor); }
+        .team.loser { opacity: 0.5; }
+        .team.tbd { opacity: 0.3; }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* --- DETAY MODALI (MATCH SHEET) --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(8px); padding: 20px; }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        
+        .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+        
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 28px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; z-index: 10; }
+        .close-btn:hover { color: var(--kirmizi-iptal); }
+
+        .modal-header { padding: 40px 20px; background: radial-gradient(circle at center, #1a0a2e 0%, #0a0a0a 100%); text-align: center; border-bottom: 1px solid #222; }
+        .match-format { font-size: 12px; font-weight: 900; color: var(--gri-yazi); letter-spacing: 2px; margin-bottom: 15px; display: block; }
+        
+        .scoreboard { display: flex; justify-content: center; align-items: center; gap: 30px; }
+        .modal-team { display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1; }
+        .modal-team img { width: 60px; height: 60px; object-fit: contain; }
+        .modal-team-name { font-size: 20px; font-weight: 900; color: white; text-transform: uppercase; }
+        
+        .modal-score-wrap { display: flex; align-items: center; gap: 15px; }
+        .modal-score { font-size: 48px; font-weight: 900; color: white; }
+        .modal-score.winner { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
+        .modal-vs { font-size: 16px; color: #555; font-weight: bold; }
+
+        .map-section { padding: 30px; border-bottom: 5px solid #000; }
+        .map-title { font-size: 16px; font-weight: 900; color: var(--neon-mor); margin-bottom: 20px; display: flex; justify-content: space-between; }
+        .map-title span.map-score { color: white; background: #222; padding: 2px 10px; border-radius: 5px; }
+
+        .stats-table { width: 100%; border-collapse: collapse; text-align: center; color: white; font-size: 13px; }
+        .stats-table th { background: #111; color: var(--gri-yazi); padding: 12px 8px; font-weight: 900; border-bottom: 2px solid #333; }
+        .stats-table td { padding: 12px 8px; border-bottom: 1px solid #1a1a1a; font-weight: 500; }
+        .stats-table tr:hover td { background: rgba(96, 29, 194, 0.1); }
+        .stats-table .ign-cell { text-align: left; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .team-a-row td { background: rgba(0, 210, 255, 0.02); }
+        .team-b-row td { background: rgba(255, 75, 75, 0.02); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        @media (max-width: 768px) {
+            .page-title { font-size: 24px; }
+            .bracket-scroll-area { padding: 10px 15px 50px 15px; }
+            .bracket-column { width: 220px; }
+            .scoreboard { gap: 15px; }
+            .modal-team img { width: 40px; height: 40px; }
+            .modal-team-name { font-size: 14px; text-align: center; }
+            .modal-score { font-size: 32px; }
+            .map-section { padding: 15px; }
+            .stats-table { font-size: 11px; }
+            .stats-table th, .stats-table td { padding: 8px 4px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header-alani"></div>
+
+    <div class="page-header">
+        <h1 class="page-title">OBB KIŞ TURNUVASI <span>FİKSTÜRÜ</span></h1>
+        <p class="page-subtitle">Toplam Ödül Havuzu: 10.000 TL | 64 Takım</p>
+    </div>
+
+    <div class="bracket-scroll-area" id="bracketWrapper">
+        <div class="bracket-container">
+            
+            <div class="bracket-column">
+                <div class="round-header">SON 64 (R1)</div>
+                
+                <div class="match-wrapper">
+                    <div class="match-card" onclick="openMatchModal('bo1')">
+                        <div class="match-info-bar">
+                            <span>BO1</span><span>Tamamlandı</span>
+                        </div>
+                        <div class="team winner">
+                            <div class="team-info"><img src="img/obblogo.png" class="team-logo"><span class="team-name">BOSSESPOR</span></div>
+                            <span class="score">13</span>
+                        </div>
+                        <div class="team loser">
+                            <div class="team-info"><img src="https://via.placeholder.com/20" class="team-logo"><span class="team-name">TEAM-X</span></div>
+                            <span class="score">7</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="match-wrapper">
+                    <div class="match-card is-live" onclick="openMatchModal('live')">
+                        <div class="match-info-bar">
+                            <span class="live-badge"><i class="fas fa-circle"></i> CANLI</span><span>Ascent</span>
+                        </div>
+                        <div class="team">
+                            <div class="team-info"><img src="https://via.placeholder.com/20" class="team-logo"><span class="team-name">FENERBAHÇE</span></div>
+                            <span class="score">9</span>
+                        </div>
+                        <div class="team">
+                            <div class="team-info"><img src="https://via.placeholder.com/20" class="team-logo"><span class="team-name">GALATASARAY</span></div>
+                            <span class="score">11</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="match-wrapper">
+                    <div class="match-card">
+                        <div class="match-info-bar"><span>BO1</span><span>Bekleniyor</span></div>
+                        <div class="team tbd"><div class="team-info"><span class="team-name">Belirlenecek (TBD)</span></div><span class="score">-</span></div>
+                        <div class="team tbd"><div class="team-info"><span class="team-name">Belirlenecek (TBD)</span></div><span class="score">-</span></div>
+                    </div>
+                </div>
+                
+                <div class="match-wrapper">
+                    <div class="match-card">
+                        <div class="match-info-bar"><span>BO1</span><span>Bekleniyor</span></div>
+                        <div class="team tbd"><div class="team-info"><span class="team-name">Belirlenecek (TBD)</span></div><span class="score">-</span></div>
+                        <div class="team tbd"><div class="team-info"><span class="team-name">Belirlenecek (TBD)</span></div><span class="score">-</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bracket-column">
+                <div class="round-header">SON 32 (R2)</div>
+                <div class="match-wrapper">
+                    <div class="match-card">
+                        <div class="match-info-bar"><span>BO1</span><span>Bekleniyor</span></div>
+                        <div class="team tbd"><div class="team-info"><span class="team-name">Maç 1 Kazananı</span></div><span class="score">-</span></div>
+                        <div class="team tbd"><div class="team-info"><span class="team-name">Maç 2 Kazananı</span></div><span class="score">-</span></div>
+                    </div>
+                </div>
+                <div class="match-wrapper">
+                    <div class="match-card">
+                        <div class="match-info-bar"><span>BO1</span><span>Bekleniyor</span></div>
+                        <div class="team tbd"><div class="team-info"><span class="team-name">Maç 3 Kazananı</span></div><span class="score">-</span></div>
+                        <div class="team tbd"><div class="team-info"><span class="team-name">Maç 4 Kazananı</span></div><span class="score">-</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bracket-column">
+                <div class="round-header">SON 16 (BO3)</div>
+                <div class="match-wrapper">
+                    <div class="match-card" onclick="openMatchModal('bo3')">
+                        <div class="match-info-bar"><span>BO3 SERİ</span><span>Bekleniyor</span></div>
+                        <div class="team winner"><div class="team-info"><span class="team-name">BOSSESPOR</span></div><span class="score">2</span></div>
+                        <div class="team loser"><div class="team-info"><span class="team-name">GALATASARAY</span></div><span class="score">1</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bracket-column">
+                <div class="round-header">ÇEYREK FİNAL</div>
+                <div class="match-wrapper">
+                    <div class="match-card"><div class="team tbd"><div class="team-info"><span class="team-name">TBD</span></div></div><div class="team tbd"><div class="team-info"><span class="team-name">TBD</span></div></div></div>
+                </div>
+            </div>
+            
+            <div class="bracket-column">
+                <div class="round-header">YARI FİNAL</div>
+                <div class="match-wrapper">
+                    <div class="match-card"><div class="team tbd"><div class="team-info"><span class="team-name">TBD</span></div></div><div class="team tbd"><div class="team-info"><span class="team-name">TBD</span></div></div></div>
+                </div>
+            </div>
+
+            <div class="bracket-column">
+                <div class="round-header" style="color: gold;">BÜYÜK FİNAL 🏆</div>
+                <div class="match-wrapper">
+                    <div class="match-card" style="border-color: gold; box-shadow: 0 0 20px rgba(255,215,0,0.2);">
+                        <div class="match-info-bar"><span>BO5 SERİ FİNALİ</span></div>
+                        <div class="team tbd"><div class="team-info"><span class="team-name">FİNALİST 1</span></div></div>
+                        <div class="team tbd"><div class="team-info"><span class="team-name">FİNALİST 2</span></div></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="matchModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeMatchModal()">&times;</span>
+            
+            <div class="modal-header">
+                <span class="match-format" id="modalFormatText">BEST OF 3 SERİSİ</span>
+                <div class="scoreboard">
+                    <div class="modal-team">
+                        <img src="img/obblogo.png" id="modalLogoA">
+                        <span class="modal-team-name" id="modalNameA">BOSSESPOR</span>
+                    </div>
+                    
+                    <div class="modal-score-wrap">
+                        <span class="modal-score winner" id="modalScoreA">2</span>
+                        <span class="modal-vs">-</span>
+                        <span class="modal-score" id="modalScoreB">1</span>
+                    </div>
+
+                    <div class="modal-team">
+                        <img src="https://via.placeholder.com/100" id="modalLogoB">
+                        <span class="modal-team-name" id="modalNameB">GALATASARAY</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mapsContainer">
+                
+                <div class="map-section">
+                    <div class="map-title">1. HARİTA (ASCENT) <span class="map-score">13 - 11</span></div>
+                    <table class="stats-table">
+                        <thead>
+                            <tr>
+                                <th>TAKIM</th>
+                                <th class="ign-cell">OYUNCU (IGN)</th>
+                                <th>K</th>
+                                <th>D</th>
+                                <th>A</th>
+                                <th>K/D</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="team-a-row"><td style="color:#00d2ff; font-weight:bold;">BOSS</td><td class="ign-cell">Matrix#TR1</td><td>24</td><td>12</td><td>5</td><td>2.0</td></tr>
+                            <tr class="team-a-row"><td style="color:#00d2ff; font-weight:bold;">BOSS</td><td class="ign-cell">JettMaster</td><td>18</td><td>15</td><td>7</td><td>1.2</td></tr>
+                            <tr class="team-b-row"><td style="color:#ff4b4b; font-weight:bold;">GS</td><td class="ign-cell">Rambo</td><td>20</td><td>16</td><td>2</td><td>1.25</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="map-section">
+                    <div class="map-title">2. HARİTA (BIND) <span class="map-score">7 - 13</span></div>
+                    <table class="stats-table">
+                        <thead>
+                            <tr>
+                                <th>TAKIM</th>
+                                <th class="ign-cell">OYUNCU (IGN)</th>
+                                <th>K</th>
+                                <th>D</th>
+                                <th>A</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="team-a-row"><td style="color:#00d2ff; font-weight:bold;">BOSS</td><td class="ign-cell">Matrix#TR1</td><td>10</td><td>15</td><td>3</td></tr>
+                            <tr class="team-b-row"><td style="color:#ff4b4b; font-weight:bold;">GS</td><td class="ign-cell">Rambo</td><td>25</td><td>9</td><td>4</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-alani"></div>
+
+    <script src="js/app.js"></script>
+    <script>
+        // --- HEADER FOOTER YÜKLEME ---
+        async function loadComponents() {
+            try {
+                const headerRes = await fetch("components/header.html");
+                if(headerRes.ok) document.getElementById('header-alani').innerHTML = await headerRes.text();
+                const footerRes = await fetch("components/footer.html");
+                if(footerRes.ok) document.getElementById('footer-alani').innerHTML = await footerRes.text();
+            } catch(e) { console.error("Komponent yüklenemedi", e); }
+        }
+        loadComponents();
+
+        // --- SÜRÜKLE-KAYDIR (DRAG TO SCROLL) MANTIĞI ---
+        const slider = document.getElementById('bracketWrapper');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            slider.style.cursor = 'grabbing';
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+        slider.addEventListener('mouseleave', () => { isDown = false; slider.style.cursor = 'grab'; });
+        slider.addEventListener('mouseup', () => { isDown = false; slider.style.cursor = 'grab'; });
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2.5; // Kaydırma hassasiyeti
+            slider.scrollLeft = scrollLeft - walk;
+        });
+
+        // --- MODAL AÇ/KAPAT ---
+        function openMatchModal(type) {
+            // type parametresi (bo1, bo3, live) veritabanı bağlandığında dinamik olarak verileri getirecek.
+            // Şu an sadece görünümü test etmek için modalı açıyoruz.
+            const modal = document.getElementById('matchModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Arka planı kilitle
+        }
+
+        function closeMatchModal() {
+            document.getElementById('matchModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        window.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('matchModal')) closeMatchModal();
+        });
+    </script>
+</body>
+</html>
