@@ -58,17 +58,18 @@
     <script src="js/app.js"></script>
 
     <script>
-        // --- 1. SAYFA YÜKLENDİĞİNDE GÜVENLİK KONTROLÜ ---
+ // --- 1. SAYFA YÜKLENDİĞİNDE GÜVENLİK KONTROLÜ ---
         window.addEventListener('DOMContentLoaded', async () => {
-            // URL'de Supabase'in gönderdiği şifre sıfırlama parametreleri var mı kontrol et
-            const hash = window.location.hash;
-            const isRecovery = hash.includes('type=recovery') || hash.includes('access_token');
+            // URL'nin tamamını alıp hem '#' hem de '?' ile gelen tüm şifreli kodları arıyoruz
+            const currentUrl = window.location.href;
+            
+            // Eğer URL'de Supabase'in şifre sıfırlama kodlarından biri varsa içeri al (isRecovery = true)
+            const isRecovery = currentUrl.includes('type=recovery') || 
+                               currentUrl.includes('access_token') || 
+                               currentUrl.includes('code=');
 
-            // Eğer e-postadan gelen bir kurtarma linkiyle geldiyse, dışarı atma.
-            // Supabase arka planda URL'deki token'ı kullanarak geçici bir oturum açacak.
+            // Eğer e-postadan gelen link değilse (URL temizse), normal oturum kontrolü yap
             if (!isRecovery) {
-                // Eğer URL'de token yoksa (biri doğrudan tarayıcıya sifre-yenile.html yazdıysa),
-                // o zaman normal oturum kontrolü yapalım.
                 const { data: { session } } = await window.supabaseClient.auth.getSession();
                 
                 if (!session) {
@@ -76,7 +77,7 @@
                     if(authCard) authCard.style.display = 'none'; // Formu anında gizle
 
                     if (typeof showNotification === 'function') {
-                        showNotification("Bu sayfaya erişim yetkiniz yok.", "error");
+                        showNotification("Bu sayfaya erişim yetkiniz yok veya link geçersiz.", "error");
                     }
                     
                     // Kullanıcıyı anasayfaya/giriş sayfasına şutla
@@ -84,6 +85,15 @@
                         window.location.href = 'index.html'; 
                     }, 2000);
                 }
+            } else {
+                // Eğer URL'de şifreli kod (code= veya access_token=) Varsa:
+                // Supabase'in arka planda oturumu kurması için ona yarım saniye süre tanı
+                setTimeout(async () => {
+                    const { data: { session } } = await window.supabaseClient.auth.getSession();
+                    if (!session) {
+                        console.log("Geçici oturum kurulamadı, token geçersiz olabilir.");
+                    }
+                }, 500);
             }
         });
 
