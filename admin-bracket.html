@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Maç Yönetimi | OBB E-SPOR ADMIN</title>
+    <title>Bracket & Skor | OBB E-SPOR ADMIN</title>
     <link rel="icon" type="image/png" href="img/obblogo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        /* --- ADMİN HEADER STİLİ --- */
+        /* --- ADMİN HEADER AKTİF SEKME STİLİ --- */
         nav ul li a { cursor: pointer; }
         .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
 
@@ -73,16 +73,47 @@
         <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
         <nav>
             <ul>
-                <li><a href="admin.html">ONAY & DUYURU</a></li>
-                <li><a href="#" class="active-admin-tab">BRACKET & SKOR</a></li>
+                <li><a href="index.html">ANA SAYFA</a></li>
+                <li><a href="admin.html">ONAY BEKLEYEN</a></li>
+                <li><a href="admin.html">ONAYLI</a></li>
+                <li><a href="admin.html">DUYURU YAYINLA</a></li>
+                
+                <li><a href="#" class="active-admin-tab">BRACKET<i class="fas fa-external-link-alt" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                
+                <li class="nav-bell desktop-only">
+                    <a href="#" onclick="toggleNotifPanel('desktopPanel', event)">
+                        <i class="fas fa-bell"></i>
+                        <span class="notif-badge" id="badge-desktop">0</span>
+                    </a>
+                    <div class="notif-panel" id="desktopPanel" onclick="event.stopPropagation()">
+                        <div class="notif-header">
+                            <h4>Bildirimler</h4>
+                            <button class="clear-btn" onclick="clearNotifications(event)">Tümünü Temizle</button>
+                        </div>
+                        <div class="notif-body" id="notif-list-desktop"></div>
+                    </div>
+                </li>
+
                 <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
             </ul>
         </nav>
     </header>
+
+    <div class="floating-bell mobile-only" onclick="toggleNotifPanel('mobilePanel', event)">
+        <i class="fas fa-bell"></i>
+        <span class="notif-badge" id="badge-mobile">0</span>
+        <div class="notif-panel mobile-panel" id="mobilePanel" onclick="event.stopPropagation()">
+            <div class="notif-header">
+                <h4>Bildirimler</h4>
+                <button class="clear-btn" onclick="clearNotifications(event)">Tümünü Temizle</button>
+            </div>
+            <div class="notif-body" id="notif-list-mobile"></div>
+        </div>
+    </div>
     
     <div id="toast-container"></div>
 
-    <main class="admin-container">
+    <main class="admin-container" style="display: block;">
         <h2 class="section-title">BRACKET & <span>MAÇ SKORLARI</span></h2>
         
         <div class="match-management-card">
@@ -154,11 +185,13 @@
     <script>
         // --- BAŞLATICI VE GÜVENLİK ---
         async function initAdminBracketPage() {
+            // Footer'ı Yükle
             try {
                 const response = await fetch("components/footer.html");
                 if (response.ok) document.getElementById("footer-alani").innerHTML = await response.text();
             } catch(e) { console.error("Footer yüklenemedi", e); }
 
+            // Scroll Efekti
             let lastScrollTop = 0;
             const header = document.getElementById("mainHeader");
             window.addEventListener("scroll", function() {
@@ -168,7 +201,18 @@
                 lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
             }, false);
 
+            // Dışarı Tıklayınca Bildirim Kapatma
+            document.addEventListener("click", function(event) {
+                const isClickInsideBell = event.target.closest('.nav-bell') || event.target.closest('.floating-bell');
+                const isClickInsidePanel = event.target.closest('.notif-panel');
+                if (!isClickInsideBell && !isClickInsidePanel) {
+                    document.querySelectorAll('.notif-panel').forEach(p => p.classList.remove('active'));
+                }
+            });
+
+            // Auth ve Güvenlik Kontrolleri
             if (typeof checkUserStatus === "function") await checkUserStatus();
+            if (typeof initNotifications === "function") initNotifications();
             checkAdminAccess();
         }
 
@@ -234,7 +278,6 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERİLER İŞLENİYOR...';
 
-            // Burası veritabanı bağlandığında aktif edilecek.
             setTimeout(() => {
                 if (typeof showNotification === "function") {
                     showNotification("Maç verileri ve oyuncu istatistikleri başarıyla kaydedildi!", "success");
