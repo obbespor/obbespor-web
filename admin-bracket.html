@@ -42,7 +42,7 @@
         .team-score-input { display: flex; flex-direction: column; align-items: center; gap: 10px; }
         .team-name-input { text-align: center; font-weight: 900; background: transparent; border: none; color: white; font-size: 24px; text-transform: uppercase; outline: none; width: 200px; }
         .big-score-input { background: #000; border: 2px solid #444; color: white; width: 90px; height: 90px; text-align: center; font-size: 40px; font-weight: 900; border-radius: 15px; outline: none; transition: 0.3s; }
-        .big-score-input:focus { border-color: var(--neon-mor); box-shadow: 0 0 20px rgba(96, 29, 194, 0.3); }
+        .big-score-input:focus { border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.3); }
         .vs-text { text-align: center; font-size: 24px; font-weight: 900; color: var(--gri-yazi); display: flex; flex-direction: column; gap: 10px; }
         
         .map-input { background: #111; border: 1px solid #444; color: var(--neon-mor); padding: 8px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; text-align: center; text-transform: uppercase; outline: none; transition: 0.3s; width: 150px; }
@@ -104,7 +104,6 @@
         <h2 class="section-title">MAÇ & İSTATİSTİK <span>YÖNETİMİ</span></h2>
         
         <div class="match-management-card">
-            
             <div class="form-group" style="margin-bottom: 30px;">
                 <label style="color:var(--neon-mor); font-weight: bold; text-transform: uppercase; font-size: 14px;">1. Önce Turnuva Eşleşmesini Seçin</label>
                 <select id="matchSelector" class="form-control" onchange="initHybridUI(this.value)">
@@ -114,17 +113,13 @@
             </div>
 
             <div id="dynamicMatchArea" style="display: none; animation: fadeIn 0.5s ease;">
-                
                 <div class="api-fetch-box">
                     <span class="api-badge">API İle Otomatik Doldur</span>
                     <div class="api-input-row">
-                        <input type="text" id="apiMatchId" placeholder="Valorant Match ID yapıştırın (Örn: a1b2c3d4-...)">
+                        <input type="text" id="apiMatchId" placeholder="Valorant Match ID yapıştırın">
                         <button class="btn-fetch" id="btnFetchApi" onclick="fetchValorantData()">
                             <i class="fas fa-bolt"></i> VERİLERİ ÇEK
                         </button>
-                    </div>
-                    <div class="api-help-text">
-                        <span>Maç ID yoksa verileri manuel girebilirsiniz.</span>
                     </div>
                 </div>
 
@@ -146,17 +141,10 @@
                 <div class="stats-grid-container">
                     <div class="team-stats-box">
                         <h4 style="color: #00d2ff; border-left-color: #00d2ff;">SOL TAKIM (Mavi)</h4>
-                        <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
-                            <span class="stat-label">AJAN</span><span class="stat-label">İSİM (API)</span><span class="stat-label">PROFİL EŞLEŞTİR</span><span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
-                        </div>
                         <div id="teamAPlayersInputs"></div>
                     </div>
-
                     <div class="team-stats-box">
                         <h4 style="color: #ff4b4b; border-left-color: #ff4b4b;">SAĞ TAKIM (Kırmızı)</h4>
-                        <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
-                            <span class="stat-label">AJAN</span><span class="stat-label">İSİM (API)</span><span class="stat-label">PROFİL EŞLEŞTİR</span><span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
-                        </div>
                         <div id="teamBPlayersInputs"></div>
                     </div>
                 </div>
@@ -176,7 +164,6 @@
     <script src="js/auth.js"></script>
     
     <script>
-        // --- BAŞLATICI VE GÜVENLİK ---
         async function initAdminBracketPage() {
             try {
                 const response = await fetch("components/footer.html");
@@ -197,7 +184,6 @@
             } catch (err) { window.location.replace("index.html"); }
         }
 
-        // --- HİBRİT UI MANTIĞI ---
         function initHybridUI(val) {
             const area = document.getElementById('dynamicMatchArea');
             if(!val) { area.style.display = 'none'; return; }
@@ -219,7 +205,10 @@
             for(let i=0; i<5; i++) {
                 container.innerHTML += `
                     <div class="player-stat-row">
-                        <img src="img/agents/unknown.png" class="agent-icon">
+                        <div class="agent-input-group">
+                            <img src="img/agents/unknown.png" class="agent-icon">
+                            <input type="text" class="agent-name-input" placeholder="Ajan">
+                        </div>
                         <input type="text" class="ign-input" placeholder="IGN" readonly>
                         <select class="user-matcher-select"><option value="">-- Profil Seç --</option></select>
                         <input type="number" class="k-input" value="0">
@@ -229,31 +218,45 @@
             }
         }
 
-        // --- GERÇEK API FONKSİYONU ---
+        // --- GÜNCELLENMİŞ API FONKSİYONU ---
         async function fetchValorantData() {
             const matchId = document.getElementById('apiMatchId').value.trim();
             if (!matchId) return showNotification("Lütfen bir Match ID girin!", "error");
 
             const btn = document.getElementById('btnFetchApi');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ÇEKİLİYOR...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> BAĞLANILIYOR...';
             btn.disabled = true;
 
             try {
-                const response = await fetch(`https://api.henrikdev.xyz/valorant/v2/match/${matchId}`);
+                // Avrupa bölgesi (eu) parametresini ekliyoruz
+                const apiUrl = `https://api.henrikdev.xyz/valorant/v2/match/${matchId}?region=eu`;
+                const response = await fetch(apiUrl);
                 const result = await response.json();
-                if (result.status !== 200) throw new Error("Maç bulunamadı.");
+
+                if (result.status !== 200) {
+                     // Hata mesajını daha detaylı gösterelim
+                     throw new Error(result.errors ? result.errors[0].message : "Maç verisi çekilemedi.");
+                }
 
                 const data = result.data;
-                document.getElementById('playedMap').value = data.metadata.map.toUpperCase();
+                document.getElementById('mapNameInput').value = data.metadata.map.toUpperCase();
+                
+                // Takımları eşle (API verisine göre skorları al)
                 document.getElementById('scoreA').value = data.teams.blue.rounds_won;
                 document.getElementById('scoreB').value = data.teams.red.rounds_won;
 
-                populateRows('teamAPlayersInputs', data.players.all_players.filter(p => p.team.toLowerCase() === 'blue'));
-                populateRows('teamBPlayersInputs', data.players.all_players.filter(p => p.team.toLowerCase() === 'red'));
+                // Oyuncuları takımlarına göre doldur
+                const bluePlayers = data.players.all_players.filter(p => p.team.toLowerCase() === 'blue');
+                const redPlayers = data.players.all_players.filter(p => p.team.toLowerCase() === 'red');
 
-                showNotification("Veriler API'den çekildi!", "success");
+                populateRows('teamAPlayersInputs', bluePlayers);
+                populateRows('teamBPlayersInputs', redPlayers);
+
+                showNotification("Veriler başarıyla çekildi!", "success");
+
             } catch (err) {
-                showNotification("Hata: " + err.message, "error");
+                console.error("API Hatası:", err);
+                showNotification("API Hatası: " + err.message, "error");
             } finally {
                 btn.innerHTML = '<i class="fas fa-bolt"></i> VERİLERİ ÇEK';
                 btn.disabled = false;
@@ -264,7 +267,9 @@
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             players.forEach((p, i) => {
                 if(rows[i]) {
+                    // API'den gelen verileri inputlara bas
                     rows[i].querySelector('.agent-icon').src = p.assets.agent.small;
+                    rows[i].querySelector('.agent-name-input').value = p.character;
                     rows[i].querySelector('.ign-input').value = `${p.name}#${p.tag}`;
                     rows[i].querySelector('.k-input').value = p.stats.kills;
                     rows[i].querySelector('.d-input').value = p.stats.deaths;
@@ -274,8 +279,7 @@
         }
 
         async function saveMappedStats() {
-            showNotification("Veriler veritabanına kaydediliyor...", "info");
-            // Supabase kaydetme mantığı buraya eklenecek
+             showNotification("Henüz veritabanı kaydı aktif değil.", "info");
         }
 
         document.addEventListener('DOMContentLoaded', initAdminBracketPage);
