@@ -239,31 +239,42 @@
             selects.forEach(select => select.innerHTML = '<option value="">Aranıyor...</option>');
 
             try {
-                // Not: Eğer veritabanında takımları ayrı tutuyorsan, buradaki '.ilike('team_name')' kısmını 
-                // kendi Supabase 'profiles' tablonun sütun adına göre ayarlamalısın.
-                const { data, error } = await window.supabaseClient
+                // --- 1. ADIM: TAKIMIN ID'SİNİ BUL ---
+                const { data: teamData, error: teamErr } = await window.supabaseClient
+                    .from('tournament_applications')
+                    .select('id')
+                    .ilike('team_name', `%${teamName.trim()}%`) 
+                    .limit(1)
+                    .single();
+
+                if (teamErr || !teamData) {
+                    throw new Error("Bu isimde bir takım bulunamadı.");
+                }
+
+                // --- 2. ADIM: BULUNAN ID İLE OYUNCULARI GETİR ---
+                const { data: players, error: playersErr } = await window.supabaseClient
                     .from('profiles')
                     .select('id, username')
-                    .ilike('team_name', `%${teamName.trim()}%`); // Takım adına benzeyenleri bul
+                    .eq('team_id', teamData.id); // İşte bağlantı noktası!
 
-                if (error) throw error;
+                if (playersErr) throw playersErr;
 
                 let optionsHtml = '<option value="">-- Profil Seç --</option>';
-                if (data && data.length > 0) {
-                    data.forEach(p => {
+                if (players && players.length > 0) {
+                    players.forEach(p => {
                         optionsHtml += `<option value="${p.id}">${p.username}</option>`;
                     });
                     showNotification(`${teamName} oyuncuları bulundu!`, "info");
                 } else {
-                    optionsHtml = '<option value="">-- Oyuncu Bulunamadı --</option>';
+                    optionsHtml = '<option value="">-- Bu takımda kayıtlı oyuncu yok --</option>';
                 }
 
                 // Tüm dropdownları doldur
                 selects.forEach(select => select.innerHTML = optionsHtml);
 
             } catch (err) {
-                console.error("Takım oyuncuları çekilemedi:", err);
-                selects.forEach(select => select.innerHTML = '<option value="">Hata Oluştu</option>');
+                console.warn("Takım araması başarısız:", err.message);
+                selects.forEach(select => select.innerHTML = '<option value="">Takım Bulunamadı</option>');
             }
         }
 
@@ -276,6 +287,66 @@
             } else {
                 icon.src = "img/agents/unknown.png";
             }
+        }
+
+        // --- OPTIONAL: API FONKSİYONU ---
+        async function fetchValorantData() {
+            const matchId = document.getElementById('apiMatchId').value.trim();
+            if (!matchId) return showNotification("Lütfen bir Match ID girin!", "error");
+
+            const apiKey = "BURAYA_HDEV_ANAHTARINI_YAPIŞTIR";
+
+            const btn = document.getElementById('btnFetchApi');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> BAĞLANILIYOR...';
+            btn.disabled = true;
+
+            try {
+                const apiUrl = `https://api.henrikdev.xyz/valorant/v2/match/${matchId}?region=eu`;
+                const response = await fetch(apiUrl, {
+                    headers: { 'Authorization': apiKey }
+                });
+                const result = await response.json();
+
+                if (result.status !== 200) {
+                     throw new Error(result.errors ? result.errors[0].message : "Maç verisi çekilemedi.");
+                }
+
+                const data = result.data;
+                document.getElementById('mapNameInput').value = data.metadata.map.toUpperCase();
+                
+                document.getElementById('scoreA').value = data.teams.blue.rounds_won;
+                document.getElementById('scoreB').value = data.teams.red.rounds_won;
+
+                const bluePlayers = data.players.all_players.filter(p => p.team.toLowerCase() === 'blue');
+                const redPlayers = data.players.all_players.filter(p => p.team.toLowerCase() === 'red');
+
+                populateRows('teamAPlayersInputs', bluePlayers);
+                populateRows('teamBPlayersInputs', redPlayers);
+
+                showNotification("Veriler API'den otomatik dolduruldu!", "success");
+
+            } catch (err) {
+                console.error("API Hatası:", err);
+                showNotification("API Hatası: " + err.message, "error");
+            } finally {
+                btn.innerHTML = '<i class="fas fa-bolt"></i> VERİLERİ ÇEK';
+                btn.disabled = false;
+            }
+        }
+
+        function populateRows(containerId, players) {
+            const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
+            players.forEach((p, i) => {
+                const actualRow = rows[i+1]; 
+                if(actualRow) {
+                    actualRow.querySelector('.agent-icon').src = p.assets.agent.small;
+                    actualRow.querySelector('.agent-name-input').value = p.character;
+                    actualRow.querySelector('.ign-input').value = `${p.name}#${p.tag}`;
+                    actualRow.querySelector('.k-input').value = p.stats.kills;
+                    actualRow.querySelector('.d-input').value = p.stats.deaths;
+                    actualRow.querySelector('.a-input').value = p.stats.assists;
+                }
+            });
         }
 
         // 3. TÜM VERİLERİ (API VEYA MANUEL) SUPABASE'E KAYDET
@@ -300,8 +371,6 @@
                     .insert([{
                         round_name: 'Fikstür Maçı',
                         round_order: 1,
-                        // Not: Schema'da team_a_id (UUID) ayarladıysak, burada bypass geçmek için DB'nin team_a_name desteklemesi veya UUID'yi bulması gerekir.
-                        // Şimdilik sorunsuz ilerlemesi için status ve skorları atıyoruz:
                         series_score_a: scoreA,
                         series_score_b: scoreB,
                         status: 'finished'
@@ -332,7 +401,7 @@
                         const row = rows[i];
                         stats.push({
                             map_id: mapData.id,
-                            user_id: row.querySelector('.user-matcher-select').value || null, // Seçilmediyse null
+                            user_id: row.querySelector('.user-matcher-select').value || null, 
                             in_game_name: row.querySelector('.ign-input').value || 'Bilinmiyor',
                             agent_name: row.querySelector('.agent-name-input').value || 'unknown',
                             kills: parseInt(row.querySelector('.k-input').value) || 0,
@@ -361,12 +430,6 @@
                 btn.innerHTML = '<i class="fas fa-save"></i> İSTATİSTİKLERİ KAYDET VE BİTİR';
                 btn.disabled = false;
             }
-        }
-
-        // --- OPTIONAL: API FONKSİYONU ---
-        async function fetchValorantData() {
-            // (Bir önceki adımda hazırladığımız HenrikDev kodu buraya gelecek. Kullanıcı manuel girmek istemezse butona basar)
-            showNotification("API Modülü aktif edildi. Lütfen kod satırına Keyinizi ekleyiniz.", "info");
         }
 
         document.addEventListener('DOMContentLoaded', initAdminBracketPage);
