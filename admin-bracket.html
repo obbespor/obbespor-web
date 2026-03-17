@@ -37,7 +37,6 @@
         .match-score-header { display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid #222;}
         .team-score-input { display: flex; flex-direction: column; align-items: center; gap: 10px; }
         
-        /* DÜZENLENEBİLİR TAKIM İSİMLERİ */
         .team-name-input { text-align: center; font-weight: 900; background: transparent; border: none; border-bottom: 1px dashed #555; color: white; font-size: 24px; text-transform: uppercase; outline: none; width: 220px; padding-bottom: 5px; transition: 0.3s; }
         .team-name-input:focus { border-bottom-color: var(--neon-mor); background: rgba(255,255,255,0.05); }
         
@@ -228,7 +227,7 @@
             header.innerHTML = `${name.toUpperCase() || defaultName} <span style="font-size:12px; color:${color}; opacity:0.7;">${team === 'A' ? '(Mavi)' : '(Kırmızı)'}</span>`;
         }
 
-        // 2. TAKIM İSMİ YAZILIP ÇIKILDIĞINDA (ONBLUR) SUPABASE'DEN OYUNCULARI ÇEK
+        // 2. TAKIM İSMİ YAZILIP ÇIKILDIĞINDA (ONBLUR) SUPABASE'DEN OYUNCULARI ÇEK (YENİ MİMARİ)
         async function fetchTeamProfiles(team, teamName) {
             if (!teamName || teamName.length < 2) return;
             
@@ -251,20 +250,28 @@
                     throw new Error("Bu isimde bir takım bulunamadı.");
                 }
 
-                // --- 2. ADIM: BULUNAN ID İLE OYUNCULARI GETİR ---
+                // --- 2. ADIM: APPLICATION_MEMBERS TABLOSUNDAN OYUNCULARI ÇEK ---
+                // Supabase'in İlişkisel Sorgu (Relational Query) gücünü kullanıyoruz!
                 const { data: players, error: playersErr } = await window.supabaseClient
-                    .from('profiles')
-                    .select('id, username')
-                    .eq('team_id', teamData.id); // İşte bağlantı noktası!
+                    .from('application_members')
+                    .select(`
+                        user_id,
+                        profiles (
+                            username
+                        )
+                    `)
+                    .eq('application_id', teamData.id)
+                    .eq('status', 'accepted'); // Sadece onaylanmış üyeler
 
                 if (playersErr) throw playersErr;
 
                 let optionsHtml = '<option value="">-- Profil Seç --</option>';
                 if (players && players.length > 0) {
                     players.forEach(p => {
-                        optionsHtml += `<option value="${p.id}">${p.username}</option>`;
+                        const username = p.profiles?.username || "İsimsiz Oyuncu";
+                        optionsHtml += `<option value="${p.user_id}">${username}</option>`;
                     });
-                    showNotification(`${teamName} oyuncuları bulundu!`, "info");
+                    showNotification(`${teamName} oyuncuları bulundu!`, "success");
                 } else {
                     optionsHtml = '<option value="">-- Bu takımda kayıtlı oyuncu yok --</option>';
                 }
