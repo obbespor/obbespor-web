@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Maç Yönetimi | OBB E-SPOR ADMIN</title>
+    <link rel="icon" type="image/png" href="img/obblogo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    
+    <style>
+        /* --- ADMİN HEADER STİLİ --- */
+        nav ul li a { cursor: pointer; }
+        .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
+
+        /* --- GENEL DÜZEN --- */
+        .admin-container { padding: 40px 10%; flex: 1; }
+        .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; color: white; }
+        .section-title span { color: var(--neon-mor); }
+
+        /* --- BRACKET & SKOR YÖNETİM STİLLERİ --- */
+        .match-management-card { background: #0a0a0a; border: 1px solid #222; border-radius: 20px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .round-selector { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 10px; }
+        .round-btn { background: #111; border: 1px solid #333; color: var(--gri-yazi); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.3s; }
+        .round-btn.active, .round-btn:hover { background: var(--neon-mor); color: white; border-color: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
+
+        .form-group { margin-bottom: 25px; display: flex; flex-direction: column; gap: 10px; }
+        .form-control { background: #111; border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; font-family: 'Poppins', sans-serif; outline: none; transition: 0.3s; font-size: 14px; }
+        .form-control:focus { border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.3); }
+
+        .match-score-header { display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #222; }
+        .team-score-input { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .team-name-input { text-align: center; font-weight: 900; background: transparent; border: none; color: white; font-size: 20px; text-transform: uppercase; outline: none; border-bottom: 1px dashed #444; padding-bottom: 5px; width: 200px; transition: 0.3s; }
+        .team-name-input:focus { border-bottom-color: var(--neon-mor); }
+        .big-score-input { background: #000; border: 2px solid var(--neon-mor); color: white; width: 80px; height: 80px; text-align: center; font-size: 32px; font-weight: 900; border-radius: 12px; outline: none; box-shadow: 0 0 15px rgba(96, 29, 194, 0.2); transition: 0.3s; }
+        .big-score-input:focus { transform: scale(1.05); }
+        .vs-text { font-size: 24px; font-weight: 900; color: var(--gri-yazi); }
+
+        .stats-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .team-stats-box h4 { color: var(--neon-mor); font-size: 14px; margin-bottom: 15px; text-transform: uppercase; border-left: 3px solid var(--neon-mor); padding-left: 10px; }
+        .player-stat-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .player-stat-row input { background: #111; border: 1px solid #333; color: white; padding: 10px; border-radius: 6px; font-size: 13px; outline: none; transition: 0.3s; }
+        .player-stat-row input:focus { border-color: var(--neon-mor); }
+        .stat-label { font-size: 10px; color: var(--gri-yazi); text-align: center; font-weight: bold; }
+        
+        .btn-save-match { background: linear-gradient(45deg, var(--neon-mor), #8a2be2); color: white; border: none; padding: 18px; border-radius: 12px; font-weight: 900; font-size: 16px; width: 100%; cursor: pointer; margin-top: 30px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-save-match:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(96, 29, 194, 0.5); }
+        .btn-save-match:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
+
+        @media (max-width: 768px) {
+            .admin-container { padding: 20px 5%; }
+            .match-score-header { flex-direction: column; gap: 15px; }
+            .stats-grid-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loadingScreen">
+        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
+        <h2>Güvenlik Kontrolü Yapılıyor...</h2>
+    </div>
+
+    <header class="main-nav" id="mainHeader">
+        <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
+        <nav>
+            <ul>
+                <li><a href="admin.html">ONAY & DUYURU</a></li>
+                <li><a href="#" class="active-admin-tab">BRACKET & SKOR</a></li>
+                <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div id="toast-container"></div>
+
+    <main class="admin-container">
+        <h2 class="section-title">BRACKET & <span>MAÇ SKORLARI</span></h2>
+        
+        <div class="match-management-card">
+            <div class="round-selector">
+                <button class="round-btn active" onclick="filterMatches(64)">64 TAKIM (R1)</button>
+                <button class="round-btn" onclick="filterMatches(32)">32 TAKIM (R2)</button>
+                <button class="round-btn" onclick="filterMatches(16)">16 TAKIM (R3)</button>
+                <button class="round-btn" onclick="filterMatches(8)">ÇEYREK FİNAL</button>
+                <button class="round-btn" onclick="filterMatches(4)">YARI FİNAL</button>
+                <button class="round-btn" onclick="filterMatches(2)">FİNAL</button>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 30px;">
+                <label style="color:var(--neon-mor); font-weight: bold; text-transform: uppercase; font-size: 13px;">Yönetilecek Eşleşmeyi Seç</label>
+                <select id="matchSelector" class="form-control" onchange="loadMatchDetails(this.value)">
+                    <option value="">-- Bir eşleşme seçin --</option>
+                    <option value="match_001">Maç #1: BOSSESPOR vs TEAM-X</option>
+                    <option value="match_002">Maç #2: FENERBAHÇE vs GALATASARAY</option>
+                </select>
+            </div>
+
+            <div id="matchEditorArea" style="display: none; animation: fadeIn 0.5s ease;">
+                <div class="match-score-header">
+                    <div class="team-score-input">
+                        <input type="text" id="teamAName" class="team-name-input" placeholder="TAKIM A">
+                        <input type="number" id="scoreA" class="big-score-input" value="0" min="0">
+                    </div>
+                    <div class="vs-text">VS</div>
+                    <div class="team-score-input">
+                        <input type="text" id="teamBName" class="team-name-input" placeholder="TAKIM B">
+                        <input type="number" id="scoreB" class="big-score-input" value="0" min="0">
+                    </div>
+                </div>
+
+                <div class="stats-grid-container">
+                    <div class="team-stats-box">
+                        <h4 id="teamALabel">SOL TAKIM OYUNCULARI</h4>
+                        <div class="player-stat-row" style="border-bottom: 1px solid #222; padding-bottom: 5px; margin-bottom: 10px;">
+                            <span class="stat-label">OYUNCU NICK (MANUEL)</span>
+                            <span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
+                        </div>
+                        <div id="teamAPlayersInputs"></div>
+                    </div>
+
+                    <div class="team-stats-box">
+                        <h4 id="teamBLabel">SAĞ TAKIM OYUNCULARI</h4>
+                        <div class="player-stat-row" style="border-bottom: 1px solid #222; padding-bottom: 5px; margin-bottom: 10px;">
+                            <span class="stat-label">OYUNCU NICK (MANUEL)</span>
+                            <span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
+                        </div>
+                        <div id="teamBPlayersInputs"></div>
+                    </div>
+                </div>
+
+                <button class="btn-save-match" id="btnSaveMatch" onclick="saveMatchStats()">
+                    <i class="fas fa-cloud-upload-alt"></i> VERİLERİ BRACKET SİSTEMİNE YANSIT
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-alani"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/bildirimler.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <script>
+        // --- BAŞLATICI VE GÜVENLİK ---
+        async function initAdminBracketPage() {
+            try {
+                const response = await fetch("components/footer.html");
+                if (response.ok) document.getElementById("footer-alani").innerHTML = await response.text();
+            } catch(e) { console.error("Footer yüklenemedi", e); }
+
+            let lastScrollTop = 0;
+            const header = document.getElementById("mainHeader");
+            window.addEventListener("scroll", function() {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                if (scrollTop > lastScrollTop && scrollTop > 100) header.classList.add("nav-hidden");
+                else header.classList.remove("nav-hidden");
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+            }, false);
+
+            if (typeof checkUserStatus === "function") await checkUserStatus();
+            checkAdminAccess();
+        }
+
+        async function checkAdminAccess() {
+            try {
+                const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
+                if (authError || !user) throw new Error("Giriş yapılmadı.");
+
+                const { data: profile, error: profileError } = await window.supabaseClient.from('profiles').select('role').eq('id', user.id).single();
+                if (profileError || profile.role !== 'admin') throw new Error("Yetkisiz erişim.");
+
+                document.getElementById('loadingScreen').style.display = 'none';
+            } catch (err) {
+                window.location.replace("index.html");
+            }
+        }
+
+        // --- BRACKET FONKSİYONLARI ---
+        function filterMatches(count) {
+            document.querySelectorAll('.round-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            if (typeof showNotification === "function") {
+                showNotification(`${count} Takımlık tur eşleşmeleri listeleniyor...`, "info");
+            }
+        }
+
+        function loadMatchDetails(matchId) {
+            const area = document.getElementById('matchEditorArea');
+            if(!matchId) {
+                area.style.display = 'none';
+                return;
+            }
+            area.style.display = 'block';
+            
+            generateManualPlayerRows('teamAPlayersInputs');
+            generateManualPlayerRows('teamBPlayersInputs');
+
+            const selText = document.getElementById('matchSelector').options[document.getElementById('matchSelector').selectedIndex].text;
+            if(selText.includes('vs')) {
+                const teams = selText.split(':')[1].split('vs');
+                document.getElementById('teamAName').value = teams[0].trim();
+                document.getElementById('teamBName').value = teams[1].trim();
+            }
+        }
+
+        function generateManualPlayerRows(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            for(let i = 1; i <= 5; i++) {
+                container.innerHTML += `
+                    <div class="player-stat-row">
+                        <input type="text" class="form-control" placeholder="Oyuncu ${i} Nick">
+                        <input type="number" class="form-control" placeholder="0" min="0">
+                        <input type="number" class="form-control" placeholder="0" min="0">
+                        <input type="number" class="form-control" placeholder="0" min="0">
+                    </div>`;
+            }
+        }
+
+        async function saveMatchStats() {
+            const btn = document.getElementById('btnSaveMatch');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERİLER İŞLENİYOR...';
+
+            // Burası veritabanı bağlandığında aktif edilecek.
+            setTimeout(() => {
+                if (typeof showNotification === "function") {
+                    showNotification("Maç verileri ve oyuncu istatistikleri başarıyla kaydedildi!", "success");
+                }
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }, 1500);
+        }
+
+        document.addEventListener('DOMContentLoaded', initAdminBracketPage);
+    </script>
+</body>
+</html>
