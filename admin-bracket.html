@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Maç Yönetimi | OBB E-SPOR ADMIN</title>
+    <title>Maç & API Yönetimi | OBB E-SPOR ADMIN</title>
     <link rel="icon" type="image/png" href="img/obblogo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -13,16 +13,12 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        /* --- ADMİN HEADER STİLİ --- */
         nav ul li a { cursor: pointer; }
         .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
-
-        /* --- GENEL DÜZEN --- */
         .admin-container { padding: 40px 10%; flex: 1; }
         .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; color: white; }
         .section-title span { color: var(--neon-mor); }
 
-        /* --- BRACKET & SKOR YÖNETİM STİLLERİ --- */
         .match-management-card { background: #0a0a0a; border: 1px solid #222; border-radius: 20px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .round-selector { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 10px; }
         .round-btn { background: #111; border: 1px solid #333; color: var(--gri-yazi); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.3s; }
@@ -32,59 +28,51 @@
         .form-control { background: #111; border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; font-family: 'Poppins', sans-serif; outline: none; transition: 0.3s; font-size: 14px; }
         .form-control:focus { border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.3); }
 
-        /* --- BO1 / BO3 DİNAMİK ALAN STİLLERİ --- */
-        .series-score-header { display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 30px; padding: 30px; background: rgba(96, 29, 194, 0.1); border: 2px solid var(--neon-mor); border-radius: 15px; }
-        .series-score { border-color: #fff !important; background: var(--neon-mor) !important; color: white !important; }
-        
-        .map-block { background: #0d0d0d; border: 1px dashed #333; border-radius: 15px; padding: 25px; margin-bottom: 40px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
-        .map-title-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #222; padding-bottom: 15px; margin-bottom: 25px; }
-        .map-title-bar span { font-size: 18px; font-weight: 900; color: var(--neon-mor); }
-        .map-name-input { background: #000; border: 1px solid #444; color: white; padding: 8px 15px; border-radius: 6px; font-weight: bold; outline: none; transition: 0.3s; }
-        .map-name-input:focus { border-color: var(--neon-mor); }
+        /* --- YENİ: API ÇEKME KUTUSU --- */
+        .api-fetch-box { background: rgba(96, 29, 194, 0.1); border: 1px dashed var(--neon-mor); padding: 20px; border-radius: 12px; display: flex; gap: 15px; margin-bottom: 30px; align-items: center; }
+        .api-fetch-box input { flex: 1; background: #000; border: 1px solid #333; color: white; padding: 12px 20px; border-radius: 8px; font-size: 14px; outline: none; }
+        .api-fetch-box input:focus { border-color: var(--neon-mor); }
+        .btn-fetch { background: var(--neon-mor); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+        .btn-fetch:hover { box-shadow: 0 0 15px var(--neon-mor); transform: translateY(-2px); }
 
-        .match-score-header { display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 30px; padding-bottom: 20px; }
-        .match-score-header.bo1 { border-bottom: 1px solid #222; margin-bottom: 40px; }
-        
+        /* --- MAÇ VE OYUNCU SATIRLARI --- */
+        .match-score-header { display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #222;}
         .team-score-input { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .team-name-input { text-align: center; font-weight: 900; background: transparent; border: none; color: white; font-size: 20px; text-transform: uppercase; outline: none; border-bottom: 1px dashed #444; padding-bottom: 5px; width: 200px; transition: 0.3s; }
-        .team-name-input:focus { border-bottom-color: var(--neon-mor); }
-        .bo3-team-name { font-size: 20px; font-weight: 900; color: white; text-transform: uppercase; }
-        
-        .big-score-input { background: #000; border: 2px solid var(--neon-mor); color: white; width: 80px; height: 80px; text-align: center; font-size: 32px; font-weight: 900; border-radius: 12px; outline: none; box-shadow: 0 0 15px rgba(96, 29, 194, 0.2); transition: 0.3s; }
-        .big-score-input:focus { transform: scale(1.05); }
+        .team-name-input { text-align: center; font-weight: 900; background: transparent; border: none; color: white; font-size: 20px; text-transform: uppercase; outline: none; width: 200px; }
+        .big-score-input { background: #000; border: 2px solid #444; color: white; width: 80px; height: 80px; text-align: center; font-size: 32px; font-weight: 900; border-radius: 12px; outline: none; transition: 0.3s; }
+        .big-score-input:focus { border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.3); }
         .vs-text { text-align: center; font-size: 24px; font-weight: 900; color: var(--gri-yazi); }
+        .map-badge { background: #222; color: var(--neon-mor); padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; border: 1px solid #444; margin-top: 5px; }
 
         .stats-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .team-stats-box h4 { font-size: 14px; margin-bottom: 15px; text-transform: uppercase; border-left: 3px solid; padding-left: 10px; }
-        .player-stat-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; align-items: center; }
-        .player-stat-row input { background: #111; border: 1px solid #333; color: white; padding: 10px; border-radius: 6px; font-size: 13px; outline: none; transition: 0.3s; }
-        .player-stat-row input:focus { border-color: var(--neon-mor); }
+        
+        /* YENİ: EŞLEŞTİRME (MAPPING) SATIRI */
+        .player-stat-row { display: grid; grid-template-columns: 40px 1.5fr 1.5fr 40px 40px 40px; gap: 8px; margin-bottom: 10px; align-items: center; background: #0d0d0d; padding: 8px; border-radius: 8px; border: 1px solid #222; }
+        .player-stat-row img.agent-icon { width: 35px; height: 35px; border-radius: 5px; object-fit: cover; border: 1px solid #444; background: #000; }
+        .player-stat-row input { background: #111; border: 1px solid #333; color: white; padding: 10px; border-radius: 6px; font-size: 13px; outline: none; text-align: center; }
+        .player-stat-row input.ign-input { text-align: left; background: transparent; border: none; font-weight: bold; color: var(--gri-yazi); padding: 0; }
+        
+        /* SUPABASE KULLANICI SEÇİCİ */
+        .user-matcher-select { background: #1a1a1a; border: 1px solid var(--neon-mor); color: white; padding: 8px; border-radius: 6px; font-size: 12px; width: 100%; outline: none; cursor: pointer; }
+        .user-matcher-select option { background: #111; }
+
         .stat-label { font-size: 10px; color: var(--gri-yazi); text-align: center; font-weight: bold; }
         
-        .btn-save-match { background: linear-gradient(45deg, var(--neon-mor), #8a2be2); color: white; border: none; padding: 18px; border-radius: 12px; font-weight: 900; font-size: 16px; width: 100%; cursor: pointer; margin-top: 30px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-save-match:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(96, 29, 194, 0.5); }
-        .btn-save-match:disabled { opacity: 0.7; cursor: not-allowed; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
+        .btn-save-match { background: linear-gradient(45deg, var(--neon-mor), #8a2be2); color: white; border: none; padding: 18px; border-radius: 12px; font-weight: 900; font-size: 16px; width: 100%; cursor: pointer; margin-top: 30px; transition: 0.3s; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-save-match:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(96, 29, 194, 0.5); }
 
         @media (max-width: 768px) {
             .admin-container { padding: 20px 5%; }
-            .series-score-header { flex-direction: column; gap: 15px; padding: 15px; }
+            .api-fetch-box { flex-direction: column; }
+            .btn-fetch { width: 100%; justify-content: center; }
             .match-score-header { flex-direction: column; gap: 15px; }
             .stats-grid-container { grid-template-columns: 1fr; }
-            .map-title-bar { flex-direction: column; gap: 10px; align-items: flex-start; }
-            .map-name-input { width: 100%; }
+            .player-stat-row { grid-template-columns: 35px 1fr 1fr 35px 35px 35px; gap: 5px; }
         }
     </style>
 </head>
 <body>
-
-    <div id="loadingScreen">
-        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
-        <h2>Güvenlik Kontrolü Yapılıyor...</h2>
-    </div>
 
     <header class="main-nav" id="mainHeader">
         <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
@@ -92,223 +80,211 @@
             <ul>
                 <li><a href="admin.html">ONAY & DUYURU</a></li>
                 <li><a href="#" class="active-admin-tab">BRACKET & SKOR</a></li>
-                <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
             </ul>
         </nav>
     </header>
-    
+
     <div id="toast-container"></div>
 
     <main class="admin-container">
-        <h2 class="section-title">BRACKET & <span>MAÇ SKORLARI</span></h2>
+        <h2 class="section-title">API İLE <span>MAÇ & SKOR YÖNETİMİ</span></h2>
         
         <div class="match-management-card">
-            <div class="round-selector">
-                <button class="round-btn active" onclick="filterMatches(64)">64 TAKIM (R1)</button>
-                <button class="round-btn" onclick="filterMatches(32)">32 TAKIM (R2)</button>
-                <button class="round-btn" onclick="filterMatches(16)">16 TAKIM (R3)</button>
-                <button class="round-btn" onclick="filterMatches(8)">ÇEYREK FİNAL</button>
-                <button class="round-btn" onclick="filterMatches(4)">YARI FİNAL</button>
-                <button class="round-btn" onclick="filterMatches(2)">FİNAL</button>
-            </div>
-
-            <div class="form-group" style="margin-bottom: 30px;">
-                <label style="color:var(--neon-mor); font-weight: bold; text-transform: uppercase; font-size: 13px;">Yönetilecek Eşleşmeyi Seç</label>
-                <select id="matchSelector" class="form-control" onchange="loadMatchDetails(this.value)">
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="color:var(--neon-mor); font-weight: bold; text-transform: uppercase; font-size: 13px;">1. Önce Turnuva Eşleşmesini Seç</label>
+                <select id="matchSelector" class="form-control" onchange="initMappingUI(this.value)">
                     <option value="">-- Bir eşleşme seçin --</option>
-                    <option value="match_001">Maç #1: BOSSESPOR vs TEAM-X</option>
-                    <option value="match_002">Maç #2: FENERBAHÇE vs GALATASARAY</option>
+                    <option value="m1">BOSSESPOR vs GALATASARAY (Son 16)</option>
                 </select>
             </div>
 
-            <div id="dynamicMatchArea" style="display: none; animation: fadeIn 0.5s ease;">
-                <div id="editorContainer"></div>
+            <div id="apiBox" class="api-fetch-box" style="display: none;">
+                <input type="text" id="apiMatchId" placeholder="Valorant Match ID (Örn: 03423a2f-34d3-4889-b758-1a52932c5101)">
+                <button class="btn-fetch" id="btnFetchApi" onclick="fetchValorantData()">
+                    <i class="fas fa-bolt"></i> Verileri Çek
+                </button>
+            </div>
 
-                <button class="btn-save-match" id="btnSaveMatch" onclick="saveMatchStats()">
-                    <i class="fas fa-cloud-upload-alt"></i> VERİLERİ BRACKET SİSTEMİNE YANSIT
+            <div id="dynamicMatchArea" style="display: none; animation: fadeIn 0.5s ease;">
+                
+                <div class="match-score-header">
+                    <div class="team-score-input">
+                        <input type="text" id="teamAName" class="team-name-input" value="TAKIM A" readonly>
+                        <input type="number" id="scoreA" class="big-score-input" value="0">
+                    </div>
+                    <div class="vs-text">VS<br><span class="map-badge" id="playedMap">Harita: -</span></div>
+                    <div class="team-score-input">
+                        <input type="text" id="teamBName" class="team-name-input" value="TAKIM B" readonly>
+                        <input type="number" id="scoreB" class="big-score-input" value="0">
+                    </div>
+                </div>
+
+                <div class="stats-grid-container">
+                    <div class="team-stats-box">
+                        <h4 style="color: #00d2ff; border-left-color: #00d2ff;">SOL TAKIM (Mavi)</h4>
+                        <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
+                            <span></span><span class="stat-label" style="text-align:left;">OYUN İÇİ NICK (API)</span><span class="stat-label">GERÇEK OYUNCUYLA EŞLEŞTİR</span><span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
+                        </div>
+                        <div id="teamAPlayersInputs"></div>
+                    </div>
+
+                    <div class="team-stats-box">
+                        <h4 style="color: #ff4b4b; border-left-color: #ff4b4b;">SAĞ TAKIM (Kırmızı)</h4>
+                        <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
+                            <span></span><span class="stat-label" style="text-align:left;">OYUN İÇİ NICK (API)</span><span class="stat-label">GERÇEK OYUNCUYLA EŞLEŞTİR</span><span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
+                        </div>
+                        <div id="teamBPlayersInputs"></div>
+                    </div>
+                </div>
+
+                <button class="btn-save-match" id="btnSaveMatch" onclick="saveMappedStats()">
+                    <i class="fas fa-save"></i> OYUNCU İSTATİSTİKLERİNİ VERİTABANINA YAZ
                 </button>
             </div>
         </div>
     </main>
 
-    <div id="footer-alani"></div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
     <script src="js/bildirimler.js"></script>
-    <script src="js/auth.js"></script>
-    
     <script>
-        let currentFormat = 'bo1'; // Başlangıç formatı
+        // Sahte Veritabanı Oyuncu Listesi (Gerçekte Supabase'den o takımın oyuncuları gelecek)
+        const mockSupabasePlayersTeamA = [
+            { id: 'uuid-1', username: 'Ahmet (Asil)' }, { id: 'uuid-2', username: 'Mehmet (Asil)' }, 
+            { id: 'uuid-3', username: 'Can (Asil)' }, { id: 'uuid-4', username: 'Burak (Asil)' }, { id: 'uuid-5', username: 'Ali (Asil)' }
+        ];
+        const mockSupabasePlayersTeamB = [
+            { id: 'uuid-6', username: 'Hasan (Asil)' }, { id: 'uuid-7', username: 'Hüseyin (Asil)' }, 
+            { id: 'uuid-8', username: 'Veli (Asil)' }, { id: 'uuid-9', username: 'Kemal (Asil)' }, { id: 'uuid-10', username: 'Zeki (Asil)' }
+        ];
 
-        // --- BAŞLATICI VE GÜVENLİK ---
-        async function initAdminBracketPage() {
-            try {
-                const response = await fetch("components/footer.html");
-                if (response.ok) document.getElementById("footer-alani").innerHTML = await response.text();
-            } catch(e) { console.error("Footer yüklenemedi", e); }
-
-            let lastScrollTop = 0;
-            const header = document.getElementById("mainHeader");
-            window.addEventListener("scroll", function() {
-                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                if (scrollTop > lastScrollTop && scrollTop > 100) header.classList.add("nav-hidden");
-                else header.classList.remove("nav-hidden");
-                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
-            }, false);
-
-            if (typeof checkUserStatus === "function") await checkUserStatus();
-            checkAdminAccess();
-        }
-
-        async function checkAdminAccess() {
-            try {
-                const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
-                if (authError || !user) throw new Error("Giriş yapılmadı.");
-
-                const { data: profile, error: profileError } = await window.supabaseClient.from('profiles').select('role').eq('id', user.id).single();
-                if (profileError || profile.role !== 'admin') throw new Error("Yetkisiz erişim.");
-
-                document.getElementById('loadingScreen').style.display = 'none';
-            } catch (err) {
-                window.location.replace("index.html");
-            }
-        }
-
-        // --- BRACKET FONKSİYONLARI (BO1 ve BO3 MANTIĞI) ---
-        function filterMatches(count) {
-            document.querySelectorAll('.round-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+        // 1. Maç Seçildiğinde Arayüzü Hazırla
+        function initMappingUI(val) {
+            const apiBox = document.getElementById('apiBox');
+            const matchArea = document.getElementById('dynamicMatchArea');
             
-            // 16 takım ve aşağısı (Son 16, Çeyrek, Yarı, Final) BO3 olur.
-            currentFormat = count <= 16 ? 'bo3' : 'bo1';
-            
-            if (typeof showNotification === "function") {
-                const formatText = currentFormat === 'bo3' ? 'Best of 3 (3 Maçlık Seri)' : 'Tek Maç (BO1)';
-                showNotification(`${count} Takımlık Tur. Format: ${formatText}`, "info");
-            }
-
-            // Seçimi sıfırla
-            document.getElementById('dynamicMatchArea').style.display = 'none';
-            document.getElementById('matchSelector').value = "";
-        }
-
-        function loadMatchDetails(matchId) {
-            const area = document.getElementById('dynamicMatchArea');
-            if(!matchId) {
-                area.style.display = 'none';
-                return;
+            if(!val) {
+                apiBox.style.display = 'none'; matchArea.style.display = 'none'; return;
             }
             
-            // Seçilen takımların ismini al
+            apiBox.style.display = 'flex';
+            
+            // Eşleşme isimlerini doldur
             const selText = document.getElementById('matchSelector').options[document.getElementById('matchSelector').selectedIndex].text;
-            let tA = "TAKIM A", tB = "TAKIM B";
             if(selText.includes('vs')) {
-                const teams = selText.split(':')[1].split('vs');
-                tA = teams[0].trim();
-                tB = teams[1].trim();
+                const teams = selText.split(':')[1].split('(')[0].split('vs');
+                document.getElementById('teamAName').value = teams[0].trim();
+                document.getElementById('teamBName').value = teams[1].trim();
             }
 
-            // Formu formatına göre (bo1 veya bo3) oluştur
-            renderMatchEditor(tA, tB, currentFormat);
-            area.style.display = 'block';
+            // Boş kalıpları oluştur
+            generateEmptyMappingRows('teamAPlayersInputs', mockSupabasePlayersTeamA);
+            generateEmptyMappingRows('teamBPlayersInputs', mockSupabasePlayersTeamB);
+            
+            matchArea.style.display = 'block';
         }
 
-        // AKILLI FORM OLUŞTURUCU
-        function renderMatchEditor(teamA, teamB, format) {
-            const container = document.getElementById('editorContainer');
-            let html = '';
+        // 2. Eşleştirme (Mapping) Satırlarını Oluşturur
+        function generateEmptyMappingRows(containerId, dbPlayers) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            // Dropdown seçeneklerini hazırla
+            let optionsHtml = '<option value="">-- Oyuncu Seç --</option>';
+            dbPlayers.forEach(p => { optionsHtml += `<option value="${p.id}">${p.username}</option>`; });
 
-            if(format === 'bo1') {
-                html = generateMapBlock(teamA, teamB, 1, false);
-            } else {
-                // BO3 FORMATI
-                html += `
-                    <div class="series-score-header">
-                        <div class="team-score-input">
-                            <input type="text" class="team-name-input" value="${teamA}">
-                            <input type="number" class="big-score-input series-score" value="0" min="0" max="2" title="Kazanılan Harita Sayısı">
-                        </div>
-                        <div class="vs-text">SERİ SKORU<br><span style="font-size:12px; color:var(--neon-mor);">BEST OF 3</span></div>
-                        <div class="team-score-input">
-                            <input type="text" class="team-name-input" value="${teamB}">
-                            <input type="number" class="big-score-input series-score" value="0" min="0" max="2" title="Kazanılan Harita Sayısı">
-                        </div>
-                    </div>
-                `;
-                // 3 Harita için blokları bas
-                html += generateMapBlock(teamA, teamB, 1, true);
-                html += generateMapBlock(teamA, teamB, 2, true);
-                html += generateMapBlock(teamA, teamB, 3, true);
+            for(let i=0; i<5; i++) {
+                container.innerHTML += `
+                    <div class="player-stat-row">
+                        <img src="img/agents/unknown.png" class="agent-icon" alt="?">
+                        <input type="text" class="ign-input" value="API Bekleniyor..." readonly>
+                        <select class="user-matcher-select">${optionsHtml}</select>
+                        <input type="number" class="k-input" value="0" readonly>
+                        <input type="number" class="d-input" value="0" readonly>
+                        <input type="number" class="a-input" value="0" readonly>
+                    </div>`;
             }
-
-            container.innerHTML = html;
         }
 
-        // HARİTA BLOK ÜRETİCİSİ
-        function generateMapBlock(teamA, teamB, mapIndex, isBo3) {
-            const mapTitle = isBo3 ? `<div class="map-title-bar"><span>${mapIndex}. MAÇ (HARİTA ${mapIndex})</span> <input type="text" placeholder="Harita Adı (Örn: Ascent)" class="map-name-input"></div>` : '';
-            const mapClass = isBo3 ? 'map-block' : '';
-            const headerClass = !isBo3 ? 'bo1' : '';
-
-            // 5 Oyuncu satırı oluştur
-            let playersA = '', playersB = '';
-            for(let i=1; i<=5; i++) {
-                playersA += `<div class="player-stat-row"><input type="text" placeholder="Oyuncu ${i} Nick"><input type="number" placeholder="0" min="0"><input type="number" placeholder="0" min="0"><input type="number" placeholder="0" min="0"></div>`;
-                playersB += `<div class="player-stat-row"><input type="text" placeholder="Oyuncu ${i} Nick"><input type="number" placeholder="0" min="0"><input type="number" placeholder="0" min="0"><input type="number" placeholder="0" min="0"></div>`;
-            }
-
-            return `
-                <div class="${mapClass}">
-                    ${mapTitle}
-                    <div class="match-score-header ${headerClass}">
-                        <div class="team-score-input">
-                            ${!isBo3 ? `<input type="text" class="team-name-input" value="${teamA}">` : `<div class="bo3-team-name">${teamA}</div>`}
-                            <input type="number" class="big-score-input" value="0" min="0" title="${mapIndex}. Harita Skoru">
-                        </div>
-                        <div class="vs-text">VS</div>
-                        <div class="team-score-input">
-                            ${!isBo3 ? `<input type="text" class="team-name-input" value="${teamB}">` : `<div class="bo3-team-name">${teamB}</div>`}
-                            <input type="number" class="big-score-input" value="0" min="0" title="${mapIndex}. Harita Skoru">
-                        </div>
-                    </div>
-
-                    <div class="stats-grid-container">
-                        <div class="team-stats-box">
-                            <h4 style="color: #00d2ff; border-left-color: #00d2ff;">SOL TAKIM OYUNCULARI</h4>
-                            <div class="player-stat-row" style="border-bottom: 1px solid #222; padding-bottom: 5px; margin-bottom: 10px;">
-                                <span class="stat-label">OYUNCU NICK (MANUEL)</span><span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
-                            </div>
-                            ${playersA}
-                        </div>
-                        <div class="team-stats-box">
-                            <h4 style="color: #ff4b4b; border-left-color: #ff4b4b;">SAĞ TAKIM OYUNCULARI</h4>
-                            <div class="player-stat-row" style="border-bottom: 1px solid #222; padding-bottom: 5px; margin-bottom: 10px;">
-                                <span class="stat-label">OYUNCU NICK (MANUEL)</span><span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
-                            </div>
-                            ${playersB}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        async function saveMatchStats() {
-            const btn = document.getElementById('btnSaveMatch');
-            const originalText = btn.innerHTML;
+        // 3. API'den Veri Çekme (Simülasyon)
+        // Gerçek API entegrasyonuna kadar UI'ın çalıştığını görmek için bir simülasyon.
+        function fetchValorantData() {
+            const btn = document.getElementById('btnFetchApi');
+            const matchId = document.getElementById('apiMatchId').value;
+            
+            if(!matchId) return showNotification("Lütfen bir Match ID girin!", "error");
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Çekiliyor...';
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERİLER İŞLENİYOR...';
 
+            // API'den veri geliyormuş gibi 1.5 saniye bekle
             setTimeout(() => {
-                if (typeof showNotification === "function") {
-                    showNotification(`${currentFormat === 'bo3' ? 'BO3 Seri' : 'BO1 Maç'} verileri başarıyla kaydedildi!`, "success");
-                }
-                btn.disabled = false;
-                btn.innerHTML = originalText;
+                // Örnek Gelen Veri
+                document.getElementById('playedMap').innerText = "Harita: ASCENT";
+                document.getElementById('scoreA').value = 13;
+                document.getElementById('scoreB').value = 9;
+
+                // Takım A Verilerini Doldur (Mavi)
+                const teamAContainer = document.getElementById('teamAPlayersInputs');
+                const teamAMockAPI = [
+                    { ign: 'Matrix#TR1', agent: 'Jett', k: 24, d: 12, a: 5 }, { ign: 'JettMstr#123', agent: 'Omen', k: 18, d: 14, a: 8 },
+                    { ign: 'Vandal#99', agent: 'Sova', k: 15, d: 15, a: 10 }, { ign: 'Kral#TR', agent: 'Killjoy', k: 12, d: 11, a: 4 }, { ign: 'Pro#1', agent: 'Cypher', k: 9, d: 18, a: 6 }
+                ];
+                populateApiData(teamAContainer, teamAMockAPI);
+
+                // Takım B Verilerini Doldur (Kırmızı)
+                const teamBContainer = document.getElementById('teamBPlayersInputs');
+                const teamBMockAPI = [
+                    { ign: 'Rambo#00', agent: 'Reyna', k: 25, d: 13, a: 2 }, { ign: 'Sniper#TR', agent: 'Chamber', k: 17, d: 15, a: 4 },
+                    { ign: 'Ghost#1', agent: 'Viper', k: 14, d: 14, a: 6 }, { ign: 'Ninja#22', agent: 'Fade', k: 11, d: 16, a: 5 }, { ign: 'Bot#99', agent: 'Brimstone', k: 5, d: 20, a: 8 }
+                ];
+                populateApiData(teamBContainer, teamBMockAPI);
+
+                btn.innerHTML = '<i class="fas fa-check"></i> Veriler Eşleşti';
+                btn.style.background = 'var(--yesil-guven)';
+                showNotification("API verileri başarıyla çekildi. Lütfen oyuncuları eşleştirin.", "success");
             }, 1500);
         }
 
-        document.addEventListener('DOMContentLoaded', initAdminBracketPage);
+        function populateApiData(container, apiPlayers) {
+            const rows = container.querySelectorAll('.player-stat-row');
+            apiPlayers.forEach((player, index) => {
+                if(rows[index]) {
+                    // Normalde resimler img/agents/Jett.png klasöründen çekilecek.
+                    // Şimdilik test için placeholder kullanıyoruz.
+                    rows[index].querySelector('.agent-icon').src = `https://ui-avatars.com/api/?name=${player.agent}&background=random&color=fff`;
+                    rows[index].querySelector('.ign-input').value = player.ign;
+                    rows[index].querySelector('.k-input').value = player.k;
+                    rows[index].querySelector('.d-input').value = player.d;
+                    rows[index].querySelector('.a-input').value = player.a;
+                }
+            });
+        }
+
+        // 4. Eşleşen Verileri Kaydetme
+        function saveMappedStats() {
+            // Eşleşmemiş dropdown var mı kontrol et
+            let hasUnmapped = false;
+            document.querySelectorAll('.user-matcher-select').forEach(select => {
+                if(select.value === "") hasUnmapped = true;
+            });
+
+            if(hasUnmapped) {
+                const conf = confirm("Bazı oyuncuları Supabase veritabanındaki kişilerle EŞLEŞTİRMEDİNİZ. Yine de kaydedilsin mi? (Eşleşmeyenlerin istatistiği profile yazılmaz)");
+                if(!conf) return;
+            }
+
+            const btn = document.getElementById('btnSaveMatch');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> KAYDEDİLİYOR...';
+            btn.disabled = true;
+
+            // Burada veriler Supabase'e yazılacak
+            setTimeout(() => {
+                showNotification("Skorlar ve eşleştirilmiş K/D istatistikleri başarıyla kaydedildi!", "success");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 1500);
+        }
     </script>
 </body>
 </html>
