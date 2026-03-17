@@ -123,8 +123,8 @@
         <p class="page-subtitle">Toplam Ödül Havuzu: 10.000 TL | 64 Takım</p>
         
         <div class="stage-tabs">
-            <button class="stage-btn active" onclick="switchStage('group', this)"><i class="fas fa-list-ul"></i> GRUP AŞAMASI (R1 & R2)</button>
-            <button class="stage-btn" onclick="switchStage('playoff', this)"><i class="fas fa-sitemap"></i> PLAYOFF AĞACI (Son 16)</button>
+            <button class="stage-btn active" onclick="switchStage('groupStage', this)"><i class="fas fa-list-ul"></i> GRUP AŞAMASI (R1 & R2)</button>
+            <button class="stage-btn" onclick="switchStage('playoffStage', this)"><i class="fas fa-sitemap"></i> PLAYOFF AĞACI (Son 16)</button>
         </div>
     </div>
 
@@ -145,7 +145,7 @@
                 <span style="font-size: 12px; font-weight: 900; color: var(--gri-yazi); letter-spacing: 2px;">MAÇ DETAYLARI</span>
                 <div class="scoreboard">
                     <div class="modal-team">
-                        <img src="img/obblogo.png">
+                        <img src="img/obblogo.png" alt="Takım A">
                         <span class="modal-team-name" id="mTeamA">TAKIM A</span>
                     </div>
                     <div style="display:flex; align-items:center; gap:15px;">
@@ -154,7 +154,7 @@
                         <span class="modal-score" id="mScoreB">0</span>
                     </div>
                     <div class="modal-team">
-                        <img src="img/obblogo.png">
+                        <img src="img/obblogo.png" alt="Takım B">
                         <span class="modal-team-name" id="mTeamB">TAKIM B</span>
                     </div>
                 </div>
