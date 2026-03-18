@@ -476,13 +476,19 @@
                     const profileIds = profiles.map(p => p.id);
                     
                     const { data: busyMembers } = await window.supabaseClient.from('application_members')
-                                                        .select('user_id, tournament_applications(status)')
+                                                        .select('user_id, tournament_applications(status, captain_id)')
                                                         .in('user_id', profileIds)
                                                         .neq('status', 'rejected');
                     
-                    const busyUserIds = busyMembers ? busyMembers.filter(m => 
-                        m.tournament_applications && m.tournament_applications.status !== 'draft'
-                    ).map(m => m.user_id) : [];
+                    const busyUserIds = busyMembers ? busyMembers.filter(m => {
+                        const app = Array.isArray(m.tournament_applications) ? m.tournament_applications[0] : m.tournament_applications;
+                        if (!app) return false;
+
+                        if (app.status === 'pending' || app.status === 'approved') return true;
+                        if (app.status === 'draft' && app.captain_id !== m.user_id) return true;
+
+                        return false;
+                    }).map(m => m.user_id) : [];
 
                     const filteredPlayers = profiles.filter(u => 
                         !selectedIds.includes(u.id) && 
@@ -667,7 +673,7 @@
                     const fileName = `logo_${currentDraftId}.${fileExt}`; 
 
                     const { error: uploadError } = await window.supabaseClient.storage
-                        .from('team-logos') // Kendi logo klasörünün adı 'team-logos' değilse burayı düzelt
+                        .from('team-logos')
                         .upload(fileName, logoFile, {
                             cacheControl: '3600',
                             upsert: true 
