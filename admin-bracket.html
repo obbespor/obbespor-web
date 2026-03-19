@@ -13,15 +13,18 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
+        /* --- ADMİN HEADER AKTİF SEKME STİLİ --- */
         nav ul li a { cursor: pointer; }
         .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
 
-        .admin-container { padding: 40px 10%; flex: 1; }
+        .admin-container { padding: 40px 10%; flex: 1; overflow-x: hidden; }
         
+        /* BAŞLIK VE BUTON ALANI İÇİN YENİ DÜZEN */
         .page-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
         .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 0; color: white; border: none; padding: 0; }
         .section-title span { color: var(--neon-mor); }
         
+        /* FİKSTÜR DÜZENLE BUTONU */
         .btn-go-edit { background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor); color: var(--neon-mor); padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 14px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
         .btn-go-edit:hover { background: var(--neon-mor); color: white; box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); transform: translateY(-2px); }
 
@@ -34,7 +37,7 @@
         /* BO3 / BO5 İÇİN YENİ SERİ SKOR ALANI STİLLERİ */
         .series-score-box { display: flex; justify-content: center; gap: 40px; margin-bottom: 25px; background: #0d0d0d; padding: 20px; border-radius: 15px; border: 1px dashed #333; transition: 0.3s; }
         .series-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .series-label { font-size: 11px; color: var(--gri-yazi); font-weight: 900; letter-spacing: 1px; }
+        .series-label { font-size: 11px; color: var(--gri-yazi); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
         .series-input { background: #000; border: 2px solid var(--neon-mor); color: white; width: 60px; height: 50px; text-align: center; font-size: 24px; font-weight: 900; border-radius: 8px; outline: none; transition: 0.3s; }
         .series-input:focus { box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); }
         .series-select { background: #000; border: 1px solid #555; color: var(--neon-mor); padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; outline: none; cursor: pointer; text-align: center; }
@@ -60,15 +63,17 @@
         .map-input { background: #111; border: 1px solid #444; color: var(--neon-mor); padding: 8px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; text-align: center; text-transform: uppercase; outline: none; transition: 0.3s; width: 150px; }
         .map-input:focus { border-color: white; color: white; }
 
-        .stats-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .stats-grid-container { display: flex; flex-direction: column; gap: 30px; }
+        .team-stats-box { width: 100%; overflow-x: auto; }
         .team-stats-box h4 { font-size: 15px; margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid; padding-left: 10px; transition: 0.3s; }
         
-        .player-stat-row { display: grid; grid-template-columns: 90px 1.5fr 1.5fr 45px 45px 45px; gap: 10px; margin-bottom: 10px; align-items: center; background: #0d0d0d; padding: 10px; border-radius: 10px; border: 1px solid #222; transition: 0.3s; }
+        /* OYUNCU TABLOSU YENİ DÜZEN (9 SÜTUN) */
+        .player-stat-row { display: grid; grid-template-columns: 80px 1.2fr 1.2fr 40px 40px 40px 50px 50px 50px; gap: 8px; margin-bottom: 10px; align-items: center; background: #0d0d0d; padding: 10px; border-radius: 10px; border: 1px solid #222; transition: 0.3s; min-width: 700px; }
         .player-stat-row:hover { border-color: #444; background: #111; }
         
-        .player-stat-row input, .player-stat-row select { background: #000; border: 1px solid #333; color: white; padding: 8px; border-radius: 6px; font-size: 13px; outline: none; transition: 0.3s; width: 100%; text-align: center; }
+        .player-stat-row input, .player-stat-row select { background: #000; border: 1px solid #333; color: white; padding: 8px 4px; border-radius: 6px; font-size: 12px; outline: none; transition: 0.3s; width: 100%; text-align: center; }
         .player-stat-row input:focus, .player-stat-row select:focus { border-color: var(--neon-mor); }
-        .player-stat-row input.ign-input { text-align: left; font-weight: bold; color: white; }
+        .player-stat-row input.ign-input { text-align: left; font-weight: bold; color: white; padding-left: 10px; }
         
         .agent-input-group { display: flex; align-items: center; gap: 5px; }
         .agent-icon { width: 35px; height: 35px; border-radius: 4px; object-fit: cover; border: 1px solid #444; background: #222; }
@@ -86,8 +91,7 @@
             .btn-fetch { width: 100%; justify-content: center; }
             .series-score-box { flex-direction: column; gap: 15px; }
             .match-score-header { flex-direction: column; gap: 20px; }
-            .stats-grid-container { grid-template-columns: 1fr; }
-            .player-stat-row { grid-template-columns: 45px 1fr 1fr 35px 35px 35px; gap: 5px; font-size: 11px; }
+            /* Mobilde taşmayı scroll ile çözmek için min-width kullanıyoruz */
         }
     </style>
 </head>
@@ -104,7 +108,7 @@
             <ul>
                 <li><a href="index.html">ANA SAYFA</a></li>
                 <li><a href="admin.html#onay">ONAY</a></li>
-                <li><a href="admin.html#onayli">ONAYLI</a></li>
+                <li><a href="admin.html#takimlar">ONAYLI</a></li>
                 <li><a href="admin.html#duyuru">DUYURU</a></li>
                 <li><a href="admin-bracket.html" class="active-admin-tab">BRACKET<i class="fas fa-external-link-alt" style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 
@@ -175,7 +179,7 @@
 
             <div id="dynamicMatchArea" style="display: none; animation: fadeIn 0.5s ease; margin-top:20px;">
                 <div class="api-fetch-box">
-                    <span class="api-badge">Opsiyonel: API İle Otomatik Doldur</span>
+                    <span class="api-badge">Opsiyonel: API İle Otomatik Doldur (Liderlik Tablosu Verileri Dahil)</span>
                     <div class="api-input-row">
                         <input type="text" id="apiMatchId" placeholder="Valorant Match ID (Elinizde Varsa)">
                         <button class="btn-fetch" id="btnFetchApi" onclick="fetchValorantData()">
@@ -274,7 +278,6 @@
             if (typeof initNotifications === "function") initNotifications();
             checkAdminAccess();
             
-            // Sayfa ilk açıldığında seçili tura göre UI'ı ayarla
             handleRoundChange();
         }
 
@@ -290,20 +293,17 @@
             } catch (err) { window.location.replace("index.html"); }
         }
 
-        // --- YENİ EKLENEN: TUR DEĞİŞTİKÇE EKRANI AYARLAYAN FONKSİYON ---
         function handleRoundChange() {
             const roundName = document.getElementById('roundNameSelect').value;
             const seriesBox = document.getElementById('seriesScoreBox');
             const mapOrderSelect = document.getElementById('mapOrderSelect');
 
             if (['R1', 'R2'].includes(roundName)) {
-                // BO1 - Tek Maç Formatı
                 seriesBox.style.display = 'none';
                 mapOrderSelect.innerHTML = '<option value="1">1. HARİTA (Map 1)</option>';
                 document.getElementById('seriesScoreA').value = 0;
                 document.getElementById('seriesScoreB').value = 0;
             } else if (['SON 16', 'ÇEYREK FİNAL', 'YARI FİNAL'].includes(roundName)) {
-                // BO3 Formatı
                 seriesBox.style.display = 'flex';
                 mapOrderSelect.innerHTML = `
                     <option value="1">1. HARİTA (Map 1)</option>
@@ -311,7 +311,6 @@
                     <option value="3">3. HARİTA (Map 3)</option>
                 `;
             } else if (roundName === 'FİNAL') {
-                // BO5 Formatı
                 seriesBox.style.display = 'flex';
                 mapOrderSelect.innerHTML = `
                     <option value="1">1. HARİTA (Map 1)</option>
@@ -330,14 +329,23 @@
             
             generateEmptyRows('teamAPlayersInputs');
             generateEmptyRows('teamBPlayersInputs');
-            handleRoundChange(); // UI açıldığında turu kontrol et
+            handleRoundChange(); 
         }
 
+        // K/D/A VE YENİ EKLENEN ACS/ADR/HS% KUTULARI
         function generateEmptyRows(containerId) {
             const container = document.getElementById(containerId);
             container.innerHTML = `
                 <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
-                    <span class="stat-label">AJAN</span><span class="stat-label" style="text-align:left;">OYUN İÇİ NİCK</span><span class="stat-label">PROFİL EŞLEŞTİR</span><span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
+                    <span class="stat-label">AJAN</span>
+                    <span class="stat-label" style="text-align:left;">OYUN İÇİ NİCK</span>
+                    <span class="stat-label">PROFİL EŞLEŞTİR</span>
+                    <span class="stat-label">K</span>
+                    <span class="stat-label">D</span>
+                    <span class="stat-label">A</span>
+                    <span class="stat-label" style="color:var(--neon-mor);">ACS</span>
+                    <span class="stat-label" style="color:var(--neon-mor);">ADR</span>
+                    <span class="stat-label" style="color:var(--neon-mor);">HS%</span>
                 </div>
             `;
             for(let i=0; i<5; i++) {
@@ -349,9 +357,12 @@
                         </div>
                         <input type="text" class="ign-input" placeholder="IGN">
                         <select class="user-matcher-select"><option value="">-- Takım İsmi Girin --</option></select>
-                        <input type="number" class="k-input" value="0" min="0">
-                        <input type="number" class="d-input" value="0" min="0">
-                        <input type="number" class="a-input" value="0" min="0">
+                        <input type="number" class="k-input" value="0" min="0" title="Kill">
+                        <input type="number" class="d-input" value="0" min="0" title="Death">
+                        <input type="number" class="a-input" value="0" min="0" title="Assist">
+                        <input type="number" class="acs-input" value="0" min="0" title="Ortalama Çatışma Skoru">
+                        <input type="number" class="adr-input" value="0" min="0" title="Raunt Başı Hasar">
+                        <input type="number" class="hs-input" value="0" min="0" title="Kafadan Vuruş Yüzdesi">
                     </div>`;
             }
         }
@@ -415,6 +426,7 @@
             else icon.src = "img/agents/unknown.png";
         }
 
+        // YAPAY ZEKA GÜÇLENDİRMELİ YENİ API VERİ ÇEKİMİ
         async function fetchValorantData() {
             const matchId = document.getElementById('apiMatchId').value.trim();
             if (!matchId) return showNotification("Lütfen bir Match ID girin!", "error");
@@ -436,13 +448,27 @@
                 document.getElementById('scoreA').value = data.teams.blue.rounds_won;
                 document.getElementById('scoreB').value = data.teams.red.rounds_won;
 
-                const bluePlayers = data.players.all_players.filter(p => p.team.toLowerCase() === 'blue');
-                const redPlayers = data.players.all_players.filter(p => p.team.toLowerCase() === 'red');
+                // Oynanan Toplam Raunt (ACS ve ADR hesabı için)
+                const roundsPlayed = data.metadata.rounds_played || 1;
+
+                // Liderlik Tablosu verilerini (ACS, ADR, HS%) otomatik hesaplayıp oyuncu objesine ekleyen fonksiyon
+                const processPlayers = (players) => players.map(p => {
+                    const totalShots = p.stats.headshots + p.stats.bodyshots + p.stats.legshots;
+                    return {
+                        ...p,
+                        calc_acs: Math.round(p.stats.score / roundsPlayed),
+                        calc_adr: Math.round(p.damage_made / roundsPlayed),
+                        calc_hs: totalShots > 0 ? Math.round((p.stats.headshots / totalShots) * 100) : 0
+                    };
+                });
+
+                const bluePlayers = processPlayers(data.players.all_players.filter(p => p.team.toLowerCase() === 'blue'));
+                const redPlayers = processPlayers(data.players.all_players.filter(p => p.team.toLowerCase() === 'red'));
 
                 populateRows('teamAPlayersInputs', bluePlayers);
                 populateRows('teamBPlayersInputs', redPlayers);
 
-                showNotification("Veriler API'den otomatik dolduruldu!", "success");
+                showNotification("Tüm Leaderboard verileri API'den başarıyla hesaplandı ve çekildi!", "success");
             } catch (err) {
                 showNotification("API Hatası: " + err.message, "error");
             } finally {
@@ -451,6 +477,7 @@
             }
         }
 
+        // HESAPLANAN VERİLERİ KUTUCUKLARA DOLDURAN FONKSİYON
         function populateRows(containerId, players) {
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             players.forEach((p, i) => {
@@ -462,10 +489,15 @@
                     actualRow.querySelector('.k-input').value = p.stats.kills;
                     actualRow.querySelector('.d-input').value = p.stats.deaths;
                     actualRow.querySelector('.a-input').value = p.stats.assists;
+                    // Yeni Eklenenler
+                    actualRow.querySelector('.acs-input').value = p.calc_acs || 0;
+                    actualRow.querySelector('.adr-input').value = p.calc_adr || 0;
+                    actualRow.querySelector('.hs-input').value = p.calc_hs || 0;
                 }
             });
         }
 
+        // EKSİKSİZ KAYIT İŞLEMİ (LİDERLİK TABLOSU VERİLERİ DAHİL)
         async function saveMappedStats() {
             const btn = document.getElementById('btnSaveMatch');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> KAYDEDİLİYOR...';
@@ -483,15 +515,14 @@
 
                 if(!currentTeamAId || !currentTeamBId) throw new Error("Lütfen takım isimlerini girip eşleşmelerini bekleyin.");
 
-                // BO1 Maçlar İçin Otomatik Seri Skoru Doldurma
                 if (['R1', 'R2'].includes(roundName)) {
                     if (scoreA > scoreB) { seriesA = 1; seriesB = 0; }
                     else if (scoreB > scoreA) { seriesA = 0; seriesB = 1; }
                 }
 
                 let winsNeeded = 1;
-                if (["SON 16", "ÇEYREK FİNAL", "YARI FİNAL"].includes(roundName)) winsNeeded = 2; // BO3
-                if (roundName === "FİNAL") winsNeeded = 3; // BO5
+                if (["SON 16", "ÇEYREK FİNAL", "YARI FİNAL"].includes(roundName)) winsNeeded = 2;
+                if (roundName === "FİNAL") winsNeeded = 3;
 
                 let winnerId = null;
                 let matchStatus = 'live';
@@ -548,6 +579,7 @@
 
                 if(mapErr) throw new Error("Harita kaydedilirken hata: Aynı sıradaki (Map " + mapOrder + ") haritayı tekrar ekliyor olabilirsiniz.");
 
+                // LİDERLİK TABLOSU VERİLERİNİ TOPLAMA
                 const collectData = (containerId, teamId) => {
                     const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
                     const stats = [];
@@ -561,7 +593,10 @@
                             agent_name: row.querySelector('.agent-name-input').value || 'unknown',
                             kills: parseInt(row.querySelector('.k-input').value) || 0,
                             deaths: parseInt(row.querySelector('.d-input').value) || 0,
-                            assists: parseInt(row.querySelector('.a-input').value) || 0
+                            assists: parseInt(row.querySelector('.a-input').value) || 0,
+                            acs: parseInt(row.querySelector('.acs-input').value) || 0,
+                            adr: parseInt(row.querySelector('.adr-input').value) || 0,
+                            hs_percentage: parseInt(row.querySelector('.hs-input').value) || 0
                         });
                     }
                     return stats;
@@ -575,7 +610,7 @@
                 const { error: statsErr } = await window.supabaseClient.from('match_player_stats').insert(insertData);
                 if(statsErr) throw statsErr;
 
-                showNotification("Harita başarıyla " + mapOrder + ". sıraya işlendi!", "success");
+                showNotification("Harita ve Liderlik Tablosu verileri başarıyla işlendi!", "success");
                 
                 setTimeout(() => {
                     document.getElementById('scoreA').value = 0;
