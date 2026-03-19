@@ -43,20 +43,19 @@
         .board-desc { color: var(--gri-yazi); font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; text-align: right; }
 
         .table-responsive { width: 100%; overflow-x: auto; }
-        .data-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
-        .data-table th { background: #0a0a0a; color: #888; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; padding: 15px 25px; border-bottom: 1px solid #222; }
-        .data-table td { padding: 15px 25px; border-bottom: 1px solid #1a1a1a; color: white; font-size: 14px; font-weight: 500; vertical-align: middle; transition: 0.2s; }
+        .data-table { width: 100%; border-collapse: collapse; text-align: center; white-space: nowrap; }
+        .data-table th { background: #0a0a0a; color: #888; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; padding: 15px; border-bottom: 1px solid #222; }
+        .data-table td { padding: 15px; border-bottom: 1px solid #1a1a1a; color: white; font-size: 14px; font-weight: 500; vertical-align: middle; transition: 0.2s; }
         .data-table tbody tr:hover td { background: #111; }
         
-        /* Satır Renklendirmeleri (İlk 3) */
-        .rank-badge { display: inline-flex; justify-content: center; align-items: center; width: 30px; height: 30px; border-radius: 50%; font-weight: 900; font-size: 14px; background: #222; color: #888; }
+        .rank-badge { display: inline-flex; justify-content: center; align-items: center; width: 30px; height: 30px; border-radius: 50%; font-weight: 900; font-size: 14px; background: #222; color: #888; margin: 0 auto; }
         .data-table tr:nth-child(1) .rank-badge { background: linear-gradient(45deg, #ffd700, #ff8c00); color: #000; box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
         .data-table tr:nth-child(2) .rank-badge { background: linear-gradient(45deg, #e0e0e0, #9e9e9e); color: #000; }
         .data-table tr:nth-child(3) .rank-badge { background: linear-gradient(45deg, #cd7f32, #8b4513); color: #000; }
         
         .data-table tr:nth-child(1) td { border-bottom: 1px solid rgba(255, 215, 0, 0.2); }
 
-        .player-info-cell { display: flex; align-items: center; gap: 15px; }
+        .player-info-cell { display: flex; align-items: center; gap: 15px; text-align: left; }
         .agent-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid #333; background: #000; }
         .player-name { font-weight: 900; font-size: 15px; color: white; display: flex; flex-direction: column; }
         .team-name-small { font-size: 11px; color: var(--neon-mor); font-weight: 700; text-transform: uppercase; }
@@ -64,14 +63,13 @@
         .highlight-stat { font-size: 18px; font-weight: 900; color: var(--neon-mor); }
         .data-table tr:nth-child(1) .highlight-stat { color: gold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
 
-        /* Yükleniyor Ekranı */
         .loading-state { text-align: center; padding: 80px 20px; color: var(--gri-yazi); }
         .loading-state i { font-size: 40px; color: var(--neon-mor); margin-bottom: 20px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ==================================================
-           MOBİL UYUMLULUK: KUSURSUZ SIĞDIRMA OPERASYONU
+           MOBİL UYUMLULUK: KOMPAKT VE SIĞDIRILMIŞ DÜZEN
         ================================================== */
         @media (max-width: 768px) {
             .page-header { padding: 40px 10px 20px; }
@@ -88,31 +86,29 @@
                 padding-bottom: 10px; 
                 gap: 10px;
                 -webkit-overflow-scrolling: touch; 
-                scrollbar-width: none; /* Firefox için gizle */
+                scrollbar-width: none; 
             }
-            .category-tabs::-webkit-scrollbar { display: none; /* Chrome/Safari için gizle */ }
+            .category-tabs::-webkit-scrollbar { display: none; }
             .category-btn { flex: 0 0 auto; padding: 8px 16px; font-size: 11px; }
 
-            /* TABLOYU EKRANA ZORLA SIĞDIRMA */
             .leaderboard-card { border-radius: 12px; }
             .board-header { padding: 15px; flex-direction: column; text-align: center; gap: 8px; }
             .board-title { font-size: 16px; }
             .board-desc { font-size: 10px; text-align: center; }
 
-            .table-responsive { overflow-x: hidden; width: 100%; } /* Taşmayı engelle */
-            .data-table { white-space: normal; table-layout: auto; width: 100%; } /* Uzun yazıları alt satıra at */
-            
-            .data-table th, .data-table td { padding: 10px 5px; font-size: 11px; text-align: center; }
-            .data-table th { font-size: 9px; padding: 8px 5px; }
-            .data-table td:nth-child(2) { text-align: left; } /* Sadece isimler solda kalsın */
+            /* TABLO İÇİ MİLİMETRİK DÜZELTMELER VE KOMPAKT GÖRÜNÜM */
+            .data-table th, .data-table td { padding: 8px 5px; font-size: 12px; }
+            .data-table th { font-size: 9px; padding: 6px 5px; }
 
-            /* Elementleri Küçültme */
-            .rank-badge { width: 22px; height: 22px; font-size: 11px; }
-            .player-info-cell { gap: 6px; }
-            .agent-img { width: 26px; height: 26px; border-radius: 5px; }
-            .player-name { font-size: 11px; word-break: break-word; }
+            .rank-badge { width: 20px; height: 20px; font-size: 11px; }
+            .player-info-cell { gap: 8px; }
+            .agent-img { width: 28px; height: 28px; border-radius: 5px; }
+            .player-name { font-size: 12px; }
             .team-name-small { font-size: 9px; }
             .highlight-stat { font-size: 14px; }
+
+            /* İKİNCİL SÜTUNLARI MOBİLDE GİZLEYEREK EKRANA SIĞDIRMA */
+            .hide-mobile { display: none !important; }
         }
     </style>
 </head>
@@ -144,11 +140,11 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Sıra</th>
-                            <th style="text-align: left;">Oyuncu / Takım</th>
-                            <th>En Çok Oynadığı Ajan</th>
-                            <th>Oynanan Harita</th>
-                            <th>Toplam Kill</th>
+                            <th width="40">#</th>
+                            <th style="text-align: left;">OYUNCU</th>
+                            <th>AJAN</th>
+                            <th class="hide-mobile">MAÇ</th>
+                            <th>KİLL</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-kills">
@@ -167,10 +163,10 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Sıra</th>
-                            <th style="text-align: left;">Oyuncu / Takım</th>
-                            <th>Ortalama ACS</th>
-                            <th>HS Yüzdesi</th>
+                            <th width="40">#</th>
+                            <th style="text-align: left;">OYUNCU</th>
+                            <th class="hide-mobile">ACS</th>
+                            <th>HS %</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-hs">
@@ -189,11 +185,11 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Sıra</th>
-                            <th style="text-align: left;">Oyuncu / Takım</th>
-                            <th>Oynanan Ajan</th>
-                            <th>K/D/A</th>
-                            <th>Maç ACS'si</th>
+                            <th width="40">#</th>
+                            <th style="text-align: left;">OYUNCU</th>
+                            <th>AJAN</th>
+                            <th class="hide-mobile">K/D/A</th>
+                            <th>ACS</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-acs">
@@ -212,10 +208,10 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Sıra</th>
-                            <th style="text-align: left;">Oyuncu / Takım</th>
-                            <th>Toplam Kill</th>
-                            <th>Ortalama ADR</th>
+                            <th width="40">#</th>
+                            <th style="text-align: left;">OYUNCU</th>
+                            <th class="hide-mobile">KİLL</th>
+                            <th>ADR</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-adr">
@@ -234,9 +230,9 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Sıra</th>
-                            <th style="text-align: left;">Ajan</th>
-                            <th>Toplam Seçilme Sayısı</th>
+                            <th width="40">#</th>
+                            <th style="text-align: left;">AJAN</th>
+                            <th>SEÇİM</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-agents">
@@ -274,7 +270,7 @@
             document.getElementById(`board-${categoryId}`).classList.add('active');
         }
 
-        // Ajan İkonu Formatlayıcı (Hatasız)
+        // Ajan İkonu Formatlayıcı 
         function getAgentImgHtml(agentName) {
             if (!agentName) return `<img src="img/imgagents/unknown.png" class="agent-img">`;
             let cleanName = agentName.replace(/[^a-zA-Z0-9]/g, ''); 
@@ -309,7 +305,6 @@
                     const teamName = teamMap[stat.team_id] || "Takımsız";
                     const agent = stat.agent_name || "unknown";
 
-                    // Ajan sayacı
                     agentsMap[agent] = (agentsMap[agent] || 0) + 1;
 
                     if (!playersMap[ign]) {
@@ -324,7 +319,7 @@
                             totalHs: 0,
                             mapsPlayed: 0,
                             agentsPlayed: {},
-                            highestAcsData: { acs: 0, agent: '', k:0, d:0, a:0 } // Tek maçlık en yüksek değer
+                            highestAcsData: { acs: 0, agent: '', k:0, d:0, a:0 } 
                         };
                     }
 
@@ -343,7 +338,6 @@
                     p.totalHs += statHs;
                     p.agentsPlayed[agent] = (p.agentsPlayed[agent] || 0) + 1;
 
-                    // Tek maçlık ACS rekoru kontrolü
                     if (statAcs > p.highestAcsData.acs) {
                         p.highestAcsData = {
                             acs: statAcs,
@@ -355,63 +349,58 @@
                     }
                 });
 
-                // Objeyi Array'e çevir
                 const playersArray = Object.values(playersMap);
 
-                // Ortalamaları hesapla ve en çok oynanan ajanı bul
                 playersArray.forEach(p => {
                     p.avgAcs = p.mapsPlayed > 0 ? Math.round(p.totalAcs / p.mapsPlayed) : 0;
                     p.avgAdr = p.mapsPlayed > 0 ? Math.round(p.totalAdr / p.mapsPlayed) : 0;
                     p.avgHs = p.mapsPlayed > 0 ? Math.round(p.totalHs / p.mapsPlayed) : 0;
                     
-                    // En çok oynadığı ajanı bul
                     p.mainAgent = Object.keys(p.agentsPlayed).reduce((a, b) => p.agentsPlayed[a] > p.agentsPlayed[b] ? a : b, "unknown");
                 });
 
-                // TABLOLARI DOLDURMA İŞLEMLERİ
-
-                // 1. KILLS (En çok kill alanlar - Saf toplam)
+                // 1. KILLS 
                 const killsSorted = [...playersArray].sort((a, b) => b.totalKills - a.totalKills).slice(0, 10);
                 document.getElementById('tbody-kills').innerHTML = killsSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
                         <td><div class="player-info-cell"><div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
-                        <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)} <span style="color:var(--gri-yazi); font-size:12px; text-transform:capitalize;">${p.mainAgent}</span></div></td>
-                        <td>${p.mapsPlayed} Harita</td>
+                        <td><div class="player-info-cell" style="justify-content:center;">${getAgentImgHtml(p.mainAgent)}</div></td>
+                        <td class="hide-mobile">${p.mapsPlayed}</td>
                         <td class="highlight-stat">${p.totalKills}</td>
                     </tr>
                 `).join('');
 
-                // 2. HS YÜZDESİ (Sadece en az 2 harita oynayanlar)
+                // 2. HS YÜZDESİ 
                 const hsSorted = [...playersArray].filter(p => p.mapsPlayed >= 2).sort((a, b) => b.avgHs - a.avgHs).slice(0, 10);
                 document.getElementById('tbody-hs').innerHTML = hsSorted.length > 0 ? hsSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
                         <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)}<div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
-                        <td>${p.avgAcs}</td>
+                        <td class="hide-mobile">${p.avgAcs}</td>
                         <td class="highlight-stat">%${p.avgHs}</td>
                     </tr>
                 `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 harita oynayan oyuncu bekleniyor.</td></tr>';
 
-                // 3. ACS (Tek maçlık rekor)
+                // 3. ACS 
                 const acsSorted = [...playersArray].sort((a, b) => b.highestAcsData.acs - a.highestAcsData.acs).slice(0, 10);
                 document.getElementById('tbody-acs').innerHTML = acsSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
                         <td><div class="player-info-cell"><div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
-                        <td>${getAgentImgHtml(p.highestAcsData.agent)}</td>
-                        <td><span style="color:#00d2ff;">${p.highestAcsData.k}</span> / <span style="color:#ff4b4b;">${p.highestAcsData.d}</span> / <span style="color:#888;">${p.highestAcsData.a}</span></td>
+                        <td><div class="player-info-cell" style="justify-content:center;">${getAgentImgHtml(p.highestAcsData.agent)}</div></td>
+                        <td class="hide-mobile"><span style="color:#00d2ff;">${p.highestAcsData.k}</span> / <span style="color:#ff4b4b;">${p.highestAcsData.d}</span> / <span style="color:#888;">${p.highestAcsData.a}</span></td>
                         <td class="highlight-stat">${p.highestAcsData.acs}</td>
                     </tr>
                 `).join('');
 
-                // 4. ADR (Ortalama - Sadece en az 2 harita oynayanlar)
+                // 4. ADR 
                 const adrSorted = [...playersArray].filter(p => p.mapsPlayed >= 2).sort((a, b) => b.avgAdr - a.avgAdr).slice(0, 10);
                 document.getElementById('tbody-adr').innerHTML = adrSorted.length > 0 ? adrSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
                         <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)}<div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
-                        <td>${p.totalKills}</td>
+                        <td class="hide-mobile">${p.totalKills}</td>
                         <td class="highlight-stat">${p.avgAdr}</td>
                     </tr>
                 `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 harita oynayan oyuncu bekleniyor.</td></tr>';
@@ -423,7 +412,7 @@
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
                         <td><div class="player-info-cell">${getAgentImgHtml(a.name)} <span style="font-weight:bold; color:white; text-transform:uppercase;">${a.name}</span></div></td>
-                        <td class="highlight-stat">${a.count} Kez Seçildi</td>
+                        <td class="highlight-stat">${a.count}</td>
                     </tr>
                 `).join('');
 
