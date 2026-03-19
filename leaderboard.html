@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-9VH0LHNCS3');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBB E-SPOR | Liderlik Tablosu</title>
+    
+    <link rel="icon" type="image/png" href="img/obblogo.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    
+    <style>
+        body { background-color: #050505; color: white; }
+
+        /* --- SAYFA BAŞLIĞI VE TASARIMI --- */
+        .page-header { text-align: center; padding: 60px 20px 40px; background: radial-gradient(circle at top, #110522 0%, #050505 100%); border-bottom: 1px solid #222; }
+        .page-title { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 900; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px; }
+        .page-title span { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
+        .page-subtitle { color: var(--gri-yazi); font-size: 15px; font-weight: 500; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+        .leaderboard-container { padding: 50px 5%; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+
+        /* --- FİLTRELEME SEKMELERİ --- */
+        .category-tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px; }
+        .category-btn { background: #0a0a0a; border: 1px solid #333; color: var(--gri-yazi); padding: 12px 25px; border-radius: 30px; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.3s; font-family: 'Poppins', sans-serif; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+        .category-btn:hover { border-color: var(--neon-mor); color: white; }
+        .category-btn.active { background: var(--neon-mor); color: white; border-color: var(--neon-mor); box-shadow: 0 0 20px rgba(96, 29, 194, 0.4); }
+
+        /* --- LİDERLİK TABLOSU TASARIMI --- */
+        .leaderboard-card { background: #0a0a0a; border: 1px solid #222; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; animation: fadeIn 0.4s ease; }
+        .leaderboard-card.active { display: block; }
+        
+        .board-header { background: #111; padding: 25px 30px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .board-title { font-size: 20px; font-weight: 900; color: white; margin: 0; display: flex; align-items: center; gap: 12px; }
+        .board-title i { color: var(--neon-mor); font-size: 24px; }
+        .board-desc { color: var(--gri-yazi); font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+
+        .table-responsive { width: 100%; overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+        .data-table th { background: #0a0a0a; color: #888; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; padding: 15px 25px; border-bottom: 1px solid #222; }
+        .data-table td { padding: 15px 25px; border-bottom: 1px solid #1a1a1a; color: white; font-size: 14px; font-weight: 500; vertical-align: middle; transition: 0.2s; }
+        .data-table tbody tr:hover td { background: #111; }
+        
+        /* Satır Renklendirmeleri (İlk 3) */
+        .rank-badge { display: inline-flex; justify-content: center; align-items: center; width: 30px; height: 30px; border-radius: 50%; font-weight: 900; font-size: 14px; background: #222; color: #888; }
+        .data-table tr:nth-child(1) .rank-badge { background: linear-gradient(45deg, #ffd700, #ff8c00); color: #000; box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+        .data-table tr:nth-child(2) .rank-badge { background: linear-gradient(45deg, #e0e0e0, #9e9e9e); color: #000; }
+        .data-table tr:nth-child(3) .rank-badge { background: linear-gradient(45deg, #cd7f32, #8b4513); color: #000; }
+        
+        .data-table tr:nth-child(1) td { border-bottom: 1px solid rgba(255, 215, 0, 0.2); }
+
+        .player-info-cell { display: flex; align-items: center; gap: 15px; }
+        .agent-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid #333; background: #000; }
+        .player-name { font-weight: 900; font-size: 15px; color: white; display: flex; flex-direction: column; }
+        .team-name-small { font-size: 11px; color: var(--neon-mor); font-weight: 700; text-transform: uppercase; }
+
+        .highlight-stat { font-size: 18px; font-weight: 900; color: var(--neon-mor); }
+        .data-table tr:nth-child(1) .highlight-stat { color: gold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+
+        /* Yükleniyor Ekranı */
+        .loading-state { text-align: center; padding: 80px 20px; color: var(--gri-yazi); }
+        .loading-state i { font-size: 40px; color: var(--neon-mor); margin-bottom: 20px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .board-header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 20px; }
+            .data-table th, .data-table td { padding: 12px 15px; }
+            .category-btn { padding: 10px 20px; font-size: 12px; }
+            .agent-img { width: 30px; height: 30px; }
+            .player-name { font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header-alani"></div>
+
+    <div class="page-header">
+        <h1 class="page-title">OBB <span>İSTATİSTİKLER</span></h1>
+        <p class="page-subtitle">Turnuva boyunca sergilenen en iyi performanslar, en keskin nişancılar ve takımını zafere taşıyan oyuncular burada listelenir.</p>
+    </div>
+
+    <div class="leaderboard-container">
+        
+        <div class="category-tabs">
+            <button class="category-btn active" onclick="switchCategory('kills')"><i class="fas fa-skull"></i> En Çok Kill</button>
+            <button class="category-btn" onclick="switchCategory('hs')"><i class="fas fa-crosshairs"></i> En Yüksek HS %</button>
+            <button class="category-btn" onclick="switchCategory('acs')"><i class="fas fa-fire"></i> En Yüksek ACS</button>
+            <button class="category-btn" onclick="switchCategory('adr')"><i class="fas fa-bolt"></i> En Yüksek ADR</button>
+            <button class="category-btn" onclick="switchCategory('agents')"><i class="fas fa-user-ninja"></i> Popüler Ajanlar</button>
+        </div>
+
+        <div class="leaderboard-card active" id="board-kills">
+            <div class="board-header">
+                <h2 class="board-title"><i class="fas fa-skull"></i> Avcılar (En Çok Kill)</h2>
+                <span class="board-desc">Toplam Kill Sayısına Göre Sıralanmıştır</span>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th width="80">Sıra</th>
+                            <th>Oyuncu / Takım</th>
+                            <th>En Çok Oynadığı Ajan</th>
+                            <th>Oynanan Harita</th>
+                            <th>Toplam Kill</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-kills">
+                        <tr><td colspan="5" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Veriler yükleniyor...</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="leaderboard-card" id="board-hs">
+            <div class="board-header">
+                <h2 class="board-title"><i class="fas fa-crosshairs"></i> Keskin Nişancılar (HS %)</h2>
+                <span class="board-desc">Ortalama Kafadan Vuruş Yüzdesine Göre</span>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th width="80">Sıra</th>
+                            <th>Oyuncu / Takım</th>
+                            <th>Ortalama ACS</th>
+                            <th>HS Yüzdesi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-hs">
+                        <tr><td colspan="4" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Veriler yükleniyor...</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="leaderboard-card" id="board-acs">
+            <div class="board-header">
+                <h2 class="board-title"><i class="fas fa-fire"></i> Savaş Makineleri (ACS)</h2>
+                <span class="board-desc">Tek Maçtaki En Yüksek Çatışma Skoruna Göre</span>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th width="80">Sıra</th>
+                            <th>Oyuncu / Takım</th>
+                            <th>Oynanan Ajan</th>
+                            <th>K / D / A</th>
+                            <th>Maç ACS'si</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-acs">
+                        <tr><td colspan="5" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Veriler yükleniyor...</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="leaderboard-card" id="board-adr">
+            <div class="board-header">
+                <h2 class="board-title"><i class="fas fa-bolt"></i> Hasar Ustaları (ADR)</h2>
+                <span class="board-desc">Raunt Başına Verilen Ortalama Hasara Göre</span>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th width="80">Sıra</th>
+                            <th>Oyuncu / Takım</th>
+                            <th>Toplam Kill</th>
+                            <th>Ortalama ADR</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-adr">
+                        <tr><td colspan="4" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Veriler yükleniyor...</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="leaderboard-card" id="board-agents">
+            <div class="board-header">
+                <h2 class="board-title"><i class="fas fa-user-ninja"></i> Popüler Seçimler</h2>
+                <span class="board-desc">Turnuvada En Çok Oynanan Ajanlar</span>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th width="80">Sıra</th>
+                            <th>Ajan</th>
+                            <th>Toplam Seçilme Sayısı</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-agents">
+                        <tr><td colspan="3" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Veriler yükleniyor...</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="footer-alani"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        async function loadComponents() {
+            try {
+                const headerRes = await fetch("components/header.html");
+                if(headerRes.ok) document.getElementById('header-alani').innerHTML = await headerRes.text();
+                
+                const footerRes = await fetch("components/footer.html");
+                if(footerRes.ok) document.getElementById('footer-alani').innerHTML = await footerRes.text();
+            } catch(e) { console.error("Komponent yüklenemedi", e); }
+        }
+
+        // Sekme Değiştirme Fonksiyonu
+        function switchCategory(categoryId) {
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            document.querySelectorAll('.leaderboard-card').forEach(card => card.classList.remove('active'));
+            document.getElementById(`board-${categoryId}`).classList.add('active');
+        }
+
+        // Ajan İkonu Formatlayıcı
+        function getAgentImgHtml(agentName) {
+            if (!agentName) return `<img src="img/imgagents/unknown.png" class="agent-img">`;
+            let cleanName = agentName.replace(/[^a-zA-Z0-9]/g, ''); 
+            let formattedName = cleanName ? (cleanName.charAt(0).toUpperCase() + cleanName.slice(1).toLowerCase()) : 'unknown';
+            return `<img src="img/imgagents/${formattedName}.webp" class="agent-img" onerror="this.onerror=null; this.src='img/imgagents/unknown.png'">`;
+        }
+
+        // İstatistikleri Çekip Ekrana Basan Ana Fonksiyon
+        async function fetchLeaderboardData() {
+            try {
+                // TAKIM BİLGİLERİNİ ÇEK
+                const { data: teamsData } = await window.supabaseClient.from('tournament_applications').select('id, team_name');
+                const teamMap = {};
+                if (teamsData) teamsData.forEach(t => teamMap[t.id] = t.team_name);
+
+                // TÜM İSTATİSTİKLERİ ÇEK
+                const { data: statsData, error } = await window.supabaseClient.from('match_player_stats').select('*');
+                if (error) throw error;
+
+                if (!statsData || statsData.length === 0) {
+                    const emptyMsg = '<tr><td colspan="5" style="text-align:center; padding: 40px; color:#555;">Henüz yeterli veri bulunmuyor.</td></tr>';
+                    ['kills', 'hs', 'acs', 'adr', 'agents'].forEach(id => document.getElementById(`tbody-${id}`).innerHTML = emptyMsg);
+                    return;
+                }
+
+                // VERİLERİ OYUNCU BAZINDA GRUPLA VE HESAPLA
+                const playersMap = {};
+                const agentsMap = {};
+
+                statsData.forEach(stat => {
+                    const ign = stat.in_game_name || "Bilinmiyor";
+                    const teamName = teamMap[stat.team_id] || "Takımsız";
+                    const agent = stat.agent_name || "unknown";
+
+                    // Ajan sayacı
+                    agentsMap[agent] = (agentsMap[agent] || 0) + 1;
+
+                    if (!playersMap[ign]) {
+                        playersMap[ign] = {
+                            ign: ign,
+                            teamName: teamName,
+                            totalKills: 0,
+                            totalDeaths: 0,
+                            totalAssists: 0,
+                            totalAcs: 0,
+                            totalAdr: 0,
+                            totalHs: 0,
+                            mapsPlayed: 0,
+                            agentsPlayed: {},
+                            highestAcsData: { acs: 0, agent: '', k:0, d:0, a:0 } // Tek maçlık en yüksek değer
+                        };
+                    }
+
+                    const p = playersMap[ign];
+                    p.mapsPlayed++;
+                    p.totalKills += (stat.kills || 0);
+                    p.totalDeaths += (stat.deaths || 0);
+                    p.totalAssists += (stat.assists || 0);
+                    
+                    // Supabase'den gelen yeni veriler (Eğer eklediysen)
+                    const statAcs = stat.acs || 0;
+                    const statAdr = stat.adr || 0;
+                    const statHs = stat.hs_percentage || 0;
+
+                    p.totalAcs += statAcs;
+                    p.totalAdr += statAdr;
+                    p.totalHs += statHs;
+                    p.agentsPlayed[agent] = (p.agentsPlayed[agent] || 0) + 1;
+
+                    // Tek maçlık ACS rekoru kontrolü
+                    if (statAcs > p.highestAcsData.acs) {
+                        p.highestAcsData = {
+                            acs: statAcs,
+                            agent: agent,
+                            k: stat.kills,
+                            d: stat.deaths,
+                            a: stat.assists
+                        };
+                    }
+                });
+
+                // Objeyi Array'e çevir
+                const playersArray = Object.values(playersMap);
+
+                // Ortalamaları hesapla ve en çok oynanan ajanı bul
+                playersArray.forEach(p => {
+                    p.avgAcs = p.mapsPlayed > 0 ? Math.round(p.totalAcs / p.mapsPlayed) : 0;
+                    p.avgAdr = p.mapsPlayed > 0 ? Math.round(p.totalAdr / p.mapsPlayed) : 0;
+                    p.avgHs = p.mapsPlayed > 0 ? Math.round(p.totalHs / p.mapsPlayed) : 0;
+                    
+                    // En çok oynadığı ajanı bul
+                    p.mainAgent = Object.keys(p.agentsPlayed).reduce((a, b) => p.agentsPlayed[a] > p.agentsPlayed[b] ? a : b, "unknown");
+                });
+
+                // TABLOLARI DOLDURMA İŞLEMLERİ
+
+                // 1. KILLS (En çok kill alanlar - Saf toplam)
+                const killsSorted = [...playersArray].sort((a, b) => b.totalKills - a.totalKills).slice(0, 10);
+                document.getElementById('tbody-kills').innerHTML = killsSorted.map((p, i) => `
+                    <tr>
+                        <td><span class="rank-badge">${i + 1}</span></td>
+                        <td><div class="player-info-cell"><div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
+                        <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)} <span style="color:var(--gri-yazi); font-size:12px; text-transform:capitalize;">${p.mainAgent}</span></div></td>
+                        <td>${p.mapsPlayed} Maç</td>
+                        <td class="highlight-stat">${p.totalKills}</td>
+                    </tr>
+                `).join('');
+
+                // 2. HS YÜZDESİ (En az 2 harita oynayanlar)
+                const hsSorted = [...playersArray].filter(p => p.mapsPlayed >= 2).sort((a, b) => b.avgHs - a.avgHs).slice(0, 10);
+                document.getElementById('tbody-hs').innerHTML = hsSorted.length > 0 ? hsSorted.map((p, i) => `
+                    <tr>
+                        <td><span class="rank-badge">${i + 1}</span></td>
+                        <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)}<div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
+                        <td>${p.avgAcs}</td>
+                        <td class="highlight-stat">%${p.avgHs}</td>
+                    </tr>
+                `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 maç oynayan oyuncu bekleniyor.</td></tr>';
+
+                // 3. ACS (Tek maçlık rekor)
+                const acsSorted = [...playersArray].sort((a, b) => b.highestAcsData.acs - a.highestAcsData.acs).slice(0, 10);
+                document.getElementById('tbody-acs').innerHTML = acsSorted.map((p, i) => `
+                    <tr>
+                        <td><span class="rank-badge">${i + 1}</span></td>
+                        <td><div class="player-info-cell"><div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
+                        <td>${getAgentImgHtml(p.highestAcsData.agent)}</td>
+                        <td><span style="color:#00d2ff;">${p.highestAcsData.k}</span> / <span style="color:#ff4b4b;">${p.highestAcsData.d}</span> / <span style="color:#888;">${p.highestAcsData.a}</span></td>
+                        <td class="highlight-stat">${p.highestAcsData.acs}</td>
+                    </tr>
+                `).join('');
+
+                // 4. ADR (Ortalama)
+                const adrSorted = [...playersArray].filter(p => p.mapsPlayed >= 2).sort((a, b) => b.avgAdr - a.avgAdr).slice(0, 10);
+                document.getElementById('tbody-adr').innerHTML = adrSorted.length > 0 ? adrSorted.map((p, i) => `
+                    <tr>
+                        <td><span class="rank-badge">${i + 1}</span></td>
+                        <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)}<div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
+                        <td>${p.totalKills}</td>
+                        <td class="highlight-stat">${p.avgAdr}</td>
+                    </tr>
+                `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">Yeterli veri yok.</td></tr>';
+
+                // 5. POPÜLER AJANLAR
+                const agentsArray = Object.keys(agentsMap).map(key => ({ name: key, count: agentsMap[key] }));
+                const agentsSorted = agentsArray.sort((a, b) => b.count - a.count).slice(0, 10);
+                document.getElementById('tbody-agents').innerHTML = agentsSorted.map((a, i) => `
+                    <tr>
+                        <td><span class="rank-badge">${i + 1}</span></td>
+                        <td><div class="player-info-cell">${getAgentImgHtml(a.name)} <span style="font-weight:bold; color:white; text-transform:uppercase;">${a.name}</span></div></td>
+                        <td class="highlight-stat">${a.count} Kez Seçildi</td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                console.error("Leaderboard yüklenirken hata:", err);
+                const errorMsg = '<tr><td colspan="5" style="text-align:center; padding: 40px; color:red;">Veriler yüklenirken bir hata oluştu.</td></tr>';
+                ['kills', 'hs', 'acs', 'adr', 'agents'].forEach(id => document.getElementById(`tbody-${id}`).innerHTML = errorMsg);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await loadComponents();
+            if (typeof checkUserStatus === 'function') { checkUserStatus(); }
+            fetchLeaderboardData();
+        });
+    </script>
+</body>
+</html>
