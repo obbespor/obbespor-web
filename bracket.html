@@ -40,22 +40,18 @@
         .bracket-scroll-area { width: 100%; overflow-x: auto; padding-bottom: 40px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; }
         .bracket-container { display: flex; align-items: stretch; justify-content: center; gap: 60px; min-width: max-content; }
         
-        /* Kaymayı Önleyen Merkezleme Mantığı */
         .bracket-column { display: flex; flex-direction: column; justify-content: center; width: 250px; position: relative; }
         
         .round-header { text-align: center; color: var(--neon-mor); font-weight: 900; text-transform: uppercase; font-size: 16px; letter-spacing: 2px; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; z-index: 10; }
 
-        /* Maç Kartı Spacing (Sabitleyici) */
         .bracket-column .match-wrapper { position: relative; z-index: 5; margin: 0; padding: 10px 0; }
         
-        /* Dinamik Boşluk Mantığı */
         .bracket-column:nth-child(1) .match-wrapper { margin-bottom: 20px; }
         .bracket-column:nth-child(2) .match-wrapper { margin-bottom: 120px; }
         .bracket-column:nth-child(3) .match-wrapper { margin-bottom: 320px; }
         .bracket-column:nth-child(4) .match-wrapper { margin-bottom: 0; }
         .bracket-column .match-wrapper:last-child { margin-bottom: 0; }
 
-        /* Ağaç Çizgileri - Milimetrik Ayar */
         .bracket-column .match-wrapper::after { content: ''; position: absolute; right: -30px; top: calc(50% - 1px); width: 30px; border-bottom: 2px solid #333; z-index: 1; }
         .bracket-column:last-child .match-wrapper::after { display: none; }
         
@@ -106,8 +102,8 @@
         .modal-header { padding: 40px 20px; background: radial-gradient(circle at center, #1a0a2e 0%, #0a0a0a 100%); text-align: center; border-bottom: 1px solid #222; }
         .scoreboard { display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 15px;}
         .modal-team { display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1; }
-        .modal-team img { width: 60px; height: 60px; object-fit: contain; }
-        .modal-team-name { font-size: 20px; font-weight: 900; color: white; text-transform: uppercase; }
+        .modal-team img { width: 60px; height: 60px; object-fit: contain; border-radius: 8px; }
+        .modal-team-name { font-size: 20px; font-weight: 900; color: white; text-transform: uppercase; text-align: center;}
         .modal-score { font-size: 48px; font-weight: 900; color: white; }
         .modal-score.winner { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
         .modal-vs { font-size: 16px; color: #555; font-weight: bold; }
@@ -189,7 +185,7 @@
                 <span style="font-size: 12px; font-weight: 900; color: var(--gri-yazi); letter-spacing: 2px;">MAÇ DETAYLARI</span>
                 <div class="scoreboard">
                     <div class="modal-team">
-                        <img src="img/obblogo.png" alt="Takım A">
+                        <img src="img/unknown.webp" id="mLogoA" alt="Takım A" onerror="this.src='img/unknown.webp'">
                         <span class="modal-team-name" id="mTeamA">TAKIM A</span>
                     </div>
                     <div style="display:flex; align-items:center; gap:15px;">
@@ -198,14 +194,13 @@
                         <span class="modal-score" id="mScoreB">0</span>
                     </div>
                     <div class="modal-team">
-                        <img src="img/obblogo.png" alt="Takım B">
+                        <img src="img/unknown.webp" id="mLogoB" alt="Takım B" onerror="this.src='img/unknown.webp'">
                         <span class="modal-team-name" id="mTeamB">TAKIM B</span>
                     </div>
                 </div>
             </div>
             
-            <div id="modalDetailsContent">
-            </div>
+            <div id="modalDetailsContent"></div>
         </div>
     </div>
 
@@ -251,8 +246,8 @@
                 return `
                     <div class="match-card empty-slot ${isFinal ? 'final-match' : ''}">
                         <div class="match-info-bar"><span>${format}</span><span style="color:#555;">EŞLEŞME BEKLENİYOR</span></div>
-                        <div class="team"><div class="team-info"><img src="img/imgagents/unknown.png" class="team-logo" onerror="this.src='img/obblogo.png'"><span class="team-name">Belirlenmedi</span></div><span class="score">-</span></div>
-                        <div class="team"><div class="team-info"><img src="img/imgagents/unknown.png" class="team-logo" onerror="this.src='img/obblogo.png'"><span class="team-name">Belirlenmedi</span></div><span class="score">-</span></div>
+                        <div class="team"><div class="team-info"><img src="img/unknown.webp" class="team-logo"><span class="team-name">Belirlenmedi</span></div><span class="score">-</span></div>
+                        <div class="team"><div class="team-info"><img src="img/unknown.webp" class="team-logo"><span class="team-name">Belirlenmedi</span></div><span class="score">-</span></div>
                     </div>
                 `;
             }
@@ -262,6 +257,10 @@
             const sA = matchData.scoreA !== null ? matchData.scoreA : '-';
             const sB = matchData.scoreB !== null ? matchData.scoreB : '-';
             
+            // Supabase'den gelen logo_url verisini kullanıyoruz, boşsa unknown.webp atıyoruz
+            const logoA = matchData.logoA || 'img/unknown.webp';
+            const logoB = matchData.logoB || 'img/unknown.webp';
+
             let classA = '', classB = '';
             let statusText = 'BEKLİYOR';
 
@@ -281,14 +280,14 @@
             const safeTA = tA.replace(/'/g, ""); const safeTB = tB.replace(/'/g, "");
 
             return `
-                <div class="match-card ${finalClass}" onclick="openModal('${matchData.id}', '${matchData.teamAId}', '${matchData.teamBId}', '${safeTA}', '${safeTB}', '${sA}', '${sB}', '${matchData.status}')">
+                <div class="match-card ${finalClass}" onclick="openModal('${matchData.id}', '${matchData.teamAId}', '${matchData.teamBId}', '${safeTA}', '${safeTB}', '${sA}', '${sB}', '${matchData.status}', '${logoA}', '${logoB}')">
                     <div class="match-info-bar"><span>${matchData.format || format}</span>${statusText}</div>
                     <div class="team ${classA}">
-                        <div class="team-info"><img src="img/obblogo.png" class="team-logo"><span class="team-name">${tA}</span></div>
+                        <div class="team-info"><img src="${logoA}" onerror="this.src='img/unknown.webp'" class="team-logo"><span class="team-name">${tA}</span></div>
                         <span class="score">${sA}</span>
                     </div>
                     <div class="team ${classB}">
-                        <div class="team-info"><img src="img/obblogo.png" class="team-logo"><span class="team-name">${tB}</span></div>
+                        <div class="team-info"><img src="${logoB}" onerror="this.src='img/unknown.webp'" class="team-logo"><span class="team-name">${tB}</span></div>
                         <span class="score">${sB}</span>
                     </div>
                 </div>
@@ -297,11 +296,19 @@
 
         async function fetchAndRenderBracket() {
             try {
-                const { data: teamsData, error: teamsErr } = await window.supabaseClient.from('tournament_applications').select('id, team_name');
+                // SÜTUN ADI DÜZELTİLDİ: logo_url olarak Supabase'den çekiliyor.
+                const { data: teamsData, error: teamsErr } = await window.supabaseClient.from('tournament_applications').select('id, team_name, logo_url');
                 if (teamsErr) throw teamsErr;
                 
                 const teamMap = {};
-                if (teamsData) teamsData.forEach(t => teamMap[t.id] = t.team_name);
+                if (teamsData) {
+                    teamsData.forEach(t => {
+                        teamMap[t.id] = {
+                            name: t.team_name,
+                            logo: t.logo_url || 'img/unknown.webp'
+                        };
+                    });
+                }
 
                 const { data: matchesData, error: matchesErr } = await window.supabaseClient.from('bracket_matches').select('*').order('round_order', { ascending: true });
                 if (matchesErr) throw matchesErr;
@@ -314,8 +321,10 @@
                             id: m.id,
                             teamAId: m.team_a_id,
                             teamBId: m.team_b_id,
-                            teamA: teamMap[m.team_a_id] || 'Belirlenmedi',
-                            teamB: teamMap[m.team_b_id] || 'Belirlenmedi',
+                            teamA: teamMap[m.team_a_id]?.name || 'Belirlenmedi',
+                            teamB: teamMap[m.team_b_id]?.name || 'Belirlenmedi',
+                            logoA: teamMap[m.team_a_id]?.logo || 'img/unknown.webp',
+                            logoB: teamMap[m.team_b_id]?.logo || 'img/unknown.webp',
                             scoreA: m.series_score_a,
                             scoreB: m.series_score_b,
                             status: m.status,
@@ -361,8 +370,7 @@
             }
         }
 
-        // --- GÜNCELLENMİŞ MODAL (GERÇEK WEBP'LERİ DOĞRU İSİMLENDİRME İLE GETİRİR) ---
-        async function openModal(matchId, teamAId, teamBId, tA, tB, sA, sB, status) {
+        async function openModal(matchId, teamAId, teamBId, tA, tB, sA, sB, status, logoA, logoB) {
             if(status === 'undefined' || status === 'pending' || sA === '-') return; 
             
             document.getElementById('mTeamA').innerText = tA;
@@ -375,6 +383,11 @@
             
             scoreAEl.className = parseInt(sA) > parseInt(sB) ? 'modal-score winner' : 'modal-score';
             scoreBEl.className = parseInt(sB) > parseInt(sA) ? 'modal-score winner' : 'modal-score';
+
+            const logoAEl = document.getElementById('mLogoA');
+            const logoBEl = document.getElementById('mLogoB');
+            logoAEl.src = logoA;
+            logoBEl.src = logoB;
 
             document.getElementById('matchModal').classList.add('active');
             document.body.style.overflow = 'hidden'; 
@@ -401,11 +414,8 @@
                 const teamAStats = stats.filter(s => s.team_id === teamAId).sort((a,b) => b.kills - a.kills);
                 const teamBStats = stats.filter(s => s.team_id === teamBId).sort((a,b) => b.kills - a.kills);
 
-                // GÜNCELLENMİŞ SATIR ÇİZİCİ (Dosya isimlendirmesini otomatik GitHub ile eşleştirir)
                 const renderRow = (stat) => {
                     const rawAgentName = stat.agent_name || "unknown"; 
-                    
-                    // Supabase'den ne gelirse gelsin, harfleri temizleyip baş harfini büyütür (Örn: "jett" -> "Jett", "KAY/O" -> "Kayo")
                     let cleanName = rawAgentName.replace(/[^a-zA-Z0-9]/g, ''); 
                     let formattedAgentName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1).toLowerCase();
                     
@@ -419,7 +429,6 @@
                     </tr>`;
                 };
 
-                // Sadece ilk haritayı gösteriyoruz
                 detailsBox.innerHTML = `
                     <div class="map-stats-block">
                         <h4 class="map-name-header">HARİTA: ${maps[0].map_name.toUpperCase()}</h4>
