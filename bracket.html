@@ -264,7 +264,7 @@
             const tA = matchData.teamA || 'Bilinmeyen Takım';
             const tB = matchData.teamB || 'Bilinmeyen Takım';
             
-            // Fikstür kartında SERİ skoru gösterilir (BO1 ise 1-0, BO3 ise 2-1 gibi)
+            // Fikstür kartında OTOMATİK HESAPLANAN SERİ skoru gösterilir
             const sA = matchData.scoreA !== null ? matchData.scoreA : '-';
             const sB = matchData.scoreB !== null ? matchData.scoreB : '-';
             
@@ -274,6 +274,7 @@
             let classA = '', classB = '';
             let statusText = 'BEKLİYOR';
 
+            // OTOMATİK HESAPLANMIŞ DURUMA GÖRE ARAYÜZ (Artık adminin girdiği veriye güvenmiyoruz)
             if (matchData.status === 'finished') {
                 classA = matchData.winnerId === matchData.teamAId ? 'winner' : 'loser';
                 classB = matchData.winnerId === matchData.teamBId ? 'winner' : 'loser';
@@ -306,7 +307,7 @@
 
         async function fetchAndRenderBracket() {
             try {
-                // Takım logolarını ve isimlerini çekiyoruz
+                // 1. Takım logolarını ve isimlerini çekiyoruz
                 const { data: teamsData, error: teamsErr } = await window.supabaseClient.from('tournament_applications').select('id, team_name, logo_url');
                 if (teamsErr) throw teamsErr;
                 
@@ -320,14 +321,58 @@
                     });
                 }
 
-                // Maçları çekiyoruz
+                // 2. Maçları çekiyoruz
                 const { data: matchesData, error: matchesErr } = await window.supabaseClient.from('bracket_matches').select('*').order('round_order', { ascending: true });
                 if (matchesErr) throw matchesErr;
+
+                // 3. TÜM HARİTALARI TEK SEFERDE ÇEKİYORUZ (OTOMATİK SKOR HESAPLAMASI İÇİN)
+                const { data: mapsData, error: mapsErr } = await window.supabaseClient.from('match_maps').select('match_id, score_a, score_b');
+                if (mapsErr) throw mapsErr;
+
+                // Haritaları maç ID'sine göre grupluyoruz
+                const mapsByMatch = {};
+                if (mapsData) {
+                    mapsData.forEach(m => {
+                        if (!mapsByMatch[m.match_id]) mapsByMatch[m.match_id] = [];
+                        mapsByMatch[m.match_id].push(m);
+                    });
+                }
 
                 const roundsData = {};
                 if (matchesData) {
                     matchesData.forEach(m => {
                         if (!roundsData[m.round_name]) roundsData[m.round_name] = [];
+                        
+                        // --- AKILLI SERİ SKORU VE DURUM HESAPLAYICI ---
+                        let sA = 0;
+                        let sB = 0;
+                        let calcStatus = 'pending';
+                        let calcWinner = null;
+                        
+                        // Kazanmak için gereken skor (BO1=1, BO3=2, BO5=3)
+                        let winsNeeded = 1; 
+                        if (["SON 16", "ÇEYREK FİNAL", "YARI FİNAL"].includes(m.round_name)) winsNeeded = 2; // BO3
+                        if (m.round_name === "FİNAL") winsNeeded = 3; // BO5
+
+                        const matchMaps = mapsByMatch[m.id] || [];
+                        
+                        if (matchMaps.length > 0) {
+                            matchMaps.forEach(map => {
+                                // Haritada skoru büyük olan takım seriye +1 puan alır
+                                if (map.score_a > map.score_b) sA++;
+                                else if (map.score_b > map.score_a) sB++;
+                            });
+
+                            // Durumu Güncelle (Gereken skora ulaşıldıysa TAMAMLANDI)
+                            if (sA >= winsNeeded) { calcStatus = 'finished'; calcWinner = m.team_a_id; }
+                            else if (sB >= winsNeeded) { calcStatus = 'finished'; calcWinner = m.team_b_id; }
+                            else { calcStatus = 'live'; } // Harita oynanmış ama seri bitmemişse CANLI
+                        } else {
+                            sA = '-';
+                            sB = '-';
+                            calcStatus = 'pending'; // Hiç harita yoksa BEKLİYOR
+                        }
+
                         roundsData[m.round_name].push({
                             id: m.id,
                             teamAId: m.team_a_id,
@@ -336,10 +381,10 @@
                             teamB: teamMap[m.team_b_id]?.name || 'Belirlenmedi',
                             logoA: teamMap[m.team_a_id]?.logo || 'img/unknown.webp',
                             logoB: teamMap[m.team_b_id]?.logo || 'img/unknown.webp',
-                            scoreA: m.series_score_a,
-                            scoreB: m.series_score_b,
-                            status: m.status,
-                            winnerId: m.winner_id,
+                            scoreA: sA, // Veritabanındaki değil, gerçek hesaplanan skor
+                            scoreB: sB, // Veritabanındaki değil, gerçek hesaplanan skor
+                            status: calcStatus, // Otomatik hesaplanan durum
+                            winnerId: calcWinner,
                             format: m.match_format
                         });
                     });
