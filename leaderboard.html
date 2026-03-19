@@ -40,7 +40,7 @@
         .board-header { background: #111; padding: 25px 30px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
         .board-title { font-size: 20px; font-weight: 900; color: white; margin: 0; display: flex; align-items: center; gap: 12px; }
         .board-title i { color: var(--neon-mor); font-size: 24px; }
-        .board-desc { color: var(--gri-yazi); font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .board-desc { color: var(--gri-yazi); font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; text-align: right; }
 
         .table-responsive { width: 100%; overflow-x: auto; }
         .data-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
@@ -71,9 +71,10 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 768px) {
-            .board-header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 20px; }
+            .board-header { flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 20px; }
+            .board-desc { text-align: center; }
             .data-table th, .data-table td { padding: 12px 15px; }
-            .category-btn { padding: 10px 20px; font-size: 12px; }
+            .category-btn { padding: 10px 20px; font-size: 12px; flex: 1 1 40%; justify-content: center; }
             .agent-img { width: 30px; height: 30px; }
             .player-name { font-size: 13px; }
         }
@@ -237,7 +238,7 @@
             document.getElementById(`board-${categoryId}`).classList.add('active');
         }
 
-        // Ajan İkonu Formatlayıcı
+        // Ajan İkonu Formatlayıcı (Hatasız)
         function getAgentImgHtml(agentName) {
             if (!agentName) return `<img src="img/imgagents/unknown.png" class="agent-img">`;
             let cleanName = agentName.replace(/[^a-zA-Z0-9]/g, ''); 
@@ -297,7 +298,6 @@
                     p.totalDeaths += (stat.deaths || 0);
                     p.totalAssists += (stat.assists || 0);
                     
-                    // Supabase'den gelen yeni veriler (Eğer eklediysen)
                     const statAcs = stat.acs || 0;
                     const statAdr = stat.adr || 0;
                     const statHs = stat.hs_percentage || 0;
@@ -341,12 +341,12 @@
                         <td><span class="rank-badge">${i + 1}</span></td>
                         <td><div class="player-info-cell"><div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
                         <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)} <span style="color:var(--gri-yazi); font-size:12px; text-transform:capitalize;">${p.mainAgent}</span></div></td>
-                        <td>${p.mapsPlayed} Maç</td>
+                        <td>${p.mapsPlayed} Harita</td>
                         <td class="highlight-stat">${p.totalKills}</td>
                     </tr>
                 `).join('');
 
-                // 2. HS YÜZDESİ (En az 2 harita oynayanlar)
+                // 2. HS YÜZDESİ (Sadece en az 2 harita oynayanlar)
                 const hsSorted = [...playersArray].filter(p => p.mapsPlayed >= 2).sort((a, b) => b.avgHs - a.avgHs).slice(0, 10);
                 document.getElementById('tbody-hs').innerHTML = hsSorted.length > 0 ? hsSorted.map((p, i) => `
                     <tr>
@@ -355,7 +355,7 @@
                         <td>${p.avgAcs}</td>
                         <td class="highlight-stat">%${p.avgHs}</td>
                     </tr>
-                `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 maç oynayan oyuncu bekleniyor.</td></tr>';
+                `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 harita oynayan oyuncu bekleniyor.</td></tr>';
 
                 // 3. ACS (Tek maçlık rekor)
                 const acsSorted = [...playersArray].sort((a, b) => b.highestAcsData.acs - a.highestAcsData.acs).slice(0, 10);
@@ -369,7 +369,7 @@
                     </tr>
                 `).join('');
 
-                // 4. ADR (Ortalama)
+                // 4. ADR (Ortalama - Sadece en az 2 harita oynayanlar)
                 const adrSorted = [...playersArray].filter(p => p.mapsPlayed >= 2).sort((a, b) => b.avgAdr - a.avgAdr).slice(0, 10);
                 document.getElementById('tbody-adr').innerHTML = adrSorted.length > 0 ? adrSorted.map((p, i) => `
                     <tr>
@@ -378,7 +378,7 @@
                         <td>${p.totalKills}</td>
                         <td class="highlight-stat">${p.avgAdr}</td>
                     </tr>
-                `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">Yeterli veri yok.</td></tr>';
+                `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 harita oynayan oyuncu bekleniyor.</td></tr>';
 
                 // 5. POPÜLER AJANLAR
                 const agentsArray = Object.keys(agentsMap).map(key => ({ name: key, count: agentsMap[key] }));
