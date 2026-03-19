@@ -20,29 +20,55 @@
         .hero { height: 75vh; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; background: url('img/background.webp') center/cover fixed; }
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1; }
         .hero-content { position: relative; z-index: 2; padding: 0 20px; }
-        .hero h1 { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 900; }
+        .hero h1 { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 900; color: white; margin-bottom: 10px; }
+        .hero p { font-size: 1.2rem; color: #ddd; margin-bottom: 30px; font-weight: 500; }
         .purple-neon { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
         
-        .main-btn { background: var(--neon-mor); color: white; border: none; padding: 15px 40px; border-radius: 8px; font-weight: 900; margin-top: 20px; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-family: 'Poppins', sans-serif; font-size: 16px; }
+        .main-btn { background: var(--neon-mor); color: white; border: none; padding: 15px 40px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-family: 'Poppins', sans-serif; font-size: 16px; }
         .main-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--neon-mor); }
 
         .container { padding: 80px 10%; }
-        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .card { background-color: var(--card-bg); border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.4s ease; }
+        
+        /* SLIDER BAŞLIĞI VE KONTROLLERİ */
+        .section-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; color: white; margin: 0; }
+        
+        .slider-controls { display: flex; gap: 10px; }
+        .slider-controls button { background: #111; border: 1px solid #333; color: white; width: 45px; height: 45px; border-radius: 50%; font-size: 18px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; }
+        .slider-controls button:hover { background: var(--neon-mor); border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); transform: scale(1.1); }
+
+        /* YATAY KAYDIRILABİLİR KART ALANI */
+        .slider-wrapper { position: relative; width: 100%; overflow: hidden; }
+        .slider-container { display: flex; gap: 30px; overflow-x: auto; scroll-behavior: smooth; padding-bottom: 20px; scrollbar-width: none; /* Firefox için gizle */ }
+        .slider-container::-webkit-scrollbar { display: none; /* Chrome/Safari için gizle */ }
+
+        /* KART TASARIMI (Artık a etiketi olacak) */
+        .card { flex: 0 0 calc(33.333% - 20px); min-width: 300px; display: block; text-decoration: none; color: inherit; background-color: var(--card-bg); border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.4s ease; }
         .card:hover { border-color: var(--neon-mor); transform: translateY(-10px); box-shadow: 0 10px 30px rgba(96, 29, 194, 0.2); }
-        .card-img { height: 200px; background: #1a052d; overflow: hidden; }
+        .card-img { height: 200px; background: #1a052d; overflow: hidden; position: relative; }
         .card-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
         .card:hover .card-img img { transform: scale(1.05); }
+        
         .card-body { padding: 25px; }
-        .card-body h3 { color: var(--neon-mor); margin-bottom: 12px; font-size: 20px; font-weight: 700; }
-        .card-body p { color: var(--gri-yazi); font-size: 14px; line-height: 1.6; }
-        .card-link { display: inline-block; margin-top: 18px; color: var(--yazi-beyaz); text-decoration: none; font-weight: bold; font-size: 13px; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; transition: 0.3s; cursor: pointer; }
+        .card-body h3 { color: var(--neon-mor); margin-bottom: 12px; font-size: 20px; font-weight: 700; transition: 0.3s; }
+        .card:hover .card-body h3 { color: white; }
+        .card-body p { color: var(--gri-yazi); font-size: 14px; line-height: 1.6; margin: 0; }
+
+        @media (max-width: 1024px) {
+            .card { flex: 0 0 calc(50% - 15px); }
+        }
 
         @media (max-width: 768px) {
             .container { padding: 40px 5%; } 
+            .hero h1 { font-size: 2.2rem; }
+            
+            /* Mobilde slider'ı iptal edip alt alta diziyoruz */
+            .slider-controls { display: none; }
+            .slider-container { flex-direction: column; overflow-x: visible; gap: 20px; padding-bottom: 0; }
+            .card { flex: 1 1 auto; min-width: 100%; }
+            
             .card-body { padding: 20px 15px; } 
             .card-body h3 { font-size: 18px; }
-            .hero h1 { font-size: 2.2rem; }
         }
     </style>
 </head>
@@ -60,42 +86,99 @@
     </div>
 
     <section class="container">
-        <h2 class="section-title">GÜNCEL DUYURULAR</h2>
-        <div class="grid-layout">
-            
-            <div class="card">
-                <div class="card-img">
-                    <img src="img/logoai.webp" alt="OBB E-Sports Lansman">
-                </div>
-                <div class="card-body">
-                    <h3>OBB E-SPORTS ÇOK YAKINDA!</h3>
-                    <p>Bu sezon, Ordu’ya yeni bir soluk getiriyoruz! Gençlerin yanındayız, yeteneklerini destekliyoruz ve birlikte büyük bir topluluk yaratıyoruz. Hazır mısınız? Macera başlıyor!</p>
-                    <a href="duyuru.html" class="card-link">DETAYLARI GÖR</a>
-                </div>
+        
+        <div class="section-header-row">
+            <h2 class="section-title">GÜNCEL DUYURULAR</h2>
+            <div class="slider-controls">
+                <button onclick="slideLeft()"><i class="fas fa-chevron-left"></i></button>
+                <button onclick="slideRight()"><i class="fas fa-chevron-right"></i></button>
             </div>
-            
-            <div class="card">
-                <div class="card-img">
-                    <img src="img/valorant.webp" alt="Valorant Turnuvası">
-                </div>
-                <div class="card-body">
-                    <h3>TOPLULUK TURNUVASI</h3>
-                    <p>Valorant Topluluk Turnuvası kayıtları Çok yakında! 10.000 TL’ye varan ödüllerle sizleri sahada görmek için sabırsızlanıyoruz!</p>
-                    <a href="basvuru.html" class="card-link">ŞİMDİ KAYDOL</a>
-                </div>
+        </div>
+
+        <div class="slider-wrapper">
+            <div class="slider-container" id="announcementSlider">
+                
+                <a href="duyuru.html" class="card">
+                    <div class="card-img">
+                        <img src="img/logoai.webp" alt="OBB E-Sports Lansman">
+                    </div>
+                    <div class="card-body">
+                        <h3>OBB E-SPORTS ÇOK YAKINDA!</h3>
+                        <p>Bu sezon, Ordu’ya yeni bir soluk getiriyoruz! Gençlerin yanındayız, yeteneklerini destekliyoruz ve birlikte büyük bir topluluk yaratıyoruz. Hazır mısınız?</p>
+                    </div>
+                </a>
+                
+                <a href="basvuru.html" class="card">
+                    <div class="card-img">
+                        <img src="img/valorant.webp" alt="Valorant Turnuvası">
+                    </div>
+                    <div class="card-body">
+                        <h3>TOPLULUK TURNUVASI</h3>
+                        <p>Valorant Topluluk Turnuvası kayıtları Çok yakında! 10.000 TL’ye varan ödüllerle sizleri sahada görmek için sabırsızlanıyoruz!</p>
+                    </div>
+                </a>
+                
+                <a href="sosyal.html" class="card">
+                    <div class="card-img">
+                        <img src="img/topluluk.webp" alt="OBB E-Sport Topluluğu">
+                    </div>
+                    <div class="card-body">
+                        <h3>TOPLULUK</h3>
+                        <p>Sizleri de aramızda görmek istiyoruz! Tek hedefimiz sadece bir takım kurmak değil; gençler için bir buluşma noktası oluşturmak.</p>
+                    </div>
+                </a>
+
+                <a href="#" class="card">
+                    <div class="card-img">
+                        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Turnuva Kuralları">
+                    </div>
+                    <div class="card-body">
+                        <h3>TURNUVA KURALLARI</h3>
+                        <p>Adil bir oyun ortamı sağlamak için turnuva kurallarımız güncellendi. Tüm katılımcıların maça çıkmadan önce okuması zorunludur.</p>
+                    </div>
+                </a>
+
+                <a href="#" class="card">
+                    <div class="card-img">
+                        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Ödül Havuzu">
+                    </div>
+                    <div class="card-body">
+                        <h3>ÖDÜL HAVUZU DAĞILIMI</h3>
+                        <p>10.000 TL'lik ödül havuzu nasıl dağıtılacak? Birinci, ikinci ve üçüncü takımları bekleyen muhteşem ödüllerin detayları burada.</p>
+                    </div>
+                </a>
+
+                <a href="#" class="card">
+                    <div class="card-img">
+                        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Canlı Yayın">
+                    </div>
+                    <div class="card-body">
+                        <h3>CANLI YAYIN BİLGİSİ</h3>
+                        <p>Turnuvanın yarı final ve final mücadeleleri resmi Twitch ve YouTube kanallarımızdan canlı yayınlanacak. Bizi takipte kalın!</p>
+                    </div>
+                </a>
+
+                <a href="#" class="card">
+                    <div class="card-img">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Kayıtlar Başladı">
+                    </div>
+                    <div class="card-body">
+                        <h3>KAYITLAR BAŞLADI</h3>
+                        <p>Takımını kur ve arenaya adımını at! Sınırlı sayıdaki takım kontenjanı dolmadan hemen yerinizi ayırtın.</p>
+                    </div>
+                </a>
+
+                <a href="#" class="card">
+                    <div class="card-img">
+                        <img src="https://images.unsplash.com/photo-1552820728-8b83bb6b773f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="E-Spor Kariyeri">
+                    </div>
+                    <div class="card-body">
+                        <h3>E-SPOR KARİYERİ</h3>
+                        <p>Profesyonel arenada boy göstermek isteyen genç yetenekler için OBB Akademi kapılarını açıyor. Detaylı bilgi için tıkla.</p>
+                    </div>
+                </a>
+
             </div>
-            
-            <div class="card">
-                <div class="card-img">
-                    <img src="img/topluluk.webp" alt="OBB E-Sport Topluluğu">
-                </div>
-                <div class="card-body">
-                    <h3>TOPLULUK</h3>
-                    <p>Sizleri de aramızda görmek istiyoruz! Tek hedefimiz sadece bir takım kurmak değil; gençler için bir buluşma noktası oluşturmak ve bunu sizsiz asla gerçekleştiremeyiz</p>
-                    <a href="#" class="card-link">SOSYAL</a>
-                </div>
-            </div>
-            
         </div>
     </section>
 
@@ -106,6 +189,34 @@
     <script src="js/bildirimler.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
+
+    <script>
+        // SLIDER (KAYDIRMA) İŞLEMLERİ VE LOOP MANTIĞI
+        function slideRight() {
+            const slider = document.getElementById('announcementSlider');
+            // Ekranda görünen kartların genişliğine göre kaydırma miktarı (Kart genişliği + gap)
+            const scrollAmount = 330; 
+            
+            // Eğer en sağa gelindiyse, başa dön (Loop)
+            if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 10) {
+                slider.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
+        }
+
+        function slideLeft() {
+            const slider = document.getElementById('announcementSlider');
+            const scrollAmount = 330;
+
+            // Eğer en soldaysa, en sona git (Loop)
+            if (slider.scrollLeft <= 0) {
+                slider.scrollTo({ left: slider.scrollWidth, behavior: 'smooth' });
+            } else {
+                slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            }
+        }
+    </script>
 
 </body>
 </html>
