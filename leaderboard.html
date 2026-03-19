@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        /* KESİN ÇÖZÜM: Tüm sayfanın yatayda patlamasını engeller */
+        /* KESİN MOBİL ÇÖZÜM: Tüm sayfanın yatayda patlamasını engeller */
         html, body { background-color: #050505; color: white; overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; }
 
         /* --- SAYFA BAŞLIĞI VE TASARIMI --- */
@@ -264,6 +264,7 @@
             } catch(e) { console.error("Komponent yüklenemedi", e); }
         }
 
+        // Sekme Değiştirme Fonksiyonu
         function switchCategory(categoryId) {
             document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
@@ -272,6 +273,7 @@
             document.getElementById(`board-${categoryId}`).classList.add('active');
         }
 
+        // Ajan İkonu Formatlayıcı 
         function getAgentImgHtml(agentName) {
             if (!agentName) return `<img src="img/imgagents/unknown.png" class="agent-img">`;
             let cleanName = agentName.replace(/[^a-zA-Z0-9]/g, ''); 
@@ -279,12 +281,15 @@
             return `<img src="img/imgagents/${formattedName}.webp" class="agent-img" onerror="this.onerror=null; this.src='img/imgagents/unknown.png'">`;
         }
 
+        // İstatistikleri Çekip Ekrana Basan Ana Fonksiyon
         async function fetchLeaderboardData() {
             try {
+                // TAKIM BİLGİLERİNİ ÇEK
                 const { data: teamsData } = await window.supabaseClient.from('tournament_applications').select('id, team_name');
                 const teamMap = {};
                 if (teamsData) teamsData.forEach(t => teamMap[t.id] = t.team_name);
 
+                // TÜM İSTATİSTİKLERİ ÇEK
                 const { data: statsData, error } = await window.supabaseClient.from('match_player_stats').select('*');
                 if (error) throw error;
 
@@ -294,6 +299,7 @@
                     return;
                 }
 
+                // VERİLERİ OYUNCU BAZINDA GRUPLA VE HESAPLA
                 const playersMap = {};
                 const agentsMap = {};
 
@@ -302,6 +308,7 @@
                     const teamName = teamMap[stat.team_id] || "Takımsız";
                     const agent = stat.agent_name || "unknown";
 
+                    // Ajan sayacı
                     agentsMap[agent] = (agentsMap[agent] || 0) + 1;
 
                     if (!playersMap[ign]) {
@@ -316,7 +323,7 @@
                             totalHs: 0,
                             mapsPlayed: 0,
                             agentsPlayed: {},
-                            highestAcsData: { acs: 0, agent: '', k:0, d:0, a:0 } 
+                            highestAcsData: { acs: 0, agent: '', k:0, d:0, a:0 } // Tek maçlık en yüksek değer
                         };
                     }
 
@@ -335,6 +342,7 @@
                     p.totalHs += statHs;
                     p.agentsPlayed[agent] = (p.agentsPlayed[agent] || 0) + 1;
 
+                    // Tek maçlık ACS rekoru kontrolü
                     if (statAcs > p.highestAcsData.acs) {
                         p.highestAcsData = {
                             acs: statAcs,
@@ -346,58 +354,70 @@
                     }
                 });
 
+                // Objeyi Array'e çevir
                 const playersArray = Object.values(playersMap);
 
+                // Ortalamaları hesapla ve en çok oynanan ajanı bul
                 playersArray.forEach(p => {
                     p.avgAcs = p.mapsPlayed > 0 ? Math.round(p.totalAcs / p.mapsPlayed) : 0;
                     p.avgAdr = p.mapsPlayed > 0 ? Math.round(p.totalAdr / p.mapsPlayed) : 0;
                     p.avgHs = p.mapsPlayed > 0 ? Math.round(p.totalHs / p.mapsPlayed) : 0;
+                    
+                    // En çok oynadığı ajanı bul
                     p.mainAgent = Object.keys(p.agentsPlayed).reduce((a, b) => p.agentsPlayed[a] > p.agentsPlayed[b] ? a : b, "unknown");
                 });
 
-                // TIKIR TIKIR ÇALIŞAN JS VE HTML YAZDIRMA KISMI (ZORUNLU MERKEZLEME SABİTLENDİ)
+                // TABLOLARI DOLDURMA İŞLEMLERİ (AGREGASYON VE MAP-BY-MAP FARKI SABİTLENDİ)
+
+                // 1. KILLS (Saf toplam, Kümeler)
+                // Bu tabloda sütunlar: Rank, OYUNCU (Nick+Takım), AJAN (Merkez), MAÇ, KİLL (Stat, Sağ)
                 const killsSorted = [...playersArray].sort((a, b) => b.totalKills - a.totalKills).slice(0, 10);
                 document.getElementById('tbody-kills').innerHTML = killsSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
-                        <td><div class="player-info-cell"><div class="player-name"><span class="player-name-text" title="${p.ign}">${p.ign}</span><span class="team-name-small" title="${p.teamName}">${p.teamName}</span></div></div></td>
+                        <td><div class="player-info-cell"><div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
                         <td><div class="player-info-cell" style="justify-content:center;">${getAgentImgHtml(p.mainAgent)}</div></td>
                         <td class="hide-mobile">${p.mapsPlayed}</td>
                         <td class="highlight-stat" style="text-align: right;">${p.totalKills}</td>
                     </tr>
                 `).join('');
 
+                // 2. HS YÜZDESİ (Kümeler)
                 const hsSorted = [...playersArray].filter(p => p.mapsPlayed >= 2).sort((a, b) => b.avgHs - a.avgHs).slice(0, 10);
                 document.getElementById('tbody-hs').innerHTML = hsSorted.length > 0 ? hsSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
-                        <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)}<div class="player-name"><span class="player-name-text" title="${p.ign}">${p.ign}</span><span class="team-name-small" title="${p.teamName}">${p.teamName}</span></div></div></td>
+                        <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)}<div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
                         <td class="hide-mobile">${p.avgAcs}</td>
                         <td class="highlight-stat" style="text-align: right;">%${p.avgHs}</td>
                     </tr>
                 `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 harita oynayan oyuncu bekleniyor.</td></tr>';
 
+                // 3. ACS (Tek maçlık rekor, Harita Bazlı)
+                // Bu tabloda sütunlar: Rank, OYUNCU (Nick+Takım), AJAN (Merkez), KDA, ACS (Stat, Sağ)
                 const acsSorted = [...playersArray].sort((a, b) => b.highestAcsData.acs - a.highestAcsData.acs).slice(0, 10);
                 document.getElementById('tbody-acs').innerHTML = acsSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
-                        <td><div class="player-info-cell"><div class="player-name"><span class="player-name-text" title="${p.ign}">${p.ign}</span><span class="team-name-small" title="${p.teamName}">${p.teamName}</span></div></div></td>
+                        <td><div class="player-info-cell"><div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
                         <td><div class="player-info-cell" style="justify-content:center;">${getAgentImgHtml(p.highestAcsData.agent)}</div></td>
-                        <td class="hide-mobile"><span style="color:#00d2ff;">${p.highestAcsData.k}</span> / <span style="color:#ff4b4b;">${p.highestAcsData.d}</span></td>
+                        <td class="hide-mobile"><span style="color:#00d2ff;">${p.highestAcsData.k}</span> / <span style="color:#ff4b4b;">${p.highestAcsData.d}</span> / <span style="color:#888;">${p.highestAcsData.a}</span></td>
                         <td class="highlight-stat" style="text-align: right;">${p.highestAcsData.acs}</td>
                     </tr>
                 `).join('');
 
+                // 4. ADR (Ortalama, Kümeler)
                 const adrSorted = [...playersArray].filter(p => p.mapsPlayed >= 2).sort((a, b) => b.avgAdr - a.avgAdr).slice(0, 10);
                 document.getElementById('tbody-adr').innerHTML = adrSorted.length > 0 ? adrSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
-                        <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)}<div class="player-name"><span class="player-name-text" title="${p.ign}">${p.ign}</span><span class="team-name-small" title="${p.teamName}">${p.teamName}</span></div></div></td>
+                        <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)}<div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
                         <td class="hide-mobile">${p.totalKills}</td>
                         <td class="highlight-stat" style="text-align: right;">${p.avgAdr}</td>
                     </tr>
                 `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 harita oynayan oyuncu bekleniyor.</td></tr>';
 
+                // 5. POPÜLER AJANLAR
                 const agentsArray = Object.keys(agentsMap).map(key => ({ name: key, count: agentsMap[key] }));
                 const agentsSorted = agentsArray.sort((a, b) => b.count - a.count).slice(0, 10);
                 document.getElementById('tbody-agents').innerHTML = agentsSorted.map((a, i) => `
