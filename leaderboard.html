@@ -4,7 +4,7 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-9VH0LHNCS3');</script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>OBB E-SPOR | Liderlik Tablosu</title>
     
     <link rel="icon" type="image/png" href="img/obblogo.png">
@@ -19,7 +19,6 @@
     <style>
         body { background-color: #050505; color: white; }
 
-        /* --- SAYFA BAŞLIĞI VE TASARIMI --- */
         .page-header { text-align: center; padding: 60px 20px 40px; background: radial-gradient(circle at top, #110522 0%, #050505 100%); border-bottom: 1px solid #222; }
         .page-title { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 900; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px; }
         .page-title span { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
@@ -27,13 +26,11 @@
 
         .leaderboard-container { padding: 50px 5%; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
 
-        /* --- FİLTRELEME SEKMELERİ --- */
         .category-tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px; }
         .category-btn { background: #0a0a0a; border: 1px solid #333; color: var(--gri-yazi); padding: 12px 25px; border-radius: 30px; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.3s; font-family: 'Poppins', sans-serif; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
         .category-btn:hover { border-color: var(--neon-mor); color: white; }
         .category-btn.active { background: var(--neon-mor); color: white; border-color: var(--neon-mor); box-shadow: 0 0 20px rgba(96, 29, 194, 0.4); }
 
-        /* --- LİDERLİK TABLOSU TASARIMI --- */
         .leaderboard-card { background: #0a0a0a; border: 1px solid #222; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; animation: fadeIn 0.4s ease; }
         .leaderboard-card.active { display: block; }
         
@@ -58,7 +55,10 @@
         .player-info-cell { display: flex; align-items: center; gap: 15px; text-align: left; }
         .agent-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid #333; background: #000; }
         .player-name { font-weight: 900; font-size: 15px; color: white; display: flex; flex-direction: column; }
-        .team-name-small { font-size: 11px; color: var(--neon-mor); font-weight: 700; text-transform: uppercase; }
+        
+        /* Uzun İsimleri Kesme Kodu (Ellipsis) */
+        .player-name-text { display: block; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .team-name-small { font-size: 11px; color: var(--neon-mor); font-weight: 700; text-transform: uppercase; display: block; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
         .highlight-stat { font-size: 18px; font-weight: 900; color: var(--neon-mor); }
         .data-table tr:nth-child(1) .highlight-stat { color: gold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
@@ -69,45 +69,43 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ==================================================
-           MOBİL UYUMLULUK: KOMPAKT VE SIĞDIRILMIŞ DÜZEN
+           AGRESİF MOBİL UYUMLULUK (ZORUNLU DARALTMA)
         ================================================== */
         @media (max-width: 768px) {
-            .page-header { padding: 40px 10px 20px; }
-            .page-title { font-size: 22px; }
-            .page-subtitle { font-size: 12px; padding: 0 5px; }
+            .page-header { padding: 30px 10px 15px; }
+            .page-title { font-size: 20px; }
+            .page-subtitle { font-size: 11px; }
             
-            .leaderboard-container { padding: 20px 10px; gap: 20px; }
+            .leaderboard-container { padding: 15px 5px; gap: 15px; }
 
-            /* BUTONLAR SAĞA DOĞRU KAYDIRILABİLİR (SWIPE) */
-            .category-tabs { 
-                flex-wrap: nowrap; 
-                overflow-x: auto; 
-                justify-content: flex-start; 
-                padding-bottom: 10px; 
-                gap: 10px;
-                -webkit-overflow-scrolling: touch; 
-                scrollbar-width: none; 
-            }
+            /* Menü Kaydırma */
+            .category-tabs { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 10px; gap: 8px; scrollbar-width: none; }
             .category-tabs::-webkit-scrollbar { display: none; }
-            .category-btn { flex: 0 0 auto; padding: 8px 16px; font-size: 11px; }
+            .category-btn { flex: 0 0 auto; padding: 8px 12px; font-size: 11px; }
 
-            .leaderboard-card { border-radius: 12px; }
-            .board-header { padding: 15px; flex-direction: column; text-align: center; gap: 8px; }
-            .board-title { font-size: 16px; }
-            .board-desc { font-size: 10px; text-align: center; }
+            .leaderboard-card { border-radius: 10px; }
+            .board-header { padding: 12px; flex-direction: column; gap: 5px; }
+            .board-title { font-size: 15px; }
+            .board-desc { font-size: 9px; }
 
-            /* TABLO İÇİ MİLİMETRİK DÜZELTMELER VE KOMPAKT GÖRÜNÜM */
-            .data-table th, .data-table td { padding: 8px 5px; font-size: 12px; }
-            .data-table th { font-size: 9px; padding: 6px 5px; }
+            /* TABLO ZORLAMA KODLARI */
+            .table-responsive { width: 100%; overflow-x: hidden; } /* Asla dışarı taşma */
+            .data-table { table-layout: fixed; width: 100%; } /* Sütunları ekrana kilitle */
+            
+            .data-table th, .data-table td { padding: 8px 4px; font-size: 11px; }
+            .data-table th { font-size: 9px; padding: 6px 2px; }
 
-            .rank-badge { width: 20px; height: 20px; font-size: 11px; }
-            .player-info-cell { gap: 8px; }
-            .agent-img { width: 28px; height: 28px; border-radius: 5px; }
-            .player-name { font-size: 12px; }
-            .team-name-small { font-size: 9px; }
-            .highlight-stat { font-size: 14px; }
+            /* Boyutları İyice Küçült */
+            .rank-badge { width: 20px; height: 20px; font-size: 10px; }
+            .player-info-cell { gap: 6px; }
+            .agent-img { width: 24px; height: 24px; border-radius: 4px; }
+            
+            /* Uzun isimleri mobilde daha da daralt */
+            .player-name-text { max-width: 90px; font-size: 11px; }
+            .team-name-small { max-width: 90px; font-size: 9px; }
+            .highlight-stat { font-size: 13px; }
 
-            /* İKİNCİL SÜTUNLARI MOBİLDE GİZLEYEREK EKRANA SIĞDIRMA */
+            /* Mobilde gizlenecek ikincil sütunlar */
             .hide-mobile { display: none !important; }
         }
     </style>
@@ -140,11 +138,11 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th width="40">#</th>
+                            <th style="width: 30px;">#</th>
                             <th style="text-align: left;">OYUNCU</th>
-                            <th>AJAN</th>
-                            <th class="hide-mobile">MAÇ</th>
-                            <th>KİLL</th>
+                            <th style="width: 50px;">AJAN</th>
+                            <th class="hide-mobile" style="width: 60px;">MAÇ</th>
+                            <th style="width: 50px;">KİLL</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-kills">
@@ -163,10 +161,10 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th width="40">#</th>
+                            <th style="width: 30px;">#</th>
                             <th style="text-align: left;">OYUNCU</th>
-                            <th class="hide-mobile">ACS</th>
-                            <th>HS %</th>
+                            <th class="hide-mobile" style="width: 60px;">ACS</th>
+                            <th style="width: 60px;">HS %</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-hs">
@@ -185,11 +183,11 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th width="40">#</th>
+                            <th style="width: 30px;">#</th>
                             <th style="text-align: left;">OYUNCU</th>
-                            <th>AJAN</th>
+                            <th style="width: 50px;">AJAN</th>
                             <th class="hide-mobile">K/D/A</th>
-                            <th>ACS</th>
+                            <th style="width: 60px;">ACS</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-acs">
@@ -208,10 +206,10 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th width="40">#</th>
+                            <th style="width: 30px;">#</th>
                             <th style="text-align: left;">OYUNCU</th>
-                            <th class="hide-mobile">KİLL</th>
-                            <th>ADR</th>
+                            <th class="hide-mobile" style="width: 60px;">KİLL</th>
+                            <th style="width: 60px;">ADR</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-adr">
@@ -230,9 +228,9 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th width="40">#</th>
+                            <th style="width: 40px;">#</th>
                             <th style="text-align: left;">AJAN</th>
-                            <th>SEÇİM</th>
+                            <th style="width: 80px;">SEÇİM</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-agents">
@@ -261,7 +259,6 @@
             } catch(e) { console.error("Komponent yüklenemedi", e); }
         }
 
-        // Sekme Değiştirme Fonksiyonu
         function switchCategory(categoryId) {
             document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
@@ -270,7 +267,6 @@
             document.getElementById(`board-${categoryId}`).classList.add('active');
         }
 
-        // Ajan İkonu Formatlayıcı 
         function getAgentImgHtml(agentName) {
             if (!agentName) return `<img src="img/imgagents/unknown.png" class="agent-img">`;
             let cleanName = agentName.replace(/[^a-zA-Z0-9]/g, ''); 
@@ -278,15 +274,12 @@
             return `<img src="img/imgagents/${formattedName}.webp" class="agent-img" onerror="this.onerror=null; this.src='img/imgagents/unknown.png'">`;
         }
 
-        // İstatistikleri Çekip Ekrana Basan Ana Fonksiyon
         async function fetchLeaderboardData() {
             try {
-                // TAKIM BİLGİLERİNİ ÇEK
                 const { data: teamsData } = await window.supabaseClient.from('tournament_applications').select('id, team_name');
                 const teamMap = {};
                 if (teamsData) teamsData.forEach(t => teamMap[t.id] = t.team_name);
 
-                // TÜM İSTATİSTİKLERİ ÇEK
                 const { data: statsData, error } = await window.supabaseClient.from('match_player_stats').select('*');
                 if (error) throw error;
 
@@ -296,7 +289,6 @@
                     return;
                 }
 
-                // VERİLERİ OYUNCU BAZINDA GRUPLA VE HESAPLA
                 const playersMap = {};
                 const agentsMap = {};
 
@@ -355,57 +347,53 @@
                     p.avgAcs = p.mapsPlayed > 0 ? Math.round(p.totalAcs / p.mapsPlayed) : 0;
                     p.avgAdr = p.mapsPlayed > 0 ? Math.round(p.totalAdr / p.mapsPlayed) : 0;
                     p.avgHs = p.mapsPlayed > 0 ? Math.round(p.totalHs / p.mapsPlayed) : 0;
-                    
                     p.mainAgent = Object.keys(p.agentsPlayed).reduce((a, b) => p.agentsPlayed[a] > p.agentsPlayed[b] ? a : b, "unknown");
                 });
 
-                // 1. KILLS 
+                // HTML BASILIRKEN YENİ EKLENEN SINIFLAR: player-name-text
+                
                 const killsSorted = [...playersArray].sort((a, b) => b.totalKills - a.totalKills).slice(0, 10);
                 document.getElementById('tbody-kills').innerHTML = killsSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
-                        <td><div class="player-info-cell"><div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
+                        <td><div class="player-info-cell"><div class="player-name"><span class="player-name-text" title="${p.ign}">${p.ign}</span><span class="team-name-small" title="${p.teamName}">${p.teamName}</span></div></div></td>
                         <td><div class="player-info-cell" style="justify-content:center;">${getAgentImgHtml(p.mainAgent)}</div></td>
                         <td class="hide-mobile">${p.mapsPlayed}</td>
                         <td class="highlight-stat">${p.totalKills}</td>
                     </tr>
                 `).join('');
 
-                // 2. HS YÜZDESİ 
                 const hsSorted = [...playersArray].filter(p => p.mapsPlayed >= 2).sort((a, b) => b.avgHs - a.avgHs).slice(0, 10);
                 document.getElementById('tbody-hs').innerHTML = hsSorted.length > 0 ? hsSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
-                        <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)}<div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
+                        <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)}<div class="player-name"><span class="player-name-text" title="${p.ign}">${p.ign}</span><span class="team-name-small" title="${p.teamName}">${p.teamName}</span></div></div></td>
                         <td class="hide-mobile">${p.avgAcs}</td>
                         <td class="highlight-stat">%${p.avgHs}</td>
                     </tr>
                 `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 harita oynayan oyuncu bekleniyor.</td></tr>';
 
-                // 3. ACS 
                 const acsSorted = [...playersArray].sort((a, b) => b.highestAcsData.acs - a.highestAcsData.acs).slice(0, 10);
                 document.getElementById('tbody-acs').innerHTML = acsSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
-                        <td><div class="player-info-cell"><div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
+                        <td><div class="player-info-cell"><div class="player-name"><span class="player-name-text" title="${p.ign}">${p.ign}</span><span class="team-name-small" title="${p.teamName}">${p.teamName}</span></div></div></td>
                         <td><div class="player-info-cell" style="justify-content:center;">${getAgentImgHtml(p.highestAcsData.agent)}</div></td>
-                        <td class="hide-mobile"><span style="color:#00d2ff;">${p.highestAcsData.k}</span> / <span style="color:#ff4b4b;">${p.highestAcsData.d}</span> / <span style="color:#888;">${p.highestAcsData.a}</span></td>
+                        <td class="hide-mobile"><span style="color:#00d2ff;">${p.highestAcsData.k}</span> / <span style="color:#ff4b4b;">${p.highestAcsData.d}</span></td>
                         <td class="highlight-stat">${p.highestAcsData.acs}</td>
                     </tr>
                 `).join('');
 
-                // 4. ADR 
                 const adrSorted = [...playersArray].filter(p => p.mapsPlayed >= 2).sort((a, b) => b.avgAdr - a.avgAdr).slice(0, 10);
                 document.getElementById('tbody-adr').innerHTML = adrSorted.length > 0 ? adrSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
-                        <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)}<div class="player-name">${p.ign}<span class="team-name-small">${p.teamName}</span></div></div></td>
+                        <td><div class="player-info-cell">${getAgentImgHtml(p.mainAgent)}<div class="player-name"><span class="player-name-text" title="${p.ign}">${p.ign}</span><span class="team-name-small" title="${p.teamName}">${p.teamName}</span></div></div></td>
                         <td class="hide-mobile">${p.totalKills}</td>
                         <td class="highlight-stat">${p.avgAdr}</td>
                     </tr>
                 `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 harita oynayan oyuncu bekleniyor.</td></tr>';
 
-                // 5. POPÜLER AJANLAR
                 const agentsArray = Object.keys(agentsMap).map(key => ({ name: key, count: agentsMap[key] }));
                 const agentsSorted = agentsArray.sort((a, b) => b.count - a.count).slice(0, 10);
                 document.getElementById('tbody-agents').innerHTML = agentsSorted.map((a, i) => `
