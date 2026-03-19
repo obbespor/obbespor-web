@@ -13,18 +13,15 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        /* --- ADMİN HEADER AKTİF SEKME STİLİ --- */
         nav ul li a { cursor: pointer; }
         .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
 
         .admin-container { padding: 40px 10%; flex: 1; }
         
-        /* BAŞLIK VE BUTON ALANI İÇİN YENİ DÜZEN */
         .page-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
         .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 0; color: white; border: none; padding: 0; }
         .section-title span { color: var(--neon-mor); }
         
-        /* FİKSTÜR DÜZENLE BUTONU */
         .btn-go-edit { background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor); color: var(--neon-mor); padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 14px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
         .btn-go-edit:hover { background: var(--neon-mor); color: white; box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); transform: translateY(-2px); }
 
@@ -33,6 +30,14 @@
         .form-group { margin-bottom: 25px; display: flex; flex-direction: column; gap: 10px; }
         .form-control { background: #111; border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; font-family: 'Poppins', sans-serif; outline: none; transition: 0.3s; font-size: 14px; }
         .form-control:focus { border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.3); }
+
+        /* BO3 / BO5 İÇİN YENİ SERİ SKOR ALANI STİLLERİ */
+        .series-score-box { display: flex; justify-content: center; gap: 40px; margin-bottom: 25px; background: #0d0d0d; padding: 20px; border-radius: 15px; border: 1px dashed #333; }
+        .series-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .series-label { font-size: 11px; color: var(--gri-yazi); font-weight: 900; letter-spacing: 1px; }
+        .series-input { background: #000; border: 2px solid var(--neon-mor); color: white; width: 60px; height: 50px; text-align: center; font-size: 24px; font-weight: 900; border-radius: 8px; outline: none; transition: 0.3s; }
+        .series-input:focus { box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); }
+        .series-select { background: #000; border: 1px solid #555; color: var(--neon-mor); padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; outline: none; cursor: pointer; text-align: center; }
 
         .api-fetch-box { background: rgba(96, 29, 194, 0.05); border: 1px dashed var(--neon-mor); padding: 25px; border-radius: 12px; display: flex; flex-direction: column; gap: 15px; margin-bottom: 40px; position: relative; }
         .api-badge { position: absolute; top: -12px; left: 20px; background: var(--neon-mor); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
@@ -79,6 +84,7 @@
             .page-header-row { flex-direction: column; gap: 15px; text-align: center; }
             .api-input-row { flex-direction: column; }
             .btn-fetch { width: 100%; justify-content: center; }
+            .series-score-box { flex-direction: column; gap: 15px; }
             .match-score-header { flex-direction: column; gap: 20px; }
             .stats-grid-container { grid-template-columns: 1fr; }
             .player-stat-row { grid-template-columns: 45px 1fr 1fr 35px 35px 35px; gap: 5px; font-size: 11px; }
@@ -100,7 +106,6 @@
                 <li><a href="admin.html#onay">ONAY</a></li>
                 <li><a href="admin.html#takimlar">ONAYLI</a></li>
                 <li><a href="admin.html#duyuru">DUYURU</a></li>
-                
                 <li><a href="admin-bracket.html" class="active-admin-tab">BRACKET<i class="fas fa-external-link-alt" style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 
                 <li class="nav-bell desktop-only">
@@ -139,7 +144,7 @@
     <main class="admin-container">
         
         <div class="page-header-row">
-            <h2 class="section-title">MAÇ & İSTATİSTİK <span>YÖNETİMİ</span></h2>
+            <h2 class="section-title">YENİ MAÇ <span>GİRİŞİ (BO1/BO3/BO5)</span></h2>
             <a href="mac-yonetim.html" class="btn-go-edit">
                 <i class="fas fa-edit"></i> FİKSTÜR DÜZENLE
             </a>
@@ -148,7 +153,7 @@
         <div class="match-management-card">
             <div style="display:flex; gap:20px; flex-wrap:wrap;">
                 <div class="form-group" style="flex:1;">
-                    <label style="color:var(--neon-mor); font-weight: bold; text-transform: uppercase; font-size: 14px;">1. Eşleşme veya Takım Seçin</label>
+                    <label style="color:var(--neon-mor); font-weight: bold; text-transform: uppercase; font-size: 14px;">1. Eşleşme Tipi</label>
                     <select id="matchSelector" class="form-control" onchange="initHybridUI(this.value)">
                         <option value="">-- Yeni / Manuel Maç Girişi --</option>
                         <option value="m1">OBB 1. TOPLULUK TURNUVASI</option>
@@ -158,12 +163,12 @@
                 <div class="form-group" style="flex:1;">
                     <label style="color:var(--neon-mor); font-weight: bold; text-transform: uppercase; font-size: 14px;">2. Hangi Turun Maçı?</label>
                     <select id="roundNameSelect" class="form-control">
-                        <option value="R1">R1 (Son 64)</option>
-                        <option value="R2">R2 (Son 32)</option>
-                        <option value="SON 16">SON 16 (Playoff)</option>
-                        <option value="ÇEYREK FİNAL">ÇEYREK FİNAL</option>
-                        <option value="YARI FİNAL">YARI FİNAL</option>
-                        <option value="FİNAL">BÜYÜK FİNAL</option>
+                        <option value="R1">R1 (Son 64 - BO1)</option>
+                        <option value="R2">R2 (Son 32 - BO1)</option>
+                        <option value="SON 16">SON 16 (Playoff - BO3)</option>
+                        <option value="ÇEYREK FİNAL">ÇEYREK FİNAL (BO3)</option>
+                        <option value="YARI FİNAL">YARI FİNAL (BO3)</option>
+                        <option value="FİNAL">BÜYÜK FİNAL (BO5)</option>
                     </select>
                 </div>
             </div>
@@ -179,16 +184,39 @@
                     </div>
                 </div>
 
+                <div class="series-score-box">
+                    <div class="series-col">
+                        <span class="series-label">GENEL SERİ SKORU (SOL)</span>
+                        <input type="number" id="seriesScoreA" class="series-input" value="0" min="0" placeholder="0">
+                    </div>
+                    <div class="series-col">
+                        <span class="series-label">KAÇINCI HARİTA?</span>
+                        <select id="mapOrderSelect" class="series-select">
+                            <option value="1">1. HARİTA (Map 1)</option>
+                            <option value="2">2. HARİTA (Map 2)</option>
+                            <option value="3">3. HARİTA (Map 3)</option>
+                            <option value="4">4. HARİTA (Map 4)</option>
+                            <option value="5">5. HARİTA (Map 5)</option>
+                        </select>
+                    </div>
+                    <div class="series-col">
+                        <span class="series-label">GENEL SERİ SKORU (SAĞ)</span>
+                        <input type="number" id="seriesScoreB" class="series-input" value="0" min="0" placeholder="0">
+                    </div>
+                </div>
+
                 <div class="match-score-header">
                     <div class="team-score-input">
+                        <span style="font-size:10px; color:var(--gri-yazi); margin-bottom:-5px;">BU HARİTA SKORU</span>
                         <input type="text" id="teamAName" class="team-name-input" placeholder="SOL TAKIM ADI" onkeyup="syncTeamName('A', this.value)" onblur="fetchTeamProfiles('A', this.value)">
                         <input type="number" id="scoreA" class="big-score-input" value="0" min="0">
                     </div>
                     <div class="vs-text">
                         VS
-                        <input type="text" id="mapNameInput" class="map-input" placeholder="HARİTA YAZIN">
+                        <input type="text" id="mapNameInput" class="map-input" placeholder="HARİTA İSMİ (ÖRN: ABYSS)">
                     </div>
                     <div class="team-score-input">
+                        <span style="font-size:10px; color:var(--gri-yazi); margin-bottom:-5px;">BU HARİTA SKORU</span>
                         <input type="text" id="teamBName" class="team-name-input" placeholder="SAĞ TAKIM ADI" onkeyup="syncTeamName('B', this.value)" onblur="fetchTeamProfiles('B', this.value)">
                         <input type="number" id="scoreB" class="big-score-input" value="0" min="0">
                     </div>
@@ -206,7 +234,7 @@
                 </div>
 
                 <button class="btn-save-match" id="btnSaveMatch" onclick="saveMappedStats()">
-                    <i class="fas fa-save"></i> İSTATİSTİKLERİ KAYDET VE BİTİR
+                    <i class="fas fa-save"></i> HARİTAYI FİKSTÜRE İŞLE
                 </button>
             </div>
         </div>
@@ -220,18 +248,16 @@
     <script src="js/auth.js"></script> 
 
     <script>
-        // TAKIM ID'LERİNİ HAFIZADA TUTACAK DEĞİŞKENLER (ÇOK ÖNEMLİ)
+        // TAKIM ID'LERİNİ HAFIZADA TUTACAK DEĞİŞKENLER
         let currentTeamAId = null;
         let currentTeamBId = null;
 
         async function initAdminBracketPage() {
             try {
-                // Header artık gömülü olduğu için header'ı fetch etmiyoruz.
                 const footerRes = await fetch("components/footer.html");
                 if(footerRes.ok) document.getElementById('footer-alani').innerHTML = await footerRes.text();
             } catch(e) { console.error("Komponent yüklenemedi", e); }
 
-            // Scroll Efekti (Header için)
             let lastScrollTop = 0;
             const header = document.getElementById("mainHeader");
             window.addEventListener("scroll", function() {
@@ -241,7 +267,6 @@
                 lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
             }, false);
 
-            // Dışarı Tıklayınca Bildirim Kapatma
             document.addEventListener("click", function(event) {
                 const isClickInsideBell = event.target.closest('.nav-bell') || event.target.closest('.floating-bell');
                 const isClickInsidePanel = event.target.closest('.notif-panel');
@@ -283,7 +308,6 @@
                     <span class="stat-label">AJAN</span><span class="stat-label" style="text-align:left;">OYUN İÇİ NİCK</span><span class="stat-label">PROFİL EŞLEŞTİR</span><span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
                 </div>
             `;
-            
             for(let i=0; i<5; i++) {
                 container.innerHTML += `
                     <div class="player-stat-row">
@@ -307,10 +331,8 @@
             header.innerHTML = `${name.toUpperCase() || defaultName} <span style="font-size:12px; color:${color}; opacity:0.7;">${team === 'A' ? '(Mavi)' : '(Kırmızı)'}</span>`;
         }
 
-        // SUPABASE'DEN OYUNCULARI ÇEKERKEN ID'Yİ DE HAFIZAYA ALIYORUZ
         async function fetchTeamProfiles(team, teamName) {
             if (!teamName || teamName.length < 2) return;
-            
             const containerId = team === 'A' ? 'teamAPlayersInputs' : 'teamBPlayersInputs';
             const selects = document.getElementById(containerId).querySelectorAll('.user-matcher-select');
             selects.forEach(select => select.innerHTML = '<option value="">Aranıyor...</option>');
@@ -325,7 +347,6 @@
 
                 if (teamErr || !teamData) throw new Error("Bu isimde bir takım bulunamadı.");
 
-                // ID'Yİ HAFIZAYA KAYDET
                 if(team === 'A') currentTeamAId = teamData.id;
                 else currentTeamBId = teamData.id;
 
@@ -413,59 +434,97 @@
             });
         }
 
-        // EKSİKSİZ KAYIT İŞLEMİ (AĞACIN İHTİYACI OLAN HER ŞEYİ GÖNDERİR)
+        // AKILLI KAYIT İŞLEMİ (BO3 / BO5 İÇİN MEVCUT MAÇI BULUR VEYA YENİ AÇAR)
         async function saveMappedStats() {
             const btn = document.getElementById('btnSaveMatch');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> KAYDEDİLİYOR...';
             btn.disabled = true;
 
             try {
+                // Harita Skorları
                 const scoreA = parseInt(document.getElementById('scoreA').value) || 0;
                 const scoreB = parseInt(document.getElementById('scoreB').value) || 0;
                 const mapName = document.getElementById('mapNameInput').value || 'Bilinmiyor';
                 
-                // SEÇİLEN TURU AL (R1, SON 16 vs.)
+                // Seri Skorları ve Seçimler
+                let seriesA = parseInt(document.getElementById('seriesScoreA').value) || 0;
+                let seriesB = parseInt(document.getElementById('seriesScoreB').value) || 0;
+                const mapOrder = parseInt(document.getElementById('mapOrderSelect').value) || 1;
                 const roundName = document.getElementById('roundNameSelect').value;
 
-                if(scoreA === 0 && scoreB === 0) throw new Error("Skorlar girilmemiş!");
-                if(!currentTeamAId && !currentTeamBId) throw new Error("En az bir takım sisteme tanıtılmalı!");
+                if(!currentTeamAId || !currentTeamBId) throw new Error("Lütfen takım isimlerini girip eşleşmelerini bekleyin.");
 
-                // KAZANANI BELİRLE
+                // BO1 Maçlar İçin Otomatik Seri Skoru Doldurma
+                if (['R1', 'R2'].includes(roundName)) {
+                    if (scoreA > scoreB) { seriesA = 1; seriesB = 0; }
+                    else if (scoreB > scoreA) { seriesA = 0; seriesB = 1; }
+                }
+
+                // Tur Formatına Göre Kazanma Kriteri Belirleme
+                let winsNeeded = 1;
+                if (["SON 16", "ÇEYREK FİNAL", "YARI FİNAL"].includes(roundName)) winsNeeded = 2; // BO3
+                if (roundName === "FİNAL") winsNeeded = 3; // BO5
+
                 let winnerId = null;
-                if (scoreA > scoreB) winnerId = currentTeamAId;
-                else if (scoreB > scoreA) winnerId = currentTeamBId;
+                let matchStatus = 'live';
 
-                // 1. MAÇI FİKSTÜRE KAYDET (Tam id'ler ile)
-                const { data: matchData, error: matchErr } = await window.supabaseClient
-                    .from('bracket_matches')
-                    .insert([{
-                        round_name: roundName,
-                        round_order: 1, // Otomatik sıralama mantığı ileride geliştirilebilir
-                        team_a_id: currentTeamAId,
-                        team_b_id: currentTeamBId,
-                        series_score_a: scoreA,
-                        series_score_b: scoreB,
-                        winner_id: winnerId,
-                        status: 'finished'
-                    }])
-                    .select().single();
+                if (seriesA >= winsNeeded) { winnerId = currentTeamAId; matchStatus = 'finished'; }
+                else if (seriesB >= winsNeeded) { winnerId = currentTeamBId; matchStatus = 'finished'; }
+                else if (seriesA > 0 || seriesB > 0 || mapOrder > 1) { matchStatus = 'live'; }
+                else if (winsNeeded === 1 && (scoreA > 0 || scoreB > 0)) { 
+                    matchStatus = 'finished'; 
+                    winnerId = scoreA > scoreB ? currentTeamAId : currentTeamBId; 
+                }
 
-                if(matchErr) throw matchErr;
+                // 1. ANA MAÇI (SERİYİ) KONTROL ET (AYNI TAKIMLAR O TURA ZATEN KAYITLI MI?)
+                const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
+                    .select('id')
+                    .eq('round_name', roundName)
+                    .eq('team_a_id', currentTeamAId)
+                    .eq('team_b_id', currentTeamBId)
+                    .single();
 
-                // 2. HARİTAYI KAYDET
+                let matchId;
+
+                if (existingMatch) {
+                    // EĞER MAÇ VARSA -> Sadece Seri Skorunu ve Durumunu Güncelle
+                    matchId = existingMatch.id;
+                    const { error: updErr } = await window.supabaseClient.from('bracket_matches')
+                        .update({ series_score_a: seriesA, series_score_b: seriesB, winner_id: winnerId, status: matchStatus })
+                        .eq('id', matchId);
+                    if (updErr) throw updErr;
+                } else {
+                    // EĞER MAÇ YOKSA -> Yeni Maç (Seri) Oluştur
+                    const { data: newMatch, error: insErr } = await window.supabaseClient.from('bracket_matches')
+                        .insert([{
+                            round_name: roundName,
+                            round_order: 1, 
+                            team_a_id: currentTeamAId,
+                            team_b_id: currentTeamBId,
+                            series_score_a: seriesA,
+                            series_score_b: seriesB,
+                            winner_id: winnerId,
+                            status: matchStatus
+                        }]).select().single();
+                    if (insErr) throw insErr;
+                    matchId = newMatch.id;
+                }
+
+                // 2. HARİTAYI ANA MAÇIN ALTINA KAYDET
                 const { data: mapData, error: mapErr } = await window.supabaseClient
                     .from('match_maps')
                     .insert([{
-                        match_id: matchData.id,
+                        match_id: matchId,
+                        map_order: mapOrder, // Supabase'de map_order sütunu olmalı!
                         map_name: mapName,
                         score_a: scoreA,
                         score_b: scoreB
                     }])
                     .select().single();
 
-                if(mapErr) throw mapErr;
+                if(mapErr) throw new Error("Harita kaydedilirken hata oluştu: Aynı sıradaki (Map " + mapOrder + ") haritayı tekrar eklemeye çalışıyor olabilirsiniz.");
 
-                // 3. OYUNCU İSTATİSTİKLERİNİ KAYDET
+                // 3. OYUNCU İSTATİSTİKLERİNİ BU HARİTAYA BAĞLA
                 const collectData = (containerId, teamId) => {
                     const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
                     const stats = [];
@@ -473,7 +532,7 @@
                         const row = rows[i];
                         stats.push({
                             map_id: mapData.id,
-                            team_id: teamId, // Oyuncunun hangi takımdan olduğu
+                            team_id: teamId, 
                             user_id: row.querySelector('.user-matcher-select').value || null, 
                             in_game_name: row.querySelector('.ign-input').value || 'Bilinmiyor',
                             agent_name: row.querySelector('.agent-name-input').value || 'unknown',
@@ -493,13 +552,21 @@
                 const { error: statsErr } = await window.supabaseClient.from('match_player_stats').insert(insertData);
                 if(statsErr) throw statsErr;
 
-                showNotification("Maç başarıyla Fikstüre (" + roundName + ") işlendi!", "success");
+                showNotification("Harita başarıyla " + mapOrder + ". sıraya işlendi!", "success");
                 
+                // Formu sıfırla (Sonraki harita girişi için)
+                setTimeout(() => {
+                    document.getElementById('scoreA').value = 0;
+                    document.getElementById('scoreB').value = 0;
+                    document.getElementById('mapNameInput').value = "";
+                    document.getElementById('mapOrderSelect').value = mapOrder < 5 ? mapOrder + 1 : 5;
+                }, 2000);
+
             } catch(err) {
                 console.error("Kayıt Hatası:", err);
                 showNotification("Hata: " + err.message, "error");
             } finally {
-                btn.innerHTML = '<i class="fas fa-save"></i> İSTATİSTİKLERİ KAYDET VE BİTİR';
+                btn.innerHTML = '<i class="fas fa-save"></i> HARİTAYI FİKSTÜRE İŞLE';
                 btn.disabled = false;
             }
         }
