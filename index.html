@@ -31,41 +31,42 @@
         
         /* SLIDER BAŞLIĞI VE KONTROLLERİ */
         .section-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; color: white; margin: 0; }
+        .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; color: white; margin: 0; border-left: 4px solid var(--neon-mor); padding-left: 15px; }
         
         .slider-controls { display: flex; gap: 10px; }
         .slider-controls button { background: #111; border: 1px solid #333; color: white; width: 45px; height: 45px; border-radius: 50%; font-size: 18px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; }
         .slider-controls button:hover { background: var(--neon-mor); border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); transform: scale(1.1); }
 
-        /* YATAY KAYDIRILABİLİR KART ALANI */
+        /* YATAY KAYDIRILABİLİR KART ALANI (PREMIUM SNAP ETKİSİ EKLENDİ) */
         .slider-wrapper { position: relative; width: 100%; overflow: hidden; }
-        .slider-container { display: flex; gap: 30px; overflow-x: auto; scroll-behavior: smooth; padding-bottom: 20px; scrollbar-width: none; /* Firefox için gizle */ }
-        .slider-container::-webkit-scrollbar { display: none; /* Chrome/Safari için gizle */ }
+        .slider-container { display: flex; gap: 20px; overflow-x: auto; scroll-behavior: smooth; padding-bottom: 20px; scrollbar-width: none; scroll-snap-type: x mandatory; }
+        .slider-container::-webkit-scrollbar { display: none; }
 
-        /* KART TASARIMI (Artık a etiketi olacak) */
-        .card { flex: 0 0 calc(33.333% - 20px); min-width: 300px; display: block; text-decoration: none; color: inherit; background-color: var(--card-bg); border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.4s ease; }
-        .card:hover { border-color: var(--neon-mor); transform: translateY(-10px); box-shadow: 0 10px 30px rgba(96, 29, 194, 0.2); }
+        /* KART TASARIMI */
+        .card { scroll-snap-align: start; flex: 0 0 calc(33.333% - 14px); min-width: 320px; display: flex; flex-direction: column; text-decoration: none; color: inherit; background-color: var(--card-bg); border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.4s ease; }
+        .card:hover { border-color: var(--neon-mor); transform: translateY(-8px); box-shadow: 0 10px 30px rgba(96, 29, 194, 0.2); }
         .card-img { height: 200px; background: #1a052d; overflow: hidden; position: relative; }
         .card-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
         .card:hover .card-img img { transform: scale(1.05); }
         
-        .card-body { padding: 25px; }
+        .card-body { padding: 25px; flex: 1; display: flex; flex-direction: column; }
         .card-body h3 { color: var(--neon-mor); margin-bottom: 12px; font-size: 20px; font-weight: 700; transition: 0.3s; }
         .card:hover .card-body h3 { color: white; }
         .card-body p { color: var(--gri-yazi); font-size: 14px; line-height: 1.6; margin: 0; }
 
         @media (max-width: 1024px) {
-            .card { flex: 0 0 calc(50% - 15px); }
+            .card { flex: 0 0 calc(50% - 10px); }
         }
 
         @media (max-width: 768px) {
-            .container { padding: 40px 5%; } 
+            .container { padding: 50px 5%; } 
             .hero h1 { font-size: 2.2rem; }
+            .section-title { font-size: 24px; }
             
             /* Mobilde slider'ı iptal edip alt alta diziyoruz */
             .slider-controls { display: none; }
-            .slider-container { flex-direction: column; overflow-x: visible; gap: 20px; padding-bottom: 0; }
-            .card { flex: 1 1 auto; min-width: 100%; }
+            .slider-container { flex-direction: column; overflow-x: visible; gap: 25px; padding-bottom: 0; scroll-snap-type: none; }
+            .card { flex: 1 1 auto; min-width: 100%; scroll-snap-align: none; }
             
             .card-body { padding: 20px 15px; } 
             .card-body h3 { font-size: 18px; }
@@ -191,13 +192,14 @@
     <script src="js/app.js"></script>
 
     <script>
-        // SLIDER (KAYDIRMA) İŞLEMLERİ VE LOOP MANTIĞI
+        // DİNAMİK SLIDER (KAYDIRMA) İŞLEMLERİ
         function slideRight() {
             const slider = document.getElementById('announcementSlider');
-            // Ekranda görünen kartların genişliğine göre kaydırma miktarı (Kart genişliği + gap)
-            const scrollAmount = 330; 
+            const card = slider.querySelector('.card');
+            // Kart genişliği + 20px gap değerini alarak dinamik kaydırma sağlar
+            const scrollAmount = card ? card.offsetWidth + 20 : 340; 
             
-            // Eğer en sağa gelindiyse, başa dön (Loop)
+            // Sona gelindiyse başa dön (Loop)
             if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 10) {
                 slider.scrollTo({ left: 0, behavior: 'smooth' });
             } else {
@@ -207,9 +209,10 @@
 
         function slideLeft() {
             const slider = document.getElementById('announcementSlider');
-            const scrollAmount = 330;
+            const card = slider.querySelector('.card');
+            const scrollAmount = card ? card.offsetWidth + 20 : 340;
 
-            // Eğer en soldaysa, en sona git (Loop)
+            // En baştaysa en sona git (Loop)
             if (slider.scrollLeft <= 0) {
                 slider.scrollTo({ left: slider.scrollWidth, behavior: 'smooth' });
             } else {
