@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Maç Yönetimi | OBB E-SPOR ADMIN</title>
+    <link rel="icon" type="image/png" href="img/obblogo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    
+    <style>
+        nav ul li a { cursor: pointer; }
+        .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
+
+        .admin-container { padding: 40px 10%; flex: 1; }
+        .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; color: white; display: flex; justify-content: space-between; align-items: center;}
+        .section-title span { color: var(--neon-mor); }
+
+        .match-management-card { background: #0a0a0a; border: 1px solid #222; border-radius: 20px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        
+        .form-group { margin-bottom: 25px; display: flex; flex-direction: column; gap: 10px; }
+        .form-control { background: #111; border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; font-family: 'Poppins', sans-serif; outline: none; transition: 0.3s; font-size: 14px; }
+        .form-control:focus { border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.3); }
+
+        .match-score-header { display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid #222;}
+        .team-score-input { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        
+        .team-name-input { text-align: center; font-weight: 900; background: transparent; border: none; border-bottom: 1px dashed #555; color: white; font-size: 24px; text-transform: uppercase; outline: none; width: 220px; padding-bottom: 5px; transition: 0.3s; }
+        .team-name-input:focus { border-bottom-color: var(--neon-mor); background: rgba(255,255,255,0.05); }
+        
+        .big-score-input { background: #000; border: 2px solid #444; color: white; width: 90px; height: 90px; text-align: center; font-size: 40px; font-weight: 900; border-radius: 15px; outline: none; transition: 0.3s; }
+        .big-score-input:focus { border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.3); }
+        .vs-text { text-align: center; font-size: 24px; font-weight: 900; color: var(--gri-yazi); display: flex; flex-direction: column; gap: 10px; }
+        
+        .map-input { background: #111; border: 1px solid #444; color: var(--neon-mor); padding: 8px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; text-align: center; text-transform: uppercase; outline: none; transition: 0.3s; width: 150px; }
+        .map-input:focus { border-color: white; color: white; }
+
+        .stats-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .team-stats-box h4 { font-size: 15px; margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid; padding-left: 10px; transition: 0.3s; }
+        
+        .player-stat-row { display: grid; grid-template-columns: 90px 1.5fr 1.5fr 45px 45px 45px; gap: 10px; margin-bottom: 10px; align-items: center; background: #0d0d0d; padding: 10px; border-radius: 10px; border: 1px solid #222; transition: 0.3s; }
+        .player-stat-row:hover { border-color: #444; background: #111; }
+        
+        .player-stat-row input, .player-stat-row select { background: #000; border: 1px solid #333; color: white; padding: 8px; border-radius: 6px; font-size: 13px; outline: none; transition: 0.3s; width: 100%; text-align: center; }
+        .player-stat-row input:focus, .player-stat-row select:focus { border-color: var(--neon-mor); }
+        .player-stat-row input.ign-input { text-align: left; font-weight: bold; color: white; }
+        
+        .agent-input-group { display: flex; align-items: center; gap: 5px; }
+        .agent-icon { width: 35px; height: 35px; border-radius: 4px; object-fit: cover; border: 1px solid #444; background: #222; }
+        .stat-label { font-size: 10px; color: var(--gri-yazi); text-align: center; font-weight: bold; }
+        
+        /* Buton Grupları */
+        .action-buttons { display: flex; gap: 15px; margin-top: 40px; }
+        .btn-update { flex: 2; background: linear-gradient(45deg, #1f8536, #28a745); color: white; border: none; padding: 20px; border-radius: 12px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 10px; letter-spacing: 1px; }
+        .btn-update:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(40, 167, 69, 0.4); }
+        .btn-delete { flex: 1; background: rgba(255, 75, 75, 0.1); border: 1px solid var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 20px; border-radius: 12px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-delete:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 10px 25px rgba(255, 75, 75, 0.4); }
+
+        /* Danger Zone (Fikstürü Temizle) */
+        .danger-zone { margin-top: 50px; background: rgba(255, 75, 75, 0.05); border: 2px dashed var(--kirmizi-iptal); border-radius: 15px; padding: 30px; text-align: center; }
+        .danger-zone h3 { color: var(--kirmizi-iptal); font-weight: 900; margin-bottom: 10px; font-size: 22px; text-transform: uppercase; }
+        .danger-zone p { color: var(--gri-yazi); margin-bottom: 20px; font-size: 14px; }
+        .btn-danger { background: var(--kirmizi-iptal); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+        .btn-danger:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 75, 75, 0.6); }
+
+        /* Modal Stilleri */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(8px); padding: 20px; }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--kirmizi-iptal); border-radius: 15px; width: 100%; max-width: 500px; padding: 30px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+        .modal-content h3 { color: white; margin-bottom: 15px; font-size: 24px; font-weight: 900; }
+        .modal-content p { color: var(--gri-yazi); margin-bottom: 25px; font-size: 14px; line-height: 1.6; }
+        .confirm-input { background: #111; border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; font-size: 18px; width: 100%; text-align: center; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; font-weight: bold; outline: none; }
+        .confirm-input:focus { border-color: var(--kirmizi-iptal); box-shadow: 0 0 15px rgba(255, 75, 75, 0.3); }
+        .modal-buttons { display: flex; gap: 10px; }
+        .btn-cancel { flex: 1; background: #333; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-cancel:hover { background: #444; }
+
+        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        @media (max-width: 768px) {
+            .action-buttons { flex-direction: column; }
+            .match-score-header { flex-direction: column; gap: 20px; }
+            .stats-grid-container { grid-template-columns: 1fr; }
+            .player-stat-row { grid-template-columns: 45px 1fr 1fr 35px 35px 35px; gap: 5px; font-size: 11px; }
+            .section-title { flex-direction: column; text-align: center; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loadingScreen">
+        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
+        <h2>Yönetim Paneli Yükleniyor...</h2>
+    </div>
+
+    <div id="header-alani"></div>
+    <div id="toast-container"></div>
+
+    <main class="admin-container">
+        <h2 class="section-title">
+            <div>MAÇ <span>DÜZENLEME & SİLME</span></div>
+        </h2>
+        
+        <div class="match-management-card">
+            <div class="form-group">
+                <label style="color:var(--neon-mor); font-weight: bold; text-transform: uppercase; font-size: 14px;"><i class="fas fa-search"></i> Düzenlenecek Maçı Seçin</label>
+                <select id="existingMatchSelect" class="form-control" onchange="loadExistingMatch(this.value)">
+                    <option value="">-- Yükleniyor... --</option>
+                </select>
+            </div>
+
+            <div id="dynamicMatchArea" style="display: none; animation: fadeIn 0.5s ease; margin-top:40px; border-top: 1px solid #222; padding-top: 30px;">
+                
+                <div class="match-score-header">
+                    <div class="team-score-input">
+                        <input type="text" id="teamAName" class="team-name-input" disabled style="opacity: 0.7; cursor: not-allowed;">
+                        <input type="number" id="scoreA" class="big-score-input" value="0" min="0">
+                    </div>
+                    <div class="vs-text">
+                        VS
+                        <input type="text" id="mapNameInput" class="map-input" placeholder="HARİTA YAZIN">
+                    </div>
+                    <div class="team-score-input">
+                        <input type="text" id="teamBName" class="team-name-input" disabled style="opacity: 0.7; cursor: not-allowed;">
+                        <input type="number" id="scoreB" class="big-score-input" value="0" min="0">
+                    </div>
+                </div>
+
+                <div class="stats-grid-container">
+                    <div class="team-stats-box">
+                        <h4 id="headerTeamA" style="color: #00d2ff; border-left-color: #00d2ff;">SOL TAKIM <span>(Mavi)</span></h4>
+                        <div id="teamAPlayersInputs"></div>
+                    </div>
+                    <div class="team-stats-box">
+                        <h4 id="headerTeamB" style="color: #ff4b4b; border-left-color: #ff4b4b;">SAĞ TAKIM <span>(Kırmızı)</span></h4>
+                        <div id="teamBPlayersInputs"></div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-update" id="btnUpdateMatch" onclick="updateMatch()">
+                        <i class="fas fa-sync-alt"></i> VERİLERİ GÜNCELLE
+                    </button>
+                    <button class="btn-delete" id="btnDeleteMatch" onclick="deleteSelectedMatch()">
+                        <i class="fas fa-trash-alt"></i> MAÇI SİL
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="danger-zone">
+            <h3><i class="fas fa-exclamation-triangle"></i> TURNUVAYI BİTİR VE FİKSTÜRÜ TEMİZLE</h3>
+            <p>Bu işlem fikstürdeki tüm maçları ekrandan kaldırır ancak veritabanında "arşivlenmiş" olarak güvende tutar. Bir sonraki turnuva için fikstürü sıfırlamak istediğinizde kullanın.</p>
+            <button class="btn-danger" onclick="openArchiveModal()">
+                <i class="fas fa-power-off"></i> FİKSTÜRÜ TEMİZLE
+            </button>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="archiveModal">
+        <div class="modal-content">
+            <h3>Emin Misiniz?</h3>
+            <p>Fikstür sıfırlanacak. Bu işlemi onaylamak için aşağıdaki kutuya <strong>ONAYLA</strong> yazın.</p>
+            <input type="text" id="confirmInput" class="confirm-input" placeholder="BURAYA YAZIN" autocomplete="off">
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeArchiveModal()">İPTAL</button>
+                <button class="btn-danger" style="flex:1; width:auto; border-radius:8px;" onclick="executeArchiveMatches()">TEMİZLE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-alani"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/bildirimler.js"></script>
+    <script src="js/auth.js"></script> 
+
+    <script>
+        // HAFIZADAKİ DEĞİŞKENLER
+        let currentMatchId = null;
+        let currentMapId = null;
+        let teamAId_memory = null;
+        let teamBId_memory = null;
+        let globalTeamMap = {};
+
+        async function initMatchManagement() {
+            try {
+                const headerRes = await fetch("components/header.html");
+                if(headerRes.ok) document.getElementById('header-alani').innerHTML = await headerRes.text();
+                const footerRes = await fetch("components/footer.html");
+                if(footerRes.ok) document.getElementById('footer-alani').innerHTML = await footerRes.text();
+            } catch(e) { console.error("Komponent yüklenemedi", e); }
+
+            if (typeof checkUserStatus === "function") await checkUserStatus();
+            checkAdminAccess();
+        }
+
+        async function checkAdminAccess() {
+            try {
+                const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
+                if (authError || !user) throw new Error("Giriş yapılmadı.");
+                const { data: profile } = await window.supabaseClient.from('profiles').select('role').eq('id', user.id).single();
+                if (!profile || profile.role !== 'admin') throw new Error("Yetkisiz erişim.");
+                
+                await fetchMatchList();
+                document.getElementById('loadingScreen').style.display = 'none';
+            } catch (err) { window.location.replace("index.html"); }
+        }
+
+        // --- MAÇ LİSTESİNİ ÇEKME ---
+        async function fetchMatchList() {
+            const select = document.getElementById('existingMatchSelect');
+            select.innerHTML = '<option value="">-- Yükleniyor... --</option>';
+
+            try {
+                // Önce takımları çekelim ki isimleri yazabilelim
+                const { data: teams } = await window.supabaseClient.from('tournament_applications').select('id, team_name');
+                if (teams) teams.forEach(t => globalTeamMap[t.id] = t.team_name);
+
+                // 'archived' OLMAYAN maçları çekiyoruz
+                const { data: matches, error } = await window.supabaseClient
+                    .from('bracket_matches')
+                    .select('*')
+                    .neq('status', 'archived')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                select.innerHTML = '<option value="">-- Düzenlenecek Maçı Seçin --</option>';
+                if (matches && matches.length > 0) {
+                    matches.forEach(m => {
+                        const tA = globalTeamMap[m.team_a_id] || "Bilinmiyor";
+                        const tB = globalTeamMap[m.team_b_id] || "Bilinmiyor";
+                        select.innerHTML += `<option value="${m.id}">[${m.round_name}] ${tA} vs ${tB}</option>`;
+                    });
+                } else {
+                    select.innerHTML = '<option value="">-- Fikstürde kayıtlı maç bulunamadı --</option>';
+                }
+            } catch (err) {
+                console.error(err);
+                showNotification("Maç listesi çekilemedi.", "error");
+            }
+        }
+
+        // --- SEÇİLEN MAÇIN BİLGİLERİNİ EKRANA DOLDURMA ---
+        async function loadExistingMatch(matchId) {
+            const area = document.getElementById('dynamicMatchArea');
+            if (!matchId) { area.style.display = 'none'; return; }
+
+            currentMatchId = matchId;
+            showNotification("Maç verileri yükleniyor...", "info");
+
+            try {
+                // 1. Maç bilgisini al
+                const { data: match, error: matchErr } = await window.supabaseClient.from('bracket_matches').select('*').eq('id', matchId).single();
+                if (matchErr) throw matchErr;
+
+                teamAId_memory = match.team_a_id;
+                teamBId_memory = match.team_b_id;
+
+                const nameA = globalTeamMap[teamAId_memory] || "TAKIM A";
+                const nameB = globalTeamMap[teamBId_memory] || "TAKIM B";
+
+                document.getElementById('teamAName').value = nameA;
+                document.getElementById('teamBName').value = nameB;
+                document.getElementById('headerTeamA').innerHTML = `${nameA} <span style="font-size:12px; opacity:0.7;">(Mavi)</span>`;
+                document.getElementById('headerTeamB').innerHTML = `${nameB} <span style="font-size:12px; opacity:0.7;">(Kırmızı)</span>`;
+                document.getElementById('scoreA').value = match.series_score_a;
+                document.getElementById('scoreB').value = match.series_score_b;
+
+                // 2. Harita bilgisini al (BO1 varsayımı ile ilk harita)
+                const { data: maps } = await window.supabaseClient.from('match_maps').select('*').eq('match_id', matchId).limit(1);
+                
+                if (maps && maps.length > 0) {
+                    currentMapId = maps[0].id;
+                    document.getElementById('mapNameInput').value = maps[0].map_name;
+
+                    // 3. Oyuncu istatistiklerini al
+                    const { data: stats } = await window.supabaseClient.from('match_player_stats').select('*').eq('map_id', currentMapId);
+                    
+                    const teamAStats = stats.filter(s => s.team_id === teamAId_memory);
+                    const teamBStats = stats.filter(s => s.team_id === teamBId_memory);
+
+                    renderPlayerRows('teamAPlayersInputs', teamAStats);
+                    renderPlayerRows('teamBPlayersInputs', teamBStats);
+                } else {
+                    currentMapId = null;
+                    document.getElementById('mapNameInput').value = "";
+                    renderPlayerRows('teamAPlayersInputs', []);
+                    renderPlayerRows('teamBPlayersInputs', []);
+                }
+
+                area.style.display = 'block';
+
+            } catch (err) {
+                console.error(err);
+                showNotification("Veriler yüklenirken hata oluştu.", "error");
+            }
+        }
+
+        function renderPlayerRows(containerId, playersData) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
+                    <span class="stat-label">AJAN</span><span class="stat-label" style="text-align:left;">OYUN İÇİ NİCK</span><span class="stat-label" style="display:none;">USER ID</span><span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
+                </div>
+            `;
+            
+            for(let i=0; i<5; i++) {
+                const p = playersData[i] || {};
+                const agent = p.agent_name || "";
+                const ign = p.in_game_name || "";
+                const kills = p.kills || 0;
+                const deaths = p.deaths || 0;
+                const assists = p.assists || 0;
+                const userId = p.user_id || "";
+
+                // Ajan ikonunu formatla
+                let cleanName = agent.replace(/[^a-zA-Z0-9]/g, ''); 
+                let formattedAgent = cleanName ? (cleanName.charAt(0).toUpperCase() + cleanName.slice(1).toLowerCase()) : 'unknown';
+
+                container.innerHTML += `
+                    <div class="player-stat-row">
+                        <div class="agent-input-group">
+                            <img src="img/imgagents/${formattedAgent}.webp" class="agent-icon" onerror="this.src='img/imgagents/unknown.png'" id="${containerId}_icon_${i}">
+                            <input type="text" class="agent-name-input" placeholder="Ajan" value="${agent}" onkeyup="updateAgentIcon(this, '${containerId}_icon_${i}')">
+                        </div>
+                        <input type="text" class="ign-input" placeholder="IGN" value="${ign}">
+                        <input type="hidden" class="hidden-user-id" value="${userId}">
+                        <input type="number" class="k-input" value="${kills}" min="0">
+                        <input type="number" class="d-input" value="${deaths}" min="0">
+                        <input type="number" class="a-input" value="${assists}" min="0">
+                    </div>`;
+            }
+        }
+
+        function updateAgentIcon(inputEl, iconId) {
+            const val = inputEl.value.replace(/[^a-zA-Z0-9]/g, '');
+            const icon = document.getElementById(iconId);
+            if(val.length > 2) {
+                const formatted = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+                icon.src = `img/imgagents/${formatted}.webp`;
+            } else {
+                icon.src = "img/imgagents/unknown.png";
+            }
+        }
+
+        // --- MAÇ VERİLERİNİ GÜNCELLEME ---
+        async function updateMatch() {
+            const btn = document.getElementById('btnUpdateMatch');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GÜNCELLENİYOR...';
+            btn.disabled = true;
+
+            try {
+                const scoreA = parseInt(document.getElementById('scoreA').value) || 0;
+                const scoreB = parseInt(document.getElementById('scoreB').value) || 0;
+                const mapName = document.getElementById('mapNameInput').value || 'Bilinmiyor';
+
+                let winnerId = null;
+                if (scoreA > scoreB) winnerId = teamAId_memory;
+                else if (scoreB > scoreA) winnerId = teamBId_memory;
+
+                // 1. Fikstür Skorunu Güncelle
+                await window.supabaseClient.from('bracket_matches')
+                    .update({ series_score_a: scoreA, series_score_b: scoreB, winner_id: winnerId })
+                    .eq('id', currentMatchId);
+
+                // 2. Haritayı Güncelle
+                if (currentMapId) {
+                    await window.supabaseClient.from('match_maps')
+                        .update({ map_name: mapName, score_a: scoreA, score_b: scoreB })
+                        .eq('id', currentMapId);
+                }
+
+                // 3. İstatistikleri Güncelle (En temiz yol eskileri silip yenileri yazmaktır)
+                if (currentMapId) {
+                    await window.supabaseClient.from('match_player_stats').delete().eq('map_id', currentMapId);
+
+                    const collectData = (containerId, teamId) => {
+                        const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
+                        const stats = [];
+                        for(let i=1; i<rows.length; i++) {
+                            const row = rows[i];
+                            const ign = row.querySelector('.ign-input').value.trim();
+                            if(!ign) continue; // Boş satırı atla
+
+                            stats.push({
+                                map_id: currentMapId,
+                                team_id: teamId,
+                                user_id: row.querySelector('.hidden-user-id').value || null, 
+                                in_game_name: ign,
+                                agent_name: row.querySelector('.agent-name-input').value || 'unknown',
+                                kills: parseInt(row.querySelector('.k-input').value) || 0,
+                                deaths: parseInt(row.querySelector('.d-input').value) || 0,
+                                assists: parseInt(row.querySelector('.a-input').value) || 0
+                            });
+                        }
+                        return stats;
+                    };
+
+                    const insertData = [...collectData('teamAPlayersInputs', teamAId_memory), ...collectData('teamBPlayersInputs', teamBId_memory)];
+                    if(insertData.length > 0) {
+                        await window.supabaseClient.from('match_player_stats').insert(insertData);
+                    }
+                }
+
+                showNotification("Maç verileri başarıyla güncellendi!", "success");
+
+            } catch(err) {
+                console.error(err);
+                showNotification("Güncelleme başarısız oldu.", "error");
+            } finally {
+                btn.innerHTML = '<i class="fas fa-sync-alt"></i> VERİLERİ GÜNCELLE';
+                btn.disabled = false;
+            }
+        }
+
+        // --- MAÇI SİLME ---
+        async function deleteSelectedMatch() {
+            if(!currentMatchId) return;
+
+            const confirmDelete = confirm("DİKKAT! Bu maçı ve tüm istatistiklerini veritabanından kalıcı olarak silmek üzeresiniz. Emin misiniz?");
+            if(!confirmDelete) return;
+
+            const btn = document.getElementById('btnDeleteMatch');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SİLİNİYOR...';
+            btn.disabled = true;
+
+            try {
+                // Güvenli silme: Önce istatistikler, sonra harita, en son maç
+                if (currentMapId) {
+                    await window.supabaseClient.from('match_player_stats').delete().eq('map_id', currentMapId);
+                    await window.supabaseClient.from('match_maps').delete().eq('id', currentMapId);
+                }
+                await window.supabaseClient.from('bracket_matches').delete().eq('id', currentMatchId);
+
+                showNotification("Maç başarıyla silindi ve fikstürden kaldırıldı.", "success");
+                
+                // Ekranı sıfırla
+                document.getElementById('dynamicMatchArea').style.display = 'none';
+                fetchMatchList();
+
+            } catch (err) {
+                console.error(err);
+                showNotification("Silme işlemi başarısız.", "error");
+            } finally {
+                btn.innerHTML = '<i class="fas fa-trash-alt"></i> MAÇI SİL';
+                btn.disabled = false;
+            }
+        }
+
+        // --- FİKSTÜRÜ TEMİZLEME (ARŞİVLEME) ---
+        function openArchiveModal() {
+            document.getElementById('confirmInput').value = '';
+            document.getElementById('archiveModal').classList.add('active');
+        }
+
+        function closeArchiveModal() {
+            document.getElementById('archiveModal').classList.remove('active');
+        }
+
+        async function executeArchiveMatches() {
+            const input = document.getElementById('confirmInput').value.trim().toUpperCase();
+            if (input !== 'ONAYLA') {
+                showNotification("İşlemi onaylamak için tam olarak ONAYLA yazmalısınız.", "error");
+                return;
+            }
+
+            closeArchiveModal();
+            showNotification("Fikstür arşivleniyor, lütfen bekleyin...", "info");
+
+            try {
+                // Fikstürdeki tüm maçları "archived" durumuna çekiyoruz.
+                // Bu sayede public fikstür sayfasında gözükmeyecekler ama DB'de kalacaklar.
+                const { error } = await window.supabaseClient
+                    .from('bracket_matches')
+                    .update({ status: 'archived' })
+                    .neq('status', 'archived'); // Zaten arşivli olanları yorma
+
+                if (error) throw error;
+
+                showNotification("Turnuva sonlandırıldı. Fikstür başarıyla temizlendi ve arşivlendi!", "success");
+                document.getElementById('dynamicMatchArea').style.display = 'none';
+                fetchMatchList(); // Listeyi yenile (artık boş gözükecek)
+
+            } catch (err) {
+                console.error(err);
+                showNotification("Fikstür temizlenirken bir hata oluştu.", "error");
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initMatchManagement);
+    </script>
+</body>
+</html>
