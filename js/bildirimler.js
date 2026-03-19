@@ -1,4 +1,3 @@
-// js/bildirimler.js
 window.myNotifications = [];
 
 function initNotifications() {
@@ -50,7 +49,7 @@ function getIconForType(tip) {
     switch(tip) {
         case 'onay': return { icon: 'fa-check-circle', color: '#00e676' }; 
         case 'red': return { icon: 'fa-times-circle', color: '#ff4b4b' }; 
-        case 'sistem': return { icon: 'fa-bullhorn', color: '#601dc2' }; // Genel duyurular için ikon
+        case 'sistem': return { icon: 'fa-bullhorn', color: '#601dc2' };
         case 'davet': return { icon: 'fa-envelope-open-text', color: '#f39c12' }; 
         default: return { icon: 'fa-bell', color: '#00d2ff' }; 
     }
@@ -73,11 +72,9 @@ window.fetchRealNotifications = async function() {
             .from('duyurular')
             .select('*'); 
 
-        // 3. Local Storage'dan gizlenmiş duyuruları al (Önbellek)
         let gizlenenDuyurular = JSON.parse(localStorage.getItem('gizlenenDuyurular') || '[]');
         let harmanlanmisList = [];
 
-        // Kişisel bildirimleri listeye ekle
         if (kisiselData) {
             kisiselData.forEach(item => {
                 harmanlanmisList.push({
@@ -91,7 +88,6 @@ window.fetchRealNotifications = async function() {
             });
         }
 
-        // Genel duyuruları listeye ekle (Sadece Gizlenmemiş olanları)
         if (duyuruData) {
             duyuruData.forEach(item => {
                 if (!gizlenenDuyurular.includes(item.id)) {
@@ -107,16 +103,9 @@ window.fetchRealNotifications = async function() {
             });
         }
 
-        // 4. Tarihe göre yeniden eskiye (descending) KUSURSUZ SIRALAMA
-        harmanlanmisList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-        // 5. Render formatına dönüştür ve ekrana bas
-        window.myNotifications = harmanlanmisList.map(item => {
-            const styleObj = getIconForType(item.tip);
-            return { ...item, icon: styleObj.icon, color: styleObj.color };
-        });
-
-        renderNotifications();
+        // Global Davetleri de çekmek için fonksiyonu burada tetikliyoruz
+        initGlobalInviteSystem(user.id, harmanlanmisList);
+        
     } catch (err) { console.error("Bildirim çekilemedi:", err); }
 };
 
@@ -125,7 +114,6 @@ window.listenRealtimeNotifications = async function() {
     const { data: { user } } = await window.supabaseClient.auth.getUser();
     if (!user) return;
 
-    // 1. Kanal: Kişisel Bildirimler
     window.supabaseClient.channel('kisisel-bildirimler')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bildirimler', filter: `kullanici_id=eq.${user.id}` },
         (payload) => {
@@ -141,7 +129,6 @@ window.listenRealtimeNotifications = async function() {
         }
       ).subscribe();
 
-    // 2. Kanal: Genel Duyurular (Tüm kullanıcılara anlık düşer)
     window.supabaseClient.channel('genel-duyurular')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'duyurular' },
         (payload) => {
@@ -167,14 +154,16 @@ window.renderNotifications = function() {
     let htmlContent = window.myNotifications.length === 0 ? `<div class="notif-empty">Şu an yeni bir bildiriminiz yok.</div>` : "";
 
     window.myNotifications.forEach(notif => {
-        let targetUrl = ""; 
-        let cursorStyle = "cursor: pointer;";
+        let targetUrl = "javascript:void(0)"; 
+        let cursorStyle = "cursor: default;";
         
-        if (notif.tip === 'davet') targetUrl = "profil.html"; 
-        else if (notif.tip === 'onay' || notif.tip === 'red') targetUrl = "profil.html"; 
-        else {
-            targetUrl = "javascript:void(0)";
-            cursorStyle = "cursor: default;"; 
+        // YÖNLENDİRME MANTIĞI: Sadece davetler profil/davet sekmesine gider. Genel duyurular gitmez.
+        if (notif.tip === 'davet') {
+            targetUrl = "profil.html#davetler"; 
+            cursorStyle = "cursor: pointer;";
+        } else if (notif.tip === 'onay' || notif.tip === 'red') {
+            targetUrl = "profil.html"; 
+            cursorStyle = "cursor: pointer;";
         }
 
         let onClickAttr = targetUrl !== "javascript:void(0)" ? `onclick="window.location.href='${targetUrl}'"` : "";
@@ -216,11 +205,11 @@ window.clearNotifications = async function(event) {
         const { data: { user } } = await window.supabaseClient.auth.getUser();
         if (!user) return;
 
-        // 1. KİŞİSEL BİLDİRİMLERİ VERİTABANINDAN SİL (DELETE)
         await window.supabaseClient.from('bildirimler').delete().eq('kullanici_id', user.id);
 
-        // 2. GENEL DUYURULARI ÖNBELLEĞE YAZ (Tarayıcıda Gizle)
         let gizlenenDuyurular = JSON.parse(localStorage.getItem('gizlenenDuyurular') || '[]');
+        
+        // Zili sıfırlarken, "davet" olanları veritabanından silmiyoruz ama ekrandan uçuruyoruz
         window.myNotifications.forEach(notif => {
             if (notif.tablo === 'duyurular' && !gizlenenDuyurular.includes(notif.id)) {
                 gizlenenDuyurular.push(notif.id);
@@ -228,7 +217,6 @@ window.clearNotifications = async function(event) {
         });
         localStorage.setItem('gizlenenDuyurular', JSON.stringify(gizlenenDuyurular));
 
-        // 3. Ekranı sıfırla
         window.myNotifications = [];
         renderNotifications();
         showNotification("Tüm bildirimler temizlendi.", "success");
@@ -236,27 +224,52 @@ window.clearNotifications = async function(event) {
 };
 
 // --- GLOBAL DAVET SİSTEMİ ---
-window.initGlobalInviteSystem = async function(userId) {
+window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = []) {
+    // 1. Bekleyen davetleri 'created_at' verisiyle birlikte çekiyoruz ki zilde doğru sıralansın
     const { data: pendingInvites } = await window.supabaseClient
         .from('application_members')
-        .select('id, tournament_applications(team_name)')
+        .select('id, created_at, tournament_applications(team_name)')
         .eq('user_id', userId)
         .eq('status', 'pending');
 
+    let alertedInvites = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
+    let newAlertsFound = false;
+
     if (pendingInvites && pendingInvites.length > 0) {
-        let alertedInvites = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
-        let newAlertsFound = false;
         pendingInvites.forEach(invite => {
+            const teamName = invite.tournament_applications?.team_name || "Bir takım";
+            
+            // 2. Baloncuğu (toast) oturum boyunca sadece 1 kez göster
             if (!alertedInvites.includes(invite.id)) {
-                const teamName = invite.tournament_applications?.team_name || "Bir takım";
                 showNotification(`🔔 ${teamName} takımından davet aldın!`, "info");
                 alertedInvites.push(invite.id);
                 newAlertsFound = true;
             }
+
+            // 3. EKSİK OLAN KISIM: ZİLE (PANEL) EKLEME MANTIĞI
+            mevcutHarmanlanmisList.push({
+                id: invite.id,
+                tablo: 'application_members',
+                tip: 'davet',
+                title: 'Yeni Takım Daveti!',
+                text: `${teamName} seni takımına davet ediyor.`,
+                created_at: invite.created_at || new Date().toISOString()
+            });
         });
+
         if (newAlertsFound) sessionStorage.setItem('alertedInvites', JSON.stringify(alertedInvites));
     }
 
+    // Listeyi tarihe göre sıralayıp ana değişkene atıyoruz ve ekrana basıyoruz
+    mevcutHarmanlanmisList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    window.myNotifications = mevcutHarmanlanmisList.map(item => {
+        const styleObj = getIconForType(item.tip);
+        return { ...item, icon: styleObj.icon, color: styleObj.color };
+    });
+    
+    renderNotifications();
+
+    // 4. Real-time Dinleme
     window.supabaseClient.channel('global-invite-listener')
         .on('postgres_changes', {
             event: 'INSERT', 
@@ -277,19 +290,20 @@ window.initGlobalInviteSystem = async function(userId) {
                 showNotification(`🔔 YENİ DAVET: ${teamName} seni takımına çağırıyor! Hemen profiline göz at.`, "success");
             }
 
-            let alertedInvites = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
-            alertedInvites.push(payload.new.id);
-            sessionStorage.setItem('alertedInvites', JSON.stringify(alertedInvites));
+            let currentAlerts = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
+            currentAlerts.push(payload.new.id);
+            sessionStorage.setItem('alertedInvites', JSON.stringify(currentAlerts));
             
+            // Anlık gelen daveti zile ekleme ve tıklanabilir yapma
             window.myNotifications.unshift({ 
                 id: payload.new.id, 
-                tablo: 'bildirimler', // Ekstra mantık için
+                tablo: 'application_members', 
                 tip: 'davet', 
                 icon: 'fa-envelope-open-text', 
                 color: '#f39c12', 
                 title: 'Yeni Davet!', 
                 text: `${teamName} seni çağırıyor.`,
-                created_at: new Date().toISOString()
+                created_at: payload.new.created_at || new Date().toISOString()
             });
             window.myNotifications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             window.renderNotifications();
