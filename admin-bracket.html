@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
+        /* --- ADMİN HEADER AKTİF SEKME STİLİ --- */
         nav ul li a { cursor: pointer; }
         .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
 
@@ -91,7 +92,47 @@
         <h2>Güvenlik Kontrolü Yapılıyor...</h2>
     </div>
 
-    <div id="header-alani"></div>
+    <header class="main-nav" id="mainHeader">
+        <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
+        <nav>
+            <ul>
+                <li><a href="index.html">ANA SAYFA</a></li>
+                <li><a href="admin.html#onay">ONAY</a></li>
+                <li><a href="admin.html#takimlar">ONAYLI</a></li>
+                <li><a href="admin.html#duyuru">DUYURU</a></li>
+                
+                <li><a href="admin-bracket.html" class="active-admin-tab">BRACKET<i class="fas fa-external-link-alt" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                
+                <li class="nav-bell desktop-only">
+                    <a href="#" onclick="toggleNotifPanel('desktopPanel', event)">
+                        <i class="fas fa-bell"></i>
+                        <span class="notif-badge" id="badge-desktop">0</span>
+                    </a>
+                    <div class="notif-panel" id="desktopPanel" onclick="event.stopPropagation()">
+                        <div class="notif-header">
+                            <h4>Bildirimler</h4>
+                            <button class="clear-btn" onclick="clearNotifications(event)">Tümünü Temizle</button>
+                        </div>
+                        <div class="notif-body" id="notif-list-desktop"></div>
+                    </div>
+                </li>
+
+                <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="floating-bell mobile-only" onclick="toggleNotifPanel('mobilePanel', event)">
+        <i class="fas fa-bell"></i>
+        <span class="notif-badge" id="badge-mobile">0</span>
+        <div class="notif-panel mobile-panel" id="mobilePanel" onclick="event.stopPropagation()">
+            <div class="notif-header">
+                <h4>Bildirimler</h4>
+                <button class="clear-btn" onclick="clearNotifications(event)">Tümünü Temizle</button>
+            </div>
+            <div class="notif-body" id="notif-list-mobile"></div>
+        </div>
+    </div>
 
     <div id="toast-container"></div>
 
@@ -185,13 +226,32 @@
 
         async function initAdminBracketPage() {
             try {
-                const headerRes = await fetch("components/header.html");
-                if(headerRes.ok) document.getElementById('header-alani').innerHTML = await headerRes.text();
+                // Header artık gömülü olduğu için header'ı fetch etmiyoruz.
                 const footerRes = await fetch("components/footer.html");
                 if(footerRes.ok) document.getElementById('footer-alani').innerHTML = await footerRes.text();
             } catch(e) { console.error("Komponent yüklenemedi", e); }
 
+            // Scroll Efekti (Header için)
+            let lastScrollTop = 0;
+            const header = document.getElementById("mainHeader");
+            window.addEventListener("scroll", function() {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                if (scrollTop > lastScrollTop && scrollTop > 100) header.classList.add("nav-hidden");
+                else header.classList.remove("nav-hidden");
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+            }, false);
+
+            // Dışarı Tıklayınca Bildirim Kapatma
+            document.addEventListener("click", function(event) {
+                const isClickInsideBell = event.target.closest('.nav-bell') || event.target.closest('.floating-bell');
+                const isClickInsidePanel = event.target.closest('.notif-panel');
+                if (!isClickInsideBell && !isClickInsidePanel) {
+                    document.querySelectorAll('.notif-panel').forEach(p => p.classList.remove('active'));
+                }
+            });
+
             if (typeof checkUserStatus === "function") await checkUserStatus();
+            if (typeof initNotifications === "function") initNotifications();
             checkAdminAccess();
         }
 
