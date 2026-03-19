@@ -70,49 +70,49 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- MOBİL UYUMLULUK DÜZENLEMELERİ --- */
+        /* ==================================================
+           MOBİL UYUMLULUK: KUSURSUZ SIĞDIRMA OPERASYONU
+        ================================================== */
         @media (max-width: 768px) {
-            .page-header { padding: 40px 15px 20px; }
-            .page-title { font-size: 24px; }
-            .page-subtitle { font-size: 13px; padding: 0 10px; }
+            .page-header { padding: 40px 10px 20px; }
+            .page-title { font-size: 22px; }
+            .page-subtitle { font-size: 12px; padding: 0 5px; }
             
-            .leaderboard-container { padding: 30px 15px; gap: 25px; }
+            .leaderboard-container { padding: 20px 10px; gap: 20px; }
 
-            /* Menü Kaydırılabilir (Swipe) Yapısı */
+            /* BUTONLAR SAĞA DOĞRU KAYDIRILABİLİR (SWIPE) */
             .category-tabs { 
                 flex-wrap: nowrap; 
-                justify-content: flex-start; 
                 overflow-x: auto; 
-                padding-bottom: 15px; 
-                scroll-behavior: smooth;
-                -ms-overflow-style: none;  /* IE ve Edge */
-                scrollbar-width: none;  /* Firefox */
+                justify-content: flex-start; 
+                padding-bottom: 10px; 
+                gap: 10px;
+                -webkit-overflow-scrolling: touch; 
+                scrollbar-width: none; /* Firefox için gizle */
             }
-            .category-tabs::-webkit-scrollbar { display: none; /* Chrome, Safari */ }
-            
-            .category-btn { flex: 0 0 auto; padding: 10px 15px; font-size: 12px; white-space: nowrap; }
+            .category-tabs::-webkit-scrollbar { display: none; /* Chrome/Safari için gizle */ }
+            .category-btn { flex: 0 0 auto; padding: 8px 16px; font-size: 11px; }
 
-            /* Başlık ve Tablo Optimize Edildi */
-            .board-header { flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 15px; }
+            /* TABLOYU EKRANA ZORLA SIĞDIRMA */
+            .leaderboard-card { border-radius: 12px; }
+            .board-header { padding: 15px; flex-direction: column; text-align: center; gap: 8px; }
             .board-title { font-size: 16px; }
-            .board-title i { font-size: 18px; }
             .board-desc { font-size: 10px; text-align: center; }
 
-            /* Tablo İçi Milimetrik Düzeltmeler */
-            .data-table th, .data-table td { padding: 12px 10px; font-size: 13px; }
-            .data-table th { font-size: 10px; }
+            .table-responsive { overflow-x: hidden; width: 100%; } /* Taşmayı engelle */
+            .data-table { white-space: normal; table-layout: auto; width: 100%; } /* Uzun yazıları alt satıra at */
             
-            .rank-badge { width: 24px; height: 24px; font-size: 12px; }
-            .agent-img { width: 32px; height: 32px; border-radius: 6px; }
-            .player-info-cell { gap: 10px; }
-            .player-name { font-size: 13px; }
-            .team-name-small { font-size: 10px; }
-            .highlight-stat { font-size: 15px; }
+            .data-table th, .data-table td { padding: 10px 5px; font-size: 11px; text-align: center; }
+            .data-table th { font-size: 9px; padding: 8px 5px; }
+            .data-table td:nth-child(2) { text-align: left; } /* Sadece isimler solda kalsın */
 
-            /* Mobilde Yana Kaydırma İçin Şık Scrollbar */
-            .table-responsive::-webkit-scrollbar { height: 4px; }
-            .table-responsive::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 10px; }
-            .table-responsive::-webkit-scrollbar-thumb { background: var(--neon-mor); border-radius: 10px; }
+            /* Elementleri Küçültme */
+            .rank-badge { width: 22px; height: 22px; font-size: 11px; }
+            .player-info-cell { gap: 6px; }
+            .agent-img { width: 26px; height: 26px; border-radius: 5px; }
+            .player-name { font-size: 11px; word-break: break-word; }
+            .team-name-small { font-size: 9px; }
+            .highlight-stat { font-size: 14px; }
         }
     </style>
 </head>
@@ -144,8 +144,8 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th width="50">Sıra</th>
-                            <th>Oyuncu / Takım</th>
+                            <th>Sıra</th>
+                            <th style="text-align: left;">Oyuncu / Takım</th>
                             <th>En Çok Oynadığı Ajan</th>
                             <th>Oynanan Harita</th>
                             <th>Toplam Kill</th>
@@ -167,8 +167,8 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th width="50">Sıra</th>
-                            <th>Oyuncu / Takım</th>
+                            <th>Sıra</th>
+                            <th style="text-align: left;">Oyuncu / Takım</th>
                             <th>Ortalama ACS</th>
                             <th>HS Yüzdesi</th>
                         </tr>
@@ -189,10 +189,10 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th width="50">Sıra</th>
-                            <th>Oyuncu / Takım</th>
+                            <th>Sıra</th>
+                            <th style="text-align: left;">Oyuncu / Takım</th>
                             <th>Oynanan Ajan</th>
-                            <th>K / D / A</th>
+                            <th>K/D/A</th>
                             <th>Maç ACS'si</th>
                         </tr>
                     </thead>
@@ -212,8 +212,8 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th width="50">Sıra</th>
-                            <th>Oyuncu / Takım</th>
+                            <th>Sıra</th>
+                            <th style="text-align: left;">Oyuncu / Takım</th>
                             <th>Toplam Kill</th>
                             <th>Ortalama ADR</th>
                         </tr>
@@ -234,8 +234,8 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th width="50">Sıra</th>
-                            <th>Ajan</th>
+                            <th>Sıra</th>
+                            <th style="text-align: left;">Ajan</th>
                             <th>Toplam Seçilme Sayısı</th>
                         </tr>
                     </thead>
