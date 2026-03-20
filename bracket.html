@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-9VH0LHNCS3');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>OBB 1. TOPLULUK TURNUVASI Fikstürü | OBB E-SPORTS</title>
     <link rel="icon" type="image/png" href="img/obblogo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <link rel="stylesheet" href="css/global.css">
@@ -37,7 +39,7 @@
         .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
 
         /* ==========================================================
-           2. AŞAMA: LINEER AĞAÇ (SOLDAN SAĞA) - YENİ TASARIM
+           2. AŞAMA: LINEER AĞAÇ (SOLDAN SAĞA) - KUSURSUZ ÇİZGİLER (YENİLENDİ)
            ========================================================== */
         .bracket-scroll-area { width: 100%; overflow-x: auto; padding-top: 50px; padding-bottom: 40px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; }
         
@@ -79,7 +81,7 @@
         .final-match .team.winner .team-name, .final-match .team.winner .score { color: gold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
 
         /* ==========================================================
-           LINEER AĞAÇ (SOLDAN SAĞA) - KUSURSUZ ÇİZGİLER
+           LINEER AĞAÇ (SOLDAN SAĞA) - KUSURSUZ ÇİZGİLER (DİNAMİK)
            ========================================================== */
         
         /* 1. Tüm kartlardan SAĞA yatay çizgi çıkar (Final hariç) */
@@ -88,20 +90,20 @@
         /* 2. Tüm kartlara SOLDAN yatay çizgi girer (İlk tur hariç) */
         .bracket-column:not(:first-child) .match-card::before { content: ''; position: absolute; top: 50%; left: -30px; width: 30px; border-top: 2px solid #333; z-index: 1; }
 
-        /* 3. Dikey Birleştirici Çizgiler (flex mantığıyla kusursuz hizalama) */
-        /* Bu çizgi, bir sonraki turun girişindeki yatay çizgileri dikeyde birleştirir */
+        /* 3. Dikey Birleştirici Çizgiler (Sarmalayıcı üzerinde flex ile dinamik) */
+        /* İlk sütun hariç, her maç sarmalayıcısına bir dikey çizgi parçası ekle */
         .bracket-column:not(:first-child) .match-wrapper::before { content: ''; position: absolute; left: 0; width: 2px; background-color: #333; z-index: 0; }
         
         /* Dikey çizginin yüksekliği: flex yapıda üstteki maçın ortasından alttaki maçın ortasına kadardır */
-        /* Nth-child mantığı ile çift/tek sarmalayıcılar ayarlanır */
+        /* Nth-child mantığı ile çift/tek sarmalayıcıları dikey çizgi parçasını farklı yönlere uzatacak şekilde ayarla */
         
-        /* Çift nolu maçlar (alt maç): Dikey çizgiyi sarmalayıcının ortasından yukarı doğru uzat */
-        .bracket-column:not(:first-child) .match-wrapper:nth-child(even)::before { top: 0; height: 50%; }
+        /* Çift nolu maçlar (alt maç): Dikey çizgi sarmalayıcının üstünden başlayıp ortasına kadar (yukarı doğru) uzat */
+        .bracket-column:not(:first-child) .match-wrapper:nth-child(even)::before { top: 0; height: 50%; /* Sarmalayıcının ortasına kadar */ }
         
-        /* Tek nolu maçlar (üst maç): Dikey çizgiyi sarmalayıcının ortasından aşağı doğru uzat */
-        .bracket-column:not(:first-child) .match-wrapper:nth-child(odd)::before { bottom: 0; height: 50%; }
+        /* Tek nolu maçlar (üst maç): Dikey çizgi sarmalayıcının ortasından başlayıp altına kadar (aşağı doğru) uzat */
+        .bracket-column:not(:first-child) .match-wrapper:nth-child(odd)::before { bottom: 0; height: 50%; /* Sarmalayıcının ortasına kadar */ }
 
-        /* Son kolonun (Final) dikey çizgiye ihtiyacı yoktur */
+        /* Son kolonun (Final) bir sonraki turla birleşmesine gerek yoktur, bu yüzden dikey çizgisini kaldır */
         .bracket-column.col-final .match-wrapper::before { display: none; }
 
         /* Pulse Animasyonu (Canlı Maç İçin) */
