@@ -29,18 +29,42 @@
 
         .container { padding: 80px 10%; }
         
-        /* SLIDER BAŞLIĞI VE KONTROLLERİ */
+        /* SLIDER BAŞLIĞI */
         .section-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; color: white; margin: 0; border-left: 4px solid var(--neon-mor); padding-left: 15px; }
-        
-        .slider-controls { display: flex; gap: 10px; }
-        .slider-controls button { background: #111; border: 1px solid #333; color: white; width: 45px; height: 45px; border-radius: 50%; font-size: 18px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; }
-        .slider-controls button:hover { background: var(--neon-mor); border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); transform: scale(1.1); }
 
-        /* YATAY KAYDIRILABİLİR KART ALANI (PREMIUM SNAP ETKİSİ EKLENDİ) */
-        .slider-wrapper { position: relative; width: 100%; overflow: hidden; }
+        /* YATAY KAYDIRILABİLİR KART ALANI */
+        .slider-wrapper { position: relative; width: 100%; overflow: hidden; border-radius: 15px; }
         .slider-container { display: flex; gap: 20px; overflow-x: auto; scroll-behavior: smooth; padding-bottom: 20px; scrollbar-width: none; scroll-snap-type: x mandatory; }
         .slider-container::-webkit-scrollbar { display: none; }
+
+        /* STEAM TARZI SLIDER OKLARI */
+        .slider-btn {
+            position: absolute;
+            top: 100px; /* Resmin tam ortasına denk gelmesi için (Resim 200px) */
+            transform: translateY(-50%);
+            background: rgba(17, 17, 17, 0.85); /* Steam stili hafif transparan koyu arka plan */
+            border: 1px solid var(--neon-mor);
+            color: white;
+            width: 45px;
+            height: 90px;
+            font-size: 26px;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .slider-btn:hover {
+            background: var(--neon-mor);
+            color: white;
+            box-shadow: 0 0 20px var(--neon-mor);
+            transform: translateY(-50%) scale(1.05); /* Hoverda hafif büyüme */
+        }
+        .prev-btn { left: 0; border-radius: 0 10px 10px 0; border-left: none; }
+        .next-btn { right: 0; border-radius: 10px 0 0 10px; border-right: none; }
 
         /* KART TASARIMI */
         .card { scroll-snap-align: start; flex: 0 0 calc(33.333% - 14px); min-width: 320px; display: flex; flex-direction: column; text-decoration: none; color: inherit; background-color: var(--card-bg); border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.4s ease; }
@@ -63,8 +87,8 @@
             .hero h1 { font-size: 2.2rem; }
             .section-title { font-size: 24px; }
             
-            /* Mobilde slider'ı iptal edip alt alta diziyoruz */
-            .slider-controls { display: none; }
+            /* Mobilde okları ve yana kaydırmayı iptal edip alt alta diziyoruz */
+            .slider-btn { display: none; }
             .slider-container { flex-direction: column; overflow-x: visible; gap: 25px; padding-bottom: 0; scroll-snap-type: none; }
             .card { flex: 1 1 auto; min-width: 100%; scroll-snap-align: none; }
             
@@ -90,13 +114,12 @@
         
         <div class="section-header-row">
             <h2 class="section-title">GÜNCEL DUYURULAR</h2>
-            <div class="slider-controls">
-                <button onclick="slideLeft()"><i class="fas fa-chevron-left"></i></button>
-                <button onclick="slideRight()"><i class="fas fa-chevron-right"></i></button>
-            </div>
         </div>
 
         <div class="slider-wrapper">
+            <button class="slider-btn prev-btn" onclick="slideLeft()"><i class="fas fa-chevron-left"></i></button>
+            <button class="slider-btn next-btn" onclick="slideRight()"><i class="fas fa-chevron-right"></i></button>
+
             <div class="slider-container" id="announcementSlider">
                 
                 <a href="duyuru.html" class="card">
