@@ -41,20 +41,37 @@
            ========================================================== */
         .bracket-scroll-area { width: 100%; overflow-x: auto; padding-top: 60px; padding-bottom: 60px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; }
         
-        .bracket-container { display: flex; align-items: stretch; justify-content: flex-start; min-width: max-content; min-height: 750px; padding-left: 20px; }
+        .bracket-container { 
+            display: flex; 
+            align-items: stretch; 
+            justify-content: flex-start; 
+            min-width: max-content; 
+            min-height: 800px; 
+            padding-left: 20px; 
+        }
         
-        .bracket-column { display: flex; flex-direction: column; width: 280px; position: relative; }
+        .bracket-column { 
+            display: flex; 
+            flex-direction: column; 
+            width: 280px; 
+            min-width: 280px;
+            position: relative; 
+        }
         
         .round-header { position: absolute; top: -50px; left: 10px; right: 10px; text-align: center; color: var(--neon-mor); font-weight: 900; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; border-bottom: 2px solid #222; padding-bottom: 10px; z-index: 10; }
 
         .match-wrapper { 
-            flex: 1 1 0%; 
-            display: flex; flex-direction: column; justify-content: center; 
-            position: relative; padding: 0 30px; margin: 0; 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            position: relative; 
+            padding: 0 30px; 
+            margin: 0; 
         }
 
         /* --- ORTAK MAÇ KARTI TASARIMI --- */
-        .match-card { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; position: relative; z-index: 5; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); margin: 0; }
+        .match-card { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; position: relative; z-index: 5; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); margin: 0; width: 100%; }
         .match-card:hover { border-color: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(96, 29, 194, 0.3); z-index: 10; }
         
         .match-info-bar { background: #111; padding: 6px 12px; font-size: 11px; color: var(--gri-yazi); font-weight: bold; display: flex; justify-content: space-between; border-bottom: 1px solid #222; border-radius: 7px 7px 0 0; }
@@ -79,13 +96,12 @@
         .final-match .team.winner { background: rgba(255, 215, 0, 0.1); border-left-color: gold; }
         .final-match .team.winner .team-name, .final-match .team.winner .score { color: gold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
 
-        /* YENİ: PLANLANMIŞ MAÇ (TARİHLİ) ÖZEL GÖRÜNÜMÜ */
         .match-card.scheduled-slot { cursor: default; border-color: #1a1a1a; }
         .match-card.scheduled-slot:hover { border-color: #00d2ff; transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 210, 255, 0.15); }
         .match-card.scheduled-slot .team-name { color: #ccc; }
 
         /* ==========================================================
-           ÇİZGİLER (1 Piksel Bile Şaşmaz)
+           ÇİZGİLER (1 Piksel Bile Şaşmaz Yöntemi)
            ========================================================== */
         
         .bracket-column:not(:last-child) .match-card::after { 
@@ -99,12 +115,17 @@
         }
 
         .bracket-column:not(:first-child) .match-wrapper::before { 
-            content: ''; position: absolute; left: 0; 
-            top: 25%; bottom: 25%; 
-            border-left: 2px solid #444; z-index: 0; 
+            content: ''; position: absolute; left: 0; width: 2px; background-color: #444; z-index: 0; 
         }
+        .bracket-column:not(:first-child) .match-wrapper:nth-child(odd)::before { 
+            top: 50%; bottom: 0; 
+        }
+        .bracket-column:not(:first-child) .match-wrapper:nth-child(even)::before { 
+            top: 0; bottom: 50%; 
+        }
+        
+        .bracket-column.col-final .match-wrapper::before { display: none; }
 
-        /* Pulse Animasyonu (Canlı Maç İçin) */
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
         /* --- DETAY MODALI VE HARİTA SEKMELERİ --- */
@@ -202,7 +223,7 @@
     <div id="playoffStage" class="stage-content">
         <div class="bracket-scroll-area">
             <div class="bracket-container" id="bracketContainer">
-                </div>
+            </div>
         </div>
     </div>
 
@@ -291,7 +312,7 @@
 
             let classA = '', classB = '';
             let statusText = 'BEKLİYOR';
-            let scheduledClass = ''; // YENİ: Planlanmış maç sınıfı
+            let scheduledClass = ''; 
 
             if (matchData.status === 'finished') {
                 classA = matchData.winnerId === matchData.teamAId ? 'winner' : 'loser';
@@ -304,7 +325,6 @@
             } else if (matchData.status === 'live') {
                 statusText = '<span style="color:var(--kirmizi-iptal); animation: pulse 1.5s infinite;">CANLI</span>';
             } else if (matchData.matchDate) {
-                // Eğer maç oynanmadıysa (bekliyor) ve bir tarih girildiyse özel tasarım uygula
                 statusText = `<span style="color:#00d2ff;"><i class="far fa-calendar-alt"></i> ${matchData.matchDate}</span>`;
                 scheduledClass = 'scheduled-slot';
             }
@@ -342,7 +362,6 @@
                     });
                 }
 
-                // match_date sütununu da çekiyoruz
                 const { data: matchesData, error: matchesErr } = await window.supabaseClient.from('bracket_matches').select('*').order('round_order', { ascending: true });
                 if (matchesErr) throw matchesErr;
 
@@ -360,20 +379,26 @@
                 const roundsData = {};
                 if (matchesData) {
                     matchesData.forEach(m => {
-                        if (!roundsData[m.round_name]) roundsData[m.round_name] = [];
+                        // KÜÇÜK/BÜYÜK HARF UYUŞMAZLIKLARINI VE BOŞLUKLARI TEMİZLEME ZIRHI
+                        const rName = m.round_name ? m.round_name.toUpperCase().trim() : '';
+                        if (!roundsData[rName]) roundsData[rName] = [];
                         
-                        let sA = 0;
-                        let sB = 0;
-                        let calcStatus = 'pending';
-                        let calcWinner = null;
+                        let sA = '-';
+                        let sB = '-';
+                        
+                        // SUPABASE'DEN GELEN 'STATUS' DEĞERİNE KESİN GÜVEN
+                        let calcStatus = m.status || 'pending';
+                        let calcWinner = m.winner_id || null;
                         
                         let winsNeeded = 1; 
-                        if (["SON 16", "ÇEYREK FİNAL", "YARI FİNAL"].includes(m.round_name)) winsNeeded = 2; // BO3
-                        if (m.round_name === "FİNAL") winsNeeded = 3; // BO5
+                        if (["SON 16", "ÇEYREK FİNAL", "YARI FİNAL"].includes(rName)) winsNeeded = 2; // BO3
+                        if (rName === "FİNAL") winsNeeded = 3; // BO5
 
                         const matchMaps = mapsByMatch[m.id] || [];
                         
-                        if (matchMaps.length > 0) {
+                        // EĞER MAÇ 'PENDING' İSE HARİTALARI YOKSAY (ZORLA TAMAMLANDI YAPMASINI ENGELLER)
+                        if (calcStatus !== 'pending' && matchMaps.length > 0) {
+                            sA = 0; sB = 0;
                             matchMaps.forEach(map => {
                                 if (map.score_a > map.score_b) sA++;
                                 else if (map.score_b > map.score_a) sB++;
@@ -382,13 +407,9 @@
                             if (sA >= winsNeeded) { calcStatus = 'finished'; calcWinner = m.team_a_id; }
                             else if (sB >= winsNeeded) { calcStatus = 'finished'; calcWinner = m.team_b_id; }
                             else { calcStatus = 'live'; } 
-                        } else {
-                            sA = '-';
-                            sB = '-';
-                            calcStatus = 'pending'; 
                         }
 
-                        roundsData[m.round_name].push({
+                        roundsData[rName].push({
                             id: m.id,
                             teamAId: m.team_a_id,
                             teamBId: m.team_b_id,
@@ -401,7 +422,7 @@
                             status: calcStatus, 
                             winnerId: calcWinner,
                             format: m.match_format,
-                            matchDate: m.match_date || null // Veritabanından gelen tarih bilgisi
+                            matchDate: m.match_date || null
                         });
                     });
                 }
@@ -456,7 +477,7 @@
         window.currentModalData = null;
 
         async function openModal(matchId, teamAId, teamBId, tA, tB, sA, sB, status, logoA, logoB) {
-            // Tıklama kontrolü (pending ve skoru olmayanlar tıklanamaz)
+            // Tıklama engelleme mekanizması (Sadece Tamamlandı/Canlı maçlarda çalışır)
             if(status === 'undefined' || status === 'pending' || sA === '-') return; 
             
             document.getElementById('mTeamA').innerText = tA;
