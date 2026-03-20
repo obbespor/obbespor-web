@@ -62,6 +62,10 @@
         
         .map-input { background: #111; border: 1px solid #444; color: var(--neon-mor); padding: 8px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; text-align: center; text-transform: uppercase; outline: none; transition: 0.3s; width: 150px; }
         .map-input:focus { border-color: white; color: white; }
+        
+        /* TARİH İNPUTU ÖZEL STİLİ */
+        .date-input { border-color: #00d2ff; color: #00d2ff; background: rgba(0, 210, 255, 0.05); }
+        .date-input:focus { box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); color: white; }
 
         .stats-grid-container { display: flex; flex-direction: column; gap: 30px; }
         .team-stats-box { width: 100%; overflow-x: auto; }
@@ -80,8 +84,8 @@
 
         .stat-label { font-size: 10px; color: var(--gri-yazi); text-align: center; font-weight: bold; }
         
-        .btn-save-match { background: linear-gradient(45deg, #1f8536, #28a745); color: white; border: none; padding: 20px; border-radius: 12px; font-weight: 900; font-size: 18px; width: 100%; cursor: pointer; margin-top: 40px; transition: 0.3s; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 10px; letter-spacing: 1px; }
-        .btn-save-match:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(40, 167, 69, 0.4); }
+        .btn-save-match { color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 10px; letter-spacing: 1px; }
+        .btn-save-match:hover { transform: translateY(-3px); }
 
         #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
 
@@ -91,7 +95,6 @@
             .btn-fetch { width: 100%; justify-content: center; }
             .series-score-box { flex-direction: column; gap: 15px; }
             .match-score-header { flex-direction: column; gap: 20px; }
-            /* Mobilde taşmayı scroll ile çözmek için min-width kullanıyoruz */
         }
     </style>
 </head>
@@ -213,7 +216,8 @@
                     </div>
                     <div class="vs-text">
                         VS
-                        <input type="text" id="mapNameInput" class="map-input" placeholder="HARİTA İSMİ (ÖRN: ABYSS)">
+                        <input type="text" id="matchDateInput" class="map-input date-input" placeholder="TARİH (24 Mart 21:00 vb.)">
+                        <input type="text" id="mapNameInput" class="map-input" placeholder="HARİTA (ÖRN: ABYSS)">
                     </div>
                     <div class="team-score-input">
                         <span style="font-size:10px; color:var(--gri-yazi); margin-bottom:-5px;">BU HARİTA SKORU</span>
@@ -233,9 +237,19 @@
                     </div>
                 </div>
 
-                <button class="btn-save-match" id="btnSaveMatch" onclick="saveMappedStats()">
-                    <i class="fas fa-save"></i> HARİTAYI FİKSTÜRE İŞLE
-                </button>
+                <div style="display:flex; gap:15px; margin-top: 40px; flex-wrap: wrap;">
+                    <button class="btn-save-match" id="btnScheduleMatch" onclick="scheduleMatch()" style="background: linear-gradient(45deg, #0056b3, #00d2ff); flex: 1.5; min-width: 250px;">
+                        <i class="far fa-calendar-alt"></i> SADECE TARİH PLANLA
+                    </button>
+                    
+                    <button class="btn-save-match" id="btnSaveMatch" onclick="saveMappedStats()" style="background: linear-gradient(45deg, #1f8536, #28a745); flex: 2; min-width: 250px;">
+                        <i class="fas fa-save"></i> HARİTAYI FİKSTÜRE İŞLE
+                    </button>
+                    
+                    <button class="btn-save-match" id="btnDeleteMatch" onclick="deleteMatch()" style="background: linear-gradient(45deg, #b30000, #ff4b4b); flex: 1; min-width: 200px;">
+                        <i class="fas fa-trash"></i> EŞLEŞMEYİ SİL
+                    </button>
+                </div>
             </div>
         </div>
     </main>
@@ -332,7 +346,6 @@
             handleRoundChange(); 
         }
 
-        // K/D/A VE YENİ EKLENEN ACS/ADR/HS% KUTULARI
         function generateEmptyRows(containerId) {
             const container = document.getElementById(containerId);
             container.innerHTML = `
@@ -426,7 +439,6 @@
             else icon.src = "img/agents/unknown.png";
         }
 
-        // YAPAY ZEKA GÜÇLENDİRMELİ YENİ API VERİ ÇEKİMİ
         async function fetchValorantData() {
             const matchId = document.getElementById('apiMatchId').value.trim();
             if (!matchId) return showNotification("Lütfen bir Match ID girin!", "error");
@@ -448,10 +460,8 @@
                 document.getElementById('scoreA').value = data.teams.blue.rounds_won;
                 document.getElementById('scoreB').value = data.teams.red.rounds_won;
 
-                // Oynanan Toplam Raunt (ACS ve ADR hesabı için)
                 const roundsPlayed = data.metadata.rounds_played || 1;
 
-                // Liderlik Tablosu verilerini (ACS, ADR, HS%) otomatik hesaplayıp oyuncu objesine ekleyen fonksiyon
                 const processPlayers = (players) => players.map(p => {
                     const totalShots = p.stats.headshots + p.stats.bodyshots + p.stats.legshots;
                     return {
@@ -477,7 +487,6 @@
             }
         }
 
-        // HESAPLANAN VERİLERİ KUTUCUKLARA DOLDURAN FONKSİYON
         function populateRows(containerId, players) {
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             players.forEach((p, i) => {
@@ -489,7 +498,6 @@
                     actualRow.querySelector('.k-input').value = p.stats.kills;
                     actualRow.querySelector('.d-input').value = p.stats.deaths;
                     actualRow.querySelector('.a-input').value = p.stats.assists;
-                    // Yeni Eklenenler
                     actualRow.querySelector('.acs-input').value = p.calc_acs || 0;
                     actualRow.querySelector('.adr-input').value = p.calc_adr || 0;
                     actualRow.querySelector('.hs-input').value = p.calc_hs || 0;
@@ -497,7 +505,101 @@
             });
         }
 
-        // EKSİKSİZ KAYIT İŞLEMİ (LİDERLİK TABLOSU VERİLERİ DAHİL)
+        // --- YENİ EKLENEN: SADECE TARİH VE EŞLEŞME PLANLAMA ---
+        async function scheduleMatch() {
+            const roundName = document.getElementById('roundNameSelect').value;
+            const matchDate = document.getElementById('matchDateInput').value.trim();
+
+            if(!currentTeamAId || !currentTeamBId) return showNotification("Lütfen önce takımların isimlerini yazıp eşleşmelerini bekleyin.", "error");
+            if(!matchDate) return showNotification("Lütfen planlamak için bir tarih girin (Örn: 24 Mart 21:00).", "error");
+
+            const btn = document.getElementById('btnScheduleMatch');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PLANLANIYOR...';
+            btn.disabled = true;
+
+            try {
+                // Maç zaten var mı kontrol et
+                const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
+                    .select('id')
+                    .eq('round_name', roundName)
+                    .eq('team_a_id', currentTeamAId)
+                    .eq('team_b_id', currentTeamBId)
+                    .single();
+
+                if (existingMatch) {
+                    // Varsa sadece tarihi güncelle ve durumu bekliyora çek
+                    const { error: updErr } = await window.supabaseClient.from('bracket_matches')
+                        .update({ match_date: matchDate, status: 'pending', series_score_a: 0, series_score_b: 0, winner_id: null })
+                        .eq('id', existingMatch.id);
+                    if (updErr) throw updErr;
+                } else {
+                    // Yoksa yeni planlanmış maç olarak ekle
+                    const { error: insErr } = await window.supabaseClient.from('bracket_matches')
+                        .insert([{
+                            round_name: roundName,
+                            round_order: 1, 
+                            team_a_id: currentTeamAId,
+                            team_b_id: currentTeamBId,
+                            series_score_a: 0,
+                            series_score_b: 0,
+                            status: 'pending',
+                            match_date: matchDate
+                        }]);
+                    if (insErr) throw insErr;
+                }
+                showNotification("Eşleşme başarıyla planlandı ve fikstüre eklendi!", "success");
+            } catch (err) {
+                console.error(err);
+                showNotification("Hata: " + err.message, "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // --- YENİ EKLENEN: MAÇI SİLME İŞLEMİ ---
+        async function deleteMatch() {
+            const roundName = document.getElementById('roundNameSelect').value;
+
+            if(!currentTeamAId || !currentTeamBId) return showNotification("Silmek istediğiniz maçın iki takımını da aratıp seçmelisiniz.", "error");
+            if(!confirm("DİKKAT: Bu eşleşmeyi ve ona bağlı olan tüm harita istatistiklerini kalıcı olarak silmek istediğinize emin misiniz?")) return;
+
+            const btn = document.getElementById('btnDeleteMatch');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SİLİNİYOR...';
+            btn.disabled = true;
+
+            try {
+                const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
+                    .select('id')
+                    .eq('round_name', roundName)
+                    .eq('team_a_id', currentTeamAId)
+                    .eq('team_b_id', currentTeamBId)
+                    .single();
+
+                if (existingMatch) {
+                    // Supabase'de ilişkili tabloların Foreign Key "Cascade Delete" ayarı açıksa
+                    // match_maps ve match_player_stats otomatik silinecektir.
+                    const { error: delErr } = await window.supabaseClient.from('bracket_matches')
+                        .delete()
+                        .eq('id', existingMatch.id);
+                    
+                    if (delErr) throw delErr;
+                    showNotification("Eşleşme ve ona bağlı tüm veriler başarıyla silindi!", "success");
+                } else {
+                    showNotification("Bu turda aradığınız takımlar arasında kaydedilmiş bir eşleşme bulunamadı.", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showNotification("Silme Hatası: " + err.message, "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // EKSİKSİZ KAYIT İŞLEMİ (ORİJİNAL)
         async function saveMappedStats() {
             const btn = document.getElementById('btnSaveMatch');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> KAYDEDİLİYOR...';
@@ -507,6 +609,7 @@
                 const scoreA = parseInt(document.getElementById('scoreA').value) || 0;
                 const scoreB = parseInt(document.getElementById('scoreB').value) || 0;
                 const mapName = document.getElementById('mapNameInput').value || 'Bilinmiyor';
+                const matchDate = document.getElementById('matchDateInput').value.trim() || null;
                 
                 let seriesA = parseInt(document.getElementById('seriesScoreA').value) || 0;
                 let seriesB = parseInt(document.getElementById('seriesScoreB').value) || 0;
@@ -547,7 +650,7 @@
                 if (existingMatch) {
                     matchId = existingMatch.id;
                     const { error: updErr } = await window.supabaseClient.from('bracket_matches')
-                        .update({ series_score_a: seriesA, series_score_b: seriesB, winner_id: winnerId, status: matchStatus })
+                        .update({ series_score_a: seriesA, series_score_b: seriesB, winner_id: winnerId, status: matchStatus, match_date: matchDate })
                         .eq('id', matchId);
                     if (updErr) throw updErr;
                 } else {
@@ -560,7 +663,8 @@
                             series_score_a: seriesA,
                             series_score_b: seriesB,
                             winner_id: winnerId,
-                            status: matchStatus
+                            status: matchStatus,
+                            match_date: matchDate
                         }]).select().single();
                     if (insErr) throw insErr;
                     matchId = newMatch.id;
@@ -579,7 +683,6 @@
 
                 if(mapErr) throw new Error("Harita kaydedilirken hata: Aynı sıradaki (Map " + mapOrder + ") haritayı tekrar ekliyor olabilirsiniz.");
 
-                // LİDERLİK TABLOSU VERİLERİNİ TOPLAMA
                 const collectData = (containerId, teamId) => {
                     const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
                     const stats = [];
