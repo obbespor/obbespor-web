@@ -20,9 +20,9 @@
         /* KESİN ÇÖZÜM: Tüm sayfanın yatayda patlamasını engeller */
         html, body { background-color: #050505; color: white; overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; }
 
-        /* --- SAYFA BAŞLIĞI VE TASARIMI (YUTULMA SORUNU ÇÖZÜLDÜ) --- */
-        /* padding-top: 130px yapılarak üstteki sabit menünün yazıları yutması engellendi */
-        .page-header { text-align: center; padding: 130px 20px 60px; background: radial-gradient(circle at top, #110522 0%, #050505 100%); border-bottom: 1px solid #222; position: relative; }
+        /* --- SAYFA BAŞLIĞI VE TASARIMI --- */
+        /* Masaüstü için padding-top: 150px yapıldı */
+        .page-header { text-align: center; padding: 150px 20px 60px; background: radial-gradient(circle at top, #110522 0%, #050505 100%); border-bottom: 1px solid #222; position: relative; }
         .page-title { font-size: clamp(2.2rem, 4vw, 3.8rem); font-weight: 900; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 2px; }
         .page-title span { color: var(--neon-mor); text-shadow: 0 0 25px rgba(96, 29, 194, 0.6); }
         .page-subtitle { color: var(--gri-yazi); font-size: 16px; font-weight: 500; max-width: 650px; margin: 0 auto; line-height: 1.6; }
@@ -107,10 +107,10 @@
             MOBİL UYUMLULUK
         ================================================== */
         @media (max-width: 768px) {
-            /* MOBİLDE YUTULMA SORUNU İÇİN PADDING-TOP ARTIRILDI */
-            .page-header { padding: 110px 10px 30px; } 
-            .page-title { font-size: 22px; margin-bottom: 10px; }
-            .page-subtitle { font-size: 12px; padding: 0 10px; }
+            /* MOBİLDE YUTULMA SORUNU ÇÖZÜMÜ: Padding-top 190px'e çıkarıldı! */
+            .page-header { padding: 190px 15px 40px; } 
+            .page-title { font-size: 26px; margin-bottom: 12px; }
+            .page-subtitle { font-size: 13px; padding: 0 10px; }
             
             .leaderboard-container { padding: 25px 10px 60px; gap: 0; }
             .category-tabs-wrapper { margin-bottom: 30px; }
