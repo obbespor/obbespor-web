@@ -36,39 +36,26 @@
         
         .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
 
-        /* --- 2. AŞAMA: AĞAÇ (BRACKET) --- */
-        .bracket-scroll-area { width: 100%; overflow-x: auto; padding-bottom: 40px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; }
-        .bracket-container { display: flex; align-items: stretch; justify-content: center; gap: 60px; min-width: max-content; }
+        /* --- 2. AŞAMA: SİMETRİK AĞAÇ (BRACKET) --- */
+        .bracket-scroll-area { width: 100%; overflow-x: auto; padding-top: 40px; padding-bottom: 40px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; }
+        .bracket-container { display: flex; align-items: stretch; justify-content: center; gap: 50px; min-width: max-content; min-height: 700px; padding-top: 50px; }
         
-        .bracket-column { display: flex; flex-direction: column; justify-content: center; width: 250px; position: relative; }
+        .bracket-column { display: flex; flex-direction: column; width: 250px; position: relative; }
         
-        .round-header { text-align: center; color: var(--neon-mor); font-weight: 900; text-transform: uppercase; font-size: 16px; letter-spacing: 2px; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; z-index: 10; }
+        /* Başlıklar kolonların hemen üstüne sabitlenir */
+        .round-header { position: absolute; top: -50px; left: 0; width: 100%; text-align: center; color: var(--neon-mor); font-weight: 900; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; border-bottom: 2px solid #222; padding-bottom: 10px; z-index: 10; }
 
-        .bracket-column .match-wrapper { position: relative; z-index: 5; margin: 0; padding: 10px 0; }
-        
-        .bracket-column:nth-child(1) .match-wrapper { margin-bottom: 20px; }
-        .bracket-column:nth-child(2) .match-wrapper { margin-bottom: 120px; }
-        .bracket-column:nth-child(3) .match-wrapper { margin-bottom: 320px; }
-        .bracket-column:nth-child(4) .match-wrapper { margin-bottom: 0; }
-        .bracket-column .match-wrapper:last-child { margin-bottom: 0; }
-
-        .bracket-column .match-wrapper::after { content: ''; position: absolute; right: -30px; top: calc(50% - 1px); width: 30px; border-bottom: 2px solid #333; z-index: 1; }
-        .bracket-column:last-child .match-wrapper::after { display: none; }
-        
-        .bracket-column:not(:first-child) .match-wrapper::before { content: ''; position: absolute; left: -30px; width: 30px; border-left: 2px solid #333; z-index: 1; }
-        
-        .bracket-column:not(:first-child) .match-wrapper:nth-child(even)::before { top: 50%; height: calc(50% + 5px); border-top: 2px solid #333; }
-        .bracket-column:not(:first-child) .match-wrapper:nth-child(odd)::before { bottom: 50%; height: calc(50% + 5px); border-bottom: 2px solid #333; }
-
-        #bracketContainer:has(.match-grid) .bracket-column .match-wrapper { margin-bottom: 15px; }
+        .match-wrapper { flex: 1; display: flex; flex-direction: column; justify-content: center; position: relative; padding: 10px 0; margin: 0; }
 
         /* --- ORTAK MAÇ KARTI TASARIMI --- */
-        .match-card { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; overflow: hidden; position: relative; z-index: 5; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .match-card { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; position: relative; z-index: 5; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .match-card:hover { border-color: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(96, 29, 194, 0.3); z-index: 10; }
-        .match-info-bar { background: #111; padding: 6px 12px; font-size: 11px; color: var(--gri-yazi); font-weight: bold; display: flex; justify-content: space-between; border-bottom: 1px solid #222; }
         
+        /* Border-radius kartlara overflow:hidden olmadan uygulandı (çizgiler kaybolmasın diye) */
+        .match-info-bar { background: #111; padding: 6px 12px; font-size: 11px; color: var(--gri-yazi); font-weight: bold; display: flex; justify-content: space-between; border-bottom: 1px solid #222; border-radius: 7px 7px 0 0; }
         .team { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #1a1a1a; }
-        .team:last-child { border-bottom: none; }
+        .team:last-child { border-bottom: none; border-radius: 0 0 7px 7px; }
+        
         .team-info { display: flex; align-items: center; gap: 10px; }
         .team-logo { width: 20px; height: 20px; object-fit: contain; background: #000; border-radius: 4px; }
         .team-name { font-size: 13px; font-weight: 700; color: white; }
@@ -86,6 +73,28 @@
         .final-match { border-color: gold; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
         .final-match .team.winner { background: rgba(255, 215, 0, 0.1); border-left-color: gold; }
         .final-match .team.winner .team-name, .final-match .team.winner .score { color: gold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+
+        /* ==========================================================
+           MATEMATİKSEL KUSURSUZ BAĞLANTI ÇİZGİLERİ (SİMETRİK) 
+           ========================================================== */
+        .bracket-column .match-card::after,
+        .bracket-column .match-card::before { content: ''; position: absolute; top: 50%; width: 25px; border-top: 2px solid #333; z-index: -1; }
+        
+        /* Sol Kanat */
+        .left-wing .match-card::after { right: -25px; } /* Sağa çıkan oklar */
+        .left-wing:not(.col-r1) .match-card::before { left: -25px; } /* Soldan giren oklar */
+        
+        /* Sağ Kanat */
+        .right-wing .match-card::before { left: -25px; } /* Sola çıkan oklar */
+        .right-wing:not(.col-r1) .match-card::after { right: -25px; } /* Sağdan giren oklar */
+        
+        /* Final */
+        .col-final .match-card::before { left: -25px; }
+        .col-final .match-card::after { right: -25px; }
+        
+        /* Dikey Birleştirici Çizgiler (%25 ile %75 arasına tam oturur) */
+        .left-wing:not(.col-r1) .match-wrapper::before { content: ''; position: absolute; left: -25px; top: 25%; bottom: 25%; border-left: 2px solid #333; z-index: 0; }
+        .right-wing:not(.col-r1) .match-wrapper::before { content: ''; position: absolute; right: -25px; top: 25%; bottom: 25%; border-right: 2px solid #333; z-index: 0; }
 
         /* --- DETAY MODALI VE HARİTA SEKMELERİ --- */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(8px); padding: 20px; }
@@ -108,13 +117,11 @@
         .modal-score.winner { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
         .modal-vs { font-size: 16px; color: #555; font-weight: bold; }
 
-        /* Harita Geçiş Sekmeleri (BO3/BO5 İçin) */
         .map-tabs-container { display: flex; justify-content: center; gap: 10px; margin: 20px 20px 0; flex-wrap: wrap; }
         .map-tab-btn { background: #111; border: 1px solid #333; color: var(--gri-yazi); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 900; transition: 0.3s; font-family: 'Poppins', sans-serif; letter-spacing: 1px; }
         .map-tab-btn:hover { background: #222; color: white; }
         .map-tab-btn.active { background: var(--neon-mor); color: white; border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); }
 
-        /* Modal İçi İstatistik Tabloları */
         .map-stats-block { margin: 20px; background: #111; border-radius: 12px; border: 1px solid #222; overflow: hidden; animation: fadeIn 0.4s ease; }
         .map-name-header { background: var(--neon-mor); color: white; padding: 12px; margin: 0; font-size: 15px; font-weight: 900; text-align: center; letter-spacing: 1px; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 15px; }
         .map-score-display { background: rgba(0,0,0,0.3); padding: 3px 12px; border-radius: 20px; font-size: 18px; color: gold; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
@@ -183,7 +190,8 @@
 
     <div id="playoffStage" class="stage-content">
         <div class="bracket-scroll-area">
-            <div class="bracket-container" id="bracketContainer"></div>
+            <div class="bracket-container" id="bracketContainer">
+                </div>
         </div>
     </div>
 
@@ -380,6 +388,7 @@
                     });
                 }
 
+                // Grup Aşaması R1 ve R2 İşleme (Mevcut yapı korundu)
                 const groupStageDiv = document.getElementById('groupStage');
                 let groupHtml = '';
                 TOURNAMENT_STRUCTURE.group.forEach(round => {
@@ -393,21 +402,54 @@
                 });
                 groupStageDiv.innerHTML = groupHtml;
 
+                // --- YENİ SİMETRİK AĞAÇ SİSTEMİ BAŞLANGICI ---
                 const playoffDiv = document.getElementById('bracketContainer');
+                
+                const r1Matches = roundsData['SON 16'] || [];
+                const r2Matches = roundsData['ÇEYREK FİNAL'] || [];
+                const r3Matches = roundsData['YARI FİNAL'] || [];
+                const finalMatch = roundsData['FİNAL'] || [];
+
+                const getMatch = (arr, index, isFinal=false) => {
+                    const format = TOURNAMENT_STRUCTURE.playoff[isFinal ? 3 : (arr===r3Matches ? 2 : arr===r2Matches ? 1 : 0)].format;
+                    if (arr[index]) return createMatchCardHTML(arr[index], format, isFinal);
+                    return createMatchCardHTML({ isDummy: true }, format, isFinal);
+                };
+
+                const renderColumn = (classes, headerText, matchHTMLs) => {
+                    let html = `<div class="bracket-column ${classes}"><div class="round-header" ${classes.includes('col-final') ? 'style="color:gold; border-bottom-color:gold;"' : ''}>${headerText}</div>`;
+                    matchHTMLs.forEach(m => {
+                        html += `<div class="match-wrapper">${m}</div>`;
+                    });
+                    html += `</div>`;
+                    return html;
+                };
+
                 let playoffHtml = '';
-                TOURNAMENT_STRUCTURE.playoff.forEach((round, index) => {
-                    const isFinal = index === TOURNAMENT_STRUCTURE.playoff.length - 1;
-                    playoffHtml += `<div class="bracket-column"><div class="round-header" ${isFinal?'style="color:gold;"':''}>${round.id}</div>`;
-                    const dbMatches = roundsData[round.id] || [];
-                    for (let i = 0; i < round.count; i++) {
-                        playoffHtml += `<div class="match-wrapper">`;
-                        if (dbMatches[i]) playoffHtml += createMatchCardHTML(dbMatches[i], round.format, isFinal);
-                        else playoffHtml += createMatchCardHTML({ isDummy: true }, round.format, isFinal);
-                        playoffHtml += `</div>`;
-                    }
-                    playoffHtml += `</div>`;
-                });
+                
+                // 1. Kolon: Sol Kanat Son 16 (0, 1, 2, 3)
+                playoffHtml += renderColumn('left-wing col-r1', 'SON 16', [getMatch(r1Matches, 0), getMatch(r1Matches, 1), getMatch(r1Matches, 2), getMatch(r1Matches, 3)]);
+                
+                // 2. Kolon: Sol Kanat Çeyrek Final (0, 1)
+                playoffHtml += renderColumn('left-wing col-r2', 'ÇEYREK FİNAL', [getMatch(r2Matches, 0), getMatch(r2Matches, 1)]);
+                
+                // 3. Kolon: Sol Kanat Yarı Final (0)
+                playoffHtml += renderColumn('left-wing col-r3', 'YARI FİNAL', [getMatch(r3Matches, 0)]);
+                
+                // 4. Kolon: Merkez / FİNAL
+                playoffHtml += renderColumn('col-final', 'FİNAL', [getMatch(finalMatch, 0, true)]);
+                
+                // 5. Kolon: Sağ Kanat Yarı Final (1)
+                playoffHtml += renderColumn('right-wing col-r3', 'YARI FİNAL', [getMatch(r3Matches, 1)]);
+                
+                // 6. Kolon: Sağ Kanat Çeyrek Final (2, 3)
+                playoffHtml += renderColumn('right-wing col-r2', 'ÇEYREK FİNAL', [getMatch(r2Matches, 2), getMatch(r2Matches, 3)]);
+                
+                // 7. Kolon: Sağ Kanat Son 16 (4, 5, 6, 7)
+                playoffHtml += renderColumn('right-wing col-r1', 'SON 16', [getMatch(r1Matches, 4), getMatch(r1Matches, 5), getMatch(r1Matches, 6), getMatch(r1Matches, 7)]);
+                
                 playoffDiv.innerHTML = playoffHtml;
+                // --- YENİ SİMETRİK AĞAÇ SİSTEMİ BİTİŞİ ---
 
             } catch (err) {
                 console.error("Fikstür yüklenirken hata oluştu:", err);
