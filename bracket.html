@@ -79,6 +79,11 @@
         .final-match .team.winner { background: rgba(255, 215, 0, 0.1); border-left-color: gold; }
         .final-match .team.winner .team-name, .final-match .team.winner .score { color: gold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
 
+        /* YENİ: PLANLANMIŞ MAÇ (TARİHLİ) ÖZEL GÖRÜNÜMÜ */
+        .match-card.scheduled-slot { cursor: default; border-color: #1a1a1a; }
+        .match-card.scheduled-slot:hover { border-color: #00d2ff; transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 210, 255, 0.15); }
+        .match-card.scheduled-slot .team-name { color: #ccc; }
+
         /* ==========================================================
            ÇİZGİLER (1 Piksel Bile Şaşmaz)
            ========================================================== */
@@ -286,6 +291,7 @@
 
             let classA = '', classB = '';
             let statusText = 'BEKLİYOR';
+            let scheduledClass = ''; // YENİ: Planlanmış maç sınıfı
 
             if (matchData.status === 'finished') {
                 classA = matchData.winnerId === matchData.teamAId ? 'winner' : 'loser';
@@ -298,15 +304,16 @@
             } else if (matchData.status === 'live') {
                 statusText = '<span style="color:var(--kirmizi-iptal); animation: pulse 1.5s infinite;">CANLI</span>';
             } else if (matchData.matchDate) {
-                // Eğer maç oynanmadıysa (bekliyor) ve bir tarih girildiyse tarihi göster
+                // Eğer maç oynanmadıysa (bekliyor) ve bir tarih girildiyse özel tasarım uygula
                 statusText = `<span style="color:#00d2ff;"><i class="far fa-calendar-alt"></i> ${matchData.matchDate}</span>`;
+                scheduledClass = 'scheduled-slot';
             }
 
             const finalClass = isFinal ? 'final-match' : '';
             const safeTA = tA.replace(/'/g, ""); const safeTB = tB.replace(/'/g, "");
 
             return `
-                <div class="match-card ${finalClass}" onclick="openModal('${matchData.id}', '${matchData.teamAId}', '${matchData.teamBId}', '${safeTA}', '${safeTB}', '${sA}', '${sB}', '${matchData.status}', '${logoA}', '${logoB}')">
+                <div class="match-card ${finalClass} ${scheduledClass}" onclick="openModal('${matchData.id}', '${matchData.teamAId}', '${matchData.teamBId}', '${safeTA}', '${safeTB}', '${sA}', '${sB}', '${matchData.status}', '${logoA}', '${logoB}')">
                     <div class="match-info-bar"><span>${format}</span>${statusText}</div>
                     <div class="team ${classA}">
                         <div class="team-info"><img src="${logoA}" onerror="this.src='img/unknown.webp'" class="team-logo"><span class="team-name">${tA}</span></div>
@@ -449,6 +456,7 @@
         window.currentModalData = null;
 
         async function openModal(matchId, teamAId, teamBId, tA, tB, sA, sB, status, logoA, logoB) {
+            // Tıklama kontrolü (pending ve skoru olmayanlar tıklanamaz)
             if(status === 'undefined' || status === 'pending' || sA === '-') return; 
             
             document.getElementById('mTeamA').innerText = tA;
