@@ -21,23 +21,25 @@
         html, body { background-color: #050505; color: white; overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; }
 
         /* --- SAYFA BAŞLIĞI VE TASARIMI --- */
-        .page-header { text-align: center; padding: 60px 20px 40px; background: radial-gradient(circle at top, #110522 0%, #050505 100%); border-bottom: 1px solid #222; }
-        .page-title { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 900; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px; }
-        .page-title span { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
-        .page-subtitle { color: var(--gri-yazi); font-size: 15px; font-weight: 500; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+        /* Düzenleme: padding-bottom artırıldı, alt çizgiyle mesafe açıldı */
+        .page-header { text-align: center; padding: 70px 20px 60px; background: radial-gradient(circle at top, #110522 0%, #050505 100%); border-bottom: 1px solid #222; position: relative; }
+        .page-title { font-size: clamp(2.2rem, 4vw, 3.8rem); font-weight: 900; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 2px; }
+        .page-title span { color: var(--neon-mor); text-shadow: 0 0 25px rgba(96, 29, 194, 0.6); }
+        .page-subtitle { color: var(--gri-yazi); font-size: 16px; font-weight: 500; max-width: 650px; margin: 0 auto; line-height: 1.6; }
 
-        .leaderboard-container { padding: 50px 5%; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; width: 100%; box-sizing: border-box; }
+        .leaderboard-container { padding: 60px 5%; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; width: 100%; box-sizing: border-box; }
 
         /* --- FİLTRELEME SEKMELERİ (Mobilde Sağa Kaydırmalı / Swipeable) --- */
-        .category-tabs-wrapper { overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+        .category-tabs-wrapper { overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
         .category-tabs-wrapper::-webkit-scrollbar { display: none; }
-        .category-tabs { display: flex; flex-wrap: nowrap; justify-content: flex-start; gap: 10px; padding: 0 5px; width: max-content; margin: 0 auto; }
-        .category-btn { flex: 0 0 auto; background: #0a0a0a; border: 1px solid #333; color: var(--gri-yazi); padding: 10px 20px; border-radius: 30px; font-weight: 700; font-size: 11px; cursor: pointer; transition: 0.3s; font-family: 'Poppins', sans-serif; text-transform: uppercase; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-        .category-btn:hover { border-color: var(--neon-mor); color: white; }
-        .category-btn.active { background: var(--neon-mor); color: white; border-color: var(--neon-mor); box-shadow: 0 0 20px rgba(96, 29, 194, 0.4); }
+        .category-tabs { display: flex; flex-wrap: nowrap; justify-content: flex-start; gap: 12px; padding: 0 5px; width: max-content; margin: 0 auto; }
+        .category-btn { flex: 0 0 auto; background: #0a0a0a; border: 1px solid #333; color: var(--gri-yazi); padding: 12px 24px; border-radius: 30px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; text-transform: uppercase; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+        .category-btn:hover { border-color: var(--neon-mor); color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(96, 29, 194, 0.2); }
+        .category-btn.active { background: var(--neon-mor); color: white; border-color: var(--neon-mor); box-shadow: 0 0 20px rgba(96, 29, 194, 0.5); transform: translateY(-2px); }
 
         /* --- LİDERLİK TABLOSU TASARIMI (Masaüstü Sabit Dizilim) --- */
-        .leaderboard-card { background: #0a0a0a; border: 1px solid #222; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; animation: fadeIn 0.4s ease; width: 100%; box-sizing: border-box; }
+        .leaderboard-card { background: #0a0a0a; border: 1px solid #222; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; animation: fadeIn 0.4s ease; width: 100%; box-sizing: border-box; transition: 0.3s; }
+        .leaderboard-card:hover { border-color: #333; box-shadow: 0 25px 60px rgba(0,0,0,0.7); }
         .leaderboard-card.active { display: block; }
         
         .board-header { background: #111; padding: 25px 30px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
@@ -47,22 +49,24 @@
 
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .data-table { width: 100%; border-collapse: collapse; text-align: center; white-space: nowrap; min-width: 600px; }
-        .data-table th { background: #0a0a0a; color: #888; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; padding: 15px 25px; border-bottom: 1px solid #222; }
-        .data-table td { padding: 15px 25px; border-bottom: 1px solid #1a1a1a; color: white; font-size: 14px; font-weight: 500; vertical-align: middle; transition: 0.2s; }
-        .data-table tbody tr:hover td { background: #111; }
+        .data-table th { background: #0a0a0a; color: #888; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; padding: 18px 25px; border-bottom: 1px solid #222; }
+        .data-table td { padding: 18px 25px; border-bottom: 1px solid #1a1a1a; color: white; font-size: 14px; font-weight: 500; vertical-align: middle; transition: 0.2s; }
+        .data-table tbody tr:hover td { background: #141414; }
         
-        .rank-badge { display: inline-flex; justify-content: center; align-items: center; width: 30px; height: 30px; border-radius: 50%; font-weight: 900; font-size: 14px; background: #222; color: #888; margin: 0 auto; }
+        .rank-badge { display: inline-flex; justify-content: center; align-items: center; width: 32px; height: 32px; border-radius: 50%; font-weight: 900; font-size: 14px; background: #222; color: #888; margin: 0 auto; transition: 0.3s; }
+        .data-table tbody tr:hover .rank-badge { transform: scale(1.1); }
         .data-table tr:nth-child(1) .rank-badge { background: linear-gradient(45deg, #ffd700, #ff8c00); color: #000; box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
         .data-table tr:nth-child(2) .rank-badge { background: linear-gradient(45deg, #e0e0e0, #9e9e9e); color: #000; }
         .data-table tr:nth-child(3) .rank-badge { background: linear-gradient(45deg, #cd7f32, #8b4513); color: #000; }
-        .data-table tr:nth-child(1) td { border-bottom: 1px solid rgba(255, 215, 0, 0.2); }
+        .data-table tr:nth-child(1) td { border-bottom: 1px solid rgba(255, 215, 0, 0.2); background-color: rgba(255, 215, 0, 0.02); }
 
         .player-info-cell { display: flex; align-items: center; gap: 15px; text-align: left; }
-        .agent-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid #333; background: #000; }
+        .agent-img { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; border: 1px solid #333; background: #000; transition: 0.3s; }
+        .data-table tbody tr:hover .agent-img { border-color: var(--neon-mor); transform: scale(1.05); }
         .player-name { font-weight: 900; font-size: 15px; color: white; display: flex; flex-direction: column; }
         
         .player-name-text { display: block; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .team-name-small { font-size: 11px; color: var(--neon-mor); font-weight: 700; text-transform: uppercase; display: block; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .team-name-small { font-size: 11px; color: var(--neon-mor); font-weight: 700; text-transform: uppercase; display: block; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0.8; }
 
         .highlight-stat { font-size: 18px; font-weight: 900; color: var(--neon-mor); }
         .data-table tr:nth-child(1) .highlight-stat { color: gold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
@@ -70,45 +74,41 @@
         .loading-state { text-align: center; padding: 80px 20px; color: var(--gri-yazi); }
         .loading-state i { font-size: 40px; color: var(--neon-mor); margin-bottom: 20px; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ==================================================
-           MOBİL UYUMLULUK: KUSURSUZ SABİT DİZİLİM VE TAŞMA İPTAL
+            MOBİL UYUMLULUK
         ================================================== */
         @media (max-width: 768px) {
-            .page-header { padding: 30px 10px 15px; }
-            .page-title { font-size: 20px; }
-            .page-subtitle { font-size: 11px; padding: 0 10px; }
+            .page-header { padding: 40px 10px 30px; } /* Mobilde de boşluk biraz artırıldı */
+            .page-title { font-size: 22px; margin-bottom: 10px; }
+            .page-subtitle { font-size: 12px; padding: 0 10px; }
             
-            .leaderboard-container { padding: 15px 10px; gap: 20px; }
+            .leaderboard-container { padding: 25px 10px; gap: 20px; }
 
             .leaderboard-card { border-radius: 12px; }
             .board-header { padding: 15px 10px; flex-direction: column; gap: 5px; text-align: center; align-items: center; justify-content: center; }
             .board-title { font-size: 16px; justify-content: center; width: 100%; }
-            .board-desc { font-size: 9px; text-align: center; }
+            .board-desc { font-size: 10px; text-align: center; }
 
-            /* TABLOYU SIKIŞTIR VE MÜKEMMEL SABİT HİZALAMA */
             .data-table { min-width: 320px; width: 100%; table-layout: auto; } 
-            .data-table th, .data-table td { padding: 10px 5px; font-size: 12px; text-align: center; }
-            .data-table th { font-size: 9px; padding: 8px 3px; text-align: center; }
+            .data-table th, .data-table td { padding: 12px 5px; font-size: 13px; text-align: center; }
+            .data-table th { font-size: 10px; padding: 10px 3px; }
             
-            /* Sola ve Sağa Yapışmayı Engelleyen Nefes Payları */
             .data-table th:first-child, .data-table td:first-child { padding-left: 12px; }
             .data-table th:last-child, .data-table td:last-child { padding-right: 12px; text-align: right; }
             .data-table td:last-child.highlight-stat { text-align: right; }
 
             .data-table th:nth-child(2), .data-table td:nth-child(2) { text-align: left; padding-left: 10px; } 
 
-            .rank-badge { width: 22px; height: 22px; font-size: 11px; margin: 0 auto; }
+            .rank-badge { width: 24px; height: 24px; font-size: 12px; margin: 0 auto; }
             .player-info-cell { gap: 8px; justify-content: flex-start; }
-            .agent-img { width: 28px; height: 28px; border-radius: 5px; margin: 0 auto; display: block; }
+            .agent-img { width: 30px; height: 30px; border-radius: 5px; margin: 0 auto; display: block; }
             
-            /* İsimleri Orantılı Kısalt (Zorunlu Sabitleme) */
-            .player-name-text { max-width: 25vw; font-size: 11px; }
-            .team-name-small { max-width: 25vw; font-size: 9px; }
-            .highlight-stat { font-size: 14px; }
+            .player-name-text { max-width: 25vw; font-size: 12px; }
+            .team-name-small { max-width: 25vw; font-size: 10px; }
+            .highlight-stat { font-size: 15px; }
 
-            /* İkincil detayları mobilde gizle */
             .hide-mobile { display: none !important; }
         }
     </style>
@@ -398,7 +398,6 @@
                     </tr>
                 `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 harita oynayan oyuncu bekleniyor.</td></tr>';
 
-                // BURASI POPÜLER AJANLAR TABLOSU İÇİN (NİCKNAME | İKON | VERİ DÜZENİ)
                 const agentsArray = Object.keys(agentsMap).map(key => ({ name: key, count: agentsMap[key] }));
                 const agentsSorted = agentsArray.sort((a, b) => b.count - a.count).slice(0, 10);
                 document.getElementById('tbody-agents').innerHTML = agentsSorted.map((a, i) => `
