@@ -21,16 +21,17 @@
         .page-title { font-size: 3rem; font-weight: 900; color: white; text-transform: uppercase; margin: 0; }
         .page-subtitle { color: var(--neon-mor); font-size: 1.2rem; font-weight: 500; margin-top: 10px; }
 
-        /* YATAY KART LİSTESİ */
-        .news-list { display: flex; flex-direction: column; gap: 40px; }
+        .news-list { display: flex; flex-direction: column; gap: 50px; }
 
-        /* YATAY KART TASARIMI */
+        /* YATAY KART TASARIMI - UZUN METİN OPTİMİZASYONU */
         .news-card-horizontal { 
             display: flex; 
+            align-items: flex-start; /* Görselin yazıyla birlikte aşağı doğru sünmesini engeller */
             background: var(--card-bg); 
             border: 1px solid #222; 
             border-radius: 20px; 
-            overflow: hidden; 
+            padding: 40px;
+            gap: 40px; /* Görsel ve metin arası boşluk */
             transition: 0.4s ease; 
             text-decoration: none; 
             color: inherit; 
@@ -43,11 +44,14 @@
             box-shadow: 0 15px 40px rgba(96, 29, 194, 0.2); 
         }
         
+        /* GÖRSEL ALANI SABİTLENDİ VE YAPIŞKAN (STICKY) YAPILDI */
         .card-img { 
-            flex: 1; 
-            position: relative; 
+            flex: 0 0 450px; /* Genişlik 450px olarak sabitlendi */
+            height: 450px; /* Yükseklik 450px olarak sabitlendi */
+            border-radius: 15px;
             overflow: hidden; 
-            min-height: 350px; 
+            position: sticky; /* Kullanıcı uzun yazıyı okurken görsel ekranda kalır */
+            top: 120px; /* Header'ın arkasında kalmaması için üstten boşluk */
         }
         
         .card-img img { 
@@ -63,10 +67,8 @@
         
         .card-content { 
             flex: 1; 
-            padding: 50px; 
             display: flex; 
             flex-direction: column; 
-            justify-content: center; 
         }
         
         .news-badge { 
@@ -83,7 +85,7 @@
         }
         
         .card-content h2 { 
-            font-size: 2rem; 
+            font-size: 2.2rem; 
             color: white; 
             font-weight: 900; 
             margin-bottom: 20px; 
@@ -91,21 +93,24 @@
             transition: color 0.3s ease;
         }
 
-        /* Hover durumunda başlık rengi değişsin (Buton olmadığı için tıklanabilir hissi verir) */
         .news-card-horizontal:hover .card-content h2 {
             color: var(--neon-mor);
         }
         
+        /* Uzun yazılar için paragraf ayarları */
         .card-content p { 
             color: var(--gri-yazi); 
             font-size: 1.05rem; 
-            line-height: 1.7; 
-            margin: 0; 
+            line-height: 1.8; 
+            margin-bottom: 15px; 
         }
 
-        /* RESPONSIVE (MOBİL VE TABLET UYUMU) */
+        /* --- MOBİL VE TABLET UYUMU --- */
         @media (max-width: 1024px) {
-            .card-content { padding: 40px; }
+            .card-img { 
+                flex: 0 0 350px; 
+                height: 350px; 
+            }
             .card-content h2 { font-size: 1.8rem; }
         }
 
@@ -113,11 +118,21 @@
             .container { padding: 40px 5%; }
             .page-title { font-size: 2rem; }
             
-            /* Mobilde kartları alt alta diz */
-            .news-card-horizontal { flex-direction: column; border-radius: 15px; }
-            .card-img { min-height: 250px; }
-            .card-content { padding: 30px 20px; }
-            .card-content h2 { font-size: 1.5rem; margin-bottom: 15px; }
+            .news-card-horizontal { 
+                flex-direction: column; 
+                padding: 20px; 
+                gap: 25px; 
+                align-items: stretch;
+            }
+            
+            .card-img { 
+                flex: none; 
+                width: 100%; 
+                height: 250px; /* Mobilde görsel çok yer kaplamasın diye boyutu düşürüldü */
+                position: static; /* Mobilde yapışkan (sticky) özelliği iptal edildi */
+            }
+            
+            .card-content h2 { font-size: 1.6rem; margin-bottom: 15px; }
             .card-content p { font-size: 0.95rem; }
             .news-list { gap: 30px; }
         }
@@ -142,13 +157,10 @@
                 <div class="card-content">
                     <span class="news-badge">HAKKIMIZDA</span>
                     <h2>Ordu Büyükşehir Belediyesi E-Spor Takımı Kuruluyor!</h2>
-                    <p>Ordu Büyükşehir Belediye Başkanı Dr. Mehmet Hilmi GÜLER’in öncülüğünde, Ordu Büyükşehir Belediyesi bünyesinde E-Spor Takımı kuruluyor.
-                Gençliğe, spora ve sporculara verdiği destekle bilinen Ordu Büyükşehir Belediyesi, sporu daha geniş kitlelere ulaştırmak amacıyla yeni bir projeyi hayata geçiriyor. Şehrin gençleri için tasarlanan bu projeyle, teknoloji ve oyun dünyasına ilgisi olan gençler bir araya gelerek hem eğlenecek hem de yeteneklerini geliştirecek. 
-                E-Spor takımına katılmak isteyen gençler için seçmeler düzenlenecek. Seçmeleri başarıyla geçen adaylar, alanında uzman profesyonel eğitmenler tarafından eğitim alacak. Eğitim süreci tamamlandıktan sonra, Ordu Büyükşehir Belediyesi E-Spor Takımı, Türkiye genelinde düzenlenen turnuvalarda       OBB E-SPOR’u temsil edecek. 
-                Projenin ilk aşamasında şehrimizin gençleri bir araya gelirken, sonraki aşamalarda online takımlar kurulacak ve Ordu’nun adını bu alanda da temsil edeceğine inanıyoruz. 
-                Başkan Dr. Mehmet Hilmi GÜLER, gençlere yönelik projelerle ilgili olarak şunları ifade etti: 
-                "Ordu Büyükşehir Belediyesi olarak her zaman sporun ve sporcunun yanında olduk. Şehrimizde spor aktivitelerini artırmak ve gençlerimizi desteklemek amacıyla E-Spor takımımızı kuruyoruz. Gençlerimiz burada hem eğlenecek hem de kendilerini geliştirecek. Biz, gençlerimizin olduğu her alanda varız. Vatanını ve milletini yürekten seven, 
-                sorumluluk bilinci yüksek gençlerimizle, ülkemizi umut ve inançla daha aydınlık yarınlara taşıyacağımıza gönülden inanıyoruz. Gençlerimiz için üretmeye ve projeler geliştirmeye devam edeceğiz." </p>
+                    <p>Ordu Büyükşehir Belediye Başkanı Dr. Mehmet Hilmi GÜLER’in öncülüğünde, Ordu Büyükşehir Belediyesi bünyesinde profesyonel E-Spor takımı kuruluyor. Gençliğe, spora ve sporculara verdiği destekle bilinen Ordu Büyükşehir Belediyesi, sporu daha geniş kitlelere ulaştırmak amacıyla yeni bir projeyi hayata geçiriyor.</p>
+                    <p>Şehrin gençleri için tasarlanan bu projeyle, teknoloji ve oyun dünyasına ilgisi olan gençler bir araya gelerek hem eğlenecek hem de yeteneklerini geliştirecek. E-Spor takımına katılmak isteyen gençler için seçmeler düzenlenecek. Seçmeleri başarıyla geçen adaylar, alanında uzman profesyonel eğitmenler tarafından eğitim alacak.</p>
+                    <p>Eğitim süreci tamamlandıktan sonra, Ordu Büyükşehir Belediyesi E-Spor Takımı, Türkiye genelinde düzenlenen turnuvalarda OBB E-SPOR'u temsil edecek. Projenin ilk aşamasında şehrimizin gençleri bir araya gelirken, sonraki aşamalarda online takımlar kurulacak ve Ordu'nun adını bu alanda da temsil edeceğine inanıyoruz.</p>
+                    <p>Başkan Dr. Mehmet Hilmi GÜLER, gençlere yönelik projelerle ilgili olarak şunları söyledi: "Teknoloji hızla gelişiyor ve gençlerimiz bu dünyanın tam merkezinde yer alıyor. Biz de onların bu tutkularını desteklemek ve profesyonel bir alana taşımak için buradayız."</p>
                 </div>
             </a>
 
@@ -159,40 +171,7 @@
                 <div class="card-content">
                     <span class="news-badge">TURNUVA</span>
                     <h2>Turnuva Detayları ve Maç Takvimi</h2>
-                    <p>Ordu.</p>
-                </div>
-            </a>
-
-            <a href="#" class="news-card-horizontal">
-                <div class="card-img">
-                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" alt="Ödül Havuzu">
-                </div>
-                <div class="card-content">
-                    <span class="news-badge">ÖDÜL</span>
-                    <h2>10.000 TL Büyük Ödül Havuzu!</h2>
-                    <p>Sadece zafer değil, büyük ödüller de sizi bekliyor. Birinci, ikinci ve üçüncü olan takımlara verilecek ödüllerin detaylı dağılımına göz atın. Arenada en iyiler kazanacak!</p>
-                </div>
-            </a>
-
-            <a href="#" class="news-card-horizontal">
-                <div class="card-img">
-                    <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" alt="Turnuva Kuralları">
-                </div>
-                <div class="card-content">
-                    <span class="news-badge">KILAVUZ</span>
-                    <h2>Resmi Turnuva Kuralları ve Politikalarımız</h2>
-                    <p>Adil bir mücadele için kurallar şart. Oyuncu davranışları, kopma durumları, yasaklamalar ve takım iletişimleriyle ilgili tüm güncel kural setimizi detaylıca okumayı unutmayın.</p>
-                </div>
-            </a>
-
-            <a href="#" class="news-card-horizontal">
-                <div class="card-img">
-                    <img src="https://images.unsplash.com/photo-1552820728-8b83bb6b773f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" alt="Kayıt Rehberi">
-                </div>
-                <div class="card-content">
-                    <span class="news-badge">REHBER</span>
-                    <h2>Turnuvaya Nasıl Kayıt Olurum?</h2>
-                    <p>Takımını kurdun ama nasıl kayıt olacağını bilmiyor musun? Hiç sorun değil! Adım adım kayıt süreci, gereken belgeler, form doldurma ve onay aşamaları ile ilgili tüm detaylar bu rehberde.</p>
+                    <p>Büyük kapışma ne zaman başlıyor? Elemeler, grup aşamaları ve büyük final tarihlerini içeren güncel maç takvimini buradan inceleyin. Tüm takımlarımıza şimdiden başarılar dileriz. Detaylı takvim çok yakında bu sekme altında duyurulacaktır.</p>
                 </div>
             </a>
 
