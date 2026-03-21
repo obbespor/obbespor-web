@@ -46,7 +46,7 @@
         .stat-item { background: #111; padding: 20px; border-radius: 15px; border-bottom: 2px solid #222; transition: 0.3s; }
         .stat-item:hover { border-color: var(--neon-mor); transform: translateY(-3px); }
         .stat-value { display: block; font-size: 24px; font-weight: 900; color: var(--neon-mor); }
-        .stat-label { font-size: 12px; color: var(--gri-yazi); font-weight: bold; }
+        .stat-label { font-size: 12px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase;}
 
         /* BİLDİRİM VE TAKIM BÖLÜMÜ */
         .notifications-section { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
@@ -174,7 +174,8 @@
             <div class="stats-grid">
                 <div class="stat-item"><span class="stat-value" id="statMatches">0</span><span class="stat-label">Toplam Maç</span></div>
                 <div class="stat-item"><span class="stat-value" id="statWinRate">%0</span><span class="stat-label">Kazanma Oranı</span></div>
-                <div class="stat-item"><span class="stat-value" id="statTournaments">0</span><span class="stat-label">Turnuvalar</span></div>
+                
+                <div class="stat-item"><span class="stat-value" id="statTotalKills">0</span><span class="stat-label">Toplam Kıll</span></div>
             </div>
         </div>
 
@@ -316,6 +317,22 @@
         }
 
         async function initProfile() {
+            // OPTİMİZASYON 3: LOCALSTORAGE CACHE KONTROLÜ (Hızlı Yükleme)
+            const cacheKey = 'obb_profile_cache';
+            const cachedProfile = localStorage.getItem(cacheKey);
+            if (cachedProfile) {
+                const p = JSON.parse(cachedProfile);
+                document.getElementById('profileNameDisplay').innerText = p.username || "İsimsiz";
+                document.getElementById('userBio').innerText = p.bio || "Açıklama eklenmemiş.";
+                if (p.ign) {
+                    const ignDisplay = document.getElementById('userIgnDisplay');
+                    ignDisplay.innerText = p.ign;
+                    ignDisplay.style.color = "#00d2ff";
+                }
+                if (p.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${p.banner_url}')`;
+                if (p.avatar_url) document.getElementById('userAvatar').src = p.avatar_url;
+            }
+
             const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
             
             if (authErr || !user) {
@@ -330,6 +347,7 @@
             let currentIgn = "Belirlenmedi"; 
             
             if (data) {
+                // Arka planda veriyi çekince DOM'u ve Cache'i güncelle (Stale-while-revalidate mantığı)
                 document.getElementById('profileNameDisplay').innerText = data.username || "İsimsiz";
                 document.getElementById('userBio').innerText = data.bio || "Açıklama eklenmemiş.";
                 
@@ -346,15 +364,29 @@
                 if (data.marketing_consent) {
                     document.getElementById('marketingToggle').checked = true;
                 }
+
+                // Cache'i Yenile
+                localStorage.setItem(cacheKey, JSON.stringify({
+                    username: data.username,
+                    bio: data.bio,
+                    ign: data.ign,
+                    banner_url: data.banner_url,
+                    avatar_url: data.avatar_url
+                }));
             }
 
-            await loadUserStats(currentIgn);
-            await loadInvitationsAndTeam();
+            // OPTİMİZASYON 2: PARALEL ÇALIŞTIRMA (PROMISE.ALL)
+            // İstatistikleri ve takımları aynı anda beklemeden çalıştırarak yükleme süresini yarıya indiririz.
+            await Promise.all([
+                loadUserStats(currentIgn),
+                loadInvitationsAndTeam()
+            ]);
+            
             subscribeToInvites();
         }
 
         // ==========================================
-        // İSTATİSTİKLER VE RÜTBE (RANK) HESAPLAMA
+        // İSTATİSTİKLER VE RÜTBE (RANK) HESAPLAMA (GEREKSİZ SORGULAR SİLİNDİ)
         // ==========================================
         async function loadUserStats(userIgn) {
             try {
@@ -400,23 +432,6 @@
                 else if (totalMatches >= 20 && totalMatches < 50) { rankEl.innerText = "PROFESYONEL"; rankEl.style.color = "#ff4b4b"; rankEl.style.borderColor = "#ff4b4b"; }
                 else { rankEl.innerText = "E-SPORCU"; rankEl.style.color = "gold"; rankEl.style.borderColor = "gold"; rankEl.style.boxShadow = "0 0 10px rgba(255,215,0,0.5)"; }
 
-                // Turnuva Sayısı (Manual Fetch for stability)
-                const { data: memberships } = await window.supabaseClient.from('application_members')
-                    .select('application_id, status')
-                    .eq('user_id', currentUser.id)
-                    .eq('status', 'accepted');
-                
-                let validTournaments = 0;
-                if (memberships && memberships.length > 0) {
-                    for (const m of memberships) {
-                        const { data: teamInfo } = await window.supabaseClient.from('tournament_applications')
-                            .select('status')
-                            .eq('id', m.application_id)
-                            .maybeSingle();
-                        if (teamInfo && teamInfo.status === 'approved') validTournaments++;
-                    }
-                }
-
                 let winRate = "%0";
                 if (totalMatches > 0) {
                     if (totalDeaths === 0 && totalKills > 0) winRate = "%100";
@@ -427,20 +442,22 @@
                 }
 
                 document.getElementById('statMatches').innerText = totalMatches;
-                document.getElementById('statTournaments').innerText = validTournaments;
                 document.getElementById('statWinRate').innerText = winRate;
+                
+                // YENİ: Toplam Kill Ekrana Basılıyor
+                document.getElementById('statTotalKills').innerText = totalKills;
 
             } catch(e) { console.warn("İstatistik hatası:", e); }
         }
 
         // ==========================================
-        // GÖRKEMLİ TAKIM KARTI VE MANUEL ARAMA MOTORU
+        // GÖRKEMLİ TAKIM KARTI VE N+1 SORGUSU DÜZELTİLMİŞ ARAMA MOTORU
         // ==========================================
         async function loadInvitationsAndTeam() {
             try {
-                // 1. Önce kullanıcının sistemdeki tüm davet ve üyeliklerini al
+                // OPTİMİZASYON 1: Döngü içindeki await'ler kaldırıldı. Supabase Foreign Key (Join) ile takım isimleri tek hamlede çekiliyor!
                 const { data: memberships, error } = await window.supabaseClient.from('application_members')
-                    .select('*')
+                    .select('*, tournament_applications(team_name, team_tag, status)')
                     .eq('user_id', currentUser.id);
                 
                 const list = document.getElementById('notificationsList');
@@ -458,12 +475,10 @@
                 // 2. Kabul edilmiş (Aktif) bir takımı var mı?
                 const activeTeam = memberships.find(m => m.status === 'accepted');
                 
-                if (activeTeam) {
-                    const { data: teamData } = await window.supabaseClient.from('tournament_applications')
-                        .select('team_name, team_tag, status')
-                        .eq('id', activeTeam.application_id)
-                        .maybeSingle();
-
+                if (activeTeam && activeTeam.tournament_applications) {
+                    // Supabase JOIN sonucu bazen Array bazen Object dönebilir, korumalı erişim:
+                    const teamData = Array.isArray(activeTeam.tournament_applications) ? activeTeam.tournament_applications[0] : activeTeam.tournament_applications;
+                    
                     if (teamData) {
                         title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
                         let tStatus = teamData.status === 'approved' ? '<span style="color:var(--yesil-guven);">Turnuvaya Onaylandı</span>' : 'İncelemede / Kurulum Aşamasında';
@@ -476,7 +491,7 @@
                                 <a href="takim.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
                             </div>
                         `;
-                        return; 
+                        return; // Takımı varsa bekleyen davetleri gösterme
                     }
                 }
 
@@ -487,11 +502,9 @@
                     badge.innerText = pendingInvites.length;
                     badge.style.display = "inline-block";
                     
-                    for (const inv of pendingInvites) {
-                        const { data: tData } = await window.supabaseClient.from('tournament_applications')
-                            .select('team_name, team_tag')
-                            .eq('id', inv.application_id)
-                            .maybeSingle();
+                    pendingInvites.forEach(inv => {
+                        // Fazladan veritabanı sorgusu atmadan direkt JOIN edilmiş objeden veriyi okuyoruz
+                        const tData = Array.isArray(inv.tournament_applications) ? inv.tournament_applications[0] : inv.tournament_applications;
                             
                         const teamName = tData?.team_name || "Bilinmeyen Takım";
                         const teamTag = tData?.team_tag || "LOBİ";
@@ -505,7 +518,7 @@
                                     <button class="btn-reject" onclick="respondInvite('${inv.id}', 'rejected')">Reddet</button>
                                 </div>
                             </div>`;
-                    }
+                    });
                 } else {
                     list.innerHTML = `<div style="text-align:center; color:#777; padding:20px;">Bekleyen davet yok. Formunu koru, teklifler gelecektir.</div>`;
                 }
@@ -555,6 +568,11 @@
                 showNotification("Kaydedilemedi!", "error");
             } else {
                 showNotification("Açıklama başarıyla güncellendi.", "success");
+                // Cache'i güncelle
+                const cacheKey = 'obb_profile_cache';
+                const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                cachedProfile.bio = newBio;
+                localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
             }
         }
 
@@ -609,6 +627,12 @@
                     showNotification("Kaydedilemedi!", "error");
                 } else {
                     showNotification("Oyun İçi Nick başarıyla güncellendi!", "success");
+                    // Cache'i güncelle
+                    const cacheKey = 'obb_profile_cache';
+                    const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                    cachedProfile.ign = trimmedIgn;
+                    localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+                    
                     await loadUserStats(trimmedIgn);
                 }
             }
@@ -667,6 +691,13 @@
                 const cleanUrl = data.publicUrl.split('?')[0];
                 await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
                 showNotification("Profil resmi başarıyla güncellendi!", "success");
+                
+                // Cache'i güncelle
+                const cacheKey = 'obb_profile_cache';
+                const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                cachedProfile.avatar_url = cleanUrl;
+                localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+
             } else {
                 showNotification("Profil resmi yüklenirken hata oluştu: " + error.message, "error");
             }
@@ -682,6 +713,12 @@
                     document.getElementById('currentBanner').style.backgroundImage = `url('${this.src}')`;
                     closeCustomModal('bannerModal');
                     await window.supabaseClient.from('profiles').update({ banner_url: this.src }).eq('id', currentUser.id);
+                    
+                    // Cache'i güncelle
+                    const cacheKey = 'obb_profile_cache';
+                    const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                    cachedProfile.banner_url = this.src;
+                    localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
                 };
                 grid.appendChild(img);
             }
