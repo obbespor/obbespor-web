@@ -16,7 +16,7 @@
     
     <style>
         .profile-container { max-width: 1000px; margin: 40px auto; padding: 20px; flex: 1; }
-        .profile-banner { height: 250px; background: url('img/banner+.jpg') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
+        .profile-banner { height: 250px; background: url('img/banner1.jpg') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
         .edit-banner-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 15px; border-radius: 5px; border: 1px solid var(--neon-mor); cursor: pointer; font-size: 12px; transition: 0.3s; }
         .edit-banner-btn:hover { background: var(--neon-mor); }
 
@@ -94,7 +94,7 @@
         input:checked + .slider { background-color: var(--mavi-onay); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* ÖZEL MODALLAR (PROMPT YERİNE) */
+        /* ÖZEL MODALLAR */
         .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
         .modal.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal-content { background: #0a0a0a; padding: 30px; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
@@ -117,6 +117,7 @@
             .avatar-wrapper { width: 110px; height: 110px; margin: -55px auto 15px; } 
             .profile-avatar { width: 110px; height: 110px; border-width: 4px; }
             .edit-avatar-btn { width: 30px; height: 30px; font-size: 12px; bottom: 0; right: 0; }
+            #profileNameDisplay { font-size: 22px !important; }
             .rank-badge { font-size: 11px; padding: 4px 12px; margin-bottom: 10px; }
             .ign-container { padding: 4px 12px; flex-wrap: wrap;}
             .bio-container { flex-direction: column; text-align: center; gap: 5px; margin-bottom: 20px; }
@@ -319,7 +320,7 @@
             if (!user) return;
             currentUser = user;
 
-            // HATA ÇÖZÜMÜ: single() yerine maybeSingle() kullanarak sistem çökmesi engellendi
+            // RLS ve 403 Hatalarına karşı çökme engelleyici (Failsafe) .maybeSingle() kullanıldı
             const { data, error: profileErr } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).maybeSingle();
             
             let currentIgn = "Belirlenmedi"; 
@@ -342,14 +343,12 @@
                     document.getElementById('marketingToggle').checked = true;
                 }
             } else {
-                // EĞER PROFİL SATIRI YOKSA (Fail-safe)
-                document.getElementById('profileNameDisplay').innerText = "KULLANICI";
+                // Eğer RLS yüzünden profil bulunamazsa veya silinmişse "Yükleniyor" yazısında takılmaması için varsayılanlar:
+                document.getElementById('profileNameDisplay').innerText = user.user_metadata?.username || "KULLANICI";
                 document.getElementById('userBio').innerText = "Açıklama eklenmemiş.";
-                
-                // Arka planda profili oluşturmayı dener
-                await window.supabaseClient.from('profiles').insert({ id: user.id, username: user.user_metadata?.username || 'KULLANICI' });
             }
 
+            // İstatistikleri yüklerken IGN'i de fonksiyona gönderiyoruz ki API'den gelen kayıtları da bulabilsin
             await loadUserStats(currentIgn);
             await loadInvitationsAndTeam();
             subscribeToInvites();
@@ -434,6 +433,7 @@
         // ==========================================
         async function loadInvitationsAndTeam() {
             try {
+                // Aktif takım kontrolü
                 const { data: myTeam } = await window.supabaseClient.from('application_members')
                     .select('tournament_applications(team_name, team_tag, status)')
                     .eq('user_id', currentUser.id)
@@ -480,8 +480,8 @@
                     validInvites.forEach(inv => {
                         // Burada da aynı filtreyi uyguladık
                         const tApp = Array.isArray(inv.tournament_applications) ? inv.tournament_applications[0] : inv.tournament_applications;
-                        const teamName = tApp.team_name || "Belirlenmedi";
-                        const teamTag = tApp.team_tag || "LOBİ";
+                        const teamName = tApp?.team_name || "Belirlenmedi";
+                        const teamTag = tApp?.team_tag || "LOBİ";
                         const roleText = inv.role === 'main' ? 'Asil' : 'Yedek';
 
                         list.innerHTML += `
@@ -535,7 +535,7 @@
             
             const { error } = await window.supabaseClient.from('profiles').update({ bio: newBio }).eq('id', currentUser.id);
             if (error) {
-                showNotification("Açıklama güncellenemedi: " + error.message, "error");
+                showNotification("Açıklama güncellenemedi. Lütfen Supabase RLS yetkilerinizi kontrol edin.", "error");
                 return;
             }
 
@@ -564,6 +564,7 @@
         async function confirmIgnUpdate() {
             const newIgn = document.getElementById('ignInputContent').value;
             if (newIgn !== null) {
+                // Harf büyüklüğüne (capslock) müdahale etmiyoruz, sadece boşlukları siliyoruz
                 const trimmedIgn = newIgn.trim();
                 
                 if (trimmedIgn === "") return showNotification("Oyun İçi Nick boş bırakılamaz.", "error");
@@ -573,6 +574,7 @@
                 if (parts.length !== 2 || parts[0].length < 2 || parts[1].length < 2) return showNotification("Geçersiz format! (Örn: PATRON#1234)", "error");
                 if (trimmedIgn.length > 25) return showNotification("Oyun İçi Nick en fazla 25 karakter olabilir.", "error");
 
+                // Büyük/küçük harf duyarsız benzersizlik kontrolü (ilike)
                 const { data: existingIgn } = await window.supabaseClient.from('profiles')
                     .select('ign').ilike('ign', trimmedIgn).neq('id', currentUser.id).limit(1);
 
@@ -582,7 +584,7 @@
                     .update({ ign: trimmedIgn, ign_updated_at: new Date().toISOString() }).eq('id', currentUser.id);
 
                 if (updateErr) {
-                    showNotification("IGN güncellenirken hata oluştu! Lütfen veritabanı (RLS) ayarlarınızı kontrol edin.", "error");
+                    showNotification("Veritabanı izni reddedildi (RLS Hatası). Lütfen Supabase ayarlarını kontrol edin.", "error");
                     console.error("Supabase Hatası:", updateErr);
                 } else {
                     const ignDisplay = document.getElementById('userIgnDisplay');
@@ -591,6 +593,7 @@
                     showNotification("Oyun İçi Nick başarıyla güncellendi!", "success");
                     closeCustomModal('ignEditModal');
                     
+                    // İstatistikleri yeni nick ile tekrar yükle
                     await loadUserStats(trimmedIgn);
                 }
             }
@@ -617,7 +620,7 @@
             else showNotification(isChecked ? "Ticari iletişim izni onaylandı." : "Ticari iletişim izni iptal edildi.", "success");
         }
 
-        // AVATAR VE BANNER YÜKLEME 
+        // AVATAR VE BANNER YÜKLEME (BANNER HATASI DÜZELTİLDİ)
         document.getElementById('avatarUpload').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -635,10 +638,10 @@
 
         function openBannerModal() {
             const grid = document.getElementById('bannerOptions'); grid.innerHTML = ""; 
-            // HATALI OLARAK BOZULAN BANNER DÖNGÜSÜ DÜZELTİLDİ (SADECE banner+.jpg)
+            // HATALI OLARAK BOZULAN BANNER DÖNGÜSÜ DÜZELTİLDİ
             for(let i=1; i<=4; i++) {
                 const img = document.createElement('img'); 
-                img.src = `img/banner+.jpg`; 
+                img.src = `img/banner${i}.jpg`; 
                 img.className = 'banner-option';
                 img.onclick = async function() { 
                     document.getElementById('currentBanner').style.backgroundImage = `url('${this.src}')`;
