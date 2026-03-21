@@ -16,7 +16,7 @@
     
     <style>
         .profile-container { max-width: 1000px; margin: 40px auto; padding: 20px; flex: 1; }
-        .profile-banner { height: 250px; background: url('img/banner1.jpg') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
+        .profile-banner { height: 250px; background: url('img/banner+.jpg') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
         .edit-banner-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 15px; border-radius: 5px; border: 1px solid var(--neon-mor); cursor: pointer; font-size: 12px; transition: 0.3s; }
         .edit-banner-btn:hover { background: var(--neon-mor); }
 
@@ -94,7 +94,7 @@
         input:checked + .slider { background-color: var(--mavi-onay); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* ÖZEL MODALLAR (PROMPT YERİNE) */
+        /* ÖZEL MODALLAR */
         .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
         .modal.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal-content { background: #0a0a0a; padding: 30px; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
@@ -117,7 +117,6 @@
             .avatar-wrapper { width: 110px; height: 110px; margin: -55px auto 15px; } 
             .profile-avatar { width: 110px; height: 110px; border-width: 4px; }
             .edit-avatar-btn { width: 30px; height: 30px; font-size: 12px; bottom: 0; right: 0; }
-            #profileNameDisplay { font-size: 22px !important; }
             .rank-badge { font-size: 11px; padding: 4px 12px; margin-bottom: 10px; }
             .ign-container { padding: 4px 12px; flex-wrap: wrap;}
             .bio-container { flex-direction: column; text-align: center; gap: 5px; margin-bottom: 20px; }
@@ -153,7 +152,7 @@
 
             <div class="rank-badge" id="userRank">YÜKLENİYOR...</div>
             
-            <h1 id="profileNameDisplay" style="font-size: 28px; font-weight: 900; margin-bottom: 5px; text-transform: none;">YÜKLENİYOR...</h1>
+            <h1 id="profileNameDisplay" style="font-size: 28px; font-weight: 900; margin-bottom: 5px;">YÜKLENİYOR...</h1>
             
             <div>
                 <div class="ign-container">
@@ -318,7 +317,6 @@
         async function initProfile() {
             const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
             
-            // Eğer oturum yoksa direkt anasayfaya (veya kayda) yolla
             if (authErr || !user) {
                 window.location.href = "kayit.html";
                 return;
@@ -326,13 +324,13 @@
             
             currentUser = user;
 
-            // RLS Hatalarına karşı çökme engelleyici (Failsafe) ve OTOMATİK INSERT KALDIRILDI!
-            const { data, error: profileErr } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).maybeSingle();
+            // Eski kodun aynısı: Sadece single() kullanıldı.
+            const { data, error } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).single();
             
             let currentIgn = "Belirlenmedi"; 
             
             if (data) {
-                document.getElementById('profileNameDisplay').innerText = data.username || "KULLANICI";
+                document.getElementById('profileNameDisplay').innerText = data.username || "İsimsiz";
                 document.getElementById('userBio').innerText = data.bio || "Açıklama eklenmemiş.";
                 
                 const ignDisplay = document.getElementById('userIgnDisplay');
@@ -348,11 +346,6 @@
                 if (data.marketing_consent) {
                     document.getElementById('marketingToggle').checked = true;
                 }
-            } else {
-                // Eğer RLS yüzünden profil bulunamazsa sadece isim yazsın ama arka planda profil OLUŞTURMASIN.
-                document.getElementById('profileNameDisplay').innerText = user.user_metadata?.username || "KULLANICI";
-                document.getElementById('userBio').innerText = "Açıklama eklenmemiş.";
-                console.warn("Profil verisi çekilemedi. Veritabanınızda (profiles tablosu) bu kullanıcıya ait bir satır yok.");
             }
 
             await loadUserStats(currentIgn);
@@ -458,7 +451,7 @@
                     list.innerHTML = `
                         <div class="active-team-card">
                             <span class="team-tag-large">${t.team_tag || 'TAG'}</span>
-                            <h3>${t.team_name || 'Belirlenmedi'}</h3>
+                            <h3>${t.team_name || 'İsimsiz Takım'}</h3>
                             <p>Durum: <b>${tStatus}</b></p>
                             <a href="takim.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
                         </div>
@@ -523,11 +516,11 @@
         }
 
         // ==========================================
-        // BİO DÜZENLEME 
+        // BİO DÜZENLEME (Eski Kodun Hızlı Arayüz Mantığı)
         // ==========================================
         function openBioEditModal() {
             const currentBio = document.getElementById('userBio').innerText;
-            document.getElementById('bioInputContent').value = (currentBio === "Açıklama eklenmemiş." || currentBio === "Veritabanı (RLS) ayarlarınızı kontrol edin.") ? "" : currentBio;
+            document.getElementById('bioInputContent').value = currentBio === "Açıklama eklenmemiş." ? "" : currentBio;
             openCustomModal('bioEditModal');
         }
 
@@ -535,15 +528,17 @@
             const newBio = document.getElementById('bioInputContent').value.trim();
             if (newBio.length > 150) return showNotification("Biyografi çok uzun!", "error");
             
+            // Kullanıcıya hızlı tepki vermek için arayüzü anında güncelle (Eski kod mantığı)
+            document.getElementById('userBio').innerText = newBio || "Açıklama eklenmemiş.";
+            closeCustomModal('bioEditModal');
+
             const { error } = await window.supabaseClient.from('profiles').update({ bio: newBio }).eq('id', currentUser.id);
             if (error) {
-                showNotification("Açıklama güncellenemedi. Profiller tablonuzda satırınız bulunmuyor olabilir.", "error");
-                return;
+                console.error("Supabase Bio Hatası:", error);
+                showNotification("Kaydedilemedi! Supabase RLS Update kuralınızı kontrol edin.", "error");
+            } else {
+                showNotification("Açıklama başarıyla güncellendi.", "success");
             }
-
-            document.getElementById('userBio').innerText = newBio || "Açıklama eklenmemiş.";
-            showNotification("Açıklama başarıyla güncellendi.", "success");
-            closeCustomModal('bioEditModal');
         }
 
         // ==========================================
@@ -551,7 +546,7 @@
         // ==========================================
         async function openIgnEditModal() {
             try {
-                const { data, error } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).maybeSingle();
+                const { data, error } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).single();
                 
                 if (data && data.ign_updated_at) {
                     const diffDays = Math.ceil(Math.abs(new Date() - new Date(data.ign_updated_at)) / (1000 * 60 * 60 * 24));
@@ -584,19 +579,20 @@
 
                 if (existingIgn && existingIgn.length > 0) return showNotification("Bu Oyun İçi Nick zaten kullanılıyor! (Büyük/küçük harf fark etmez).", "error");
 
+                // Kullanıcıya anında hissiyat ver
+                const ignDisplay = document.getElementById('userIgnDisplay');
+                ignDisplay.innerText = trimmedIgn;
+                ignDisplay.style.color = "#00d2ff";
+                closeCustomModal('ignEditModal');
+
                 const { error: updateErr } = await window.supabaseClient.from('profiles')
                     .update({ ign: trimmedIgn, ign_updated_at: new Date().toISOString() }).eq('id', currentUser.id);
 
                 if (updateErr) {
-                    showNotification("Güncellenemedi. Profiller tablonuzda satırınız bulunmuyor olabilir.", "error");
-                    console.error("Supabase Hatası:", updateErr);
+                    console.error("Supabase IGN Hatası:", updateErr);
+                    showNotification("Kaydedilemedi! Supabase RLS Update kuralınızı kontrol edin.", "error");
                 } else {
-                    const ignDisplay = document.getElementById('userIgnDisplay');
-                    ignDisplay.innerText = trimmedIgn;
-                    ignDisplay.style.color = "#00d2ff";
                     showNotification("Oyun İçi Nick başarıyla güncellendi!", "success");
-                    closeCustomModal('ignEditModal');
-                    
                     await loadUserStats(trimmedIgn);
                 }
             }
@@ -619,7 +615,7 @@
 
         async function toggleMarketingConsent(isChecked) {
             const { error } = await window.supabaseClient.from('profiles').update({ marketing_consent: isChecked }).eq('id', currentUser.id);
-            if (error) showNotification("Tercih kaydedilemedi. Profiller tablonuzda satırınız bulunmuyor olabilir.", "error");
+            if (error) showNotification("Tercih kaydedilemedi. RLS Update kuralınızı kontrol edin.", "error");
             else showNotification(isChecked ? "Ticari iletişim izni onaylandı." : "Ticari iletişim izni iptal edildi.", "success");
         }
 
@@ -641,10 +637,10 @@
 
         function openBannerModal() {
             const grid = document.getElementById('bannerOptions'); grid.innerHTML = ""; 
-            // HATALI OLARAK BOZULAN BANNER DÖNGÜSÜ DÜZELTİLDİ
+            // HATALI OLARAK BOZULAN BANNER DÖNGÜSÜ ORİJİNAL HALİNE GETİRİLDİ
             for(let i=1; i<=4; i++) {
                 const img = document.createElement('img'); 
-                img.src = `img/banner${i}.jpg`; 
+                img.src = `img/banner+.jpg`; 
                 img.className = 'banner-option';
                 img.onclick = async function() { 
                     document.getElementById('currentBanner').style.backgroundImage = `url('${this.src}')`;
