@@ -1,1 +1,1092 @@
-ss
+
+<!DOCTYPE html>
+
+<html lang="tr">
+
+<head>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
+
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-9VH0LHNCS3');</script>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Kayıt Ol | OBB E-SPORTS</title>
+
+    <link rel="icon" type="image/png" href="img/obblogo.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    
+
+    <link rel="stylesheet" href="css/global.css">
+
+    <link rel="stylesheet" href="css/header.css">
+
+    <link rel="stylesheet" href="css/footer.css">
+
+    
+
+    <style>
+
+        .auth-wrapper { min-height: calc(100vh - 160px); display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+
+        .main-layout { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 1600px; gap: 20px; }
+
+        .auth-side-image { flex: 1.2; display: flex; justify-content: center; }
+
+        .auth-side-image img { width: 100%; max-width: 520px; border-radius: 20px; filter: drop-shadow(0 0 30px rgba(96, 29, 194, 0.4)); animation: float 4s ease-in-out infinite; }
+
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+
+        .auth-card { flex: 1; background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); z-index: 5; }
+
+        .auth-header { text-align: center; margin-bottom: 25px; }
+
+        .auth-header h1 { font-size: 2rem; font-weight: 900; text-transform: uppercase; }
+
+        .purple-neon { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
+
+        .input-group { margin-bottom: 15px; position: relative; } /* margin biraz küçültüldü sığması için */
+
+        .input-group label { display: block; margin-bottom: 6px; font-size: 13px; color: var(--gri-yazi); font-weight: bold; }
+
+        .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; outline: none; transition: 0.3s; }
+
+        .input-group input:focus { border-color: var(--neon-mor); }
+
+        
+
+        /* Tarih seçici ikonunu karanlık temaya uygun hale getirmek için */
+
+        input[type="date"] { color-scheme: dark; }
+
+        
+
+        /* ŞİFREMİ UNUTTUM BUTONU STİLİ */
+
+        .forgot-pass-link { display: none; text-align: right; margin-top: -10px; margin-bottom: 20px; font-size: 12px; font-weight: bold; color: var(--neon-mor); text-decoration: none; transition: 0.3s; cursor: pointer; }
+
+        .forgot-pass-link:hover { text-shadow: 0 0 10px var(--neon-mor); }
+
+
+
+        /* SÖZLEŞME CHECKBOX STİLLERİ */
+
+        .kvkk-group { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px; }
+
+        .kvkk-group input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--neon-mor); margin-top: 2px; flex-shrink: 0; }
+
+        .kvkk-label { font-size: 12px; color: var(--gri-yazi); line-height: 1.4; margin: 0; }
+
+        .kvkk-link { color: var(--neon-mor); font-weight: bold; text-decoration: underline; cursor: pointer; transition: 0.3s; }
+
+        .kvkk-link:hover { text-shadow: 0 0 10px var(--neon-mor); color: #fff; }
+
+
+
+        .register-btn { width: 100%; padding: 15px; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-bottom: 20px; margin-top: 15px; }
+
+        .register-btn:hover:not(:disabled) { transform: scale(1.02); box-shadow: 0 0 20px var(--neon-mor); }
+
+        .register-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        
+
+        .auth-toggle-area { text-align: center; border-top: 1px solid #222; padding-top: 20px; }
+
+        .switch-btn { background: transparent; border: 1px solid #23083e; color: var(--neon-mor); padding: 8px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+
+
+
+        /* SÖZLEŞME MODAL STİLLERİ */
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 20px; }
+
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+
+        .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 12px; width: 100%; max-width: 700px; max-height: 80vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; z-index: 10; }
+
+        .close-btn:hover { color: var(--kirmizi-iptal); }
+
+        .modal-header { padding: 25px 25px 15px; border-bottom: 1px solid #222; }
+
+        .modal-header h2 { font-size: 18px; color: var(--neon-mor); margin: 0; font-weight: 900; }
+
+        
+
+        /* Modal İçi Yazı Formatları */
+
+        .modal-body { padding: 25px; overflow-y: auto; font-size: 13px; color: #ddd; line-height: 1.6; }
+
+        .modal-body h4 { color: var(--neon-mor); margin-top: 20px; margin-bottom: 10px; font-size: 15px; border-left: 3px solid var(--neon-mor); padding-left: 10px; }
+
+        .modal-body h4:first-child { margin-top: 0; }
+
+        .modal-body p { margin-bottom: 15px; }
+
+        .modal-body ul { margin-bottom: 15px; padding-left: 20px; }
+
+        .modal-body ul li { margin-bottom: 8px; }
+
+        
+
+        .modal-body::-webkit-scrollbar { width: 6px; }
+
+        .modal-body::-webkit-scrollbar-track { background: #111; }
+
+        .modal-body::-webkit-scrollbar-thumb { background: var(--neon-mor); border-radius: 4px; }
+
+
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+
+
+        @media (max-width: 768px) {
+
+            .auth-side-image { display: none; }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div id="header-alani"></div>
+
+
+
+    <div class="auth-wrapper">
+
+        <div class="main-layout">
+
+            <div class="auth-side-image"><img src="img/obb jett.webp" alt="Jett"></div>
+
+            
+
+            <div class="auth-card">
+
+                <div class="auth-header" id="authHeader">
+
+                    <h1>ARENAYA <span class="purple-neon">KATIL</span></h1>
+
+                    <p id="authSubtext" style="color: var(--gri-yazi); font-size: 14px; margin-top: 5px;">Profilini oluştur ve rekabete dahil ol.</p>
+
+                </div>
+
+
+
+                <form id="authForm">
+
+                    <div class="input-group" id="userGroup">
+
+                        <label>Kullanıcı Adı</label>
+
+                        <input type="text" id="username" placeholder="gamer123">
+
+                    </div>
+
+                    <div class="input-group" id="emailGroup">
+
+                        <label>E-posta</label>
+
+                        <input type="email" id="email" placeholder="ornek@mail.com" required>
+
+                    </div>
+
+                    <div style="display:flex; gap:10px;">
+
+                        <div class="input-group" id="phoneGroup" style="flex:1;">
+
+                            <label>Telefon</label>
+
+                            <input type="tel" id="phone" placeholder="05XX XXX XX XX">
+
+                        </div>
+
+                        <div class="input-group" id="dobGroup" style="flex:1;">
+
+                            <label>Doğum Tarihi</label>
+
+                            <input type="date" id="dob">
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div style="display:flex; gap:10px;">
+
+                        <div class="input-group" style="flex:1;">
+
+                            <label>Şifre</label>
+
+                            <input type="password" id="mainPass" placeholder="••••••••" required minlength="6">
+
+                        </div>
+
+                        <div class="input-group" id="confirmPassGroup" style="flex:1;">
+
+                            <label>Şifre Tekrar</label>
+
+                            <input type="password" id="confirmPass" placeholder="••••••••" required>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <a class="forgot-pass-link" id="forgotPassBtn" onclick="sifremiUnuttum()">Şifremi Unuttum?</a>
+
+
+
+                    <div class="kvkk-group" id="kvkkBox1">
+
+                        <input type="checkbox" id="kvkkCheck1">
+
+                        <label for="kvkkCheck1" class="kvkk-label">
+
+                            <span class="kvkk-link" onclick="openDocModal('kvkk')">KVKK Aydınlatma Metni</span>'ni okudum ve anladım. *
+
+                        </label>
+
+                    </div>
+
+
+
+                    <div class="kvkk-group" id="kvkkBox2">
+
+                        <input type="checkbox" id="kvkkCheck2">
+
+                        <label for="kvkkCheck2" class="kvkk-label">
+
+                            <span class="kvkk-link" onclick="openDocModal('sozlesme')">Kullanıcı Sözleşmesi</span>'ni okudum ve kabul ediyorum. *
+
+                        </label>
+
+                    </div>
+
+
+
+                    <div class="kvkk-group" id="kvkkBox3">
+
+                        <input type="checkbox" id="kvkkCheck3">
+
+                        <label for="kvkkCheck3" class="kvkk-label">
+
+                            <span class="kvkk-link" onclick="openDocModal('yayin')">Yayın ve İmaj Hakları Açık Rıza Metni</span>'ni onaylıyorum. *
+
+                        </label>
+
+                    </div>
+
+
+
+                    <div class="kvkk-group" id="kvkkBox4">
+
+                        <input type="checkbox" id="kvkkCheck4">
+
+                        <label for="kvkkCheck4" class="kvkk-label">
+
+                            <span class="kvkk-link" onclick="openDocModal('ticari')">Ticari İletişim Açık Rıza Metni</span>'ni onaylıyorum. (Opsiyonel)
+
+                        </label>
+
+                    </div>
+
+
+
+                    <button type="submit" class="register-btn" id="submitBtn">HESABI OLUŞTUR</button>
+
+                </form>
+
+
+
+                <div class="auth-toggle-area">
+
+                    <p id="toggleText" style="color: var(--gri-yazi); font-size: 13px; margin-bottom: 10px;">Zaten bir hesabın var mı?</p>
+
+                    <button class="switch-btn" onclick="toggleAuth(false)" id="switchBtn">GİRİŞ YAP</button>
+
+                </div>
+
+            </div>
+
+            <div class="auth-side-image"><img src="img/obbchamber.webp" alt="Chamber"></div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="modal-overlay" id="docModal" onclick="closeDocModal(event)">
+
+        <div class="modal-content" onclick="event.stopPropagation()">
+
+            <span class="close-btn" onclick="closeDocModal(event)">&times;</span>
+
+            <div class="modal-header">
+
+                <h2 id="docModalTitle">SÖZLEŞME BAŞLIĞI</h2>
+
+            </div>
+
+            <div class="modal-body" id="docModalBody">
+
+                </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div id="footer-alani"></div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="js/config.js"></script>
+
+    <script src="js/bildirimler.js"></script>
+
+    <script src="js/auth.js"></script>
+
+    <script src="js/app.js"></script>
+
+
+
+    <script>
+
+        // PDF DOSYALARINDAN ALINAN PROFESYONEL SÖZLEŞME İÇERİKLERİ
+
+        const documentContents = {
+
+            kvkk: {
+
+                title: "KİŞİSEL VERİLERİN İŞLENMESİNE İLİŞKİN AYDINLATMA METNİ",
+
+                body: `
+
+                    <h4>1. Veri Sorumlusunun Kimliği ve Temsilcisi</h4>
+
+                    <p>6698 sayılı Kişisel Verilerin Korunması Kanunu m. 10 ve ilgili Aydınlatma Rehberi uyarınca, OBB E-SPOR olarak, veri sorumlusu sıfatıyla, tarafınıza ait kişisel verilerin hukuka, dürüstlük kurallarına uygun, belirli, açık ve meşru amaçlarla bağlantılı, sınırlı ve ölçülü olarak işleneceğini beyan ederiz.</p>
+
+                    <p><strong>Merkez Adresi:</strong> Ordu Büyükşehir Belediyesi Şarkiye Mahallesi Yükçülük Sokak No:2 52100 Altınordu / ORDU<br>
+
+                    <strong>İletişim E-posta:</strong> obbesports@gmail.com</p>
+
+
+
+                    <h4>2. İşlenen Kişisel Veri Kategorileri</h4>
+
+                    <p>Platformumuz üzerinden üyelik oluşturmanız, e-spor turnuvalarına katılmanız ve topluluk içi iletişim araçlarını kullanmanız süreçlerinde aşağıdaki kişisel veri kategorileriniz tamamen veya kısmen otomatik yollarla işlenmektedir:</p>
+
+                    <ul>
+
+                        <li><strong>Kimlik ve İletişim Verileri:</strong> Ad, soyad, e-posta adresi, cep telefonu numarası ve Türkiye Cumhuriyeti kanunları kapsamındaki yasal yaş doğrulama yükümlülükleri gereği talep edilen yaş/doğum tarihi ve kimlik doğrulama statüsü bilgileri.</li>
+
+                        <li><strong>İşlem Güvenliği ve Cihaz Verileri:</strong> IP adresi, MAC adresi, donanım kimliği (Hardware ID / HWID), işletim sistemi mimarisi, log kayıtları, cihaz türü ve sunucu bağlantı zaman damgaları.</li>
+
+                        <li><strong>Müşteri İşlem ve Performans Verileri:</strong> Turnuva katılım bedellerine ilişkin finansal işlemler ve fatura bilgileri (Kredi kartı verileri Platformumuz sunucularında saklanmamakta, yalnızca PCI-DSS sertifikalı bağımsız ödeme kuruluşları üzerinden tokenize edilerek işlenmektedir).</li>
+
+                        <li><strong>Oyun İçi Davranış ve Telemetri Verileri:</strong> Üçüncü parti oyun geliştiricilerinin (Valorant, CS:GO, LoL vb.) sağladığı turnuva API'leri ve maç sonu istatistikleri üzerinden elde edilen oyun içi performans istatistikleri (galibiyet/mağlubiyet kayıtları, KDA vb.) ve platform içi yazılı/sesli İletişim kayıtları.</li>
+
+                        <li><strong>Görsel ve İşitsel Veriler:</strong> Fiziki veya çevrimiçi e-spor turnuvalarına katılımınız halinde; oyuncu avatar fotoğrafları, sesli komuta sohbet kayıtları, turnuva canlı yayınları sırasında elde edilen web kamerası görüntüleri ve müsabaka içi karakter hareketleri.</li>
+
+                    </ul>
+
+
+
+                    <h4>3. Kişisel Verilerin İşlenme Amaçları</h4>
+
+                    <p>Toplanan kişisel verileriniz, KVKK m. 4'te belirtilen genel ilkelere uygun olarak yalnızca aşağıda sayılan belirli ve meşru amaçlar dahilinde işlenmektedir:</p>
+
+                    <ul>
+
+                        <li>Kullanıcı hesaplarının oluşturulması, bireysel profillerin yönetilmesi ve platform içi iletişimin sağlanması,</li>
+
+                        <li>5651 sayılı İnternet Ortamında Yapılan Yayınların Düzenlenmesi Hakkında Kanun ve ilgili mevzuat kapsamında, 15 yaşından küçük bireylerin platforma kaydolmasının engellenmesi amacıyla zorunlu yaş doğrulama işlemlerinin gerçekleştirilmesi,</li>
+
+                        <li>Turnuva ve etkinlik katılım ücretleri gibi finansal operasyonların yürütülmesi ve faturalandırma süreçlerinin tamamlanması,</li>
+
+                        <li>Oyun ekosisteminin bütünlüğünü korumak adına, üçüncü parti oyunların kendi hile koruma sistemleri (Anti-Cheat) tarafından tespit edilen ihlallerin platforma yansıtılması ve platform içi siber zorbalığın önlenerek adil oyun (fair play) kurallarının tatbiki,</li>
+
+                        <li>E-spor liglerinin ve resmi turnuvalarının organizasyonu, adil eşleştirme (matchmaking) sistemlerinin çalıştırılması ve oyuncu sıralamalarının belirlenmesi,</li>
+
+                        <li>Kullanıcı uyuşmazlıklarının çözümü, teknik destek hizmetlerinin sunulması ve şikayetlerin yönetilmesi,</li>
+
+                        <li>Yetkili kamu kurum ve kuruluşlarından (BTK, Savcılıklar, Mahkemeler) mevzuata uygun olarak gelecek resmi ve yasal bilgi taleplerinin karşılanması.</li>
+
+                    </ul>
+
+
+
+                    <h4>4. Kişisel Veri Toplamanın Yöntemi ve Hukuki Sebebi</h4>
+
+                    <p>Kişisel verileriniz; web sitemizdeki üyelik formları, platform içi iletişim panelleri ve üçüncü parti oyun geliştiricilerinin (Riot Games, Valve vb.) sağladığı resmi turnuva API'leri aracılığıyla elektronik ortamda, kısmen veya tamamen otomatik yollarla elde edilmektedir.</p>
+
+                    <p>Verilerinizin işlenmesi, KVKK'nın 5. maddesinde yer alan aşağıdaki açık hukuki sebeplere dayanmaktadır:</p>
+
+                    <ul>
+
+                        <li><strong>KVKK m. 5/2-c uyarınca;</strong> "Bir sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması kaydıyla, sözleşmenin taraflarına ait kişisel verilerin işlenmesinin gerekli olması" (Kullanıcı Sözleşmesi ve Hizmet Şartlarının ifası, hesabın teknik yönetimi),</li>
+
+                        <li><strong>KVKK m. 5/2-ç uyarınca;</strong> "Veri sorumlusunun hukuki yükümlülüğünü yerine getirebilmesi için zorunlu olması" (5651 sayılı Kanun kapsamındaki yaş doğrulama, log tutma ve yasal bilgi sağlama yükümlülükleri),</li>
+
+                        <li><strong>KVKK m. 5/2-e uyarınca;</strong> "Bir hakkın tesisi, kullanılması veya korunması için veri işlemenin zorunlu olması" (Olası hukuki uyuşmazlıklarda delillerin muhafazası),</li>
+
+                        <li><strong>KVKK m. 5/2-f uyarınca;</strong> "İlgili kişinin temel hak ve özgürlüklerine zarar vermemek kaydıyla, veri sorumlusunun meşru menfaatleri için veri işlenmesinin zorunlu olması" (Platformun siber güvenliğinin sağlanması, haksız rekabetin önlenmesi ve adil oyun kurallarının tatbiki).</li>
+
+                    </ul>
+
+                    <p>Profesyonel e-spor etkinlikleri kapsamında reklam, pazarlama, canlı yayın ve sponsorluk amaçlarıyla görsel ve işitsel kayıtlarınızın ticari olarak kullanılması ise yalnızca tarafınızdan ayrıca alınacak Açık Rıza (KVKK m. 5/1) doğrultusunda gerçekleştirilecektir.</p>
+
+
+
+                    <h4>5. İşlenen Kişisel Verilerin Kimlere ve Hangi Amaçla Aktarılabileceği</h4>
+
+                    <p>Kişisel verileriniz, yukarıda belirtilen meşru amaçların gerçekleştirilmesi doğrultusunda ve KVKK'nın 8. ve 9. maddelerindeki katı koşullara riayet edilerek aktarılmaktadır:</p>
+
+                    <ul>
+
+                        <li><strong>Yurt İçi Aktarım (KVKK m. 8):</strong> Yasal yükümlülüklerimizin yerine getirilmesi amacıyla kanunen yetkili kamu kurumlarına (BTK, Adli Makamlar), ödeme işlemleri ve dolandırıcılık tespiti için BDDK lisanslı ödeme hizmeti sağlayıcılarına, finansal denetim ve beyanname süreçleri amacıyla bağımsız mali müşavirlere aktarılmaktadır.</li>
+
+                        <li><strong>Yurt Dışı Aktarım (KVKK m. 9):</strong> Platformumuzun kesintisiz ve küresel çapta hizmet verebilmesi amacıyla; sunucu barındırma (server hosting), bulut veri tabanı yönetimi ve iletişim/topluluk (örn: Discord) altyapısı hizmeti alınan yurt dışında mukim çok uluslu teknoloji tedarikçilerine aktarılmaktadır.</li>
+
+                    </ul>
+
+
+
+                    <h4>6. KVKK Madde 11 Kapsamındaki Kanuni Haklarınız</h4>
+
+                    <p>Kişisel veri sahibi olarak, bize dilediğiniz zaman başvurarak KVKK m. 11 kapsamındaki haklarınızı kullanabilirsiniz. Bu haklar şunlardır:</p>
+
+                    <ul>
+
+                        <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme, işlenmişse buna ilişkin detaylı bilgi talep etme,</li>
+
+                        <li>İşlenme amacını ve verilerin amacına uygun kullanılıp kullanılmadığını öğrenme,</li>
+
+                        <li>Yurt içinde veya yurt dışında kişisel verilerinizin aktarıldığı üçüncü kişi ve kurumları bilme,</li>
+
+                        <li>Kişisel verilerinizin eksik veya yanlış işlenmiş olması hâlinde bunların düzeltilmesini isteme,</li>
+
+                        <li>KVKK'nın 7. maddesinde öngörülen yasal saklama sürelerinin dolması şartıyla kişisel verilerinizin silinmesini veya yok edilmesini isteme,</li>
+
+                        <li>Düzeltme, silme ve yok etme işlemlerinin, verilerinizin aktarıldığı üçüncü kişilere bildirilmesini isteme,</li>
+
+                        <li>İşlenen verilerinizin münhasıran otomatik sistemler vasıtasıyla analiz edilmesi suretiyle aleyhinize bir sonucun ortaya çıkmasına itiraz etme,</li>
+
+                        <li>Kişisel verilerinizin kanuna aykırı olarak işlenmesi sebebiyle fiili bir zarara uğramanız hâlinde maddi ve manevi zararın giderilmesini talep etme.</li>
+
+                    </ul>
+
+                    <p>Bu haklarınızı kullanmak için taleplerinizi, "Veri Sorumlusuna Başvuru Usul ve Esasları Hakkında Tebliğ" uyarınca yukarıda belirtilen fiziki adresimize kimlik ispatlayıcı belgelerle birlikte yazılı olarak iletebilir, noter kanalıyla gönderebilir veya sistemimizde kayıtlı bulunan e-posta adresiniz üzerinden obbesports@gmail.com adresine elektronik posta yoluyla iletebilirsiniz.</p>
+
+                `
+
+            },
+
+            yayin: {
+
+                title: "YAYIN VE İMAJ HAKLARI AÇIK RIZA METNİ",
+
+                body: `
+
+                    <p>Kişisel Verilerin İşlenmesine İlişkin Aydınlatma Metni'ni okudum ve anladım. Katıldığım resmi e-spor liglerinde, çevrimiçi turnuvalarda veya platform içi etkinliklerde elde edilen oyun içi performans görüntülerimin, sesli iletişim kayıtlarımın (voice chat), kullanıcı adımın (nickname) ve varsa web kamerası görüntülerimin kaydedilmesine; canlı, naklen veya banttan ulusal ve uluslararası mecralarda (Twitch, YouTube vb.) yayınlanmasına; turnuva organizatörleri, sponsor markalar ve OBB E-Spor'un ticari iş ortaklarıyla reklam, pazarlama, tanıtım ve PR faaliyetleri kapsamında paylaşılmasına ve bu amaçlarla ticari olarak kullanılmasına tamamen özgür irademle açık rıza veriyorum.</p>
+
+                `
+
+            },
+
+            ticari: {
+
+                title: "TİCARİ İLETİŞİM AÇIK RIZA METNİ",
+
+                body: `
+
+                    <p>Kişisel Verilerin İşlenmesine İlişkin Aydınlatma Metni'ni okudum ve anladım. E-posta, SMS ve anlık bildirim (push notification) araçları kullanılarak OBB E-Spor'un düzenleyeceği yeni turnuvalar, etkinlik duyuruları, platform yenilikleri ve sponsor markalara ait kampanya/reklam içerikleri hakkında tarafımla ticari iletişim kurulmasına ve bu kapsamda iletişim verilerimin işlenmesine tamamen özgür irademle açık rıza veriyorum.</p>
+
+                `
+
+            },
+
+            sozlesme: {
+
+                title: "KULLANICI VE HİZMET SÖZLEŞMESİ (TERMS OF SERVICE)",
+
+                body: `
+
+                    <h4>Madde 1. Taraflar, Sözleşmenin Kurulması ve Kapsam</h4>
+
+                    <p>İşbu Kullanıcı ve Hizmet Sözleşmesi ("Sözleşme"), Ordu Büyükşehir Belediyesi E-Spor (kısaca "OBB E-Spor" veya "Platform") ile www.obbesports.com internet sitesine, e-spor sunucularına veya bağlantılı dijital servislere (müştereken "Hizmetler") üye olarak kaydolan veya Hizmetleri kullanan gerçek kişi ("Oyuncu") arasında, dijital ortamda onaylanması anında akdedilmiştir.</p>
+
+                    <p>Platformun yasal iletişim adresi "Şarkiye Mahallesi Yükçülük Sokak No:2 52100 Altınordu / ORDU" ve resmi e-posta adresi "obbesports@gmail.com" olarak belirlenmiştir. Oyuncu, kayıt formunda yer alan "Kullanıcı Sözleşmesini okudum ve kabul ediyorum" butonuna tıkladığı anda, bu Sözleşmedeki tüm hukuki, mali ve cezai şartları gayrikabili rücu (geri alınamaz) olarak kabul ettiğini beyan eder.</p>
+
+
+
+                    <h4>Madde 2. Yasal Yaş Sınırı, Kayıt Şartları ve Kimlik Doğrulama Yükümlülüğü</h4>
+
+                    <p><strong>2.1. Yasal Yaş Sınırı:</strong> Türkiye Cumhuriyeti kanunlarında yer alan emredici çocuk koruma düzenlemeleri ve ilgili mevzuat uyarınca, Platforma kaydolabilmek ve Hizmetleri kullanabilmek için Kullanıcının 15 (on beş) yaşını doldurmuş olması zorunludur. 18 (on sekiz) yaşını doldurmamış Oyuncuların platform içi işlemleri, turnuva kayıtları ve olası ödül alımları için yasal veli/vasisinin yazılı veya dijital (e-posta/SMS doğrulama) onayını sunması şarttır. Bu onayın eksikliğinden kaynaklanan hukuki ve mali sorumluluk tamamen Oyuncu'ya ve yasal temsilcisine aittir.</p>
+
+                    <p><strong>2.2. Resmi Yaş Doğrulama Süreci:</strong> Platform, yasal yaş sınırlarına uyulduğunu teyit etmek amacıyla, Kullanıcının sisteme kaydolduğu esnada veya turnuva süreçlerinde kimlik ibrazı veya dijital doğrulama yöntemleri talep etme hakkına sahiptir. Kimlik doğrulama işlemini tamamlamayan, 15 yaşından küçük olduğu tespit edilen veya gerekli veli/vasi onayını sunamayan kişilerin hesapları derhal ve ön bildirimsiz olarak kalıcı şekilde kapatılacak, elde edilen tüm turnuva hakları ve hesap içi kazanımlar iptal edilecektir.</p>
+
+                    <p><strong>2.3. Hesap Güvenliği ve Devir Yasağı:</strong> Kullanıcı, platform hesabı için belirlediği şifrenin gizliliğinden ve hesabında gerçekleştirilen tüm eylemlerden müteselsilen ve tek başına sorumludur. Hesabın, hesap içi verilerin veya sıralama/lig (rank) derecelerinin üçüncü bir kişiye devredilmesi, satılması, kiralanması veya ortak kullanılması (account sharing/boosting) kesinlikle yasaktır ve derhal fesih nedenidir.</p>
+
+
+
+                    <h4>Madde 3. Sınırlı Kullanım Lisansı ve Fikri Mülkiyet Haklarının Korunması</h4>
+
+                    <p><strong>3.1. Sınırlı Lisans:</strong> Platform, Kullanıcıya yalnızca işbu Sözleşme şartlarına katı bir şekilde uyması kaydıyla; Hizmetlere erişmesi, oyunları oynaması ve kişisel, ticari olmayan amaçlarla kullanması için münhasır olmayan, devredilemez, alt lisanslanamaz, iptal edilebilir ve sınırlı bir dijital lisans verir.</p>
+
+                    <p><strong>3.2. Fikri Mülkiyetin İhlali:</strong> Platform'un kendi web sitesi tasarımı, logoları, OBB E-Spor markası, yayınları, görsel arayüzleri ve ürettiği özgün içeriklerin tüm fikri ve sınai mülkiyet hakları münhasıran Platform'a aittir. Kullanıcı, Hizmetlerin hiçbir parçasını kopyalayamaz, kiralayamaz, değiştiremez veya izinsiz ticari amaçla kullanamaz. Turnuvaları düzenlenen üçüncü parti oyunların (Valorant, CS:GO, LOL vb.) oyun motorları, karakterleri, müzikleri ve hikaye (lore) unsurları ilgili oyun geliştiricilerine ait olup, Platform yalnızca turnuva düzenleyici sıfatıyla hareket etmektedir.</p>
+
+
+
+                    <h4>Madde 4. Adil Oyun (Fair Play), Hile Koruması ve Üçüncü Parti Yazılım Yasağı</h4>
+
+                    <p>Platform üzerinden düzenlenen turnuvalarda ve etkinliklerde adil rekabet esastır. Platform, rekabetçi e-spor ekosistemini korumak ve tüm oyuncular için manipülasyondan uzak bir ortam sağlamakla yükümlüdür.</p>
+
+                    <p><strong>4.1. Hile ve Manipülasyon Yasağı:</strong> Oyuncu, rekabet edilen oyunun (Örn: Valorant, CS:GO, LoL vb.) kendi yayıncısı tarafından belirlenen Hizmet Şartlarına ve Hile Koruma (Anti-Cheat) kurallarına uymak zorundadır. Üçüncü parti hile yazılımları (aimbot, wallhack, makro, otomasyon yazılımları vb.) kullanmak, şike yapmak (match-fixing) veya turnuva işleyişini sabote eden herhangi bir yöntemi kullanmak kesinlikle yasaktır.</p>
+
+                    <p><strong>4.2. Yaptırım Mekanizması:</strong> Madde 4 hükümlerinin ihlal edildiğinin turnuva hakemleri, platform yetkilileri veya oyun içi hile koruma sistemleri aracılığıyla tespit edilmesi durumunda OBB E-Spor; haksız elde edilen lig puanlarını geri alma, oyuncuyu turnuvalardan men etme, hesabı süreli/süresiz askıya alma ve kazanılan ödülleri iptal etme hakkını saklı tutar.</p>
+
+
+
+                    <h4>Madde 5. Toksik Davranışlar, Topluluk Standartları ve İletişim Kuralları</h4>
+
+                    <p>Platformun oyun içi sohbet (yazılı chat, sesli iletişim - voice comms) sistemlerinde, forumlarında veya e-spor lobi alanlarında, Kullanıcıların aşağıdaki yıkıcı (toxic) davranışlarda bulunması katı surette yasaklanmıştır:</p>
+
+                    <ul>
+
+                        <li><strong>5.1. Nefret Söylemi ve Ayrımcılık:</strong> Irk, din, dil, cinsiyet, cinsel yönelim veya etnik köken temelli saldırgan ifadeler kullanmak, aşağılamak ve sistematik ötekileştirme (hate speech) yapmak.</li>
+
+                        <li><strong>5.2. Siber Zorbalık ve Taciz:</strong> Diğer oyunculara, e-spor hakemlerine, Platform personeline veya üçüncü kişilere yönelik doğrudan tehdit, şantaj, siber zorbalık (cyberbullying) ve sistematik tacizde (griefing) bulunmak.</li>
+
+                        <li><strong>5.3. Uygunsuz İçerik:</strong> Müstehcen, pornografik içerikli materyal paylaşmak, aşırı küfür ve argo kullanmak.</li>
+
+                        <li><strong>5.4. Doxxing ve Mahremiyet İhlali:</strong> Başka oyuncuların gerçek kimlik bilgilerini, iletişim numaralarını veya adreslerini (doxxing) rızaları dışında ifşa etmek.</li>
+
+                    </ul>
+
+                    <p><strong>5.5. Yaptırım Mekanizması:</strong> Platform moderatörleri veya yapay zeka tabanlı dil analiz sistemleri tarafından tespit edilen bu eylemler; geçici iletişim kısıtlamalarından (chat mute/silence), hesabın rekabetçi eşleştirmeden süreli men edilmesine (ranked ban) ve nihai olarak hesabın kalıcı olarak kapatılmasına (perma-ban) kadar giden kümülatif yaptırımlara tabidir. Asılsız yere diğer oyuncuları raporlamak (false reporting) da aynı yaptırımlara yol açabilir.</p>
+
+
+
+                    <h4>Madde 6. E-Spor Turnuvaları ve Ticari Yayın Hakları</h4>
+
+                    <p><strong>6.1. Turnuva Kurallarına Uyum:</strong> Platform tarafından organize edilen veya desteklenen resmi e-spor liglerine/turnuvalarına katılan Kullanıcılar, Platform tarafından belirlenen turnuva kurallarına ve genel kabul görmüş e-spor davranış kurallarına uymak zorundadır.</p>
+
+                    <p><strong>6.2. İmaj ve Yayın Hakları:</strong> Kullanıcı, turnuva süresince oynadığı maçların, platform içi eylemlerinin ve oyun içi iletişimlerinin Platform tarafından kaydedilebileceğini, canlı yayınlanabileceğini (streaming), ticari amaçlarla naklen veya banttan dağıtılabileceğini ve Platform'un medya iş ortakları, sponsorları veya reklam verenleri ile paylaşılabileceğini kabul eder. Bu yayınlarda Kullanıcının oyuncu adının (nickname), avatarının ve oyun içi performansının bedelsiz, telifsiz ve süresiz olarak Platform'un ticari kullanımına tahsis edildiği kabul edilir. (Kişisel görüntünün ve sesin kullanımı KVKK Açık Rıza metnindeki onaylara tabidir).</p>
+
+
+
+                    <h4>Madde 7. Sorumluluğun Sınırlandırılması ve Hizmet Kesintileri</h4>
+
+                    <p><strong>7.1. Garanti Feragati:</strong> Platform, Hizmetlerin ("olduğu gibi" ve "mevcut olduğu şekliyle" sunulur) kesintisiz, tamamen hatasız (bug-free) veya siber saldırılara karşı %100 korunaklı olacağını hukuken garanti etmez. Planlı sunucu bakım çalışmaları, yazılım güncellemeleri veya mücbir sebepler (doğal afet, altyapı çökmesi) nedeniyle yaşanacak erişim kesintilerinden dolayı Platform sorumlu tutulamaz.</p>
+
+                    <p><strong>7.2. Yasal Erişim Engelleri ve Bant Daraltma:</strong> Türkiye Cumhuriyeti kanunlarının (özellikle 5651 sayılı Kanun) uygulanması, yetkili idari mercilerin (BTK, Mahkemeler) kararları veya yeni regülasyonlar doğrultusunda Hizmetlere erişimin tamamen engellenmesi, yasaklanması veya sunucu bant genişliğinin idari yaptırımla daraltılması (throttling) durumlarında, Platform, Kullanıcıya karşı hiçbir maddi tazminat veya sanal ürün iadesi ile yükümlü değildir.</p>
+
+
+
+                    <h4>Madde 8. Sözleşmenin Feshi ve Hesabın Kapatılması</h4>
+
+                    <p><strong>8.1. Kullanıcı Tarafından Fesih:</strong> Kullanıcı, dilediği zaman müşteri hizmetleri paneli üzerinden hesabının kalıcı olarak silinmesini talep ederek işbu Sözleşmeyi tek taraflı feshedebilir.</p>
+
+                    <p><strong>8.2. Platform Tarafından Haklı Nedenle Fesih:</strong> Platform, Kullanıcının işbu Sözleşmedeki temel yükümlülüklerden herhangi birini (özellikle Madde 2'deki Yaş Şartı, Madde 4'teki Hile Yasağı ve Madde 5'teki Toksik Davranış kurallarını) ihlal ettiğini tespit etmesi halinde, Kullanıcıya herhangi bir ön bildirimde bulunmaksızın Sözleşmeyi tek taraflı olarak derhal feshetme, hesabı kalıcı olarak kapatma (banlama) ve IP/Donanım erişimini bloklama hakkına münhasıran sahiptir.</p>
+
+
+
+                    <h4>Madde 9. Uygulanacak Hukuk ve Uyuşmazlıkların Çözüm Yeri</h4>
+
+                    <p>İşbu Sözleşmenin kurulması, yorumlanması, ifası ve taraflar arasında doğabilecek sözleşme içi veya haksız fiil kaynaklı tüm uyuşmazlıklarda münhasıran Türkiye Cumhuriyeti kanunları uygulanacaktır. Uyuşmazlıkların çözümünde Ordu Mahkemeleri ve İcra Daireleri kesin yetkilidir. Tüketici hukuku kapsamına giren durumlarda, Kullanıcılar yasal parasal sınırlar dâhilinde yerleşim yerlerindeki Tüketici Hakem Heyetlerine başvurabilirler.</p>
+
+
+
+                    <h4>Madde 10. Yürürlük ve Değişiklikler</h4>
+
+                    <p>Platform, operasyonel gereklilikler veya yasal mevzuat değişiklikleri sebebiyle işbu Sözleşme şartlarında dilediği zaman tek taraflı değişiklik yapma hakkını saklı tutar. Yapılan değişiklikler, Platform üzerinden yayınlandığı tarihte yürürlüğe girer. Değişiklik sonrasında Hizmetleri kullanmaya devam etmek, güncel şartların Kullanıcı tarafından kabul edildiği anlamına gelir. İşbu Sözleşme, Kullanıcı tarafından kayıt sürecinde elektronik onay (tık) verilmesi anında yürürlüğe girmiştir.</p>
+
+                `
+
+            }
+
+        };
+
+
+
+        // TELEFON NUMARASI OTOMATİK FORMATLAMA (MASKELEME)
+
+        const phoneInput = document.getElementById('phone');
+
+        if (phoneInput) {
+
+            phoneInput.addEventListener('input', function (e) {
+
+                // Sadece rakamları al
+
+                let numbers = this.value.replace(/\D/g, '');
+
+                
+
+                // TR numarası 05 ile başlamalı
+
+                if (numbers.length > 0 && numbers[0] !== '0') {
+
+                    numbers = '0' + numbers;
+
+                }
+
+                if (numbers.length > 1 && numbers[1] !== '5') {
+
+                    numbers = '05' + numbers.substring(2);
+
+                }
+
+
+
+                // Maksimum 11 rakam
+
+                numbers = numbers.substring(0, 11);
+
+
+
+                // Formatlama: 05XX XXX XX XX
+
+                let formatted = '';
+
+                for (let i = 0; i < numbers.length; i++) {
+
+                    if (i === 4 || i === 7 || i === 9) {
+
+                        formatted += ' ';
+
+                    }
+
+                    formatted += numbers[i];
+
+                }
+
+                
+
+                this.value = formatted;
+
+            });
+
+        }
+
+
+
+        // MODAL AÇMA/KAPAMA FONKSİYONLARI
+
+        function openDocModal(docType) {
+
+            document.getElementById('docModalTitle').innerText = documentContents[docType].title;
+
+            document.getElementById('docModalBody').innerHTML = documentContents[docType].body;
+
+            
+
+            document.getElementById('docModal').classList.add('active');
+
+            document.body.style.overflow = 'hidden';
+
+        }
+
+
+
+        function closeDocModal(e) {
+
+            if (!e || e.target.id === 'docModal' || e.target.classList.contains('close-btn')) {
+
+                document.getElementById('docModal').classList.remove('active');
+
+                document.body.style.overflow = 'auto';
+
+            }
+
+        }
+
+
+
+        // SAYFA YÜKLENDİĞİNDE ÖNBELLEK (LOCALSTORAGE) KONTROLÜ
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const hasRegistered = localStorage.getItem('obb_has_registered');
+
+            if (hasRegistered === 'true') {
+
+                toggleAuth(true); // Giriş yap modunda aç
+
+            }
+
+        });
+
+
+
+        // EKRAN DEĞİŞTİRME FONKSİYONU (Kayıt Ol <-> Giriş Yap)
+
+        function toggleAuth(forceLogin = false) {
+
+            let isReg;
+
+            if (forceLogin) {
+
+                isReg = true; 
+
+            } else {
+
+                isReg = document.getElementById('submitBtn').innerText === "HESABI OLUŞTUR";
+
+            }
+
+
+
+            document.querySelector('#authHeader h1').innerHTML = isReg ? 'HOŞ <span class="purple-neon">GELDİN</span>' : 'ARENAYA <span class="purple-neon">KATIL</span>';
+
+            document.getElementById('authSubtext').innerText = isReg ? 'Bilgilerini gir ve arenaya dön.' : 'Profilini oluştur ve rekabete dahil ol.';
+
+            document.getElementById('submitBtn').innerText = isReg ? "GİRİŞ YAP" : "HESABI OLUŞTUR";
+
+            document.getElementById('switchBtn').innerText = isReg ? "KAYIT OL" : "GİRİŞ YAP";
+
+            document.getElementById('toggleText').innerText = isReg ? "Henüz bir hesabın yok mu?" : "Zaten bir hesabın var mı?";
+
+            
+
+            // Kayıt alanlarını gizle/göster
+
+            ['userGroup', 'phoneGroup', 'dobGroup', 'confirmPassGroup', 'kvkkBox1', 'kvkkBox2', 'kvkkBox3', 'kvkkBox4'].forEach(id => {
+
+                const el = document.getElementById(id);
+
+                if (el) el.style.display = isReg ? "none" : (id.includes('kvkk') ? "flex" : "block");
+
+            });
+
+
+
+            document.getElementById('forgotPassBtn').style.display = isReg ? "block" : "none";
+
+            
+
+            // Zorunlulukları (Required) ayarla (Box 4 zorunlu değil)
+
+            document.getElementById('confirmPass').required = !isReg;
+
+            document.getElementById('dob').required = !isReg;
+
+            document.getElementById('kvkkCheck1').required = !isReg;
+
+            document.getElementById('kvkkCheck2').required = !isReg;
+
+            document.getElementById('kvkkCheck3').required = !isReg;
+
+            document.getElementById('kvkkCheck4').required = false; 
+
+        }
+
+
+
+        // --- ŞİFRE SIFIRLAMA İSTEĞİ GÖNDERME ---
+
+        async function sifremiUnuttum() {
+
+            const emailInput = document.getElementById('email').value.trim();
+
+            if (!emailInput) {
+
+                showNotification("Lütfen önce yukarıdaki e-posta alanını doldurun ve tekrar tıklayın.", "error");
+
+                document.getElementById('email').focus();
+
+                return;
+
+            }
+
+
+
+            const btn = document.getElementById('submitBtn');
+
+            const originalText = btn.innerText;
+
+            btn.innerText = "LÜTFEN BEKLEYİN...";
+
+            btn.disabled = true;
+
+
+
+            const { error } = await window.supabaseClient.auth.resetPasswordForEmail(
+
+                emailInput, 
+
+                { redirectTo: 'https://www.obbesports.com/sifre-yenile.html' }
+
+            );
+
+
+
+            if (error) {
+
+                showNotification("Hata: " + error.message, "error");
+
+            } else {
+
+                showNotification("Şifre sıfırlama bağlantısı e-postanıza gönderildi!", "success");
+
+            }
+
+
+
+            btn.innerText = originalText;
+
+            btn.disabled = false;
+
+        }
+
+
+
+        // --- FORM GÖNDERME (KAYIT & GİRİŞ) ---
+
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+
+            const password = document.getElementById('mainPass').value;
+
+            const submitBtn = document.getElementById('submitBtn');
+
+            const isRegister = submitBtn.innerText === "HESABI OLUŞTUR";
+
+
+
+            submitBtn.disabled = true; 
+
+            submitBtn.innerText = "İŞLEM YAPILIYOR...";
+
+
+
+            if (isRegister) {
+
+                // 1. SÖZLEŞME KONTROLLERİ (Sadece 1, 2 ve 3 zorunlu)
+
+                const kvkk1Checked = document.getElementById('kvkkCheck1').checked;
+
+                const kvkk2Checked = document.getElementById('kvkkCheck2').checked;
+
+                const kvkk3Checked = document.getElementById('kvkkCheck3').checked;
+
+                
+
+                if (!kvkk1Checked || !kvkk2Checked || !kvkk3Checked) { 
+
+                    showNotification("Kayıt olabilmek için (*) ile işaretli tüm zorunlu yasal metinleri onaylamalısınız!", "error"); 
+
+                    submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; 
+
+                }
+
+
+
+                // 2. ŞİFRE VE KULLANICI ADI KONTROLÜ
+
+                const confirmPass = document.getElementById('confirmPass').value;
+
+                const usernameInput = document.getElementById('username').value.trim();
+
+                
+
+                if (password !== confirmPass) { showNotification("Şifreler uyuşmuyor!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; }
+
+                if (!usernameInput) { showNotification("Kullanıcı adı boş bırakılamaz!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; }
+
+
+
+                // TELEFON NUMARASI GEÇERLİLİK KONTROLÜ
+
+                const rawPhone = document.getElementById('phone').value.replace(/\s/g, ''); // Boşlukları temizle
+
+                if (rawPhone) { // Opsiyonelse veya zorunluysa kontrol et
+
+                    if (rawPhone.length !== 11 || !rawPhone.startsWith('05')) {
+
+                        showNotification("Lütfen geçerli bir cep telefonu numarası girin (Örn: 05XX XXX XX XX).", "error");
+
+                        submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; 
+
+                    }
+
+                    
+
+                    // Art arda aynı rakamların tekrarını engelle (örn: 05555555555)
+
+                    const sameDigitRegex = /05(\d)\1{8}/; 
+
+                    if (sameDigitRegex.test(rawPhone)) {
+
+                        showNotification("Geçersiz telefon numarası. Lütfen gerçek bir numara girin.", "error");
+
+                        submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; 
+
+                    }
+
+                }
+
+
+
+                // 3. YAŞ (DOĞUM TARİHİ) KONTROLÜ (Sadece tarayıcıda hesaplanır, ASLA veritabanına gitmez)
+
+                const dobVal = document.getElementById('dob').value;
+
+                if (!dobVal) {
+
+                    showNotification("Lütfen doğum tarihinizi giriniz.", "error"); 
+
+                    submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; 
+
+                }
+
+                
+
+                const dobDate = new Date(dobVal);
+
+                const today = new Date();
+
+                let age = today.getFullYear() - dobDate.getFullYear();
+
+                const m = today.getMonth() - dobDate.getMonth();
+
+                if (m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) { age--; }
+
+
+
+                if (age < 15) {
+
+                    showNotification("OBB E-SPORTS platformuna kayıt olabilmek için en az 15 yaşında olmalısınız.", "error");
+
+                    submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; 
+
+                }
+
+
+
+                // 4. KULLANICI ADI MÜKERRERLİK KONTROLÜ
+
+                const { data: existingUsers } = await window.supabaseClient.from('profiles').select('username').ilike('username', usernameInput).limit(1);
+
+                if (existingUsers && existingUsers.length > 0) {
+
+                    showNotification("Bu kullanıcı adı zaten alınmış!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return;
+
+                }
+
+
+
+                // 5. SUPABASE KAYIT İŞLEMİ (Burada options payload'ına DİKKAT! Sadece username ve phone var)
+
+                // Yaş veya doğum tarihi (dobVal, age) değişkenleri Supabase'e GÖNDERİLMEZ.
+
+                const { data, error } = await window.supabaseClient.auth.signUp({
+
+                    email: email, 
+
+                    password: password, 
+
+                    options: { 
+
+                        data: { 
+
+                            username: usernameInput, 
+
+                            phone: document.getElementById('phone').value 
+
+                        } 
+
+                    }
+
+                });
+
+
+
+                if (error) {
+
+                    showNotification("Hata: " + error.message, "error");
+
+                } else { 
+
+                    // BAŞARILI KAYIT SONRASI ÖNBELLEĞE KAYDET
+
+                    localStorage.setItem('obb_has_registered', 'true');
+
+                    
+
+                    showNotification("Kayıt başarılı! Lütfen e-postanıza (Gereksiz/Spam kutusu dahil) gelen linke tıklayarak hesabınızı doğrulayın.", "success"); 
+
+                    setTimeout(() => toggleAuth(false), 2500); 
+
+                }
+
+
+
+            } else {
+
+                // GİRİŞ YAPMA İŞLEMİ
+
+                const { error } = await window.supabaseClient.auth.signInWithPassword({ email: email, password: password });
+
+                
+
+                if (error) {
+
+                    if (error.message === "Email not confirmed") {
+
+                        showNotification("Giriş başarısız! Lütfen önce e-postanıza gelen doğrulama linkine tıklayın.", "error");
+
+                    } else {
+
+                        showNotification("Giriş başarısız. Lütfen bilgilerinizi kontrol edin.", "error");
+
+                    }
+
+                } else { 
+
+                    localStorage.setItem('obb_has_registered', 'true');
+
+                    showNotification("Giriş yapıldı!", "success"); 
+
+                    setTimeout(() => window.location.href = "index.html", 1000); 
+
+                }
+
+            }
+
+            
+
+            submitBtn.disabled = false;
+
+            submitBtn.innerText = isRegister ? "HESABI OLUŞTUR" : "GİRİŞ YAP";
+
+        });
+
+    </script>
+
+</body>
+
+</html>
