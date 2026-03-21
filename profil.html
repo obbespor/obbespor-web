@@ -16,7 +16,7 @@
     
     <style>
         .profile-container { max-width: 1000px; margin: 40px auto; padding: 20px; flex: 1; }
-        .profile-banner { height: 250px; background: url('img/banner+.jpg') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
+        .profile-banner { height: 250px; background: url('img/banner1.jpg') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
         .edit-banner-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 15px; border-radius: 5px; border: 1px solid var(--neon-mor); cursor: pointer; font-size: 12px; transition: 0.3s; }
         .edit-banner-btn:hover { background: var(--neon-mor); }
 
@@ -152,7 +152,8 @@
             </div>
 
             <div class="rank-badge" id="userRank">YÜKLENİYOR...</div>
-            <h1 id="profileNameDisplay" style="font-size: 28px; font-weight: 900; margin-bottom: 5px;">...</h1>
+            
+            <h1 id="profileNameDisplay" style="font-size: 28px; font-weight: 900; margin-bottom: 5px; text-transform: none;">YÜKLENİYOR...</h1>
             
             <div>
                 <div class="ign-container">
@@ -265,7 +266,7 @@
                 <i class="fas fa-exclamation-triangle"></i> DİKKAT: Oyun İçi Nickinizi <b>ayda yalnızca 1 kez</b> değiştirebileceksiniz. Emin misiniz?
             </div>
             <div class="input-group">
-                <label>Yeni IGN (Örn: PATRON#TR1)</label>
+                <label>Yeni IGN (Örn: paTRon#TR1)</label>
                 <input type="text" id="ignInputContent" placeholder="NICK#TAG formatında giriniz">
             </div>
             <button class="btn-primary" onclick="confirmIgnUpdate()">Kabul Ediyorum ve Kaydet</button>
@@ -320,25 +321,31 @@
             currentUser = user;
 
             const { data } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+            
+            let currentIgn = "Belirlenmedi"; // Varsayılan değer
+            
             if (data) {
-                document.getElementById('profileNameDisplay').innerText = data.username || "İsimsiz";
+                // İsmin orijinal harf yapısıyla kalması ve "YÜKLENİYOR..." takılma hatası çözüldü
+                document.getElementById('profileNameDisplay').innerText = data.username || "KULLANICI";
                 document.getElementById('userBio').innerText = data.bio || "Açıklama eklenmemiş.";
                 
                 const ignDisplay = document.getElementById('userIgnDisplay');
                 if (data.ign) {
+                    currentIgn = data.ign;
                     ignDisplay.innerText = data.ign;
                     ignDisplay.style.color = "#00d2ff";
                 }
+                
                 if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
                 if(data.avatar_url) document.getElementById('userAvatar').src = data.avatar_url + "?t=" + Date.now();
 
-                // Ticari Rıza Checkbox Durumu
                 if (data.marketing_consent) {
                     document.getElementById('marketingToggle').checked = true;
                 }
             }
 
-            await loadUserStats();
+            // İstatistikleri yüklerken IGN'i de fonksiyona gönderiyoruz ki API'den gelen kayıtları da bulabilsin
+            await loadUserStats(currentIgn);
             await loadInvitationsAndTeam();
             subscribeToInvites();
         }
@@ -346,22 +353,42 @@
         // ==========================================
         // İSTATİSTİKLER VE RÜTBE (RANK) HESAPLAMA
         // ==========================================
-        async function loadUserStats() {
+        async function loadUserStats(userIgn) {
             try {
-                // 1. Bireysel Maç İstatistikleri Çekimi
-                const { data: pStats } = await window.supabaseClient.from('match_player_stats')
-                    .select('map_id, kills, deaths')
+                let allStats = [];
+                
+                // 1. ARAMA: Kullanıcının ID'si ile kaydedilmiş olan maçları çek (Manuel eşleştirilenler)
+                const { data: statsById } = await window.supabaseClient.from('match_player_stats')
+                    .select('map_id, kills, deaths, id')
                     .eq('user_id', currentUser.id);
+                if(statsById) allStats = [...statsById];
+
+                // 2. ARAMA: Kullanıcının IGN'i ile kaydedilmiş olan maçları çek (API üzerinden gelenler)
+                if (userIgn && userIgn !== "Belirlenmedi") {
+                    const { data: statsByIgn } = await window.supabaseClient.from('match_player_stats')
+                        .select('map_id, kills, deaths, id')
+                        .ilike('in_game_name', userIgn); // Büyük/küçük harf duyarsız arama
+                        
+                    if(statsByIgn) {
+                        // Sadece listeye henüz eklenmemiş olan (ID ile bulunmayan) kayıtları ekle
+                        statsByIgn.forEach(st => {
+                            if(!allStats.find(a => a.id === st.id)) {
+                                allStats.push(st);
+                            }
+                        });
+                    }
+                }
 
                 let totalMatches = 0;
                 let totalKills = 0;
                 let totalDeaths = 0;
 
-                if (pStats && pStats.length > 0) {
-                    const uniqueMaps = new Set(pStats.map(s => s.map_id));
+                if (allStats.length > 0) {
+                    // Kaç farklı map oynadığını bul
+                    const uniqueMaps = new Set(allStats.map(s => s.map_id));
                     totalMatches = uniqueMaps.size;
                     
-                    pStats.forEach(s => {
+                    allStats.forEach(s => {
                         totalKills += (s.kills || 0);
                         totalDeaths += (s.deaths || 0);
                     });
@@ -375,7 +402,7 @@
                 else if (totalMatches >= 20 && totalMatches < 50) { rankEl.innerText = "PROFESYONEL"; rankEl.style.color = "#ff4b4b"; rankEl.style.borderColor = "#ff4b4b"; }
                 else { rankEl.innerText = "E-SPORCU"; rankEl.style.color = "gold"; rankEl.style.borderColor = "gold"; rankEl.style.boxShadow = "0 0 10px rgba(255,215,0,0.5)"; }
 
-                // 2. Turnuva (Kabul Edilmiş Takım) Sayısı Çekimi
+                // Turnuva (Kabul Edilmiş Takım) Sayısı
                 const { data: teamStats } = await window.supabaseClient.from('application_members')
                     .select('application_id, tournament_applications(status)')
                     .eq('user_id', currentUser.id)
@@ -386,7 +413,7 @@
                     validTournaments = teamStats.filter(ts => ts.tournament_applications && ts.tournament_applications.status === 'approved').length;
                 }
 
-                // 3. Kazanma Oranı (Win Rate)
+                // Kazanma Oranı (Win Rate)
                 let winRate = "%0";
                 if (totalMatches > 0) {
                     if (totalDeaths === 0 && totalKills > 0) winRate = "%100";
@@ -404,7 +431,7 @@
         }
 
         // ==========================================
-        // GÖRKEMLİ TAKIM KARTI VEYA DAVETLER
+        // GÖRKEMLİ TAKIM KARTI VEYA DAVETLER (İSİMSİZ TAKIM HATASI ÇÖZÜLDÜ)
         // ==========================================
         async function loadInvitationsAndTeam() {
             try {
@@ -419,7 +446,9 @@
                 const title = document.getElementById('inviteSectionTitle');
 
                 if (myTeam && myTeam.tournament_applications) {
-                    const t = myTeam.tournament_applications;
+                    // İlişkili tablo dizi (array) dönüyorsa ilk elemanı al, yoksa direkt kullan
+                    const t = Array.isArray(myTeam.tournament_applications) ? myTeam.tournament_applications[0] : myTeam.tournament_applications;
+                    
                     let tStatus = t.status === 'approved' ? '<span style="color:var(--yesil-guven);">Turnuvaya Onaylandı</span>' : 'İncelemede / Kurulum Aşamasında';
                     
                     document.getElementById('notifBadge').style.display = "none";
@@ -428,7 +457,7 @@
                     list.innerHTML = `
                         <div class="active-team-card">
                             <span class="team-tag-large">${t.team_tag || 'TAG'}</span>
-                            <h3>${t.team_name || 'İsimsiz Takım'}</h3>
+                            <h3>${t.team_name || 'Belirlenmedi'}</h3>
                             <p>Durum: <b>${tStatus}</b></p>
                             <a href="takim.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
                         </div>
@@ -452,8 +481,9 @@
                     document.getElementById('notifBadge').style.display = "inline-block";
                     
                     validInvites.forEach(inv => {
-                        const teamName = inv.tournament_applications.team_name || "İsimsiz Takım";
-                        const teamTag = inv.tournament_applications.team_tag || "LOBİ";
+                        const tApp = Array.isArray(inv.tournament_applications) ? inv.tournament_applications[0] : inv.tournament_applications;
+                        const teamName = tApp.team_name || "Belirlenmedi";
+                        const teamTag = tApp.team_tag || "LOBİ";
                         const roleText = inv.role === 'main' ? 'Asil' : 'Yedek';
 
                         list.innerHTML += `
@@ -493,7 +523,7 @@
         }
 
         // ==========================================
-        // BİO VE IGN DÜZENLEME (MODALLI)
+        // BİO DÜZENLEME 
         // ==========================================
         function openBioEditModal() {
             const currentBio = document.getElementById('userBio').innerText;
@@ -511,6 +541,9 @@
             closeCustomModal('bioEditModal');
         }
 
+        // ==========================================
+        // GÜVENLİ VE BÜYÜK/KÜÇÜK HARF DUYARSIZ IGN DÜZENLEME 
+        // ==========================================
         async function openIgnEditModal() {
             const { data, error } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).single();
             if (data && data.ign_updated_at) {
@@ -527,15 +560,17 @@
         async function confirmIgnUpdate() {
             const newIgn = document.getElementById('ignInputContent').value;
             if (newIgn !== null) {
+                // Harf büyüklüğüne (capslock) müdahale etmiyoruz, sadece boşlukları siliyoruz
                 const trimmedIgn = newIgn.trim();
                 
                 if (trimmedIgn === "") return showNotification("Oyun İçi Nick boş bırakılamaz.", "error");
-                if (!trimmedIgn.includes("#")) return showNotification("Oyun İçi Nick mutlaka '#' etiketi içermelidir! (Örn: KRAL#TR1)", "error");
+                if (!trimmedIgn.includes("#")) return showNotification("Oyun İçi Nick mutlaka '#' etiketi içermelidir! (Örn: PATRON#TR1)", "error");
 
                 const parts = trimmedIgn.split("#");
                 if (parts.length !== 2 || parts[0].length < 2 || parts[1].length < 2) return showNotification("Geçersiz format! (Örn: PATRON#1234)", "error");
                 if (trimmedIgn.length > 25) return showNotification("Oyun İçi Nick en fazla 25 karakter olabilir.", "error");
 
+                // Büyük/küçük harf duyarsız benzersizlik kontrolü (ilike)
                 const { data: existingIgn } = await window.supabaseClient.from('profiles')
                     .select('ign').ilike('ign', trimmedIgn).neq('id', currentUser.id).limit(1);
 
@@ -545,13 +580,18 @@
                     .update({ ign: trimmedIgn, ign_updated_at: new Date().toISOString() }).eq('id', currentUser.id);
 
                 if (updateErr) {
+                    // Güvenlik uyarısı: RLS veya başka bir hata varsa ekrana basar
                     showNotification("IGN güncellenirken hata: " + updateErr.message, "error");
+                    console.error("Supabase Hatası:", updateErr);
                 } else {
                     const ignDisplay = document.getElementById('userIgnDisplay');
                     ignDisplay.innerText = trimmedIgn;
                     ignDisplay.style.color = "#00d2ff";
                     showNotification("Oyun İçi Nick başarıyla güncellendi!", "success");
                     closeCustomModal('ignEditModal');
+                    
+                    // İstatistikleri yeni nick ile tekrar yükle
+                    await loadUserStats(trimmedIgn);
                 }
             }
         }
@@ -577,7 +617,7 @@
             else showNotification(isChecked ? "Ticari iletişim izni onaylandı." : "Ticari iletişim izni iptal edildi.", "success");
         }
 
-        // AVATAR VE BANNER YÜKLEME
+        // AVATAR VE BANNER YÜKLEME (BANNER HATASI DÜZELTİLDİ)
         document.getElementById('avatarUpload').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -596,7 +636,9 @@
         function openBannerModal() {
             const grid = document.getElementById('bannerOptions'); grid.innerHTML = ""; 
             for(let i=1; i<=4; i++) {
-                const img = document.createElement('img'); img.src = `img/banner+.jpg`; img.className = 'banner-option';
+                const img = document.createElement('img'); 
+                img.src = `img/banner${i}.jpg`; // + yerine ${i} ile dinamik döngü sağlandı
+                img.className = 'banner-option';
                 img.onclick = async function() { 
                     document.getElementById('currentBanner').style.backgroundImage = `url('${this.src}')`;
                     closeCustomModal('bannerModal');
