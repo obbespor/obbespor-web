@@ -47,27 +47,47 @@
         .roster-box { background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(96, 29, 194, 0.3); border-radius: 16px; padding: 25px; margin: 35px 0; text-align: left; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); }
         .roster-title { color: var(--neon-mor); border-bottom: 2px solid rgba(96, 29, 194, 0.3); padding-bottom: 12px; margin-bottom: 20px; font-size: 18px; letter-spacing: 1px; text-transform: uppercase; font-weight: 900; display: flex; align-items: center; gap: 12px; }
         .roster-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+        
         @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .roster-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: linear-gradient(90deg, #111 0%, #0a0a0a 100%); border-radius: 12px; border: 1px solid #222; transition: all 0.3s ease; opacity: 0; animation: slideInUp 0.4s ease forwards; }
-        .roster-item:hover { transform: translateX(8px); border-color: var(--neon-mor); background: linear-gradient(90deg, #181818 0%, #0a0a0a 100%); box-shadow: -5px 0 20px rgba(96, 29, 194, 0.2); }
+        
+        /* --- YENİ EKLENEN/GÜNCELLENEN: GENİŞLETİLEBİLİR OYUNCU KARTI STİLLERİ --- */
+        .roster-item { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 14px 20px; background: linear-gradient(90deg, #111 0%, #0a0a0a 100%); border-radius: 12px; border: 1px solid #222; transition: all 0.3s ease; opacity: 0; animation: slideInUp 0.4s ease forwards; cursor: pointer; }
+        .roster-item:hover { border-color: var(--neon-mor); background: linear-gradient(90deg, #181818 0%, #0a0a0a 100%); box-shadow: -5px 0 20px rgba(96, 29, 194, 0.2); }
+        .roster-main { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .player-info { display: flex; align-items: center; gap: 15px; }
         .player-avatar { width: 38px; height: 38px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 2px solid #333; display: flex; justify-content: center; align-items: center; font-size: 14px; transition: 0.3s; }
-        .player-name { font-weight: 800; font-size: 15px; letter-spacing: 0.5px; }
+        .player-name { font-weight: 800; font-size: 15px; letter-spacing: 0.5px; margin-bottom: 2px; }
+        .click-hint { font-size: 10px; color: #666; display: flex; align-items: center; gap: 5px; font-weight: normal; transition: 0.3s; }
+        .roster-item.open .click-hint { color: var(--neon-mor); }
+        .roster-item.open .click-hint i { transform: rotate(180deg); }
+        
         .role-badge { font-size: 10px; padding: 4px 10px; border-radius: 30px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
         .role-captain { background: linear-gradient(135deg, var(--neon-mor), #a020f0); color: white; border: 1px solid #c77dff; }
         .role-main { background: #222; color: var(--yazi-beyaz); border: 1px solid #444; }
         .role-sub { background: transparent; color: var(--gri-yazi); border: 1px dashed #555; }
         .status-icon-box { display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); padding: 8px; border-radius: 50%; border: 1px solid #222; }
 
+        /* AÇILIR İSTATİSTİK BÖLÜMÜ */
+        .roster-stats { max-height: 0; overflow: hidden; transition: all 0.4s ease; opacity: 0; padding: 0; }
+        .roster-item.open .roster-stats { max-height: 150px; opacity: 1; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(96, 29, 194, 0.3); }
+        .stats-grid-mini { display: flex; justify-content: space-between; gap: 10px; }
+        .stat-mini-box { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid #222; border-radius: 8px; padding: 10px 5px; text-align: center; transition: 0.3s; }
+        .stat-mini-box:hover { border-color: var(--neon-mor); background: rgba(96, 29, 194, 0.1); }
+        .stat-mini-title { font-size: 10px; color: var(--gri-yazi); font-weight: 900; letter-spacing: 0.5px; margin-bottom: 5px; }
+        .stat-mini-value { font-size: 16px; font-weight: 900; color: white; }
+        .stat-mini-value.neon { color: var(--neon-mor); text-shadow: 0 0 10px rgba(96,29,194,0.5); }
+
         @media (max-width: 768px) {
             .main-content { padding: 40px 5%; }
             .action-btns { flex-direction: column; }
             .roster-box { padding: 15px; }
-            .roster-item { padding: 12px; flex-direction: row; gap: 10px; }
             .player-info { gap: 10px; }
             .player-avatar { width: 32px; height: 32px; font-size: 12px; }
             .player-name { font-size: 13px; }
             .role-badge { font-size: 9px; padding: 3px 8px; }
+            .stats-grid-mini { flex-wrap: wrap; }
+            .stat-mini-box { flex: 1 1 40%; padding: 8px; }
+            .roster-item.open .roster-stats { max-height: 250px; }
         }
     </style>
 </head>
@@ -136,6 +156,20 @@
 
     <script>
         let currentUser = null, currentDraftId = null, draftCreatedAt = null, saveTimeout = null, currentStatus = null;
+
+        // Kart açma/kapatma fonksiyonu
+        window.togglePlayerStats = function(element) {
+            const currentItem = element;
+            const isAlreadyOpen = currentItem.classList.contains('open');
+            
+            // Açık olan diğer kartları kapat
+            document.querySelectorAll('.roster-item').forEach(el => el.classList.remove('open'));
+            
+            // Eğer tıkladığımız önceden kapalıysa aç
+            if (!isAlreadyOpen) {
+                currentItem.classList.add('open');
+            }
+        };
 
         async function initPageData() {
             try {
@@ -232,6 +266,31 @@
                 .order('created_at', { ascending: true });
 
             if (members) {
+                // --- İSTATİSTİK ÇEKME VE HESAPLAMA MANTIĞI ---
+                const userIds = members.map(m => m.user_id);
+                let playerStats = {};
+                
+                try {
+                    const { data: statsData } = await window.supabaseClient
+                        .from('match_player_stats')
+                        .select('user_id, kills, deaths, assists, acs, map_id')
+                        .in('user_id', userIds);
+                        
+                    if (statsData && statsData.length > 0) {
+                        statsData.forEach(stat => {
+                            if (!playerStats[stat.user_id]) {
+                                playerStats[stat.user_id] = { kills: 0, deaths: 0, assists: 0, acsTotal: 0, mapCount: new Set() };
+                            }
+                            playerStats[stat.user_id].kills += (stat.kills || 0);
+                            playerStats[stat.user_id].deaths += (stat.deaths || 0);
+                            playerStats[stat.user_id].assists += (stat.assists || 0);
+                            playerStats[stat.user_id].acsTotal += (stat.acs || 0);
+                            if(stat.map_id) playerStats[stat.user_id].mapCount.add(stat.map_id);
+                        });
+                    }
+                } catch(e) { console.warn("İstatistik çekilemedi, varsayılan değerler gösterilecek."); }
+                // ---------------------------------------------
+
                 let html = '';
                 const mainPlayers = members.filter(m => m.role === 'main');
                 const subPlayers = members.filter(m => m.role === 'sub');
@@ -260,17 +319,54 @@
                         ? '<i class="fas fa-check" style="color: var(--yesil-guven); font-size: 16px; filter: drop-shadow(0 0 5px var(--yesil-guven));" title="Daveti Onayladı"></i>'
                         : '<i class="fas fa-hourglass-half fa-spin" style="color: var(--mavi-onay); font-size: 16px; filter: drop-shadow(0 0 5px var(--mavi-onay));" title="Onay Bekliyor"></i>';
 
+                    // --- BİREYSEL HESAPLAMALAR ---
+                    const pStat = playerStats[m.user_id] || { kills: 0, deaths: 0, assists: 0, acsTotal: 0, mapCount: new Set() };
+                    const mapsPlayed = pStat.mapCount instanceof Set ? pStat.mapCount.size : 0;
+                    
+                    const kdaStr = mapsPlayed > 0 ? `${pStat.kills} / ${pStat.deaths} / ${pStat.assists}` : "0 / 0 / 0";
+                    const avgACS = mapsPlayed > 0 ? Math.round(pStat.acsTotal / mapsPlayed) : 0;
+                    
+                    let kdRatio = "0.00";
+                    if (mapsPlayed > 0) {
+                        kdRatio = pStat.deaths > 0 ? (pStat.kills / pStat.deaths).toFixed(2) : (pStat.kills > 0 ? "Mükemmel" : "0.00");
+                    }
+
                     html += `
-                        <li class="roster-item" style="animation-delay: ${index * 0.1}s;">
-                            <div class="player-info">
-                                <div class="player-avatar" style="color: ${iconColor}; border-color: ${iconColor};">
-                                    <i class="fas fa-user"></i>
+                        <li class="roster-item" style="animation-delay: ${index * 0.1}s;" onclick="togglePlayerStats(this)">
+                            <div class="roster-main">
+                                <div class="player-info">
+                                    <div class="player-avatar" style="color: ${iconColor}; border-color: ${iconColor};">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div style="display:flex; flex-direction:column; align-items:flex-start;">
+                                        <span class="player-name" style="color: ${iconColor};">${username}</span>
+                                        <span class="click-hint">Genişletmek için tıkla <i class="fas fa-chevron-down"></i></span>
+                                    </div>
+                                    <span class="role-badge ${roleClass}">${roleText}</span>
                                 </div>
-                                <span class="player-name" style="color: ${iconColor};">${username}</span>
-                                <span class="role-badge ${roleClass}">${roleText}</span>
+                                <div class="status-icon-box">
+                                    ${statusIcon}
+                                </div>
                             </div>
-                            <div class="status-icon-box">
-                                ${statusIcon}
+                            <div class="roster-stats">
+                                <div class="stats-grid-mini">
+                                    <div class="stat-mini-box">
+                                        <div class="stat-mini-title">OYNANAN HARİTA</div>
+                                        <div class="stat-mini-value">${mapsPlayed}</div>
+                                    </div>
+                                    <div class="stat-mini-box" style="flex: 1.5;">
+                                        <div class="stat-mini-title">TOPLAM K/D/A</div>
+                                        <div class="stat-mini-value">${kdaStr}</div>
+                                    </div>
+                                    <div class="stat-mini-box">
+                                        <div class="stat-mini-title">K/D ORANI</div>
+                                        <div class="stat-mini-value neon">${kdRatio}</div>
+                                    </div>
+                                    <div class="stat-mini-box">
+                                        <div class="stat-mini-title">ORTALAMA ACS</div>
+                                        <div class="stat-mini-value neon">${avgACS}</div>
+                                    </div>
+                                </div>
                             </div>
                         </li>
                     `;
@@ -667,6 +763,23 @@
             try {
                 const logoFile = document.getElementById('teamLogo').files[0];
                 let logoUrl = "";
+                
+                if (logoFile) {
+                    const maxSzeInMB = 2;
+                    const maxSizeInBytes = maxSzeInMB * 1024 * 1024;
+                    
+                    if (logoFile.size > maxSizeInBytes) {
+                        if(typeof showNotification === 'function') {
+                            showNotification(`Hata: Yüklediğiniz logo çok büyük. Lütfen maksimum ${maxSzeInMB}MB boyutunda bir dosya seçin.`, "error");
+                        } else {
+                            alert(`Hata: Yüklediğiniz logo çok büyük. Lütfen maksimum ${maxSzeInMB}MB boyutunda bir dosya seçin.`);
+                        }
+                        
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = "BAŞVURUYU TAMAMLA VE GÖNDER";
+                        return; 
+                    }
+                }
                 
                 if(logoFile) {
                     const fileExt = logoFile.name.split('.').pop();
