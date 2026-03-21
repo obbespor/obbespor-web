@@ -222,11 +222,29 @@
             
             <div class="settings-grid">
                 <div style="display: flex; flex-direction: column; gap: 20px;">
+                    
+                    <div class="settings-box">
+                        <h4>Profil İsmini Değiştir</h4>
+                        <div class="input-group">
+                            <label>Yeni Profil İsmi</label>
+                            <input type="text" id="newUsernameInput" placeholder="Yeni isminizi girin">
+                        </div>
+                        <div class="input-group">
+                            <label>Mevcut Şifreniz (Güvenlik Onayı)</label>
+                            <input type="password" id="currentPasswordForName" placeholder="Onay için şifrenizi girin">
+                        </div>
+                        <button class="btn-primary" onclick="changeProfileName()">İsmi Güncelle</button>
+                    </div>
+
                     <div class="settings-box">
                         <h4>Şifre Değiştir</h4>
                         <div class="input-group">
                             <label>Yeni Şifre (En az 6 karakter)</label>
                             <input type="password" id="newPassword" placeholder="••••••••">
+                        </div>
+                        <div class="input-group">
+                            <label>Yeni Şifre (Tekrar)</label>
+                            <input type="password" id="newPasswordConfirm" placeholder="••••••••">
                         </div>
                         <button class="btn-primary" onclick="changePassword()">Şifreyi Güncelle</button>
                     </div>
@@ -826,17 +844,68 @@
         }
 
         // ==========================================
-        // AYARLAR VE SÖZLEŞMELER
+        // AYARLAR VE GÜVENLİK (YENİLENMİŞ)
         // ==========================================
+        
+        // ŞİFRE DEĞİŞTİRME
         async function changePassword() {
             const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('newPasswordConfirm').value;
+            
             if (newPass.length < 6) return showNotification("Şifre en az 6 karakter olmalıdır.", "error");
+            if (newPass !== confirmPass) return showNotification("Şifreler birbiriyle uyuşmuyor! Lütfen kontrol edin.", "error");
 
             const { error } = await window.supabaseClient.auth.updateUser({ password: newPass });
-            if (error) showNotification("Şifre güncellenemedi: " + error.message, "error");
-            else {
+            if (error) {
+                showNotification("Şifre güncellenemedi: " + error.message, "error");
+            } else {
                 showNotification("Şifreniz başarıyla güncellendi!", "success");
                 document.getElementById('newPassword').value = '';
+                document.getElementById('newPasswordConfirm').value = '';
+            }
+        }
+
+        // PROFİL İSMİ DEĞİŞTİRME (Şifre Onaylı)
+        async function changeProfileName() {
+            const newName = document.getElementById('newUsernameInput').value.trim();
+            const currentPass = document.getElementById('currentPasswordForName').value;
+
+            if (!newName) return showNotification("Yeni profil ismi boş bırakılamaz.", "error");
+            if (!currentPass) return showNotification("Güvenlik onayı için mevcut şifrenizi girmelisiniz.", "error");
+
+            // 1. ADIM: Şifrenin doğru olup olmadığını kontrol et (Arka planda sessizce giriş yapmayı deneriz)
+            const { error: authError } = await window.supabaseClient.auth.signInWithPassword({
+                email: currentUser.email, // Kullanıcının e-postasını mevcut oturumdan çekiyoruz
+                password: currentPass
+            });
+
+            if (authError) {
+                return showNotification("Girdiğiniz mevcut şifre yanlış. Lütfen tekrar deneyin.", "error");
+            }
+
+            // 2. ADIM: Şifre doğruysa veritabanındaki (profiles tablosu) ismini güncelle
+            const { error: updateError } = await window.supabaseClient.from('profiles')
+                .update({ username: newName })
+                .eq('id', currentUser.id);
+
+            if (updateError) {
+                showNotification("Profil ismi güncellenirken bir hata oluştu.", "error");
+                console.error("İsim Güncelleme Hatası:", updateError);
+            } else {
+                showNotification("Profil isminiz başarıyla güncellendi!", "success");
+                
+                // Ekranda görünen ismi anında değiştir
+                document.getElementById('profileNameDisplay').innerText = newName;
+                
+                // Kutuları temizle
+                document.getElementById('newUsernameInput').value = '';
+                document.getElementById('currentPasswordForName').value = '';
+                
+                // Tarayıcı önbelleğini (Cache) güncelle ki sayfayı yenileyince eski isim gelmesin
+                const cacheKey = 'obb_profile_cache';
+                const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                cachedProfile.username = newName;
+                localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
             }
         }
 
