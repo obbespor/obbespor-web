@@ -29,25 +29,28 @@
         .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; outline: none; transition: 0.3s; }
         .input-group input:focus { border-color: var(--neon-mor); }
         
+        /* Tarih seçici ikonunu karanlık temaya uygun hale getirmek için */
+        input[type="date"] { color-scheme: dark; }
+        
         /* ŞİFREMİ UNUTTUM BUTONU STİLİ */
         .forgot-pass-link { display: none; text-align: right; margin-top: -10px; margin-bottom: 20px; font-size: 12px; font-weight: bold; color: var(--neon-mor); text-decoration: none; transition: 0.3s; cursor: pointer; }
         .forgot-pass-link:hover { text-shadow: 0 0 10px var(--neon-mor); }
 
-        /* KVKK CHECKBOX STİLLERİ */
-        .kvkk-group { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px; }
-        .kvkk-group input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--neon-mor); margin-top: 2px; }
-        .kvkk-label { font-size: 12px; color: var(--gri-yazi); line-height: 1.4; }
+        /* SÖZLEŞME CHECKBOX STİLLERİ */
+        .kvkk-group { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 15px; }
+        .kvkk-group input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--neon-mor); margin-top: 2px; flex-shrink: 0; }
+        .kvkk-label { font-size: 12px; color: var(--gri-yazi); line-height: 1.4; margin: 0; }
         .kvkk-link { color: var(--neon-mor); font-weight: bold; text-decoration: underline; cursor: pointer; transition: 0.3s; }
         .kvkk-link:hover { text-shadow: 0 0 10px var(--neon-mor); color: #fff; }
 
-        .register-btn { width: 100%; padding: 15px; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-bottom: 20px; }
+        .register-btn { width: 100%; padding: 15px; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-bottom: 20px; margin-top: 10px; }
         .register-btn:hover:not(:disabled) { transform: scale(1.02); box-shadow: 0 0 20px var(--neon-mor); }
         .register-btn:disabled { opacity: 0.7; cursor: not-allowed; }
         
         .auth-toggle-area { text-align: center; border-top: 1px solid #222; padding-top: 20px; }
         .switch-btn { background: transparent; border: 1px solid #23083e; color: var(--neon-mor); padding: 8px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
 
-        /* KVKK MODAL STİLLERİ */
+        /* SÖZLEŞME MODAL STİLLERİ */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 20px; }
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 12px; width: 100%; max-width: 600px; max-height: 80vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
@@ -93,6 +96,12 @@
                         <label>Telefon</label>
                         <input type="tel" id="phone" placeholder="05XX XXX XX XX">
                     </div>
+                    
+                    <div class="input-group" id="dobGroup">
+                        <label>Doğum Tarihi</label>
+                        <input type="date" id="dob">
+                    </div>
+
                     <div class="input-group">
                         <label>Şifre</label>
                         <input type="password" id="mainPass" placeholder="••••••••" required minlength="6">
@@ -105,10 +114,18 @@
                         <input type="password" id="confirmPass" placeholder="••••••••" required>
                     </div>
 
-                    <div class="kvkk-group" id="kvkkGroup">
-                        <input type="checkbox" id="kvkkCheck">
-                        <label for="kvkkCheck" class="kvkk-label">
-                            <span class="kvkk-link" onclick="openKvkkModal()">KVKK Metni ve Kullanıcı Sözleşmesi</span>'ni okudum, anladım ve onaylıyorum. *
+                    <div class="kvkk-group" id="kvkkBox1">
+                        <input type="checkbox" id="kvkkCheck1">
+                        <label for="kvkkCheck1" class="kvkk-label">
+                            <span class="kvkk-link" onclick="openDocModal('kvkk')">KVKK Metni</span> ve 
+                            <span class="kvkk-link" onclick="openDocModal('riza')">Açık Rıza Metni</span>'ni okudum ve onaylıyorum. *
+                        </label>
+                    </div>
+
+                    <div class="kvkk-group" id="kvkkBox2">
+                        <input type="checkbox" id="kvkkCheck2">
+                        <label for="kvkkCheck2" class="kvkk-label">
+                            <span class="kvkk-link" onclick="openDocModal('sozlesme')">Kullanıcı Sözleşmesi</span>'ni okudum, anladım ve kabul ediyorum. *
                         </label>
                     </div>
 
@@ -124,27 +141,14 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="kvkkModal" onclick="closeKvkkModal(event)">
+    <div class="modal-overlay" id="docModal" onclick="closeDocModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <span class="close-btn" onclick="closeKvkkModal(event)">&times;</span>
+            <span class="close-btn" onclick="closeDocModal(event)">&times;</span>
             <div class="modal-header">
-                <h2>KVKK VE KULLANICI SÖZLEŞMESİ</h2>
+                <h2 id="docModalTitle">SÖZLEŞME BAŞLIĞI</h2>
             </div>
-            <div class="modal-body">
-                <h4>1. Taraflar ve Amaç</h4>
-                <p>Bu metin, OBB E-SPORTS platformuna kayıt olan kullanıcıların kişisel verilerinin işlenmesi, saklanması ve korunmasına ilişkin şartları düzenler. 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) uyarınca, kişisel verileriniz yalnızca platform hizmetlerinin sunulabilmesi amacıyla işlenecektir.</p>
-                
-                <br>
-                <h4>2. İşlenen Kişisel Veriler</h4>
-                <p>Platformumuza kayıt olurken paylaştığınız e-posta adresi, kullanıcı adı ve isteğe bağlı telefon numaranız; turnuva kayıtları, takım yönetimi ve iletişim faaliyetleri kapsamında sistemlerimizde güvenle saklanmaktadır.</p>
-                
-                <br>
-                <h4>3. Kullanıcı Yükümlülükleri</h4>
-                <p>Kullanıcı, platform üzerinde hile, üçüncü parti yazılım veya topluluk kurallarına aykırı bir eylemde bulunmamayı kabul eder. Aksi takdirde OBB E-SPORTS, kullanıcının hesabını askıya alma hakkını saklı tutar.</p>
-                
-                <br>
-                <p style="color: var(--neon-mor); font-style: italic;">* İçeriği detaylı olarak daha sonra bu kısımdan güncelleyebilirsiniz.</p>
-            </div>
+            <div class="modal-body" id="docModalBody">
+                </div>
         </div>
     </div>
 
@@ -157,21 +161,64 @@
     <script src="js/app.js"></script>
 
     <script>
+        // SÖZLEŞME İÇERİKLERİ (Yarın burayı kendi metinlerinle değiştirebilirsin)
+        const documentContents = {
+            kvkk: {
+                title: "KVKK AYDINLATMA METNİ",
+                body: `
+                    <h4>1. Veri Sorumlusu</h4>
+                    <p>OBB E-SPORTS platformu olarak kişisel verilerinizin güvenliğine önem veriyoruz...</p><br>
+                    <h4>2. İşlenen Veriler</h4>
+                    <p>Kayıt esnasında alınan bilgileriniz (e-posta, kullanıcı adı, tel no) sadece sistem işleyişi için kullanılmaktadır. <b>Doğum tarihiniz veri tabanına kaydedilmemektedir.</b> Sadece yaş doğrulama amacıyla anlık olarak işlenir.</p>
+                `
+            },
+            riza: {
+                title: "AÇIK RIZA METNİ",
+                body: `
+                    <h4>Onay Beyanı</h4>
+                    <p>OBB E-SPORTS platformuna kayıt olarak, sağladığım e-posta ve iletişim kanalları üzerinden turnuva güncellemeleri, duyurular ve bilgilendirmeler amacıyla benimle iletişime geçilmesine özgür irademle açık rıza gösteriyorum.</p>
+                `
+            },
+            sozlesme: {
+                title: "KULLANICI SÖZLEŞMESİ",
+                body: `
+                    <h4>1. Taraflar ve Amaç</h4>
+                    <p>Bu sözleşme, OBB E-SPORTS platformuna kayıt olan üyelerin uyması gereken kuralları kapsar.</p><br>
+                    <h4>2. Kurallar</h4>
+                    <p>Kullanıcılar hile yapmamayı, üçüncü parti yazılımlar kullanmamayı ve topluluk kurallarına saygı göstermeyi kabul ederler.</p>
+                `
+            }
+        };
+
+        // MODAL AÇMA/KAPAMA FONKSİYONLARI
+        function openDocModal(docType) {
+            document.getElementById('docModalTitle').innerText = documentContents[docType].title;
+            document.getElementById('docModalBody').innerHTML = documentContents[docType].body;
+            
+            document.getElementById('docModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDocModal(e) {
+            if (!e || e.target.id === 'docModal' || e.target.classList.contains('close-btn')) {
+                document.getElementById('docModal').classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
         // SAYFA YÜKLENDİĞİNDE ÖNBELLEK (LOCALSTORAGE) KONTROLÜ
         document.addEventListener('DOMContentLoaded', () => {
             const hasRegistered = localStorage.getItem('obb_has_registered');
             if (hasRegistered === 'true') {
-                // Eğer daha önce kayıt olduysa Giriş Yap ekranını varsayılan yap
-                toggleAuth(true); 
+                toggleAuth(true); // Giriş yap modunda aç
             }
         });
 
-        // EKRAN DEĞİŞTİRME FONKSİYONU
-        // forceLogin parametresi true gelirse direkt giriş ekranına geçer
+        // EKRAN DEĞİŞTİRME FONKSİYONU (Kayıt Ol <-> Giriş Yap)
         function toggleAuth(forceLogin = false) {
             let isReg;
             if (forceLogin) {
-                isReg = true; // true demek: Şu an kayıt ekranında, giriş ekranına geçir demek
+                isReg = true; 
             } else {
                 isReg = document.getElementById('submitBtn').innerText === "HESABI OLUŞTUR";
             }
@@ -182,29 +229,19 @@
             document.getElementById('switchBtn').innerText = isReg ? "KAYIT OL" : "GİRİŞ YAP";
             document.getElementById('toggleText').innerText = isReg ? "Henüz bir hesabın yok mu?" : "Zaten bir hesabın var mı?";
             
-            // "Şifremi unuttum" sadece Giriş Yap ekranında görünür
-            ['userGroup', 'phoneGroup', 'confirmPassGroup', 'kvkkGroup'].forEach(id => document.getElementById(id).style.display = isReg ? "none" : "block");
-            
-            // Flex yapısını bozmamak için kvkkGroup'a display:flex veriyoruz (block yerine)
-            if(!isReg) document.getElementById('kvkkGroup').style.display = "flex";
+            // Kayıt alanlarını gizle/göster
+            ['userGroup', 'phoneGroup', 'dobGroup', 'confirmPassGroup', 'kvkkBox1', 'kvkkBox2'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = isReg ? "none" : (id.includes('kvkk') ? "flex" : "block");
+            });
 
             document.getElementById('forgotPassBtn').style.display = isReg ? "block" : "none";
+            
+            // Zorunlulukları (Required) ayarla
             document.getElementById('confirmPass').required = !isReg;
-            document.getElementById('kvkkCheck').required = !isReg;
-        }
-
-        // --- KVKK MODAL FONKSİYONLARI ---
-        function openKvkkModal() {
-            document.getElementById('kvkkModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeKvkkModal(e) {
-            // Eğer çarpıya tıklandıysa veya siyah alana tıklandıysa kapat
-            if (!e || e.target.id === 'kvkkModal' || e.target.classList.contains('close-btn')) {
-                document.getElementById('kvkkModal').classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
+            document.getElementById('dob').required = !isReg;
+            document.getElementById('kvkkCheck1').required = !isReg;
+            document.getElementById('kvkkCheck2').required = !isReg;
         }
 
         // --- ŞİFRE SIFIRLAMA İSTEĞİ GÖNDERME ---
@@ -248,22 +285,55 @@
             submitBtn.innerText = "İŞLEM YAPILIYOR...";
 
             if (isRegister) {
+                // 1. SÖZLEŞME KONTROLLERİ
+                const kvkk1Checked = document.getElementById('kvkkCheck1').checked;
+                const kvkk2Checked = document.getElementById('kvkkCheck2').checked;
+                if (!kvkk1Checked || !kvkk2Checked) { 
+                    showNotification("Kayıt olabilmek için tüm yasal metinleri ve sözleşmeleri onaylamalısınız!", "error"); 
+                    submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; 
+                }
+
+                // 2. ŞİFRE VE KULLANICI ADI KONTROLÜ
                 const confirmPass = document.getElementById('confirmPass').value;
                 const usernameInput = document.getElementById('username').value.trim();
-                const kvkkChecked = document.getElementById('kvkkCheck').checked;
                 
-                if (!kvkkChecked) { showNotification("Kayıt olabilmek için KVKK Sözleşmesini onaylamalısınız!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; }
                 if (password !== confirmPass) { showNotification("Şifreler uyuşmuyor!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; }
                 if (!usernameInput) { showNotification("Kullanıcı adı boş bırakılamaz!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; }
 
+                // 3. YAŞ (DOĞUM TARİHİ) KONTROLÜ (Veritabanına kaydedilmez)
+                const dobVal = document.getElementById('dob').value;
+                if (!dobVal) {
+                    showNotification("Lütfen doğum tarihinizi giriniz.", "error"); 
+                    submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; 
+                }
+                
+                const dobDate = new Date(dobVal);
+                const today = new Date();
+                let age = today.getFullYear() - dobDate.getFullYear();
+                const m = today.getMonth() - dobDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) { age--; }
+
+                if (age < 15) {
+                    showNotification("OBB E-SPORTS platformuna kayıt olabilmek için en az 15 yaşında olmalısınız.", "error");
+                    submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; 
+                }
+
+                // 4. KULLANICI ADI MÜKERRERLİK KONTROLÜ
                 const { data: existingUsers } = await window.supabaseClient.from('profiles').select('username').ilike('username', usernameInput).limit(1);
                 if (existingUsers && existingUsers.length > 0) {
                     showNotification("Bu kullanıcı adı zaten alınmış!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return;
                 }
 
-                // Supabase Kayıt İşlemi
+                // 5. SUPABASE KAYIT İŞLEMİ (Sadece username ve phone gönderilir, yaş GÖNDERİLMEZ)
                 const { data, error } = await window.supabaseClient.auth.signUp({
-                    email: email, password: password, options: { data: { username: usernameInput, phone: document.getElementById('phone').value } }
+                    email: email, 
+                    password: password, 
+                    options: { 
+                        data: { 
+                            username: usernameInput, 
+                            phone: document.getElementById('phone').value 
+                        } 
+                    }
                 });
 
                 if (error) {
@@ -287,9 +357,7 @@
                         showNotification("Giriş başarısız. Lütfen bilgilerinizi kontrol edin.", "error");
                     }
                 } else { 
-                    // GİRİŞ BAŞARILI OLURSA DA ÖNBELLEĞE KAYDET (Farklı tarayıcıdan girdiyse diye)
                     localStorage.setItem('obb_has_registered', 'true');
-                    
                     showNotification("Giriş yapıldı!", "success"); 
                     setTimeout(() => window.location.href = "index.html", 1000); 
                 }
