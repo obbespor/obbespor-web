@@ -438,7 +438,7 @@
         // ==========================================
         async function loadInvitationsAndTeam() {
             try {
-                // 1. Önce kullanıcının sistemdeki tüm davet ve üyeliklerini al (İlişkili tablo beklemiyoruz)
+                // 1. Önce kullanıcının sistemdeki tüm davet ve üyeliklerini al
                 const { data: memberships, error } = await window.supabaseClient.from('application_members')
                     .select('*')
                     .eq('user_id', currentUser.id);
@@ -459,7 +459,6 @@
                 const activeTeam = memberships.find(m => m.status === 'accepted');
                 
                 if (activeTeam) {
-                    // Takım tablosuna BİZZAT gidip o takımı buluyoruz (İsimsiz takım hatasının sonu)
                     const { data: teamData } = await window.supabaseClient.from('tournament_applications')
                         .select('team_name, team_tag, status')
                         .eq('id', activeTeam.application_id)
@@ -477,7 +476,7 @@
                                 <a href="takim.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
                             </div>
                         `;
-                        return; // Takımı varsa bekleyen davetleri gösterme
+                        return; 
                     }
                 }
 
@@ -489,7 +488,6 @@
                     badge.style.display = "inline-block";
                     
                     for (const inv of pendingInvites) {
-                        // Davet atan takımların adını BİZZAT tablodan bul
                         const { data: tData } = await window.supabaseClient.from('tournament_applications')
                             .select('team_name, team_tag')
                             .eq('id', inv.application_id)
@@ -637,19 +635,40 @@
             else showNotification(isChecked ? "Ticari iletişim izni onaylandı." : "Ticari iletişim izni iptal edildi.", "success");
         }
 
-        // AVATAR VE BANNER YÜKLEME 
+        // ==========================================
+        // OPTİMİZE EDİLMİŞ AVATAR YÜKLEME (ÇÖP KORUMASI EKLENDİ)
+        // ==========================================
         document.getElementById('avatarUpload').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
             if (file.size > 2 * 1024 * 1024) return showNotification("Dosya 2MB'den küçük olmalı.", "error");
+            
             document.getElementById('userAvatar').src = URL.createObjectURL(file);
-            const ext = file.name.split('.').pop();
+            
+            const ext = file.name.split('.').pop().toLowerCase();
             const path = `${currentUser.id}/profil_resmi.${ext}`;
-            const { error } = await window.supabaseClient.storage.from('avatars').upload(path, file, { upsert: true, cacheControl: '0' });
+
+            // Eski dosyaları acımasızca temizle
+            await window.supabaseClient.storage.from('avatars').remove([
+                `${currentUser.id}/profil_resmi.jpg`,
+                `${currentUser.id}/profil_resmi.jpeg`,
+                `${currentUser.id}/profil_resmi.png`,
+                `${currentUser.id}/profil_resmi.webp`,
+                `${currentUser.id}/profil_resmi.gif`
+            ]);
+
+            const { error } = await window.supabaseClient.storage.from('avatars').upload(path, file, { 
+                upsert: true, 
+                cacheControl: '0' 
+            });
+            
             if (!error) {
                 const { data } = window.supabaseClient.storage.from('avatars').getPublicUrl(path);
-                await window.supabaseClient.from('profiles').update({ avatar_url: data.publicUrl.split('?')[0] }).eq('id', currentUser.id);
-                showNotification("Profil resmi güncellendi!", "success");
+                const cleanUrl = data.publicUrl.split('?')[0];
+                await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
+                showNotification("Profil resmi başarıyla güncellendi!", "success");
+            } else {
+                showNotification("Profil resmi yüklenirken hata oluştu: " + error.message, "error");
             }
         });
 
