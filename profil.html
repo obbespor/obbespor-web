@@ -25,7 +25,19 @@
         .profile-avatar { width: 150px; height: 150px; border-radius: 50%; border: 5px solid var(--card-bg); background: #111; object-fit: cover; box-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
         .edit-avatar-btn { position: absolute; bottom: 5px; right: 5px; background: var(--neon-mor); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid var(--card-bg); color: white; transition: 0.3s; }
         
-        .rank-badge { display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: 800; background: rgba(96, 29, 194, 0.2); border: 1px solid var(--neon-mor); color: var(--neon-mor); margin-bottom: 15px; }
+        .rank-badge { display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: 800; background: rgba(96, 29, 194, 0.2); border: 1px solid var(--neon-mor); color: var(--neon-mor); margin-bottom: 10px; }
+        
+        /* YENİ: IGN (OYUN İÇİ NİCK) BÖLÜMÜ */
+        .ign-container { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; background: rgba(0,0,0,0.3); display: inline-flex; padding: 6px 15px; border-radius: 30px; border: 1px solid #333; }
+        .ign-label { font-size: 11px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase; }
+        .ign-value { font-size: 14px; font-weight: 900; color: #00d2ff; }
+        .ign-actions { display: flex; gap: 8px; margin-left: 5px; border-left: 1px solid #444; padding-left: 8px; }
+        .ign-actions i { cursor: pointer; transition: 0.3s; font-size: 14px; }
+        .ign-actions .fa-pencil-alt { color: var(--neon-mor); }
+        .ign-actions .fa-pencil-alt:hover { color: white; transform: scale(1.2); }
+        .ign-actions .fa-info-circle { color: var(--gri-yazi); }
+        .ign-actions .fa-info-circle:hover { color: #00d2ff; transform: scale(1.2); }
+
         .bio-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; }
         .edit-bio-icon { color: var(--neon-mor); cursor: pointer; transition: 0.3s; }
         
@@ -45,41 +57,38 @@
         .btn-accept:hover { background: rgba(0, 210, 255, 0.2); }
         .btn-reject:hover { background: rgba(255, 75, 75, 0.2); }
 
-        /* Modal */
+        /* Modallar */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
         .modal-content { background: #0a0a0a; margin: 10% auto; padding: 30px; border: 2px solid var(--neon-mor); width: 90%; max-width: 800px; border-radius: 20px; position: relative; }
+        
         .banner-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
         .banner-option { width: 100%; height: 120px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; object-fit: cover; }
         .banner-option:hover { border-color: var(--neon-mor); }
 
-        /* =========================================
-           KUSURSUZ MOBİL GÖRÜNÜM OPTİMİZASYONU
-        ========================================= */
+        /* YENİ: IGN BİLGİLENDİRME MODALI STİLLERİ */
+        .ign-info-modal .modal-content { max-width: 500px; border-color: #00d2ff; text-align: left; padding: 40px; }
+        .ign-info-modal h2 { color: #00d2ff; font-size: 22px; font-weight: 900; margin-bottom: 15px; text-transform: uppercase; }
+        .ign-info-modal p { color: #ddd; font-size: 13px; line-height: 1.6; margin-bottom: 15px; }
+        .ign-info-modal ul { color: var(--gri-yazi); font-size: 13px; line-height: 1.6; padding-left: 20px; margin-bottom: 20px; }
+        .ign-info-modal ul li { margin-bottom: 8px; }
+        .ign-info-modal .warning-box { background: rgba(255, 75, 75, 0.1); border-left: 3px solid #ff4b4b; padding: 12px; font-size: 12px; color: #ff4b4b; font-weight: bold; border-radius: 4px; }
+
         @media (max-width: 768px) {
             .profile-container { padding: 15px 10px; margin: 10px auto; width: 100%; } 
-            
-            /* Banner ve Kartın Orantılanması */
             .profile-banner { height: 150px; border-radius: 15px 15px 0 0; }
             .profile-card { padding: 0 20px 25px; border-radius: 0 0 15px 15px; }
-            
-            /* Avatar Boyutu ve Hizalaması */
             .avatar-wrapper { width: 110px; height: 110px; margin: -55px auto 15px; } 
             .profile-avatar { width: 110px; height: 110px; border-width: 4px; }
             .edit-avatar-btn { width: 30px; height: 30px; font-size: 12px; bottom: 0; right: 0; }
-            
-            /* Yazıların Ekrana Sığması */
             #profileNameDisplay { font-size: 22px !important; }
             .rank-badge { font-size: 11px; padding: 4px 12px; margin-bottom: 10px; }
+            .ign-container { padding: 4px 12px; }
             .bio-container { flex-direction: column; text-align: center; gap: 5px; margin-bottom: 20px; }
             .profile-bio { font-size: 13px; line-height: 1.4; }
-            
-            /* İstatistiklerin Yan Yana Ama Derli Toplu Durması */
             .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; } 
             .stat-item { padding: 10px 5px; border-radius: 10px; border-bottom-width: 1px; }
             .stat-value { font-size: 18px; }
             .stat-label { font-size: 10px; }
-            
-            /* Bildirimler ve Butonların Ferahlatılması */
             .notifications-section { padding: 20px 15px; border-radius: 15px; }
             .notif-item { flex-direction: column; align-items: flex-start; gap: 12px; padding: 15px; }
             .notif-text { font-size: 13px; line-height: 1.5; text-align: center; width: 100%; }
@@ -106,6 +115,17 @@
 
             <div class="rank-badge" id="userRank">OYUNCU</div>
             <h1 id="profileNameDisplay" style="font-size: 28px; font-weight: 900; margin-bottom: 5px;">YÜKLENİYOR...</h1>
+            
+            <div>
+                <div class="ign-container">
+                    <span class="ign-label">OYUN İÇİ NİCK:</span>
+                    <span class="ign-value" id="userIgnDisplay">Belirlenmedi</span>
+                    <div class="ign-actions">
+                        <i class="fas fa-pencil-alt" onclick="editIGN()" title="Nicki Düzenle"></i>
+                        <i class="fas fa-info-circle" onclick="openIgnInfoModal()" title="Bu nedir?"></i>
+                    </div>
+                </div>
+            </div>
             
             <div class="bio-container">
                 <p class="profile-bio" id="userBio">Açıklama yükleniyor...</p>
@@ -136,6 +156,22 @@
         </div>
     </div>
 
+    <div id="ignInfoModal" class="modal ign-info-modal">
+        <div class="modal-content">
+            <span style="position:absolute; right:20px; top:15px; cursor:pointer; font-size:24px; color:white;" onclick="closeIgnInfoModal()">&times;</span>
+            <h2>Oyun İçi Nick (IGN) Nedir?</h2>
+            <p>Platformumuzdaki kullanıcı adınız ile rekabetçi arenadaki isminiz farklı olabilir. Oyun İçi Nick (IGN), turnuvalarda ve <b>Liderlik Tablosunda</b> görünecek olan asıl oyuncu adınızdır.</p>
+            <ul>
+                <li>Oyun içi isminizi belirlerken mutlaka kimlik etiketinizi (Tag) ekleyin. <b>(Örn: KRAL#TR1)</b></li>
+                <li>Eğer bu alanı boş bırakıp bir turnuvaya katılırsanız, ilk maçınızdan sonra sistem yöneticileri (Admin) tarafından oyundaki isminiz bu alana <b>otomatik olarak</b> işlenir.</li>
+                <li>Turnuvalar arası isminizi değiştirseniz bile, başarı istatistikleriniz (KDA, ACS vb.) doğrudan profilinize bağlı kalır, sıfırlanmaz.</li>
+            </ul>
+            <div class="warning-box">
+                <i class="fas fa-exclamation-triangle"></i> DİKKAT: İsim hırsızlıklarını ve karışıklıkları önlemek amacıyla, belirlediğiniz Oyun İçi Nicki <b>ayda yalnızca 1 kez</b> değiştirebilirsiniz.
+            </div>
+        </div>
+    </div>
+
     <div id="footer-alani"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -152,13 +188,24 @@
             if (!user) return;
             currentUser = user;
 
+            // YENİ: profile tablosundan ign ve ign_updated_at verilerini de çekiyoruz.
             const { data } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).single();
             if (data) {
                 document.getElementById('profileNameDisplay').innerText = data.username || "İsimsiz";
                 document.getElementById('userBio').innerText = data.bio || "Açıklama eklenmemiş.";
+                
+                // IGN Ekranı Yansıtma
+                const ignDisplay = document.getElementById('userIgnDisplay');
+                if (data.ign) {
+                    ignDisplay.innerText = data.ign;
+                    ignDisplay.style.color = "#00d2ff"; // Doluysa mavi
+                } else {
+                    ignDisplay.innerText = "Belirlenmedi";
+                    ignDisplay.style.color = "var(--gri-yazi)"; // Boşsa gri
+                }
+
                 if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
                 
-                // Cache buster ile her seferinde resmin güncel halini göster
                 if(data.avatar_url) document.getElementById('userAvatar').src = data.avatar_url + "?t=" + Date.now();
             }
 
@@ -167,7 +214,85 @@
         }
 
         // ==========================================
-        // OPTİMİZE EDİLMİŞ AVATAR YÜKLEME (ÇÖP OLUŞTURMAZ)
+        // YENİ: IGN DÜZENLEME (1 AY KONTROLÜ)
+        // ==========================================
+        async function editIGN() {
+            // Güvenlik: Veritabanından kullanıcının en güncel ign_updated_at verisini çekiyoruz
+            const { data, error: fetchErr } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).single();
+            
+            if (fetchErr) {
+                showNotification("Bilgileriniz alınırken hata oluştu.", "error");
+                return;
+            }
+
+            // 1 Aylık (30 Gün) Değişim Süresi Kontrolü
+            if (data.ign_updated_at) {
+                const lastUpdate = new Date(data.ign_updated_at);
+                const now = new Date();
+                const diffTime = Math.abs(now - lastUpdate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays < 30) {
+                    const kalanGun = 30 - diffDays;
+                    showNotification(`Oyun İçi Nickinizi ayda sadece 1 kez değiştirebilirsiniz. Kalan süre: ${kalanGun} gün.`, "error");
+                    return;
+                }
+            }
+
+            const currentIgn = data.ign && data.ign !== "Belirlenmedi" ? data.ign : "";
+            const newIgn = prompt("Yeni Oyun İçi Nickinizi (IGN) girin (Örn: KRAL#TR1):", currentIgn);
+            
+            if (newIgn !== null) {
+                const trimmedIgn = newIgn.trim();
+                
+                if (trimmedIgn === "") {
+                    showNotification("Oyun İçi Nick boş bırakılamaz.", "error");
+                    return;
+                }
+                
+                if (trimmedIgn.length > 25) {
+                    showNotification("Oyun İçi Nick en fazla 25 karakter olabilir.", "error");
+                    return;
+                }
+
+                // Veritabanını güncelle ve tarihi kaydet
+                const { error: updateErr } = await window.supabaseClient.from('profiles')
+                    .update({ 
+                        ign: trimmedIgn, 
+                        ign_updated_at: new Date().toISOString() 
+                    })
+                    .eq('id', currentUser.id);
+
+                if (updateErr) {
+                    // Unique constraint (isim hırsızlığı) hatası yakalama
+                    if (updateErr.code === '23505') {
+                        showNotification("Bu Oyun İçi Nick başka bir oyuncu tarafından kullanılıyor!", "error");
+                    } else {
+                        showNotification("IGN güncellenirken hata: " + updateErr.message, "error");
+                    }
+                } else {
+                    const ignDisplay = document.getElementById('userIgnDisplay');
+                    ignDisplay.innerText = trimmedIgn;
+                    ignDisplay.style.color = "#00d2ff";
+                    showNotification("Oyun İçi Nick başarıyla güncellendi!", "success");
+                }
+            }
+        }
+
+        function openIgnInfoModal() {
+            document.getElementById('ignInfoModal').style.display = "block";
+            // Hafif gecikme ile animasyonu tetikle
+            setTimeout(() => { document.getElementById('ignInfoModal').classList.add('active'); }, 10);
+        }
+        
+        function closeIgnInfoModal() {
+            document.getElementById('ignInfoModal').classList.remove('active');
+            setTimeout(() => { document.getElementById('ignInfoModal').style.display = "none"; }, 300);
+        }
+
+
+        // ==========================================
+        // AVATAR YÜKLEME 
         // ==========================================
         document.getElementById('avatarUpload').addEventListener('change', async (e) => {
             const file = e.target.files[0];
@@ -176,20 +301,16 @@
 
             document.getElementById('userAvatar').src = URL.createObjectURL(file);
             
-            // DİKKAT: Artık Date.now() kullanmıyoruz. Sabit bir isim veriyoruz ki hep eskisini ezsin.
-            // Dosya uzantısını koruyoruz (örn: .jpg veya .png)
             const ext = file.name.split('.').pop();
             const path = `${currentUser.id}/profil_resmi.${ext}`;
 
-            // UPSERT komutu ile eski resmi silip üstüne yazmasını söylüyoruz
             const { error } = await window.supabaseClient.storage.from('avatars').upload(path, file, {
                 upsert: true,
-                cacheControl: '0' // Tarayıcının eski resmi hatırlamasını engeller
+                cacheControl: '0' 
             });
             
             if (!error) {
                 const { data } = window.supabaseClient.storage.from('avatars').getPublicUrl(path);
-                // Resmi veritabanına kaydederken sonuna yine bir cache buster koyuyoruz ki ekranda anında güncellensin
                 const cleanUrl = data.publicUrl.split('?')[0]; 
                 await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
                 showNotification("Profil resmi güncellendi!", "success");
@@ -199,7 +320,7 @@
         });
 
         // ==========================================
-        // GÜVENLİ BİO DÜZENLEME (150 KARAKTER SINIRI)
+        // GÜVENLİ BİO DÜZENLEME 
         // ==========================================
         async function editBio() {
             const el = document.getElementById('userBio');
@@ -208,7 +329,7 @@
             if (newBio !== null) {
                 if (newBio.length > 150) {
                     showNotification("Biyografi çok uzun! En fazla 150 karakter yazabilirsiniz.", "error");
-                    return; // Sınır aşıldıysa işlemi iptal et, veritabanını yorma
+                    return; 
                 }
                 
                 el.innerText = newBio;
