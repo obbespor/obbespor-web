@@ -22,20 +22,13 @@
 
         .profile-card { background: var(--card-bg); border: 1px solid #222; border-top: none; border-radius: 0 0 20px 20px; padding: 0 40px 40px; position: relative; text-align: center; margin-bottom: 30px; border-top: 2px solid var(--neon-mor); border-top-left-radius: 20px; border-top-right-radius: 20px; }
         
-        /* PP'NİN ARKASINA VE KARTIN ÜSTÜNE MOR IŞIMA VE KAVİSLİ GEÇİŞ */
+        /* PP'NİN ARKASINA VE KARTIN ÜSTÜNE MOR IŞIMA VE KAVİSLİ GEÇİŞ (Estetik için bırakıldı) */
         .profile-card::before { content: ''; position: absolute; top: -75px; left: 50%; transform: translateX(-50%); width: 170px; height: 170px; background: rgba(96, 29, 194, 0.1); border-radius: 50%; filter: blur(20px); z-index: -1; box-shadow: 0 0 30px var(--neon-mor); }
 
         .avatar-wrapper { position: relative; width: 150px; height: 150px; margin: -75px auto 20px; }
         .profile-avatar { width: 150px; height: 150px; border-radius: 50%; border: 5px solid var(--card-bg); background: #111; object-fit: cover; box-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
         .edit-avatar-btn { position: absolute; bottom: 5px; right: 5px; background: var(--neon-mor); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid var(--card-bg); color: white; transition: 0.3s; z-index: 1000; }
         
-        /* YENİ DETAYLAR VE RANK SİMGELERİ */
-        .profile-detail { position: absolute; top: 10px; display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase; z-index: 1001; }
-        .left-detail { left: 40px; }
-        .right-detail { right: 40px; }
-        .rank-icon { color: gold; font-size: 14px; }
-        .trophy-icon { color: silver; font-size: 14px; }
-
         .rank-badge { display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: 800; background: rgba(96, 29, 194, 0.2); border: 1px solid var(--neon-mor); color: var(--neon-mor); margin-bottom: 10px; transition: 0.3s; text-transform: uppercase; }
         
         /* IGN BÖLÜMÜ */
@@ -96,9 +89,9 @@
         .legal-status.approved { color: var(--yesil-guven); font-weight: bold; display: flex; align-items: center; gap: 5px; }
         .legal-status.approved i { font-size: 16px; }
         
-        /* TIKLANABİLİR SÖZLEŞME LİNKLERİ */
-        .clickable-doc { color: #ddd; text-decoration: underline; cursor: pointer; transition: 0.3s; }
-        .clickable-doc:hover { color: var(--neon-mor); text-shadow: 0 0 10px var(--neon-mor); }
+        /* TIKLANABİLİR SÖZLEŞME LİNKLERİ (Belirginleştirildi) */
+        .clickable-doc { color: var(--neon-mor); text-decoration: underline; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .clickable-doc:hover { color: #fff; text-shadow: 0 0 10px var(--neon-mor); }
 
         /* TİCARİ ONAY TOGGLE (SWITCH) */
         .switch-container { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; font-size: 13px; }
@@ -151,12 +144,6 @@
             .profile-avatar { width: 110px; height: 110px; border-width: 4px; }
             .edit-avatar-btn { width: 30px; height: 30px; font-size: 12px; bottom: 0; right: 0; }
             
-            /* Mobil Uyumlu Detaylar */
-            .profile-detail { font-size: 9px; top: 5px; gap: 5px; }
-            .left-detail { left: 10px; }
-            .right-detail { right: 10px; }
-            .rank-icon, .trophy-icon { font-size: 11px; }
-
             #profileNameDisplay { font-size: 22px !important; }
             .rank-badge { font-size: 11px; padding: 4px 12px; margin-bottom: 10px; }
             .ign-container { padding: 4px 12px; flex-wrap: wrap;}
@@ -185,15 +172,6 @@
         </div>
 
         <div class="profile-card">
-            <div class="profile-detail left-detail">
-                <i class="fas fa-crown rank-icon"></i>
-                <span class="rank-name">Valorant Kralı</span>
-            </div>
-            <div class="profile-detail right-detail">
-                <i class="fas fa-trophy trophy-icon"></i>
-                <span class="trophy-count">5 Turnuva Kupası</span>
-            </div>
-
             <div class="avatar-wrapper">
                 <img src="img/obblogo.png" alt="Avatar" class="profile-avatar" id="userAvatar">
                 <label for="avatarUpload" class="edit-avatar-btn"><i class="fas fa-camera"></i></label>
@@ -365,7 +343,7 @@
     <script>
         let currentUser = null;
 
-        // PDF DOSYALARINDAN ALINAN PROFESYONEL SÖZLEŞME İÇERİKLERİ
+        // İŞTE SÖZLEŞME YAZILARININ OLDUĞU YER BURASI! AŞAĞIDAKİ ALANDAN İÇERİKLERİ DEĞİŞTİREBİLİRSİN.
         const documentContents = {
             kvkk: {
                 title: "KİŞİSEL VERİLERİN İŞLENMESİNE İLİŞKİN AYDINLATMA METNİ",
@@ -536,7 +514,6 @@
             let currentIgn = "Belirlenmedi"; 
             
             if (data) {
-                // Arka planda veriyi çekince DOM'u ve Cache'i güncelle (Stale-while-revalidate mantığı)
                 document.getElementById('profileNameDisplay').innerText = data.username || "İsimsiz";
                 document.getElementById('userBio').innerText = data.bio || "Açıklama eklenmemiş.";
                 
