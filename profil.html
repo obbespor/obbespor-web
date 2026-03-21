@@ -16,7 +16,7 @@
     
     <style>
         .profile-container { max-width: 1000px; margin: 40px auto; padding: 20px; flex: 1; }
-        .profile-banner { height: 250px; background: url('img/banner1.jpg') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
+        .profile-banner { height: 250px; background: url('img/banner+.jpg') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
         .edit-banner-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 15px; border-radius: 5px; border: 1px solid var(--neon-mor); cursor: pointer; font-size: 12px; transition: 0.3s; }
         .edit-banner-btn:hover { background: var(--neon-mor); }
 
@@ -117,7 +117,6 @@
             .avatar-wrapper { width: 110px; height: 110px; margin: -55px auto 15px; } 
             .profile-avatar { width: 110px; height: 110px; border-width: 4px; }
             .edit-avatar-btn { width: 30px; height: 30px; font-size: 12px; bottom: 0; right: 0; }
-            #profileNameDisplay { font-size: 22px !important; }
             .rank-badge { font-size: 11px; padding: 4px 12px; margin-bottom: 10px; }
             .ign-container { padding: 4px 12px; flex-wrap: wrap;}
             .bio-container { flex-direction: column; text-align: center; gap: 5px; margin-bottom: 20px; }
@@ -141,7 +140,7 @@
 
     <main class="profile-container">
         <div class="profile-banner" id="currentBanner">
-            <button class="edit-banner-btn" onclick="openCustomModal('bannerModal')"><i class="fas fa-image"></i> Kapak Değiştir</button>
+            <button class="edit-banner-btn" onclick="openBannerModal()"><i class="fas fa-image"></i> Kapak Değiştir</button>
         </div>
 
         <div class="profile-card">
@@ -153,7 +152,7 @@
 
             <div class="rank-badge" id="userRank">YÜKLENİYOR...</div>
             
-            <h1 id="profileNameDisplay" style="font-size: 28px; font-weight: 900; margin-bottom: 5px; text-transform: none;">YÜKLENİYOR...</h1>
+            <h1 id="profileNameDisplay" style="font-size: 28px; font-weight: 900; margin-bottom: 5px;">YÜKLENİYOR...</h1>
             
             <div>
                 <div class="ign-container">
@@ -320,12 +319,12 @@
             if (!user) return;
             currentUser = user;
 
-            const { data } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+            // HATA ÇÖZÜMÜ: single() yerine maybeSingle() kullanarak sistem çökmesi engellendi
+            const { data, error: profileErr } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).maybeSingle();
             
-            let currentIgn = "Belirlenmedi"; // Varsayılan değer
+            let currentIgn = "Belirlenmedi"; 
             
             if (data) {
-                // İsmin orijinal harf yapısıyla kalması ve "YÜKLENİYOR..." takılma hatası çözüldü
                 document.getElementById('profileNameDisplay').innerText = data.username || "KULLANICI";
                 document.getElementById('userBio').innerText = data.bio || "Açıklama eklenmemiş.";
                 
@@ -342,9 +341,15 @@
                 if (data.marketing_consent) {
                     document.getElementById('marketingToggle').checked = true;
                 }
+            } else {
+                // EĞER PROFİL SATIRI YOKSA (Fail-safe)
+                document.getElementById('profileNameDisplay').innerText = "KULLANICI";
+                document.getElementById('userBio').innerText = "Açıklama eklenmemiş.";
+                
+                // Arka planda profili oluşturmayı dener
+                await window.supabaseClient.from('profiles').insert({ id: user.id, username: user.user_metadata?.username || 'KULLANICI' });
             }
 
-            // İstatistikleri yüklerken IGN'i de fonksiyona gönderiyoruz ki API'den gelen kayıtları da bulabilsin
             await loadUserStats(currentIgn);
             await loadInvitationsAndTeam();
             subscribeToInvites();
@@ -357,20 +362,17 @@
             try {
                 let allStats = [];
                 
-                // 1. ARAMA: Kullanıcının ID'si ile kaydedilmiş olan maçları çek (Manuel eşleştirilenler)
                 const { data: statsById } = await window.supabaseClient.from('match_player_stats')
                     .select('map_id, kills, deaths, id')
                     .eq('user_id', currentUser.id);
                 if(statsById) allStats = [...statsById];
 
-                // 2. ARAMA: Kullanıcının IGN'i ile kaydedilmiş olan maçları çek (API üzerinden gelenler)
                 if (userIgn && userIgn !== "Belirlenmedi") {
                     const { data: statsByIgn } = await window.supabaseClient.from('match_player_stats')
                         .select('map_id, kills, deaths, id')
-                        .ilike('in_game_name', userIgn); // Büyük/küçük harf duyarsız arama
+                        .ilike('in_game_name', userIgn); 
                         
                     if(statsByIgn) {
-                        // Sadece listeye henüz eklenmemiş olan (ID ile bulunmayan) kayıtları ekle
                         statsByIgn.forEach(st => {
                             if(!allStats.find(a => a.id === st.id)) {
                                 allStats.push(st);
@@ -384,7 +386,6 @@
                 let totalDeaths = 0;
 
                 if (allStats.length > 0) {
-                    // Kaç farklı map oynadığını bul
                     const uniqueMaps = new Set(allStats.map(s => s.map_id));
                     totalMatches = uniqueMaps.size;
                     
@@ -402,7 +403,6 @@
                 else if (totalMatches >= 20 && totalMatches < 50) { rankEl.innerText = "PROFESYONEL"; rankEl.style.color = "#ff4b4b"; rankEl.style.borderColor = "#ff4b4b"; }
                 else { rankEl.innerText = "E-SPORCU"; rankEl.style.color = "gold"; rankEl.style.borderColor = "gold"; rankEl.style.boxShadow = "0 0 10px rgba(255,215,0,0.5)"; }
 
-                // Turnuva (Kabul Edilmiş Takım) Sayısı
                 const { data: teamStats } = await window.supabaseClient.from('application_members')
                     .select('application_id, tournament_applications(status)')
                     .eq('user_id', currentUser.id)
@@ -413,7 +413,6 @@
                     validTournaments = teamStats.filter(ts => ts.tournament_applications && ts.tournament_applications.status === 'approved').length;
                 }
 
-                // Kazanma Oranı (Win Rate)
                 let winRate = "%0";
                 if (totalMatches > 0) {
                     if (totalDeaths === 0 && totalKills > 0) winRate = "%100";
@@ -431,11 +430,10 @@
         }
 
         // ==========================================
-        // GÖRKEMLİ TAKIM KARTI VEYA DAVETLER (İSİMSİZ TAKIM HATASI ÇÖZÜLDÜ)
+        // GÖRKEMLİ TAKIM KARTI VEYA DAVETLER (HATASI ÇÖZÜLDÜ)
         // ==========================================
         async function loadInvitationsAndTeam() {
             try {
-                // Aktif takım kontrolü
                 const { data: myTeam } = await window.supabaseClient.from('application_members')
                     .select('tournament_applications(team_name, team_tag, status)')
                     .eq('user_id', currentUser.id)
@@ -446,7 +444,7 @@
                 const title = document.getElementById('inviteSectionTitle');
 
                 if (myTeam && myTeam.tournament_applications) {
-                    // İlişkili tablo dizi (array) dönüyorsa ilk elemanı al, yoksa direkt kullan
+                    // Yabancı Anahtarın (Foreign Key) Dizi olarak dönme hatasını çözen filtre
                     const t = Array.isArray(myTeam.tournament_applications) ? myTeam.tournament_applications[0] : myTeam.tournament_applications;
                     
                     let tStatus = t.status === 'approved' ? '<span style="color:var(--yesil-guven);">Turnuvaya Onaylandı</span>' : 'İncelemede / Kurulum Aşamasında';
@@ -465,7 +463,6 @@
                     return; 
                 }
 
-                // Takımı yoksa, bekleyen davetleri yükle
                 const { data, error } = await window.supabaseClient.from('application_members')
                     .select(`id, role, tournament_applications(team_name, team_tag)`)
                     .eq('user_id', currentUser.id)
@@ -481,6 +478,7 @@
                     document.getElementById('notifBadge').style.display = "inline-block";
                     
                     validInvites.forEach(inv => {
+                        // Burada da aynı filtreyi uyguladık
                         const tApp = Array.isArray(inv.tournament_applications) ? inv.tournament_applications[0] : inv.tournament_applications;
                         const teamName = tApp.team_name || "Belirlenmedi";
                         const teamTag = tApp.team_tag || "LOBİ";
@@ -535,7 +533,12 @@
             const newBio = document.getElementById('bioInputContent').value.trim();
             if (newBio.length > 150) return showNotification("Biyografi çok uzun!", "error");
             
-            await window.supabaseClient.from('profiles').update({ bio: newBio }).eq('id', currentUser.id);
+            const { error } = await window.supabaseClient.from('profiles').update({ bio: newBio }).eq('id', currentUser.id);
+            if (error) {
+                showNotification("Açıklama güncellenemedi: " + error.message, "error");
+                return;
+            }
+
             document.getElementById('userBio').innerText = newBio || "Açıklama eklenmemiş.";
             showNotification("Açıklama başarıyla güncellendi.", "success");
             closeCustomModal('bioEditModal');
@@ -545,7 +548,8 @@
         // GÜVENLİ VE BÜYÜK/KÜÇÜK HARF DUYARSIZ IGN DÜZENLEME 
         // ==========================================
         async function openIgnEditModal() {
-            const { data, error } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).single();
+            const { data, error } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).maybeSingle();
+            
             if (data && data.ign_updated_at) {
                 const diffDays = Math.ceil(Math.abs(new Date() - new Date(data.ign_updated_at)) / (1000 * 60 * 60 * 24));
                 if (diffDays < 30) {
@@ -560,7 +564,6 @@
         async function confirmIgnUpdate() {
             const newIgn = document.getElementById('ignInputContent').value;
             if (newIgn !== null) {
-                // Harf büyüklüğüne (capslock) müdahale etmiyoruz, sadece boşlukları siliyoruz
                 const trimmedIgn = newIgn.trim();
                 
                 if (trimmedIgn === "") return showNotification("Oyun İçi Nick boş bırakılamaz.", "error");
@@ -570,7 +573,6 @@
                 if (parts.length !== 2 || parts[0].length < 2 || parts[1].length < 2) return showNotification("Geçersiz format! (Örn: PATRON#1234)", "error");
                 if (trimmedIgn.length > 25) return showNotification("Oyun İçi Nick en fazla 25 karakter olabilir.", "error");
 
-                // Büyük/küçük harf duyarsız benzersizlik kontrolü (ilike)
                 const { data: existingIgn } = await window.supabaseClient.from('profiles')
                     .select('ign').ilike('ign', trimmedIgn).neq('id', currentUser.id).limit(1);
 
@@ -580,8 +582,7 @@
                     .update({ ign: trimmedIgn, ign_updated_at: new Date().toISOString() }).eq('id', currentUser.id);
 
                 if (updateErr) {
-                    // Güvenlik uyarısı: RLS veya başka bir hata varsa ekrana basar
-                    showNotification("IGN güncellenirken hata: " + updateErr.message, "error");
+                    showNotification("IGN güncellenirken hata oluştu! Lütfen veritabanı (RLS) ayarlarınızı kontrol edin.", "error");
                     console.error("Supabase Hatası:", updateErr);
                 } else {
                     const ignDisplay = document.getElementById('userIgnDisplay');
@@ -590,7 +591,6 @@
                     showNotification("Oyun İçi Nick başarıyla güncellendi!", "success");
                     closeCustomModal('ignEditModal');
                     
-                    // İstatistikleri yeni nick ile tekrar yükle
                     await loadUserStats(trimmedIgn);
                 }
             }
@@ -613,11 +613,11 @@
 
         async function toggleMarketingConsent(isChecked) {
             const { error } = await window.supabaseClient.from('profiles').update({ marketing_consent: isChecked }).eq('id', currentUser.id);
-            if (error) showNotification("Tercih güncellenemedi.", "error");
+            if (error) showNotification("Tercih güncellenemedi, veritabanı (RLS) ayarlarını kontrol edin.", "error");
             else showNotification(isChecked ? "Ticari iletişim izni onaylandı." : "Ticari iletişim izni iptal edildi.", "success");
         }
 
-        // AVATAR VE BANNER YÜKLEME (BANNER HATASI DÜZELTİLDİ)
+        // AVATAR VE BANNER YÜKLEME 
         document.getElementById('avatarUpload').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -635,9 +635,10 @@
 
         function openBannerModal() {
             const grid = document.getElementById('bannerOptions'); grid.innerHTML = ""; 
+            // HATALI OLARAK BOZULAN BANNER DÖNGÜSÜ DÜZELTİLDİ (SADECE banner+.jpg)
             for(let i=1; i<=4; i++) {
                 const img = document.createElement('img'); 
-                img.src = `img/banner${i}.jpg`; // + yerine ${i} ile dinamik döngü sağlandı
+                img.src = `img/banner+.jpg`; 
                 img.className = 'banner-option';
                 img.onclick = async function() { 
                     document.getElementById('currentBanner').style.backgroundImage = `url('${this.src}')`;
