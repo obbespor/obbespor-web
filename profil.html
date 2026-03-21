@@ -22,20 +22,13 @@
 
         .profile-card { background: var(--card-bg); border: 1px solid #222; border-top: none; border-radius: 0 0 20px 20px; padding: 0 40px 40px; position: relative; text-align: center; margin-bottom: 30px; border-top: 2px solid var(--neon-mor); border-top-left-radius: 20px; border-top-right-radius: 20px; }
         
-        /* PP'NİN ARKASINA VE KARTIN ÜSTÜNE MOR IŞIMA VE KAVİSLİ GEÇİŞ */
+        /* PP'NİN ARKASINA VE KARTIN ÜSTÜNE MOR IŞIMA VE KAVİSLİ GEÇİŞ (Estetik için bırakıldı) */
         .profile-card::before { content: ''; position: absolute; top: -75px; left: 50%; transform: translateX(-50%); width: 170px; height: 170px; background: rgba(96, 29, 194, 0.1); border-radius: 50%; filter: blur(20px); z-index: -1; box-shadow: 0 0 30px var(--neon-mor); }
 
         .avatar-wrapper { position: relative; width: 150px; height: 150px; margin: -75px auto 20px; }
         .profile-avatar { width: 150px; height: 150px; border-radius: 50%; border: 5px solid var(--card-bg); background: #111; object-fit: cover; box-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
         .edit-avatar-btn { position: absolute; bottom: 5px; right: 5px; background: var(--neon-mor); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid var(--card-bg); color: white; transition: 0.3s; z-index: 1000; }
         
-        /* YENİ DETAYLAR VE RANK SİMGELERİ */
-        .profile-detail { position: absolute; top: 10px; display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase; z-index: 1001; }
-        .left-detail { left: 40px; }
-        .right-detail { right: 40px; }
-        .rank-icon { color: gold; font-size: 14px; }
-        .trophy-icon { color: silver; font-size: 14px; }
-
         .rank-badge { display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: 800; background: rgba(96, 29, 194, 0.2); border: 1px solid var(--neon-mor); color: var(--neon-mor); margin-bottom: 10px; transition: 0.3s; text-transform: uppercase; }
         
         /* IGN BÖLÜMÜ */
@@ -88,13 +81,17 @@
         .input-group label { display: block; font-size: 12px; color: var(--gri-yazi); margin-bottom: 5px; font-weight: bold; }
         .input-group input { width: 100%; padding: 12px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; font-family: 'Poppins', sans-serif; outline: none; transition: 0.3s; }
         .input-group input:focus { border-color: var(--neon-mor); }
-        .btn-primary { background: var(--neon-mor); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-primary { background: var(--neon-mor); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; display: inline-block; text-align: center; }
         .btn-primary:hover { box-shadow: 0 0 15px rgba(96,29,194,0.5); transform: translateY(-2px); }
 
         .legal-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed #222; font-size: 13px; }
         .legal-item:last-child { border-bottom: none; }
         .legal-status.approved { color: var(--yesil-guven); font-weight: bold; display: flex; align-items: center; gap: 5px; }
         .legal-status.approved i { font-size: 16px; }
+        
+        /* TIKLANABİLİR SÖZLEŞME LİNKLERİ (Belirginleştirildi) */
+        .clickable-doc { color: var(--neon-mor); text-decoration: underline; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .clickable-doc:hover { color: #fff; text-shadow: 0 0 10px var(--neon-mor); }
 
         /* TİCARİ ONAY TOGGLE (SWITCH) */
         .switch-container { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; font-size: 13px; }
@@ -102,17 +99,31 @@
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 24px; }
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--mavi-onay); }
-        input:checked + .slider:before { transform: translateX(20px); }
+        .input:checked + .slider { background-color: var(--mavi-onay); }
+        .input:checked + .slider:before { transform: translateX(20px); }
 
-        /* ÖZEL MODALLAR (PROMPT YERİNE) */
+        /* ÖZEL MODALLAR */
         .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
         .modal.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal-content { background: #0a0a0a; padding: 30px; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        .modal-close { position: absolute; right: 20px; top: 15px; font-size: 24px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; }
+        
+        /* SÖZLEŞME ÖZEL MODAL STİLLERİ (Kayıt Sayfasından Aktarıldı) */
+        .doc-modal-content { max-width: 700px; max-height: 80vh; display: flex; flex-direction: column; padding: 0; }
+        .doc-modal-header { padding: 25px 25px 15px; border-bottom: 1px solid #222; }
+        .doc-modal-body { padding: 25px; overflow-y: auto; font-size: 13px; color: #ddd; line-height: 1.6; }
+        .doc-modal-body h4 { color: var(--neon-mor); margin-top: 20px; margin-bottom: 10px; font-size: 15px; border-left: 3px solid var(--neon-mor); padding-left: 10px; }
+        .doc-modal-body h4:first-child { margin-top: 0; }
+        .doc-modal-body p { margin-bottom: 15px; }
+        .doc-modal-body ul { margin-bottom: 15px; padding-left: 20px; }
+        .doc-modal-body ul li { margin-bottom: 8px; }
+        .doc-modal-body::-webkit-scrollbar { width: 6px; }
+        .doc-modal-body::-webkit-scrollbar-track { background: #111; }
+        .doc-modal-body::-webkit-scrollbar-thumb { background: var(--neon-mor); border-radius: 4px; }
+
+        .modal-close { position: absolute; right: 20px; top: 15px; font-size: 24px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; z-index: 10; }
         .modal-close:hover { color: var(--kirmizi-iptal); }
-        .modal-title { font-size: 20px; color: var(--neon-mor); font-weight: 900; margin-bottom: 15px; text-transform: uppercase; }
-        .modal-desc { font-size: 13px; color: var(--gri-yazi); margin-bottom: 20px; line-height: 1.5; }
+        .modal-title { font-size: 20px; color: var(--neon-mor); font-weight: 900; margin-bottom: 15px; text-transform: uppercase; margin: 0;}
+        .modal-desc { font-size: 13px; color: var(--gri-yazi); margin-bottom: 20px; line-height: 1.5; margin-top: 15px;}
         .warning-box { background: rgba(255, 75, 75, 0.1); border-left: 3px solid #ff4b4b; padding: 12px; font-size: 12px; color: #ff4b4b; font-weight: bold; border-radius: 4px; margin-bottom: 20px; }
         
         .banner-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
@@ -133,12 +144,6 @@
             .profile-avatar { width: 110px; height: 110px; border-width: 4px; }
             .edit-avatar-btn { width: 30px; height: 30px; font-size: 12px; bottom: 0; right: 0; }
             
-            /* Mobil Uyumlu Detaylar */
-            .profile-detail { font-size: 9px; top: 5px; gap: 5px; }
-            .left-detail { left: 10px; }
-            .right-detail { right: 10px; }
-            .rank-icon, .trophy-icon { font-size: 11px; }
-
             #profileNameDisplay { font-size: 22px !important; }
             .rank-badge { font-size: 11px; padding: 4px 12px; margin-bottom: 10px; }
             .ign-container { padding: 4px 12px; flex-wrap: wrap;}
@@ -167,15 +172,6 @@
         </div>
 
         <div class="profile-card">
-            <div class="profile-detail left-detail">
-                <i class="fas fa-crown rank-icon"></i>
-                <span class="rank-name">Valorant Kralı</span>
-            </div>
-            <div class="profile-detail right-detail">
-                <i class="fas fa-trophy trophy-icon"></i>
-                <span class="trophy-count">5 Turnuva Kupası</span>
-            </div>
-
             <div class="avatar-wrapper">
                 <img src="img/obblogo.png" alt="Avatar" class="profile-avatar" id="userAvatar">
                 <label for="avatarUpload" class="edit-avatar-btn"><i class="fas fa-camera"></i></label>
@@ -205,14 +201,13 @@
             <div class="stats-grid">
                 <div class="stat-item"><span class="stat-value" id="statMatches">0</span><span class="stat-label">Toplam Maç</span></div>
                 <div class="stat-item"><span class="stat-value" id="statWinRate">%0</span><span class="stat-label">Kazanma Oranı</span></div>
-                
                 <div class="stat-item"><span class="stat-value" id="statTotalKills">0</span><span class="stat-label">Toplam Kıll</span></div>
             </div>
         </div>
 
         <div class="notifications-section">
             <div class="notifications-header">
-                <h3 id="inviteSectionTitle"><i class="fas fa-users"></i> Takım Davetleri</h3>
+                <h3 id="inviteSectionTitle"><i class="fas fa-users"></i> Takım Durumu</h3>
                 <span class="badge" id="notifBadge" style="display: none;">0</span>
             </div>
             <div id="notificationsList">
@@ -245,18 +240,18 @@
 
                 <div class="settings-box">
                     <h4>Onaylanan Yasal Metinler</h4>
-                    <p style="font-size: 11px; color: var(--gri-yazi); margin-bottom: 15px;">Aşağıdaki zorunlu sözleşmeler kayıt esnasında tarafınızca onaylanmıştır.</p>
+                    <p style="font-size: 11px; color: var(--gri-yazi); margin-bottom: 15px;">Kayıt esnasında onayladığınız sözleşmeleri üzerine tıklayarak tekrar okuyabilirsiniz.</p>
                     
                     <div class="legal-item">
-                        <span>KVKK Aydınlatma Metni</span>
+                        <span class="clickable-doc" onclick="openDocModal('kvkk')">KVKK Aydınlatma Metni</span>
                         <span class="legal-status approved"><i class="fas fa-check-circle"></i> Onaylandı</span>
                     </div>
                     <div class="legal-item">
-                        <span>Kullanıcı Sözleşmesi</span>
+                        <span class="clickable-doc" onclick="openDocModal('sozlesme')">Kullanıcı Sözleşmesi</span>
                         <span class="legal-status approved"><i class="fas fa-check-circle"></i> Onaylandı</span>
                     </div>
                     <div class="legal-item">
-                        <span>Yayın ve İmaj Hakları</span>
+                        <span class="clickable-doc" onclick="openDocModal('yayin')">Yayın ve İmaj Hakları</span>
                         <span class="legal-status approved"><i class="fas fa-check-circle"></i> Onaylandı</span>
                     </div>
                     
@@ -276,6 +271,17 @@
             </div>
         </div>
     </main>
+
+    <div id="docModal" class="modal" onclick="closeCustomModal('docModal')">
+        <div class="modal-content doc-modal-content" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeCustomModal('docModal')">&times;</span>
+            <div class="doc-modal-header">
+                <h2 class="modal-title" id="docModalTitle">SÖZLEŞME BAŞLIĞI</h2>
+            </div>
+            <div class="doc-modal-body" id="docModalBody">
+                </div>
+        </div>
+    </div>
 
     <div id="bioEditModal" class="modal">
         <div class="modal-content">
@@ -308,16 +314,16 @@
     <div id="bannerModal" class="modal">
         <div class="modal-content" style="max-width: 800px;">
             <span class="modal-close" onclick="closeCustomModal('bannerModal')">&times;</span>
-            <div class="modal-title">Kapak Resmi Seç</div>
+            <div class="modal-title" style="padding-bottom: 15px; border-bottom: 1px solid #333;">Kapak Resmi Seç</div>
             <div class="banner-grid" id="bannerOptions"></div>
         </div>
     </div>
 
-    <div id="ignInfoModal" class="modal ign-info-modal">
+    <div id="ignInfoModal" class="modal">
         <div class="modal-content">
             <span class="modal-close" onclick="closeCustomModal('ignInfoModal')">&times;</span>
-            <h2 style="color: #00d2ff; font-size: 22px; font-weight: 900; margin-bottom: 15px;">Oyun İçi Nick (IGN) Nedir?</h2>
-            <p style="color: #ddd; font-size: 13px; line-height: 1.6; margin-bottom: 15px;">Platformumuzdaki kullanıcı adınız ile rekabetçi arenadaki isminiz farklı olabilir. Oyun İçi Nick (IGN), turnuvalarda ve <b>Liderlik Tablosunda</b> görünecek olan asıl oyuncu adınızdır.</p>
+            <div class="modal-title" style="color: #00d2ff;">Oyun İçi Nick (IGN) Nedir?</div>
+            <p style="color: #ddd; font-size: 13px; line-height: 1.6; margin-bottom: 15px; margin-top: 15px;">Platformumuzdaki kullanıcı adınız ile rekabetçi arenadaki isminiz farklı olabilir. Oyun İçi Nick (IGN), turnuvalarda ve <b>Liderlik Tablosunda</b> görünecek olan asıl oyuncu adınızdır.</p>
             <ul style="color: var(--gri-yazi); font-size: 13px; line-height: 1.6; padding-left: 20px; margin-bottom: 20px;">
                 <li style="margin-bottom: 8px;">Oyun içi isminizi belirlerken mutlaka kimlik etiketinizi (Tag) ekleyin. <b>(Örn: KRAL#TR1)</b></li>
                 <li style="margin-bottom: 8px;">Eğer bu alanı boş bırakıp bir turnuvaya katılırsanız, adminler tarafından oyundaki isminiz bu alana otomatik işlenir.</li>
@@ -337,6 +343,129 @@
     <script>
         let currentUser = null;
 
+        // İŞTE SÖZLEŞME YAZILARININ OLDUĞU YER BURASI! AŞAĞIDAKİ ALANDAN İÇERİKLERİ DEĞİŞTİREBİLİRSİN.
+        const documentContents = {
+            kvkk: {
+                title: "KİŞİSEL VERİLERİN İŞLENMESİNE İLİŞKİN AYDINLATMA METNİ",
+                body: `
+                    <h4>1. Veri Sorumlusunun Kimliği ve Temsilcisi</h4>
+                    <p>6698 sayılı Kişisel Verilerin Korunması Kanunu m. 10 ve ilgili Aydınlatma Rehberi uyarınca, OBB E-SPOR olarak, veri sorumlusu sıfatıyla, tarafınıza ait kişisel verilerin hukuka, dürüstlük kurallarına uygun, belirli, açık ve meşru amaçlarla bağlantılı, sınırlı ve ölçülü olarak işleneceğini beyan ederiz.</p>
+                    <p><strong>Merkez Adresi:</strong> Ordu Büyükşehir Belediyesi Şarkiye Mahallesi Yükçülük Sokak No:2 52100 Altınordu / ORDU<br>
+                    <strong>İletişim E-posta:</strong> obbesports@gmail.com</p>
+
+                    <h4>2. İşlenen Kişisel Veri Kategorileri</h4>
+                    <p>Platformumuz üzerinden üyelik oluşturmanız, e-spor turnuvalarına katılmanız ve topluluk içi iletişim araçlarını kullanmanız süreçlerinde aşağıdaki kişisel veri kategorileriniz tamamen veya kısmen otomatik yollarla işlenmektedir:</p>
+                    <ul>
+                        <li><strong>Kimlik ve İletişim Verileri:</strong> Ad, soyad, e-posta adresi, cep telefonu numarası ve Türkiye Cumhuriyeti kanunları kapsamındaki yasal yaş doğrulama yükümlülükleri gereği talep edilen yaş/doğum tarihi ve kimlik doğrulama statüsü bilgileri.</li>
+                        <li><strong>İşlem Güvenliği ve Cihaz Verileri:</strong> IP adresi, MAC adresi, donanım kimliği (Hardware ID / HWID), işletim sistemi mimarisi, log kayıtları, cihaz türü ve sunucu bağlantı zaman damgaları.</li>
+                        <li><strong>Müşteri İşlem ve Performans Verileri:</strong> Turnuva katılım bedellerine ilişkin finansal işlemler ve fatura bilgileri (Kredi kartı verileri Platformumuz sunucularında saklanmamakta, yalnızca PCI-DSS sertifikalı bağımsız ödeme kuruluşları üzerinden tokenize edilerek işlenmektedir).</li>
+                        <li><strong>Oyun İçi Davranış ve Telemetri Verileri:</strong> Üçüncü parti oyun geliştiricilerinin (Valorant, CS:GO, LoL vb.) sağladığı turnuva API'leri ve maç sonu istatistikleri üzerinden elde edilen oyun içi performans istatistikleri (galibiyet/mağlubiyet kayıtları, KDA vb.) ve platform içi yazılı/sesli İletişim kayıtları.</li>
+                        <li><strong>Görsel ve İşitsel Veriler:</strong> Fiziki veya çevrimiçi e-spor turnuvalarına katılımınız halinde; oyuncu avatar fotoğrafları, sesli komuta sohbet kayıtları, turnuva canlı yayınları sırasında elde edilen web kamerası görüntüleri ve müsabaka içi karakter hareketleri.</li>
+                    </ul>
+
+                    <h4>3. Kişisel Verilerin İşlenme Amaçları</h4>
+                    <p>Toplanan kişisel verileriniz, KVKK m. 4'te belirtilen genel ilkelere uygun olarak yalnızca aşağıda sayılan belirli ve meşru amaçlar dahilinde işlenmektedir:</p>
+                    <ul>
+                        <li>Kullanıcı hesaplarının oluşturulması, bireysel profillerin yönetilmesi ve platform içi iletişimin sağlanması,</li>
+                        <li>5651 sayılı İnternet Ortamında Yapılan Yayınların Düzenlenmesi Hakkında Kanun ve ilgili mevzuat kapsamında, 15 yaşından küçük bireylerin platforma kaydolmasının engellenmesi amacıyla zorunlu yaş doğrulama işlemlerinin gerçekleştirilmesi,</li>
+                        <li>Turnuva ve etkinlik katılım ücretleri gibi finansal operasyonların yürütülmesi ve faturalandırma süreçlerinin tamamlanması,</li>
+                        <li>Oyun ekosisteminin bütünlüğünü korumak adına, üçüncü parti oyunların kendi hile koruma sistemleri (Anti-Cheat) tarafından tespit edilen ihlallerin platforma yansıtılması ve platform içi siber zorbalığın önlenerek adil oyun (fair play) kurallarının tatbiki,</li>
+                        <li>E-spor liglerinin ve resmi turnuvalarının organizasyonu, adil eşleştirme (matchmaking) sistemlerinin çalıştırılması ve oyuncu sıralamalarının belirlenmesi,</li>
+                        <li>Kullanıcı uyuşmazlıklarının çözümü, teknik destek hizmetlerinin sunulması ve şikayetlerin yönetilmesi,</li>
+                        <li>Yetkili kamu kurum ve kuruluşlarından (BTK, Savcılıklar, Mahkemeler) mevzuata uygun olarak gelecek resmi ve yasal bilgi taleplerinin karşılanması.</li>
+                    </ul>
+
+                    <h4>4. Kişisel Veri Toplamanın Yöntemi ve Hukuki Sebebi</h4>
+                    <p>Kişisel verileriniz; web sitemizdeki üyelik formları, platform içi iletişim panelleri ve üçüncü parti oyun geliştiricilerinin (Riot Games, Valve vb.) sağladığı resmi turnuva API'leri aracılığıyla elektronik ortamda, kısmen veya tamamen otomatik yollarla elde edilmektedir.</p>
+                    <p>Verilerinizin işlenmesi, KVKK'nın 5. maddesinde yer alan aşağıdaki açık hukuki sebeplere dayanmaktadır:</p>
+                    <ul>
+                        <li><strong>KVKK m. 5/2-c uyarınca;</strong> "Bir sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması kaydıyla, sözleşmenin taraflarına ait kişisel verilerin işlenmesinin gerekli olması" (Kullanıcı Sözleşmesi ve Hizmet Şartlarının ifası, hesabın teknik yönetimi),</li>
+                        <li><strong>KVKK m. 5/2-ç uyarınca;</strong> "Veri sorumlusunun hukuki yükümlülüğünü yerine getirebilmesi için zorunlu olması" (5651 sayılı Kanun kapsamındaki yaş doğrulama, log tutma ve yasal bilgi sağlama yükümlülükleri),</li>
+                        <li><strong>KVKK m. 5/2-e uyarınca;</strong> "Bir hakkın tesisi, kullanılması veya korunması için veri işlemenin zorunlu olması" (Olası hukuki uyuşmazlıklarda delillerin muhafazası),</li>
+                        <li><strong>KVKK m. 5/2-f uyarınca;</strong> "İlgili kişinin temel hak ve özgürlüklerine zarar vermemek kaydıyla, veri sorumlusunun meşru menfaatleri için veri işlenmesinin zorunlu olması" (Platformun siber güvenliğinin sağlanması, haksız rekabetin önlenmesi ve adil oyun kurallarının tatbiki).</li>
+                    </ul>
+                    <p>Profesyonel e-spor etkinlikleri kapsamında reklam, pazarlama, canlı yayın ve sponsorluk amaçlarıyla görsel ve işitsel kayıtlarınızın ticari olarak kullanılması ise yalnızca tarafınızdan ayrıca alınacak Açık Rıza (KVKK m. 5/1) doğrultusunda gerçekleştirilecektir.</p>
+
+                    <h4>5. İşlenen Kişisel Verilerin Kimlere ve Hangi Amaçla Aktarılabileceği</h4>
+                    <p>Kişisel verileriniz, yukarıda belirtilen meşru amaçların gerçekleştirilmesi doğrultusunda ve KVKK'nın 8. ve 9. maddelerindeki katı koşullara riayet edilerek aktarılmaktadır:</p>
+                    <ul>
+                        <li><strong>Yurt İçi Aktarım (KVKK m. 8):</strong> Yasal yükümlülüklerimizin yerine getirilmesi amacıyla kanunen yetkili kamu kurumlarına (BTK, Adli Makamlar), ödeme işlemleri ve dolandırıcılık tespiti için BDDK lisanslı ödeme hizmeti sağlayıcılarına, finansal denetim ve beyanname süreçleri amacıyla bağımsız mali müşavirlere aktarılmaktadır.</li>
+                        <li><strong>Yurt Dışı Aktarım (KVKK m. 9):</strong> Platformumuzun kesintisiz ve küresel çapta hizmet verebilmesi amacıyla; sunucu barındırma (server hosting), bulut veri tabanı yönetimi ve iletişim/topluluk (örn: Discord) altyapısı hizmeti alınan yurt dışında mukim çok uluslu teknoloji tedarikçilerine aktarılmaktadır.</li>
+                    </ul>
+
+                    <h4>6. KVKK Madde 11 Kapsamındaki Kanuni Haklarınız</h4>
+                    <p>Kişisel veri sahibi olarak, bize dilediğiniz zaman başvurarak KVKK m. 11 kapsamındaki haklarınızı kullanabilirsiniz. Bu haklar şunlardır:</p>
+                    <ul>
+                        <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme, işlenmişse buna ilişkin detaylı bilgi talep etme,</li>
+                        <li>İşlenme amacını ve verilerin amacına uygun kullanılıp kullanılmadığını öğrenme,</li>
+                        <li>Yurt içinde veya yurt dışında kişisel verilerinizin aktarıldığı üçüncü kişi ve kurumları bilme,</li>
+                        <li>Kişisel verilerinizin eksik veya yanlış işlenmiş olması hâlinde bunların düzeltilmesini isteme,</li>
+                        <li>KVKK'nın 7. maddesinde öngörülen yasal saklama sürelerinin dolması şartıyla kişisel verilerinizin silinmesini veya yok edilmesini isteme,</li>
+                        <li>Düzeltme, silme ve yok etme işlemlerinin, verilerinizin aktarıldığı üçüncü kişilere bildirilmesini isteme,</li>
+                        <li>İşlenen verilerinizin münhasıran otomatik sistemler vasıtasıyla analiz edilmesi suretiyle aleyhinize bir sonucun ortaya çıkmasına itiraz etme,</li>
+                        <li>Kişisel verilerinizin kanuna aykırı olarak işlenmesi sebebiyle fiili bir zarara uğramanız hâlinde maddi ve manevi zararın giderilmesini talep etme.</li>
+                    </ul>
+                    <p>Bu haklarınızı kullanmak için taleplerinizi, "Veri Sorumlusuna Başvuru Usul ve Esasları Hakkında Tebliğ" uyarınca yukarıda belirtilen fiziki adresimize kimlik ispatlayıcı belgelerle birlikte yazılı olarak iletebilir, noter kanalıyla gönderebilir veya sistemimizde kayıtlı bulunan e-posta adresiniz üzerinden obbesports@gmail.com adresine elektronik posta yoluyla iletebilirsiniz.</p>
+                `
+            },
+            yayin: {
+                title: "YAYIN VE İMAJ HAKLARI AÇIK RIZA METNİ",
+                body: `
+                    <p>Kişisel Verilerin İşlenmesine İlişkin Aydınlatma Metni'ni okudum ve anladım. Katıldığım resmi e-spor liglerinde, çevrimiçi turnuvalarda veya platform içi etkinliklerde elde edilen oyun içi performans görüntülerimin, sesli iletişim kayıtlarımın (voice chat), kullanıcı adımın (nickname) ve varsa web kamerası görüntülerimin kaydedilmesine; canlı, naklen veya banttan ulusal ve uluslararası mecralarda (Twitch, YouTube vb.) yayınlanmasına; turnuva organizatörleri, sponsor markalar ve OBB E-Spor'un ticari iş ortaklarıyla reklam, pazarlama, tanıtım ve PR faaliyetleri kapsamında paylaşılmasına ve bu amaçlarla ticari olarak kullanılmasına tamamen özgür irademle açık rıza veriyorum.</p>
+                `
+            },
+            sozlesme: {
+                title: "KULLANICI VE HİZMET SÖZLEŞMESİ (TERMS OF SERVICE)",
+                body: `
+                    <h4>Madde 1. Taraflar, Sözleşmenin Kurulması ve Kapsam</h4>
+                    <p>İşbu Kullanıcı ve Hizmet Sözleşmesi ("Sözleşme"), Ordu Büyükşehir Belediyesi E-Spor (kısaca "OBB E-Spor" veya "Platform") ile www.obbesports.com internet sitesine, e-spor sunucularına veya bağlantılı dijital servislere (müştereken "Hizmetler") üye olarak kaydolan veya Hizmetleri kullanan gerçek kişi ("Oyuncu") arasında, dijital ortamda onaylanması anında akdedilmiştir.</p>
+                    <p>Platformun yasal iletişim adresi "Şarkiye Mahallesi Yükçülük Sokak No:2 52100 Altınordu / ORDU" ve resmi e-posta adresi "obbesports@gmail.com" olarak belirlenmiştir. Oyuncu, kayıt formunda yer alan "Kullanıcı Sözleşmesini okudum ve kabul ediyorum" butonuna tıkladığı anda, bu Sözleşmedeki tüm hukuki, mali ve cezai şartları gayrikabili rücu (geri alınamaz) olarak kabul ettiğini beyan eder.</p>
+
+                    <h4>Madde 2. Yasal Yaş Sınırı, Kayıt Şartları ve Kimlik Doğrulama Yükümlülüğü</h4>
+                    <p><strong>2.1. Yasal Yaş Sınırı:</strong> Türkiye Cumhuriyeti kanunlarında yer alan emredici çocuk koruma düzenlemeleri ve ilgili mevzuat uyarınca, Platforma kaydolabilmek ve Hizmetleri kullanabilmek için Kullanıcının 15 (on beş) yaşını doldurmuş olması zorunludur. 18 (on sekiz) yaşını doldurmamış Oyuncuların platform içi işlemleri, turnuva kayıtları ve olası ödül alımları için yasal veli/vasisinin yazılı veya dijital (e-posta/SMS doğrulama) onayını sunması şarttır. Bu onayın eksikliğinden kaynaklanan hukuki ve mali sorumluluk tamamen Oyuncu'ya ve yasal temsilcisine aittir.</p>
+                    <p><strong>2.2. Resmi Yaş Doğrulama Süreci:</strong> Platform, yasal yaş sınırlarına uyulduğunu teyit etmek amacıyla, Kullanıcının sisteme kaydolduğu esnada veya turnuva süreçlerinde kimlik ibrazı veya dijital doğrulama yöntemleri talep etme hakkına sahiptir. Kimlik doğrulama işlemini tamamlamayan, 15 yaşından küçük olduğu tespit edilen veya gerekli veli/vasi onayını sunamayan kişilerin hesapları derhal ve ön bildirimsiz olarak kalıcı şekilde kapatılacak, elde edilen tüm turnuva hakları ve hesap içi kazanımlar iptal edilecektir.</p>
+                    <p><strong>2.3. Hesap Güvenliği ve Devir Yasağı:</strong> Kullanıcı, platform hesabı için belirlediği şifrenin gizliliğinden ve hesabında gerçekleştirilen tüm eylemlerden müteselsilen ve tek başına sorumludur. Hesabın, hesap içi verilerin veya sıralama/lig (rank) derecelerinin üçüncü bir kişiye devredilmesi, satılması, kiralanması veya ortak kullanılması (account sharing/boosting) kesinlikle yasaktır ve derhal fesih nedenidir.</p>
+
+                    <h4>Madde 3. Sınırlı Kullanım Lisansı ve Fikri Mülkiyet Haklarının Korunması</h4>
+                    <p><strong>3.1. Sınırlı Lisans:</strong> Platform, Kullanıcıya yalnızca işbu Sözleşme şartlarına katı bir şekilde uyması kaydıyla; Hizmetlere erişmesi, oyunları oynaması ve kişisel, ticari olmayan amaçlarla kullanması için münhasır olmayan, devredilemez, alt lisanslanamaz, iptal edilebilir ve sınırlı bir dijital lisans verir.</p>
+                    <p><strong>3.2. Fikri Mülkiyetin İhlali:</strong> Platform'un kendi web sitesi tasarımı, logoları, OBB E-Spor markası, yayınları, görsel arayüzleri ve ürettiği özgün içeriklerin tüm fikri ve sınai mülkiyet hakları münhasıran Platform'a aittir. Kullanıcı, Hizmetlerin hiçbir parçasını kopyalayamaz, kiralayamaz, değiştiremez veya izinsiz ticari amaçla kullanamaz. Turnuvaları düzenlenen üçüncü parti oyunların (Valorant, CS:GO, LOL vb.) oyun motorları, karakterleri, müzikleri ve hikaye (lore) unsurları ilgili oyun geliştiricilerine ait olup, Platform yalnızca turnuva düzenleyici sıfatıyla hareket etmektedir.</p>
+
+                    <h4>Madde 4. Adil Oyun (Fair Play), Hile Koruması ve Üçüncü Parti Yazılım Yasağı</h4>
+                    <p>Platform üzerinden düzenlenen turnuvalarda ve etkinliklerde adil rekabet esastır. Platform, rekabetçi e-spor ekosistemini korumak ve tüm oyuncular için manipülasyondan uzak bir ortam sağlamakla yükümlüdür.</p>
+                    <p><strong>4.1. Hile ve Manipülasyon Yasağı:</strong> Oyuncu, rekabet edilen oyunun (Örn: Valorant, CS:GO, LoL vb.) kendi yayıncısı tarafından belirlenen Hizmet Şartlarına ve Hile Koruma (Anti-Cheat) kurallarına uymak zorundadır. Üçüncü parti hile yazılımları (aimbot, wallhack, makro, otomasyon yazılımları vb.) kullanmak, şike yapmak (match-fixing) veya turnuva işleyişini sabote eden herhangi bir yöntemi kullanmak kesinlikle yasaktır.</p>
+                    <p><strong>4.2. Yaptırım Mekanizması:</strong> Madde 4 hükümlerinin ihlal edildiğinin turnuva hakemleri, platform yetkilileri veya oyun içi hile koruma sistemleri aracılığıyla tespit edilmesi durumunda OBB E-Spor; haksız elde edilen lig puanlarını geri alma, oyuncuyu turnuvalardan men etme, hesabı süreli/süresiz askıya alma ve kazanılan ödülleri iptal etme hakkını saklı tutar.</p>
+
+                    <h4>Madde 5. Toksik Davranışlar, Topluluk Standartları ve İletişim Kuralları</h4>
+                    <p>Platformun oyun içi sohbet (yazılı chat, sesli iletişim - voice comms) sistemlerinde, forumlarında veya e-spor lobi alanlarında, Kullanıcıların aşağıdaki yıkıcı (toxic) davranışlarda bulunması katı surette yasaklanmıştır:</p>
+                    <ul>
+                        <li><strong>5.1. Nefret Söylemi ve Ayrımcılık:</strong> Irk, din, dil, cinsiyet, cinsel yönelim veya etnik köken temelli saldırgan ifadeler kullanmak, aşağılamak ve sistematik ötekileştirme (hate speech) yapmak.</li>
+                        <li><strong>5.2. Siber Zorbalık ve Taciz:</strong> Diğer oyunculara, e-spor hakemlerine, Platform personeline veya üçüncü kişilere yönelik doğrudan tehdit, şantaj, siber zorbalık (cyberbullying) ve sistematik tacizde (griefing) bulunmak.</li>
+                        <li><strong>5.3. Uygunsuz İçerik:</strong> Müstehcen, pornografik içerikli materyal paylaşmak, aşırı küfür ve argo kullanmak.</li>
+                        <li><strong>5.4. Doxxing ve Mahremiyet İhlali:</strong> Başka oyuncuların gerçek kimlik bilgilerini, iletişim numaralarını veya adreslerini (doxxing) rızaları dışında ifşa etmek.</li>
+                    </ul>
+                    <p><strong>5.5. Yaptırım Mekanizması:</strong> Platform moderatörleri veya yapay zeka tabanlı dil analiz sistemleri tarafından tespit edilen bu eylemler; geçici iletişim kısıtlamalarından (chat mute/silence), hesabın rekabetçi eşleştirmeden süreli men edilmesine (ranked ban) ve nihai olarak hesabın kalıcı olarak kapatılmasına (perma-ban) kadar giden kümülatif yaptırımlara tabidir. Asılsız yere diğer oyuncuları raporlamak (false reporting) da aynı yaptırımlara yol açabilir.</p>
+
+                    <h4>Madde 6. E-Spor Turnuvaları ve Ticari Yayın Hakları</h4>
+                    <p><strong>6.1. Turnuva Kurallarına Uyum:</strong> Platform tarafından organize edilen veya desteklenen resmi e-spor liglerine/turnuvalarına katılan Kullanıcılar, Platform tarafından belirlenen turnuva kurallarına ve genel kabul görmüş e-spor davranış kurallarına uymak zorundadır.</p>
+                    <p><strong>6.2. İmaj ve Yayın Hakları:</strong> Kullanıcı, turnuva süresince oynadığı maçların, platform içi eylemlerinin ve oyun içi iletişimlerinin Platform tarafından kaydedilebileceğini, canlı yayınlanabileceğini (streaming), ticari amaçlarla naklen veya banttan dağıtılabileceğini ve Platform'un medya iş ortakları, sponsorları veya reklam verenleri ile paylaşılabileceğini kabul eder. Bu yayınlarda Kullanıcının oyuncu adının (nickname), avatarının ve oyun içi performansının bedelsiz, telifsiz ve süresiz olarak Platform'un ticari kullanımına tahsis edildiği kabul edilir. (Kişisel görüntünün ve sesin kullanımı KVKK Açık Rıza metnindeki onaylara tabidir).</p>
+
+                    <h4>Madde 7. Sorumluluğun Sınırlandırılması ve Hizmet Kesintileri</h4>
+                    <p><strong>7.1. Garanti Feragati:</strong> Platform, Hizmetlerin ("olduğu gibi" ve "mevcut olduğu şekliyle" sunulur) kesintisiz, tamamen hatasız (bug-free) veya siber saldırılara karşı %100 korunaklı olacağını hukuken garanti etmez. Planlı sunucu bakım çalışmaları, yazılım güncellemeleri veya mücbir sebepler (doğal afet, altyapı çökmesi) nedeniyle yaşanacak erişim kesintilerinden dolayı Platform sorumlu tutulamaz.</p>
+                    <p><strong>7.2. Yasal Erişim Engelleri ve Bant Daraltma:</strong> Türkiye Cumhuriyeti kanunlarının (özellikle 5651 sayılı Kanun) uygulanması, yetkili idari mercilerin (BTK, Mahkemeler) kararları veya yeni regülasyonlar doğrultusunda Hizmetlere erişimin tamamen engellenmesi, yasaklanması veya sunucu bant genişliğinin idari yaptırımla daraltılması (throttling) durumlarında, Platform, Kullanıcıya karşı hiçbir maddi tazminat veya sanal ürün iadesi ile yükümlü değildir.</p>
+
+                    <h4>Madde 8. Sözleşmenin Feshi ve Hesabın Kapatılması</h4>
+                    <p><strong>8.1. Kullanıcı Tarafından Fesih:</strong> Kullanıcı, dilediği zaman müşteri hizmetleri paneli üzerinden hesabının kalıcı olarak silinmesini talep ederek işbu Sözleşmeyi tek taraflı feshedebilir.</p>
+                    <p><strong>8.2. Platform Tarafından Haklı Nedenle Fesih:</strong> Platform, Kullanıcının işbu Sözleşmedeki temel yükümlülüklerden herhangi birini (özellikle Madde 2'deki Yaş Şartı, Madde 4'teki Hile Yasağı ve Madde 5'teki Toksik Davranış kurallarını) ihlal ettiğini tespit etmesi halinde, Kullanıcıya herhangi bir ön bildirimde bulunmaksızın Sözleşmeyi tek taraflı olarak derhal feshetme, hesabı kalıcı olarak kapatma (banlama) ve IP/Donanım erişimini bloklama hakkına münhasıran sahiptir.</p>
+
+                    <h4>Madde 9. Uygulanacak Hukuk ve Uyuşmazlıkların Çözüm Yeri</h4>
+                    <p>İşbu Sözleşmenin kurulması, yorumlanması, ifası ve taraflar arasında doğabilecek sözleşme içi veya haksız fiil kaynaklı tüm uyuşmazlıklarda münhasıran Türkiye Cumhuriyeti kanunları uygulanacaktır. Uyuşmazlıkların çözümünde Ordu Mahkemeleri ve İcra Daireleri kesin yetkilidir. Tüketici hukuku kapsamına giren durumlarda, Kullanıcılar yasal parasal sınırlar dâhilinde yerleşim yerlerindeki Tüketici Hakem Heyetlerine başvurabilirler.</p>
+
+                    <h4>Madde 10. Yürürlük ve Değişiklikler</h4>
+                    <p>Platform, operasyonel gereklilikler veya yasal mevzuat değişiklikleri sebebiyle işbu Sözleşme şartlarında dilediği zaman tek taraflı değişiklik yapma hakkını saklı tutar. Yapılan değişiklikler, Platform üzerinden yayınlandığı tarihte yürürlüğe girer. Değişiklik sonrasında Hizmetleri kullanmaya devam etmek, güncel şartların Kullanıcı tarafından kabul edildiği anlamına gelir. İşbu Sözleşme, Kullanıcı tarafından kayıt sürecinde elektronik onay (tık) verilmesi anında yürürlüğe girmiştir.</p>
+                `
+            }
+        };
+
         // MODAL KONTROL FONKSİYONLARI
         function openCustomModal(id) {
             document.getElementById(id).style.display = "flex";
@@ -345,6 +474,13 @@
         function closeCustomModal(id) {
             document.getElementById(id).classList.remove('active');
             setTimeout(() => { document.getElementById(id).style.display = "none"; }, 300);
+        }
+
+        // SÖZLEŞME AÇMA FONKSİYONU
+        function openDocModal(docType) {
+            document.getElementById('docModalTitle').innerText = documentContents[docType].title;
+            document.getElementById('docModalBody').innerHTML = documentContents[docType].body;
+            openCustomModal('docModal');
         }
 
         async function initProfile() {
@@ -378,7 +514,6 @@
             let currentIgn = "Belirlenmedi"; 
             
             if (data) {
-                // Arka planda veriyi çekince DOM'u ve Cache'i güncelle (Stale-while-revalidate mantığı)
                 document.getElementById('profileNameDisplay').innerText = data.username || "İsimsiz";
                 document.getElementById('userBio').innerText = data.bio || "Açıklama eklenmemiş.";
                 
@@ -473,19 +608,17 @@
 
                 document.getElementById('statMatches').innerText = totalMatches;
                 document.getElementById('statWinRate').innerText = winRate;
-                
-                // Toplam Kill Ekrana Basılıyor
                 document.getElementById('statTotalKills').innerText = totalKills;
 
             } catch(e) { console.warn("İstatistik hatası:", e); }
         }
 
         // ==========================================
-        // TAKIM VE DAVET ARAMA MOTORU (JOIN Optimizasyonlu)
+        // TAKIM VE DAVET ARAMA MOTORU (GÜNCELLENDİ)
         // ==========================================
         async function loadInvitationsAndTeam() {
             try {
-                // Supabase Join ile takım isimleri tek hamlede çekiliyor
+                // Supabase Join ile takım detayları çekiliyor
                 const { data: memberships, error } = await window.supabaseClient.from('application_members')
                     .select('*, tournament_applications(team_name, team_tag, status)')
                     .eq('user_id', currentUser.id);
@@ -496,38 +629,53 @@
                 
                 list.innerHTML = '';
                 badge.style.display = "none";
+
+                // Ortak Boş Durum (Empty State) Tasarımı
+                const showEmptyState = () => {
+                    title.innerHTML = `<i class="fas fa-users"></i> Takım Durumu`;
+                    list.innerHTML = `
+                        <div style="text-align:center; padding:30px; background: rgba(255,255,255,0.02); border-radius:15px; border: 1px dashed #333;">
+                            <i class="fas fa-user-plus" style="font-size: 30px; color: #444; margin-bottom: 15px;"></i>
+                            <p style="color:#ccc; margin-bottom: 8px;">Henüz bir takım davetin yok.</p>
+                            <p style="font-size: 13px; color:#777; margin-bottom: 20px;">İstersen hemen kendi takımını oluşturabilirsin!</p>
+                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:220px; text-decoration:none; font-size:14px;">
+                                <i class="fas fa-plus-circle"></i> Takım Oluştur
+                            </a>
+                        </div>
+                    `;
+                };
                 
                 if (error || !memberships || memberships.length === 0) {
-                    list.innerHTML = `<div style="text-align:center; color:#777; padding:20px;">Bekleyen davet yok. Formunu koru, teklifler gelecektir.</div>`;
+                    showEmptyState();
                     return;
                 }
 
-                // 2. Kabul edilmiş (Aktif) bir takımı var mı?
+                // 1. Kabul edilmiş (Aktif) bir takımı var mı?
                 const activeTeam = memberships.find(m => m.status === 'accepted');
                 
                 if (activeTeam && activeTeam.tournament_applications) {
                     const teamData = Array.isArray(activeTeam.tournament_applications) ? activeTeam.tournament_applications[0] : activeTeam.tournament_applications;
                     
-                    if (teamData) {
+                    // Sadece tam onaylı takımları "Mevcut Takımın" olarak göster (Draft aşamasındakileri es geç)
+                    if (teamData && teamData.status === 'approved') {
                         title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
-                        let tStatus = teamData.status === 'approved' ? '<span style="color:var(--yesil-guven);">Turnuvaya Onaylandı</span>' : 'İncelemede / Kurulum Aşamasında';
-                        
                         list.innerHTML = `
                             <div class="active-team-card">
                                 <span class="team-tag-large">${teamData.team_tag || 'TAG'}</span>
-                                <h3>${teamData.team_name || 'İsimsiz Takım'}</h3>
-                                <p>Durum: <b>${tStatus}</b></p>
+                                <h3>${teamData.team_name || 'OBB ESPORTS'}</h3>
+                                <p>Durum: <span style="color:var(--yesil-guven); font-weight:bold;"><i class="fas fa-check-circle"></i> Turnuvaya Hazır</span></p>
                                 <a href="takim.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
                             </div>
                         `;
-                        return; // Takımı varsa bekleyen davetleri gösterme
+                        return; // Tamamlanmış takım varsa davetleri vs. göstermeye gerek yok
                     }
                 }
 
-                // 3. Aktif takımı yoksa, bekleyen davetleri yükle
+                // 2. Aktif Onaylı takımı yoksa, bekleyen davetleri yükle
                 const pendingInvites = memberships.filter(m => m.status === 'pending');
                 
                 if (pendingInvites.length > 0) {
+                    title.innerHTML = `<i class="fas fa-users"></i> Takım Davetleri`;
                     badge.innerText = pendingInvites.length;
                     badge.style.display = "inline-block";
                     
@@ -547,8 +695,19 @@
                                 </div>
                             </div>`;
                     });
+
+                    // Bekleyen davetlerin altına da ek bir Takım Oluştur seçeneği ekleyelim
+                    list.innerHTML += `
+                        <div style="text-align:center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #333;">
+                            <p style="font-size: 13px; color:#777; margin-bottom: 10px;">Veya kendi takımını kurarak lider sen ol!</p>
+                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none; font-size:13px; padding: 8px 15px;">
+                                <i class="fas fa-plus-circle"></i> Takım Oluştur
+                            </a>
+                        </div>
+                    `;
                 } else {
-                    list.innerHTML = `<div style="text-align:center; color:#777; padding:20px;">Bekleyen davet yok. Formunu koru, teklifler gelecektir.</div>`;
+                    // Hiç davet de yoksa ve takım da yoksa empty state göster
+                    showEmptyState();
                 }
                 
             } catch (err) {
