@@ -63,7 +63,7 @@
         /* AKTİF TAKIM KARTI */
         .active-team-card { background: linear-gradient(135deg, rgba(96, 29, 194, 0.1) 0%, rgba(10, 10, 10, 0.9) 100%); border: 1px solid var(--neon-mor); border-radius: 15px; padding: 30px; text-align: center; box-shadow: 0 10px 30px rgba(96, 29, 194, 0.15); animation: fadeIn 0.5s ease; position: relative; overflow: hidden; }
         .active-team-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--neon-mor); }
-        .active-team-card h3 { font-size: 24px; color: white; margin-bottom: 5px; font-weight: 900; }
+        .active-team-card h3 { font-size: 24px; color: white; margin-bottom: 5px; font-weight: 900; text-transform: uppercase; }
         .active-team-card p { color: var(--gri-yazi); font-size: 14px; margin-bottom: 20px; }
         .active-team-card .team-tag-large { display: inline-block; background: var(--neon-mor); color: white; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
 
@@ -141,7 +141,7 @@
 
     <main class="profile-container">
         <div class="profile-banner" id="currentBanner">
-            <button class="edit-banner-btn" onclick="openCustomModal('bannerModal')"><i class="fas fa-image"></i> Kapak Değiştir</button>
+            <button class="edit-banner-btn" onclick="openBannerModal()"><i class="fas fa-image"></i> Kapak Değiştir</button>
         </div>
 
         <div class="profile-card">
@@ -153,7 +153,7 @@
 
             <div class="rank-badge" id="userRank">YÜKLENİYOR...</div>
             
-            <h1 id="profileNameDisplay" style="font-size: 28px; font-weight: 900; margin-bottom: 5px;">YÜKLENİYOR...</h1>
+            <h1 id="profileNameDisplay" style="font-size: 28px; font-weight: 900; margin-bottom: 5px; text-transform: none;">YÜKLENİYOR...</h1>
             
             <div>
                 <div class="ign-container">
@@ -318,6 +318,7 @@
         async function initProfile() {
             const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
             
+            // Eğer oturum yoksa direkt anasayfaya (veya kayda) yolla
             if (authErr || !user) {
                 window.location.href = "kayit.html";
                 return;
@@ -325,42 +326,33 @@
             
             currentUser = user;
 
-            // RLS ve Ghost Row Hatasını Önleyen Motor
+            // RLS Hatalarına karşı çökme engelleyici (Failsafe) ve OTOMATİK INSERT KALDIRILDI!
             const { data, error: profileErr } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).maybeSingle();
             
-            let pData = data;
             let currentIgn = "Belirlenmedi"; 
-
-            // EĞER VERİTABANINDA PROFİL YOKSA, HEMEN ŞİMDİ OLUŞTUR (INSERT POLİTİKASI GEREKTİRİR)
-            if (!pData && !profileErr) {
-                const { data: newData, error: insertErr } = await window.supabaseClient.from('profiles').insert({
-                    id: user.id,
-                    username: user.user_metadata?.username || "KULLANICI"
-                }).select().maybeSingle();
-                
-                if (newData) pData = newData;
-            }
             
-            if (pData) {
-                document.getElementById('profileNameDisplay').innerText = pData.username || "KULLANICI";
-                document.getElementById('userBio').innerText = pData.bio || "Açıklama eklenmemiş.";
+            if (data) {
+                document.getElementById('profileNameDisplay').innerText = data.username || "KULLANICI";
+                document.getElementById('userBio').innerText = data.bio || "Açıklama eklenmemiş.";
                 
                 const ignDisplay = document.getElementById('userIgnDisplay');
-                if (pData.ign) {
-                    currentIgn = pData.ign;
-                    ignDisplay.innerText = pData.ign;
+                if (data.ign) {
+                    currentIgn = data.ign;
+                    ignDisplay.innerText = data.ign;
                     ignDisplay.style.color = "#00d2ff";
                 }
                 
-                if(pData.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${pData.banner_url}')`;
-                if(pData.avatar_url) document.getElementById('userAvatar').src = pData.avatar_url + "?t=" + Date.now();
+                if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
+                if(data.avatar_url) document.getElementById('userAvatar').src = data.avatar_url + "?t=" + Date.now();
 
-                if (pData.marketing_consent) {
+                if (data.marketing_consent) {
                     document.getElementById('marketingToggle').checked = true;
                 }
             } else {
-                document.getElementById('profileNameDisplay').innerText = "KULLANICI";
-                console.error("Profil oluşturulamadı. Supabase INSERT politikasını (RLS) kontrol edin.");
+                // Eğer RLS yüzünden profil bulunamazsa sadece isim yazsın ama arka planda profil OLUŞTURMASIN.
+                document.getElementById('profileNameDisplay').innerText = user.user_metadata?.username || "KULLANICI";
+                document.getElementById('userBio').innerText = "Açıklama eklenmemiş.";
+                console.warn("Profil verisi çekilemedi. Veritabanınızda (profiles tablosu) bu kullanıcıya ait bir satır yok.");
             }
 
             await loadUserStats(currentIgn);
@@ -408,7 +400,6 @@
                     });
                 }
 
-                // RÜTBE HESAPLAMA
                 const rankEl = document.getElementById('userRank');
                 if (totalMatches === 0) { rankEl.innerText = "YENİ"; rankEl.style.color = "#888"; rankEl.style.borderColor = "#888"; }
                 else if (totalMatches >= 1 && totalMatches < 10) { rankEl.innerText = "ACEMİ"; rankEl.style.color = "#00d2ff"; rankEl.style.borderColor = "#00d2ff"; }
@@ -443,7 +434,7 @@
         }
 
         // ==========================================
-        // GÖRKEMLİ TAKIM KARTI VEYA DAVETLER 
+        // GÖRKEMLİ TAKIM KARTI VEYA DAVETLER (HATASI ÇÖZÜLDÜ)
         // ==========================================
         async function loadInvitationsAndTeam() {
             try {
@@ -467,7 +458,7 @@
                     list.innerHTML = `
                         <div class="active-team-card">
                             <span class="team-tag-large">${t.team_tag || 'TAG'}</span>
-                            <h3>${t.team_name || 'İsimsiz Takım'}</h3>
+                            <h3>${t.team_name || 'Belirlenmedi'}</h3>
                             <p>Durum: <b>${tStatus}</b></p>
                             <a href="takim.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
                         </div>
@@ -546,7 +537,7 @@
             
             const { error } = await window.supabaseClient.from('profiles').update({ bio: newBio }).eq('id', currentUser.id);
             if (error) {
-                showNotification("HATA: Değişiklik kaydedilemedi. INSERT politikasını (RLS) kontrol edin.", "error");
+                showNotification("Açıklama güncellenemedi. Profiller tablonuzda satırınız bulunmuyor olabilir.", "error");
                 return;
             }
 
@@ -597,7 +588,7 @@
                     .update({ ign: trimmedIgn, ign_updated_at: new Date().toISOString() }).eq('id', currentUser.id);
 
                 if (updateErr) {
-                    showNotification("HATA: Değişiklik kaydedilemedi. INSERT politikasını (RLS) kontrol edin.", "error");
+                    showNotification("Güncellenemedi. Profiller tablonuzda satırınız bulunmuyor olabilir.", "error");
                     console.error("Supabase Hatası:", updateErr);
                 } else {
                     const ignDisplay = document.getElementById('userIgnDisplay');
@@ -628,7 +619,7 @@
 
         async function toggleMarketingConsent(isChecked) {
             const { error } = await window.supabaseClient.from('profiles').update({ marketing_consent: isChecked }).eq('id', currentUser.id);
-            if (error) showNotification("Tercih kaydedilemedi. Supabase (RLS) INSERT ayarınızı yapmalısınız.", "error");
+            if (error) showNotification("Tercih kaydedilemedi. Profiller tablonuzda satırınız bulunmuyor olabilir.", "error");
             else showNotification(isChecked ? "Ticari iletişim izni onaylandı." : "Ticari iletişim izni iptal edildi.", "success");
         }
 
@@ -650,6 +641,7 @@
 
         function openBannerModal() {
             const grid = document.getElementById('bannerOptions'); grid.innerHTML = ""; 
+            // HATALI OLARAK BOZULAN BANNER DÖNGÜSÜ DÜZELTİLDİ
             for(let i=1; i<=4; i++) {
                 const img = document.createElement('img'); 
                 img.src = `img/banner${i}.jpg`; 
