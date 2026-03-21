@@ -313,6 +313,37 @@
             }
         };
 
+        // TELEFON NUMARASI OTOMATİK FORMATLAMA (MASKELEME)
+        const phoneInput = document.getElementById('phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function (e) {
+                // Sadece rakamları al
+                let numbers = this.value.replace(/\D/g, '');
+                
+                // TR numarası 05 ile başlamalı
+                if (numbers.length > 0 && numbers[0] !== '0') {
+                    numbers = '0' + numbers;
+                }
+                if (numbers.length > 1 && numbers[1] !== '5') {
+                    numbers = '05' + numbers.substring(2);
+                }
+
+                // Maksimum 11 rakam
+                numbers = numbers.substring(0, 11);
+
+                // Formatlama: 05XX XXX XX XX
+                let formatted = '';
+                for (let i = 0; i < numbers.length; i++) {
+                    if (i === 4 || i === 7 || i === 9) {
+                        formatted += ' ';
+                    }
+                    formatted += numbers[i];
+                }
+                
+                this.value = formatted;
+            });
+        }
+
         // MODAL AÇMA/KAPAMA FONKSİYONLARI
         function openDocModal(docType) {
             document.getElementById('docModalTitle').innerText = documentContents[docType].title;
@@ -427,6 +458,22 @@
                 if (password !== confirmPass) { showNotification("Şifreler uyuşmuyor!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; }
                 if (!usernameInput) { showNotification("Kullanıcı adı boş bırakılamaz!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; }
 
+                // TELEFON NUMARASI GEÇERLİLİK KONTROLÜ
+                const rawPhone = document.getElementById('phone').value.replace(/\s/g, ''); // Boşlukları temizle
+                if (rawPhone) { // Opsiyonelse veya zorunluysa kontrol et
+                    if (rawPhone.length !== 11 || !rawPhone.startsWith('05')) {
+                        showNotification("Lütfen geçerli bir cep telefonu numarası girin (Örn: 05XX XXX XX XX).", "error");
+                        submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; 
+                    }
+                    
+                    // Art arda aynı rakamların tekrarını engelle (örn: 05555555555)
+                    const sameDigitRegex = /05(\d)\1{8}/; 
+                    if (sameDigitRegex.test(rawPhone)) {
+                        showNotification("Geçersiz telefon numarası. Lütfen gerçek bir numara girin.", "error");
+                        submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; 
+                    }
+                }
+
                 // 3. YAŞ (DOĞUM TARİHİ) KONTROLÜ (Sadece tarayıcıda hesaplanır, ASLA veritabanına gitmez)
                 const dobVal = document.getElementById('dob').value;
                 if (!dobVal) {
@@ -451,7 +498,8 @@
                     showNotification("Bu kullanıcı adı zaten alınmış!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return;
                 }
 
-                // 5. SUPABASE KAYIT İŞLEMİ 
+                // 5. SUPABASE KAYIT İŞLEMİ (Burada options payload'ına DİKKAT! Sadece username ve phone var)
+                // Yaş veya doğum tarihi (dobVal, age) değişkenleri Supabase'e GÖNDERİLMEZ.
                 const { data, error } = await window.supabaseClient.auth.signUp({
                     email: email, 
                     password: password, 
