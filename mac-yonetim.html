@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OBB E-SPORTS ADMIN</title>
+    <title>Maç Yönetimi | OBB E-SPORTS ADMIN</title>
     <link rel="icon" type="image/png" href="img/obblogo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -13,15 +13,18 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
+        /* --- ADMİN HEADER AKTİF SEKME STİLİ --- */
         nav ul li a { cursor: pointer; }
         .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
 
-        .admin-container { padding: 40px 10%; flex: 1; }
+        .admin-container { padding: 40px 10%; flex: 1; overflow-x: hidden; }
         
+        /* BAŞLIK VE BUTON ALANI İÇİN YENİ DÜZEN */
         .page-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
         .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 0; color: white; border: none; padding: 0; }
         .section-title span { color: var(--neon-mor); }
         
+        /* FİKSTÜR DÜZENLE BUTONU */
         .btn-go-edit { background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor); color: var(--neon-mor); padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 14px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
         .btn-go-edit:hover { background: var(--neon-mor); color: white; box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); transform: translateY(-2px); }
 
@@ -59,11 +62,16 @@
         
         .map-input { background: #111; border: 1px solid #444; color: var(--neon-mor); padding: 8px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; text-align: center; text-transform: uppercase; outline: none; transition: 0.3s; width: 150px; }
         .map-input:focus { border-color: white; color: white; }
+        
+        /* TARİH İNPUTU ÖZEL STİLİ */
+        .date-input { border-color: #00d2ff; color: #00d2ff; background: rgba(0, 210, 255, 0.05); }
+        .date-input:focus { box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); color: white; }
 
         .stats-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .team-stats-box h4 { font-size: 15px; margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid; padding-left: 10px; transition: 0.3s; }
         
-        .player-stat-row { display: grid; grid-template-columns: 90px 1.5fr 1.5fr 45px 45px 45px; gap: 10px; margin-bottom: 10px; align-items: center; background: #0d0d0d; padding: 10px; border-radius: 10px; border: 1px solid #222; transition: 0.3s; }
+        /* OYUNCU TABLOSU YENİ DÜZEN (9 SÜTUN) */
+        .player-stat-row { display: grid; grid-template-columns: 80px 1.5fr 1.5fr 45px 45px 45px; gap: 10px; margin-bottom: 10px; align-items: center; background: #0d0d0d; padding: 10px; border-radius: 10px; border: 1px solid #222; transition: 0.3s; }
         .player-stat-row:hover { border-color: #444; background: #111; }
         
         .player-stat-row input, .player-stat-row select { background: #000; border: 1px solid #333; color: white; padding: 8px; border-radius: 6px; font-size: 13px; outline: none; transition: 0.3s; width: 100%; text-align: center; }
@@ -242,7 +250,7 @@
 
                 <div class="action-buttons">
                     <button class="btn-update" id="btnUpdateMatch" onclick="updateMatch()">
-                        <i class="fas fa-sync-alt"></i> VERİLERİ GÜNCELLE
+                        <i class="fas fa-sync-alt"></i> VERİLERİ KAYDET / GÜNCELLE
                     </button>
                     <button class="btn-delete" id="btnDeleteMatch" onclick="deleteSelectedMatch()">
                         <i class="fas fa-trash-alt"></i> TÜM MAÇI SİL
@@ -287,7 +295,7 @@
         let teamAId_memory = null;
         let teamBId_memory = null;
         let globalTeamMap = {};
-        let loadedMaps = []; // O maça ait tüm haritalar
+        let loadedMaps = []; 
 
         async function initMatchManagement() {
             try {
@@ -361,7 +369,7 @@
             }
         }
 
-        // --- MAÇ BİLGİLERİNİ ÇEKME ---
+        // --- MAÇ BİLGİLERİNİ VE HARİTA SLOTLARINI DOLDURMA ---
         async function loadExistingMatch(matchId) {
             const area = document.getElementById('dynamicMatchArea');
             if (!matchId) { area.style.display = 'none'; return; }
@@ -389,35 +397,41 @@
                 document.getElementById('seriesScoreB').value = match.series_score_b || 0;
 
                 const seriesBox = document.getElementById('seriesScoreBox');
+                let winsNeeded = 1;
+                
                 if (['R1', 'R2'].includes(currentRoundName)) {
-                    seriesBox.style.display = 'none'; // BO1'de gizle
+                    seriesBox.style.display = 'none'; 
+                    winsNeeded = 1;
                 } else {
-                    seriesBox.style.display = 'flex'; // BO3/BO5'te göster
+                    seriesBox.style.display = 'flex'; 
+                    winsNeeded = (currentRoundName === "FİNAL") ? 3 : 2; // BO5 için 3, BO3 için 2 win lazım
                 }
+                
+                let maxMaps = winsNeeded === 1 ? 1 : (winsNeeded === 2 ? 3 : 5);
 
-                // O Maça ait TÜM haritaları sıralı şekilde çek
                 const { data: maps } = await window.supabaseClient.from('match_maps').select('*').eq('match_id', matchId).order('map_order', {ascending: true});
                 loadedMaps = maps || [];
 
                 const mapSelect = document.getElementById('editMapSelect');
                 mapSelect.innerHTML = '';
 
-                if (loadedMaps.length > 0) {
-                    loadedMaps.forEach(m => {
-                        const order = m.map_order || 1;
-                        mapSelect.innerHTML += `<option value="${m.id}">${order}. HARİTA (${m.map_name})</option>`;
-                    });
-                    // Otomatik olarak ilk sıradaki haritayı yükle
-                    await loadMapStats(loadedMaps[0].id);
-                } else {
-                    currentMapId = null;
-                    mapSelect.innerHTML = '<option value="">-- Harita Yok --</option>';
-                    document.getElementById('mapNameInput').value = "";
-                    renderPlayerRows('teamAPlayersInputs', []);
-                    renderPlayerRows('teamBPlayersInputs', []);
+                // HARİTA YÖNETİM SİSTEMİ: Kayıtlı olanları 'DÜZENLE', olmayanları 'YENİ EKLE' olarak basar
+                for (let i = 1; i <= maxMaps; i++) {
+                    const existingMap = loadedMaps.find(m => m.map_order === i);
+                    if (existingMap) {
+                        mapSelect.innerHTML += `<option value="${existingMap.id}">${i}. HARİTA (${existingMap.map_name}) - DÜZENLE</option>`;
+                    } else {
+                        mapSelect.innerHTML += `<option value="new_${i}">${i}. HARİTA - YENİ EKLE</option>`;
+                    }
                 }
 
                 area.style.display = 'block';
+
+                if (loadedMaps.length > 0) {
+                    await loadMapStats(loadedMaps[0].id);
+                } else {
+                    await prepareNewMapUI(1);
+                }
 
             } catch (err) {
                 console.error(err);
@@ -425,23 +439,109 @@
             }
         }
 
-        // --- SEÇİLEN HARİTANIN İSTATİSTİKLERİNİ EKRANA DOLDURMA ---
-        async function loadMapStats(mapId) {
-            currentMapId = mapId;
-            const mapData = loadedMaps.find(m => m.id === mapId);
+        // --- TAKIM PROFİLLERİNİ OTOMATİK ÇEKME (YENİ HARİTA İÇİN) ---
+        async function loadTeamProfilesToSelect(containerId, teamId) {
+            const selects = document.getElementById(containerId).querySelectorAll('.user-matcher-select');
+            selects.forEach(select => select.innerHTML = '<option value="">Yükleniyor...</option>');
+            try {
+                const { data: players, error } = await window.supabaseClient
+                    .from('application_members')
+                    .select('user_id, profiles(username, ign)')
+                    .eq('application_id', teamId)
+                    .eq('status', 'accepted');
+                    
+                let optionsHtml = '<option value="">-- Profil Seç --</option>';
+                if (players && players.length > 0) {
+                    players.forEach(p => {
+                        const username = p.profiles?.username || "İsimsiz";
+                        const ign = p.profiles?.ign;
+                        const displayName = ign ? `${ign} (${username})` : username;
+                        optionsHtml += `<option value="${p.user_id}" data-ign="${ign || ''}">${displayName}</option>`;
+                    });
+                } else {
+                    optionsHtml = '<option value="">Kayıtlı oyuncu yok</option>';
+                }
+                selects.forEach(select => select.innerHTML = optionsHtml);
+            } catch(e) {
+                selects.forEach(select => select.innerHTML = '<option value="">Hata</option>');
+            }
+        }
+
+        // --- YENİ BİR HARİTA (Map 2, Map 3 vb.) GİRİŞİ İÇİN EKRANI HAZIRLAR ---
+        async function prepareNewMapUI(order) {
+            currentMapId = null; // null olması Update işlemi sırasında "Insert" (Yeni Kayıt) yapılacağını belirtir
+            document.getElementById('mapNameInput').value = "";
+            document.getElementById('scoreA').value = 0;
+            document.getElementById('scoreB').value = 0;
+            
+            generateEmptyRows('teamAPlayersInputs');
+            generateEmptyRows('teamBPlayersInputs');
+
+            if (teamAId_memory) await loadTeamProfilesToSelect('teamAPlayersInputs', teamAId_memory);
+            if (teamBId_memory) await loadTeamProfilesToSelect('teamBPlayersInputs', teamBId_memory);
+            
+            showNotification(`${order}. Harita girişine hazır, takım profilleri otomatik çekildi.`, "info");
+        }
+
+        // --- SEÇİLEN HARİTANIN İSTATİSTİKLERİNİ VEYA YENİ GİRİŞ EKRANINI YÜKLER ---
+        async function loadMapStats(val) {
+            if (!val) return;
+            
+            if (val.startsWith('new_')) {
+                const order = parseInt(val.split('_')[1]);
+                await prepareNewMapUI(order);
+                return;
+            }
+
+            currentMapId = val;
+            const mapData = loadedMaps.find(m => m.id === currentMapId);
             if(!mapData) return;
 
             document.getElementById('mapNameInput').value = mapData.map_name;
             document.getElementById('scoreA').value = mapData.score_a;
             document.getElementById('scoreB').value = mapData.score_b;
 
-            const { data: stats } = await window.supabaseClient.from('match_player_stats').select('*').eq('map_id', mapId);
+            const { data: stats } = await window.supabaseClient.from('match_player_stats').select('*').eq('map_id', currentMapId);
             
             const teamAStats = stats ? stats.filter(s => s.team_id === teamAId_memory) : [];
             const teamBStats = stats ? stats.filter(s => s.team_id === teamBId_memory) : [];
 
             renderPlayerRows('teamAPlayersInputs', teamAStats);
             renderPlayerRows('teamBPlayersInputs', teamBStats);
+        }
+
+        function generateEmptyRows(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
+                    <span class="stat-label">AJAN</span>
+                    <span class="stat-label" style="text-align:left;">OYUN İÇİ NİCK</span>
+                    <span class="stat-label">PROFİL EŞLEŞTİR</span>
+                    <span class="stat-label">K</span>
+                    <span class="stat-label">D</span>
+                    <span class="stat-label">A</span>
+                    <span class="stat-label" style="color:var(--neon-mor);">ACS</span>
+                    <span class="stat-label" style="color:var(--neon-mor);">ADR</span>
+                    <span class="stat-label" style="color:var(--neon-mor);">HS%</span>
+                </div>
+            `;
+            for(let i=0; i<5; i++) {
+                container.innerHTML += `
+                    <div class="player-stat-row">
+                        <div class="agent-input-group">
+                            <img src="img/agents/unknown.png" class="agent-icon" id="${containerId}_icon_${i}">
+                            <input type="text" class="agent-name-input" placeholder="Ajan" onkeyup="updateAgentIcon(this, '${containerId}_icon_${i}')">
+                        </div>
+                        <input type="text" class="ign-input" placeholder="IGN">
+                        <select class="user-matcher-select"><option value="">-- Takım İsmi Girin --</option></select>
+                        <input type="number" class="k-input" value="0" min="0" title="Kill">
+                        <input type="number" class="d-input" value="0" min="0" title="Death">
+                        <input type="number" class="a-input" value="0" min="0" title="Assist">
+                        <input type="number" class="acs-input" value="0" min="0" title="Ortalama Çatışma Skoru">
+                        <input type="number" class="adr-input" value="0" min="0" title="Raunt Başı Hasar">
+                        <input type="number" class="hs-input" value="0" min="0" title="Kafadan Vuruş Yüzdesi">
+                    </div>`;
+            }
         }
 
         function renderPlayerRows(containerId, playersData) {
@@ -463,6 +563,7 @@
 
                 let cleanName = agent.replace(/[^a-zA-Z0-9]/g, ''); 
                 let formattedAgent = cleanName ? (cleanName.charAt(0).toUpperCase() + cleanName.slice(1).toLowerCase()) : 'unknown';
+                if(formattedAgent === 'Kayo' || formattedAgent === 'KAYO') formattedAgent = 'Kayo';
 
                 container.innerHTML += `
                     <div class="player-stat-row">
@@ -480,20 +581,78 @@
         }
 
         function updateAgentIcon(inputEl, iconId) {
-            const val = inputEl.value.replace(/[^a-zA-Z0-9]/g, '');
+            let val = inputEl.value.replace(/[^a-zA-Z0-9]/g, '');
             const icon = document.getElementById(iconId);
-            if(val.length > 2) {
-                const formatted = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+            
+            if(val.length >= 2) {
+                let formatted = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+                if (formatted === 'Kayo') formatted = 'Kayo';
                 icon.src = `img/imgagents/${formatted}.webp`;
             } else {
                 icon.src = "img/imgagents/unknown.png";
             }
         }
 
-        // --- MAÇ VE HARİTA BİLGİLERİNİ GÜNCELLEME ---
+        const collectDataAndUpdateIGN = async (containerId, teamId, mapDataId) => {
+            const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
+            const stats = [];
+            for(let i=1; i<rows.length; i++) {
+                const row = rows[i];
+                
+                // "Düzenle" menüsünde (Yüklü profil varsa gizli inputu, yoksa select'i kullanırız)
+                const hiddenInput = row.querySelector('.hidden-user-id');
+                const select = row.querySelector('.user-matcher-select');
+                
+                const userId = (hiddenInput && hiddenInput.value) ? hiddenInput.value : (select ? select.value : null);
+                const inGameName = row.querySelector('.ign-input').value || 'Bilinmiyor';
+
+                if (select && userId && inGameName && inGameName !== 'Bilinmiyor') {
+                    const selectedOption = select.options[select.selectedIndex];
+                    const existingIgn = selectedOption.getAttribute('data-ign');
+                    
+                    if (!existingIgn || existingIgn.trim() === '' || existingIgn === 'null') {
+                        await window.supabaseClient.from('profiles')
+                            .update({ ign: inGameName })
+                            .eq('id', userId);
+                        
+                        console.log(`Otomatik IGN Güncellendi: ${userId} -> ${inGameName}`);
+                        selectedOption.setAttribute('data-ign', inGameName); 
+
+                        await window.supabaseClient.from('bildirimler').insert([{
+                            kullanici_id: userId,
+                            baslik: "Oyun İçi Nick Güncellendi",
+                            mesaj: `Oyun içi nickiniz (IGN) maç eşleştirmesi sırasında sistem tarafından otomatik olarak '${inGameName}' şeklinde güncellenmiştir.`,
+                            tip: 'sistem'
+                        }]);
+                    }
+                }
+
+                // DÜZENLE menüsünde ACS, ADR, HS inputları yoksa varsayılan 0 atıyoruz
+                const acsInput = row.querySelector('.acs-input');
+                const adrInput = row.querySelector('.adr-input');
+                const hsInput = row.querySelector('.hs-input');
+
+                stats.push({
+                    map_id: mapDataId,
+                    team_id: teamId, 
+                    user_id: userId, 
+                    in_game_name: inGameName,
+                    agent_name: row.querySelector('.agent-name-input').value || 'unknown',
+                    kills: parseInt(row.querySelector('.k-input').value) || 0,
+                    deaths: parseInt(row.querySelector('.d-input').value) || 0,
+                    assists: parseInt(row.querySelector('.a-input').value) || 0,
+                    acs: acsInput ? (parseInt(acsInput.value) || 0) : 0,
+                    adr: adrInput ? (parseInt(adrInput.value) || 0) : 0,
+                    hs_percentage: hsInput ? (parseInt(hsInput.value) || 0) : 0
+                });
+            }
+            return stats;
+        };
+
+        // --- MAÇ VE HARİTA BİLGİLERİNİ GÜNCELLEME VEYA YENİ HARİTA EKLEME ---
         async function updateMatch() {
             const btn = document.getElementById('btnUpdateMatch');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GÜNCELLENİYOR...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> KAYDEDİLİYOR...';
             btn.disabled = true;
 
             try {
@@ -510,7 +669,6 @@
                 if (["SON 16", "ÇEYREK FİNAL", "YARI FİNAL"].includes(currentRoundName)) winsNeeded = 2;
                 if (currentRoundName === "FİNAL") winsNeeded = 3;
 
-                // BO1 mi yoksa BO3/BO5 mi? Kazanana ona göre karar verilir
                 if (winsNeeded === 1) {
                     if (scoreA > scoreB) winnerId = teamAId_memory;
                     else if (scoreB > scoreA) winnerId = teamBId_memory;
@@ -521,57 +679,60 @@
                 } else {
                     if (seriesA >= winsNeeded) { winnerId = teamAId_memory; matchStatus = 'finished'; }
                     else if (seriesB >= winsNeeded) { winnerId = teamBId_memory; matchStatus = 'finished'; }
-                    else { matchStatus = 'live'; } // Seri henüz bitmedi
+                    else { matchStatus = 'live'; }
 
                     await window.supabaseClient.from('bracket_matches')
                         .update({ series_score_a: seriesA, series_score_b: seriesB, winner_id: winnerId, status: matchStatus })
                         .eq('id', currentMatchId);
                 }
 
-                // SADECE SEÇİLİ HARİTAYI GÜNCELLE
-                if (currentMapId) {
+                // EĞER SEÇİLİ OLAN BİR YENİ HARİTAYSA INSERT YAP, DEĞİLSE UPDATE YAP
+                let targetMapId = currentMapId;
+                const selectedVal = document.getElementById('editMapSelect').value;
+                
+                if (selectedVal.startsWith('new_')) {
+                    const mapOrderToInsert = parseInt(selectedVal.split('_')[1]) || 1;
+                    
+                    const { data: newMap, error: mapErr } = await window.supabaseClient.from('match_maps').insert([{
+                        match_id: currentMatchId,
+                        map_order: mapOrderToInsert,
+                        map_name: mapName,
+                        score_a: scoreA,
+                        score_b: scoreB
+                    }]).select().single();
+                    
+                    if(mapErr) throw mapErr;
+                    targetMapId = newMap.id;
+                } else {
                     await window.supabaseClient.from('match_maps')
                         .update({ map_name: mapName, score_a: scoreA, score_b: scoreB })
-                        .eq('id', currentMapId);
+                        .eq('id', targetMapId);
 
-                    // Mevcut haritanın eski istatistiklerini temizle
-                    await window.supabaseClient.from('match_player_stats').delete().eq('map_id', currentMapId);
-
-                    const collectData = (containerId, teamId) => {
-                        const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
-                        const stats = [];
-                        for(let i=1; i<rows.length; i++) {
-                            const row = rows[i];
-                            const ign = row.querySelector('.ign-input').value.trim();
-                            if(!ign) continue;
-
-                            stats.push({
-                                map_id: currentMapId,
-                                team_id: teamId,
-                                user_id: row.querySelector('.hidden-user-id').value || null, 
-                                in_game_name: ign,
-                                agent_name: row.querySelector('.agent-name-input').value || 'unknown',
-                                kills: parseInt(row.querySelector('.k-input').value) || 0,
-                                deaths: parseInt(row.querySelector('.d-input').value) || 0,
-                                assists: parseInt(row.querySelector('.a-input').value) || 0
-                            });
-                        }
-                        return stats;
-                    };
-
-                    const insertData = [...collectData('teamAPlayersInputs', teamAId_memory), ...collectData('teamBPlayersInputs', teamBId_memory)];
-                    if(insertData.length > 0) {
-                        await window.supabaseClient.from('match_player_stats').insert(insertData);
-                    }
+                    await window.supabaseClient.from('match_player_stats').delete().eq('map_id', targetMapId);
                 }
 
-                showNotification("Seçili harita verileri başarıyla güncellendi!", "success");
+                // YENİDEN OLUŞTURULMUŞ VEYA GÜNCELLENMİŞ HARİTA ID'Sİ İLE İSTATİSTİKLERİ YAZ
+                const insertData = [
+                    ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, targetMapId)), 
+                    ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, targetMapId))
+                ];
+                
+                if(insertData.length > 0) {
+                    await window.supabaseClient.from('match_player_stats').insert(insertData);
+                }
+
+                showNotification("Seçili harita verileri başarıyla kaydedildi!", "success");
+                
+                // İşlem bittikten sonra dropdown listesini tekrar çek ve son eklenen haritada kal
+                setTimeout(() => {
+                    loadExistingMatch(currentMatchId);
+                }, 1500);
 
             } catch(err) {
                 console.error(err);
-                showNotification("Güncelleme başarısız oldu.", "error");
+                showNotification("Kayıt işlemi başarısız oldu.", "error");
             } finally {
-                btn.innerHTML = '<i class="fas fa-sync-alt"></i> VERİLERİ GÜNCELLE';
+                btn.innerHTML = '<i class="fas fa-sync-alt"></i> VERİLERİ KAYDET / GÜNCELLE';
                 btn.disabled = false;
             }
         }
@@ -588,8 +749,6 @@
             btn.disabled = true;
 
             try {
-                // Eğer cascade silme açıksa sadece bracket_matches silmek yeterlidir, 
-                // ancak garanti olsun diye manual harita temizliği de eklenebilir.
                 await window.supabaseClient.from('bracket_matches').delete().eq('id', currentMatchId);
 
                 showNotification("Tüm maç başarıyla silindi ve fikstürden kaldırıldı.", "success");
@@ -627,14 +786,25 @@
                 document.getElementById('scoreA').value = data.teams.blue.rounds_won;
                 document.getElementById('scoreB').value = data.teams.red.rounds_won;
 
-                const bluePlayers = data.players.all_players.filter(p => p.team.toLowerCase() === 'blue');
-                const redPlayers = data.players.all_players.filter(p => p.team.toLowerCase() === 'red');
+                const roundsPlayed = data.metadata.rounds_played || 1;
 
-                // Seçili harita için statları API'den çekip populate edelim
-                populateRows('teamAPlayersInputs', bluePlayers);
-                populateRows('teamBPlayersInputs', redPlayers);
+                const processPlayers = (players) => players.map(p => {
+                    const totalShots = p.stats.headshots + p.stats.bodyshots + p.stats.legshots;
+                    return {
+                        ...p,
+                        calc_acs: Math.round(p.stats.score / roundsPlayed),
+                        calc_adr: Math.round(p.damage_made / roundsPlayed),
+                        calc_hs: totalShots > 0 ? Math.round((p.stats.headshots / totalShots) * 100) : 0
+                    };
+                });
 
-                showNotification("Veriler API'den otomatik dolduruldu!", "success");
+                const bluePlayers = processPlayers(data.players.all_players.filter(p => p.team.toLowerCase() === 'blue'));
+                const redPlayers = processPlayers(data.players.all_players.filter(p => p.team.toLowerCase() === 'red'));
+
+                apiPopulateRows('teamAPlayersInputs', bluePlayers);
+                apiPopulateRows('teamBPlayersInputs', redPlayers);
+
+                showNotification("Tüm veriler API'den otomatik dolduruldu!", "success");
             } catch (err) {
                 showNotification("API Hatası: " + err.message, "error");
             } finally {
@@ -643,17 +813,38 @@
             }
         }
 
-        function populateRows(containerId, players) {
+        function apiPopulateRows(containerId, players) {
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             players.forEach((p, i) => {
-                const actualRow = rows[i+1]; 
+                const actualRow = rows[i+1]; // İlk satır header olduğu için +1
                 if(actualRow) {
-                    actualRow.querySelector('.agent-icon').src = p.assets.agent.small;
-                    actualRow.querySelector('.agent-name-input').value = p.character;
-                    actualRow.querySelector('.ign-input').value = `${p.name}#${p.tag}`;
-                    actualRow.querySelector('.k-input').value = p.stats.kills;
-                    actualRow.querySelector('.d-input').value = p.stats.deaths;
-                    actualRow.querySelector('.a-input').value = p.stats.assists;
+                    const iconEl = actualRow.querySelector('.agent-icon');
+                    if(iconEl) iconEl.src = p.assets.agent.small;
+                    
+                    const nameEl = actualRow.querySelector('.agent-name-input');
+                    if(nameEl) nameEl.value = p.character;
+                    
+                    const ignEl = actualRow.querySelector('.ign-input');
+                    if(ignEl) ignEl.value = `${p.name}#${p.tag}`;
+                    
+                    const kEl = actualRow.querySelector('.k-input');
+                    if(kEl) kEl.value = p.stats.kills;
+                    
+                    const dEl = actualRow.querySelector('.d-input');
+                    if(dEl) dEl.value = p.stats.deaths;
+                    
+                    const aEl = actualRow.querySelector('.a-input');
+                    if(aEl) aEl.value = p.stats.assists;
+                    
+                    // Düzenle ekranında normalde acs-adr yok, varsa ekleriz
+                    const acsEl = actualRow.querySelector('.acs-input');
+                    if(acsEl) acsEl.value = p.calc_acs || 0;
+                    
+                    const adrEl = actualRow.querySelector('.adr-input');
+                    if(adrEl) adrEl.value = p.calc_adr || 0;
+                    
+                    const hsEl = actualRow.querySelector('.hs-input');
+                    if(hsEl) hsEl.value = p.calc_hs || 0;
                 }
             });
         }
