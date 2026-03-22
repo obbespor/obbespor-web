@@ -79,6 +79,9 @@
         .player-stat-row input:focus, .player-stat-row select:focus { border-color: var(--neon-mor); }
         .player-stat-row input.ign-input { text-align: left; font-weight: bold; color: white; padding-left: 10px; }
         
+        /* Eşleşme durumuna göre select kutusunun stilleri */
+        .user-matcher-select { transition: 0.3s; }
+        
         .agent-input-group { display: flex; align-items: center; gap: 5px; }
         .agent-icon { width: 35px; height: 35px; border-radius: 4px; object-fit: cover; border: 1px solid #444; background: #222; }
 
@@ -439,11 +442,18 @@
             }
         }
 
+        // Kayo hatasını çözen ikon güncelleyicisi
         function updateAgentIcon(inputEl, iconId) {
-            const val = inputEl.value.trim().toLowerCase();
+            let val = inputEl.value.replace(/[^a-zA-Z0-9]/g, '');
             const icon = document.getElementById(iconId);
-            if(val.length > 2) icon.src = `https://ui-avatars.com/api/?name=${val}&background=random&color=fff`;
-            else icon.src = "img/agents/unknown.png";
+            
+            if(val.length >= 2) {
+                let formatted = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+                if (formatted === 'Kayo' || formatted === 'KAYO') formatted = 'Kayo'; 
+                icon.src = `img/imgagents/${formatted}.webp`;
+            } else {
+                icon.src = "img/imgagents/unknown.png";
+            }
         }
 
         async function fetchValorantData() {
@@ -485,7 +495,7 @@
                 populateRows('teamAPlayersInputs', bluePlayers);
                 populateRows('teamBPlayersInputs', redPlayers);
 
-                showNotification("Tüm Leaderboard verileri API'den başarıyla hesaplandı ve çekildi!", "success");
+                showNotification("Tüm Leaderboard verileri API'den çekildi ve eşleştirildi!", "success");
             } catch (err) {
                 showNotification("API Hatası: " + err.message, "error");
             } finally {
@@ -494,20 +504,67 @@
             }
         }
 
+        // --- GÜNCELLENMİŞ: OTOMATİK PROFİL EŞLEŞTİRME VE LİSTE DOLDURMA ---
         function populateRows(containerId, players) {
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             players.forEach((p, i) => {
-                const actualRow = rows[i+1]; 
+                const actualRow = rows[i+1]; // İlk satır header olduğu için +1
                 if(actualRow) {
-                    actualRow.querySelector('.agent-icon').src = p.assets.agent.small;
-                    actualRow.querySelector('.agent-name-input').value = p.character;
-                    actualRow.querySelector('.ign-input').value = `${p.name}#${p.tag}`;
-                    actualRow.querySelector('.k-input').value = p.stats.kills;
-                    actualRow.querySelector('.d-input').value = p.stats.deaths;
-                    actualRow.querySelector('.a-input').value = p.stats.assists;
-                    actualRow.querySelector('.acs-input').value = p.calc_acs || 0;
-                    actualRow.querySelector('.adr-input').value = p.calc_adr || 0;
-                    actualRow.querySelector('.hs-input').value = p.calc_hs || 0;
+                    const iconEl = actualRow.querySelector('.agent-icon');
+                    if(iconEl) iconEl.src = p.assets.agent.small;
+                    
+                    const nameEl = actualRow.querySelector('.agent-name-input');
+                    if(nameEl) nameEl.value = p.character;
+                    
+                    // API'den gelen tam IGN (Örn: PATRON#TR1)
+                    const apiIgn = `${p.name}#${p.tag}`;
+                    const ignEl = actualRow.querySelector('.ign-input');
+                    if(ignEl) ignEl.value = apiIgn;
+
+                    // --- OTOMATİK PROFİL EŞLEŞTİRME SİSTEMİ ---
+                    const selectEl = actualRow.querySelector('.user-matcher-select');
+                    if (selectEl) {
+                        const cleanApiIgn = apiIgn.toLowerCase().replace(/\s+/g, '');
+                        let matched = false;
+                        
+                        for (let j = 0; j < selectEl.options.length; j++) {
+                            const optIgn = selectEl.options[j].getAttribute('data-ign');
+                            
+                            if (optIgn && optIgn.toLowerCase().replace(/\s+/g, '') === cleanApiIgn) {
+                                selectEl.selectedIndex = j; 
+                                selectEl.style.border = "1px solid #00d2ff"; 
+                                selectEl.style.color = "#00d2ff";
+                                matched = true;
+                                break;
+                            }
+                        }
+                        
+                        // Eşleşmediyse uyar, index 0'a atıp manual seçimi bekle
+                        if (!matched) {
+                            selectEl.style.border = "1px dashed #ff4b4b"; 
+                            selectEl.style.color = "#ff4b4b";
+                            selectEl.selectedIndex = 0;
+                        }
+                    }
+                    // ------------------------------------------
+                    
+                    const kEl = actualRow.querySelector('.k-input');
+                    if(kEl) kEl.value = p.stats.kills;
+                    
+                    const dEl = actualRow.querySelector('.d-input');
+                    if(dEl) dEl.value = p.stats.deaths;
+                    
+                    const aEl = actualRow.querySelector('.a-input');
+                    if(aEl) aEl.value = p.stats.assists;
+                    
+                    const acsEl = actualRow.querySelector('.acs-input');
+                    if(acsEl) acsEl.value = p.calc_acs || 0;
+                    
+                    const adrEl = actualRow.querySelector('.adr-input');
+                    if(adrEl) adrEl.value = p.calc_adr || 0;
+                    
+                    const hsEl = actualRow.querySelector('.hs-input');
+                    if(hsEl) hsEl.value = p.calc_hs || 0;
                 }
             });
         }
@@ -600,14 +657,14 @@
             }
         }
 
-        // BU KISMI BÜTÜN FONKSİYONLA BERABER DEĞİŞTİRDİK
+        // İGN GÜNCELLEME VE BİLDİRİM ATMA
         const collectDataAndUpdateIGN = async (containerId, teamId, mapDataId) => {
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             const stats = [];
             for(let i=1; i<rows.length; i++) {
                 const row = rows[i];
                 const select = row.querySelector('.user-matcher-select');
-                const userId = select.value || null;
+                const userId = select ? select.value : null;
                 const inGameName = row.querySelector('.ign-input').value || 'Bilinmiyor';
 
                 if (userId && inGameName && inGameName !== 'Bilinmiyor') {
