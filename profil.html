@@ -93,13 +93,12 @@
         .clickable-doc { color: var(--neon-mor); text-decoration: underline; cursor: pointer; transition: 0.3s; font-weight: bold; }
         .clickable-doc:hover { color: #fff; text-shadow: 0 0 10px var(--neon-mor); }
 
-/* TİCARİ ONAY TOGGLE (SWITCH) */
+        /* TİCARİ ONAY TOGGLE (SWITCH) */
         .switch-container { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; font-size: 13px; }
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 24px; }
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        /* Aşağıdaki iki satırda baştaki noktalar kaldırıldı */
         input:checked + .slider { background-color: var(--mavi-onay); }
         input:checked + .slider:before { transform: translateX(20px); }
 
@@ -108,7 +107,7 @@
         .modal.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal-content { background: #0a0a0a; padding: 30px; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         
-        /* SÖZLEŞME ÖZEL MODAL STİLLERİ (Kayıt Sayfasından Aktarıldı) */
+        /* SÖZLEŞME ÖZEL MODAL STİLLERİ */
         .doc-modal-content { max-width: 700px; max-height: 80vh; display: flex; flex-direction: column; padding: 0; }
         .doc-modal-header { padding: 25px 25px 15px; border-bottom: 1px solid #222; }
         .doc-modal-body { padding: 25px; overflow-y: auto; font-size: 13px; color: #ddd; line-height: 1.6; }
@@ -280,7 +279,7 @@
                     </div>
                     
                     <div style="margin-top: 20px; text-align: right;">
-                        <a href="#" onclick="localStorage.removeItem('obb_cookie_consent'); location.reload();" style="color: var(--gri-yazi); font-size: 12px; text-decoration: underline;">Çerez Tercihlerimi Sıfırla</a>
+                        <a href="#" onclick="confirmCookieReset(); return false;" style="color: var(--gri-yazi); font-size: 12px; text-decoration: underline;">Çerez Tercihlerimi Sıfırla</a>
                     </div>
                 </div>
             </div>
@@ -297,6 +296,18 @@
                 <input type="password" id="modalCurrentPassword" placeholder="••••••••">
             </div>
             <button class="btn-primary" onclick="confirmActionWithPassword()">Onayla ve Kaydet</button>
+        </div>
+    </div>
+
+    <div id="cookieResetModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeCustomModal('cookieResetModal')">&times;</span>
+            <div class="modal-title" style="color: var(--kirmizi-iptal);">Çerezleri Sıfırla</div>
+            <p class="modal-desc">Çerez tercihlerinizi tamamen sıfırlamak istediğinize emin misiniz? Bu işlem sonrası sayfa yeniden yüklenecektir.</p>
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                <button class="btn-primary" style="background: #333;" onclick="closeCustomModal('cookieResetModal')">Vazgeç</button>
+                <button class="btn-primary" style="background: var(--kirmizi-iptal);" onclick="executeCookieReset()">Evet, Sıfırla</button>
+            </div>
         </div>
     </div>
 
@@ -370,7 +381,7 @@
 
     <script>
         let currentUser = null;
-        let pendingAction = null; // İşlemi bekletmek için eklenen değişken
+        let pendingAction = null; 
 
         const documentContents = {
             kvkk: {
@@ -502,6 +513,16 @@
         function closeCustomModal(id) {
             document.getElementById(id).classList.remove('active');
             setTimeout(() => { document.getElementById(id).style.display = "none"; }, 300);
+        }
+
+        // --- YENİ ÇEREZ SIFIRLAMA FONKSİYONLARI ---
+        function confirmCookieReset() {
+            openCustomModal('cookieResetModal');
+        }
+
+        function executeCookieReset() {
+            localStorage.removeItem('obb_cookie_consent');
+            location.reload();
         }
 
         function openDocModal(docType) {
@@ -828,7 +849,7 @@
             }
         }
 
-        // --- YENİ GÜVENLİK MODALI VE GÜNCELLEME İŞLEMLERİ ---
+        // --- GÜNCELLENMİŞ GÜVENLİK MODALI VE ONAY İŞLEMLERİ ---
 
         function initiateNameUpdate() {
             const newName = document.getElementById('newUsernameInput').value.trim();
@@ -854,9 +875,14 @@
         async function confirmActionWithPassword() {
             const currentPass = document.getElementById('modalCurrentPassword').value;
             if (!currentPass) return showNotification("Lütfen mevcut şifrenizi girin.", "error");
+            
+            // Eğer giriş yöntemine bağlı olarak email çekilemezse uyar:
+            const userEmail = currentUser.email || (currentUser.user_metadata && currentUser.user_metadata.email);
+            if (!userEmail) return showNotification("Hesap emailiniz bulunamadı. Şifre doğrulama yapılamıyor.", "error");
 
+            // Doğrulama aşaması: Mevcut email ve şifreyle Supabase'e giriş denemesi yapılır.
             const { error: authError } = await window.supabaseClient.auth.signInWithPassword({
-                email: currentUser.email,
+                email: userEmail,
                 password: currentPass
             });
 
@@ -872,6 +898,7 @@
                     .eq('id', currentUser.id);
 
                 if (updateError) {
+                    console.error("Profil güncellenemedi:", updateError);
                     showNotification("Profil ismi güncellenirken bir hata oluştu.", "error");
                 } else {
                     showNotification("Profil isminiz başarıyla güncellendi!", "success");
@@ -890,6 +917,7 @@
                 const { error } = await window.supabaseClient.auth.updateUser({ password: newPass });
                 
                 if (error) {
+                    console.error("Şifre güncellenemedi:", error);
                     showNotification("Şifre güncellenemedi: " + error.message, "error");
                 } else {
                     showNotification("Şifreniz başarıyla güncellendi!", "success");
