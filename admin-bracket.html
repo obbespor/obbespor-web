@@ -600,6 +600,7 @@
             }
         }
 
+        // BU KISMI BÜTÜN FONKSİYONLA BERABER DEĞİŞTİRDİK
         const collectDataAndUpdateIGN = async (containerId, teamId, mapDataId) => {
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             const stats = [];
@@ -614,12 +615,21 @@
                     const existingIgn = selectedOption.getAttribute('data-ign');
                     
                     if (!existingIgn || existingIgn.trim() === '' || existingIgn === 'null') {
+                        // PROFİLİ GÜNCELLE
                         await window.supabaseClient.from('profiles')
                             .update({ ign: inGameName })
                             .eq('id', userId);
                         
                         console.log(`Otomatik IGN Güncellendi: ${userId} -> ${inGameName}`);
                         selectedOption.setAttribute('data-ign', inGameName); 
+
+                        // KULLANICIYA SİSTEM BİLDİRİMİ GÖNDER
+                        await window.supabaseClient.from('bildirimler').insert([{
+                            kullanici_id: userId,
+                            baslik: "Oyun İçi Nick Güncellendi",
+                            mesaj: `Oyun içi nickiniz (IGN) maç eşleştirmesi sırasında sistem tarafından otomatik olarak '${inGameName}' şeklinde güncellenmiştir.`,
+                            tip: 'sistem'
+                        }]);
                     }
                 }
 
