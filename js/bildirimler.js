@@ -55,16 +55,14 @@ function getIconForType(tip) {
     }
 }
 
-// --- HİBRİT VERİ ÇEKME VE HARMANLAMA SİSTEMİ ---
+// --- KİŞİSEL BİLDİRİMLERİ VERİTABANINDAN ÇEKME (DUYURULAR KALDIRILDI) ---
 window.fetchRealNotifications = async function() {
     try {
         const { data: { user } } = await window.supabaseClient.auth.getUser();
         if (!user) return;
 
         const { data: kisiselData } = await window.supabaseClient.from('bildirimler').select('*').eq('kullanici_id', user.id); 
-        const { data: duyuruData } = await window.supabaseClient.from('duyurular').select('*'); 
 
-        let gizlenenDuyurular = JSON.parse(localStorage.getItem('gizlenenDuyurular') || '[]');
         let harmanlanmisList = [];
 
         if (kisiselData) {
@@ -76,22 +74,11 @@ window.fetchRealNotifications = async function() {
             });
         }
 
-        if (duyuruData) {
-            duyuruData.forEach(item => {
-                if (!gizlenenDuyurular.includes(item.id)) {
-                    harmanlanmisList.push({
-                        id: item.id, tablo: 'duyurular', tip: 'sistem', 
-                        title: item.baslik, text: item.mesaj, created_at: item.created_at
-                    });
-                }
-            });
-        }
-
         initGlobalInviteSystem(user.id, harmanlanmisList);
     } catch (err) { console.error("Bildirim çekilemedi:", err); }
 };
 
-// --- İKİ KANALDAN GERÇEK ZAMANLI (REALTIME) DİNLEME ---
+// --- KİŞİSEL BİLDİRİMLERİ GERÇEK ZAMANLI (REALTIME) DİNLEME (DUYURULAR KALDIRILDI) ---
 window.listenRealtimeNotifications = async function() {
     const { data: { user } } = await window.supabaseClient.auth.getUser();
     if (!user) return;
@@ -108,21 +95,6 @@ window.listenRealtimeNotifications = async function() {
             window.myNotifications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             renderNotifications();
             showNotification(yeni.baslik, "info");
-        }
-      ).subscribe();
-
-    window.supabaseClient.channel('genel-duyurular')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'duyurular' },
-        (payload) => {
-            const yeni = payload.new;
-            const styleObj = getIconForType('sistem');
-            window.myNotifications.unshift({
-                id: yeni.id, tablo: 'duyurular', tip: 'sistem', icon: styleObj.icon, color: styleObj.color,
-                title: yeni.baslik, text: yeni.mesaj, created_at: yeni.created_at
-            });
-            window.myNotifications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            renderNotifications();
-            showNotification(yeni.baslik, "info"); 
         }
       ).subscribe();
 };
@@ -179,24 +151,18 @@ window.toggleNotifPanel = function(panelId, event) {
     if (!isActive) panel.classList.add("active");
 };
 
-// --- ÇİFT KARAKTERLİ SİLME İŞLEMİ ---
+// --- BİLDİRİM SİLME İŞLEMİ (SADECE KİŞİSEL BİLDİRİMLER KALDI) ---
 window.clearNotifications = async function(event) {
     if(event) event.stopPropagation();
     try {
         const { data: { user } } = await window.supabaseClient.auth.getUser();
         if (!user) return;
 
+        // Sadece kullanıcının kendi bildirimlerini veritabanından siliyoruz
         await window.supabaseClient.from('bildirimler').delete().eq('kullanici_id', user.id);
 
-        let gizlenenDuyurular = JSON.parse(localStorage.getItem('gizlenenDuyurular') || '[]');
+        // Duyuru filtreleme ve gizleme (localStorage) mantığı tamamen kaldırıldı
         
-        window.myNotifications.forEach(notif => {
-            if (notif.tablo === 'duyurular' && !gizlenenDuyurular.includes(notif.id)) {
-                gizlenenDuyurular.push(notif.id);
-            }
-        });
-        localStorage.setItem('gizlenenDuyurular', JSON.stringify(gizlenenDuyurular));
-
         window.myNotifications = [];
         renderNotifications();
         showNotification("Tüm bildirimler temizlendi.", "success");
@@ -413,8 +379,6 @@ window.closeCookiePolicyModal = function() {
 };
 
 // --- DİNAMİK GOOGLE ANALYTICS ENJEKSİYONU ---
-// ÖNEMLİ: Bu fonksiyon sadece kullanıcı "Kabul Et" derse çalışır. 
-// Eğer HTML dosyalarınızda <script async src="...gtag..."></script> varsa onları SİLMELİSİNİZ!
 function injectGoogleAnalytics() {
     // Aynı scriptin birden fazla eklenmesini engelle
     if (document.getElementById('ga-script-inject')) return;
