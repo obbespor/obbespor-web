@@ -89,7 +89,7 @@
         .legal-status.approved { color: var(--yesil-guven); font-weight: bold; display: flex; align-items: center; gap: 5px; }
         .legal-status.approved i { font-size: 16px; }
         
-        /* TIKLANABİLİR SÖZLEŞME LİNKLERİ (Belirginleştirildi) */
+        /* TIKLANABİLİR SÖZLEŞME LİNKLERİ */
         .clickable-doc { color: var(--neon-mor); text-decoration: underline; cursor: pointer; transition: 0.3s; font-weight: bold; }
         .clickable-doc:hover { color: #fff; text-shadow: 0 0 10px var(--neon-mor); }
 
@@ -223,15 +223,6 @@
             <div class="settings-grid">
                 <div style="display: flex; flex-direction: column; gap: 20px;">
                     
-                    <div class="settings-box">
-                        <h4>Profil İsmini Değiştir</h4>
-                        <div class="input-group">
-                            <label>Yeni Profil İsmi</label>
-                            <input type="text" id="newUsernameInput" placeholder="Yeni isminizi girin">
-                        </div>
-                        <button class="btn-primary" onclick="initiateNameUpdate()">İsmi Güncelle</button>
-                    </div>
-
                     <div class="settings-box">
                         <h4>Şifre Değiştir</h4>
                         <div class="input-group">
@@ -851,15 +842,6 @@
 
         // --- GÜNCELLENMİŞ GÜVENLİK MODALI VE ONAY İŞLEMLERİ ---
 
-        function initiateNameUpdate() {
-            const newName = document.getElementById('newUsernameInput').value.trim();
-            if (!newName) return showNotification("Yeni profil ismi boş bırakılamaz.", "error");
-
-            pendingAction = 'nameUpdate';
-            document.getElementById('modalCurrentPassword').value = '';
-            openCustomModal('passwordConfirmModal');
-        }
-
         function initiatePasswordUpdate() {
             const newPass = document.getElementById('newPassword').value;
             const confirmPass = document.getElementById('newPasswordConfirm').value;
@@ -890,29 +872,7 @@
                 return showNotification("Girdiğiniz mevcut şifre yanlış. Lütfen tekrar deneyin.", "error");
             }
 
-            if (pendingAction === 'nameUpdate') {
-                const newName = document.getElementById('newUsernameInput').value.trim();
-                
-                const { error: updateError } = await window.supabaseClient.from('profiles')
-                    .update({ username: newName })
-                    .eq('id', currentUser.id);
-
-                if (updateError) {
-                    console.error("Profil güncellenemedi:", updateError);
-                    showNotification("Profil ismi güncellenirken bir hata oluştu.", "error");
-                } else {
-                    showNotification("Profil isminiz başarıyla güncellendi!", "success");
-                    document.getElementById('profileNameDisplay').innerText = newName;
-                    document.getElementById('newUsernameInput').value = ''; 
-                    
-                    const cacheKey = 'obb_profile_cache';
-                    const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
-                    cachedProfile.username = newName;
-                    localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
-                    closeCustomModal('passwordConfirmModal');
-                }
-
-            } else if (pendingAction === 'passwordUpdate') {
+            if (pendingAction === 'passwordUpdate') {
                 const newPass = document.getElementById('newPassword').value;
                 const { error } = await window.supabaseClient.auth.updateUser({ password: newPass });
                 
