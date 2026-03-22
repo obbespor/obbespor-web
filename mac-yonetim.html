@@ -40,7 +40,8 @@
         .series-label { font-size: 11px; color: var(--gri-yazi); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
         .series-input { background: #000; border: 2px solid var(--neon-mor); color: white; width: 60px; height: 50px; text-align: center; font-size: 24px; font-weight: 900; border-radius: 8px; outline: none; transition: 0.3s; }
         .series-input:focus { box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); }
-        .series-select { background: #000; border: 1px solid #555; color: var(--neon-mor); padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; outline: none; cursor: pointer; text-align: center; width: 250px; }
+        .series-select { background: #000; border: 1px solid #555; color: var(--neon-mor); padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; outline: none; cursor: pointer; text-align: center; width: 250px; transition: 0.3s;}
+        .series-select:focus { border-color: var(--neon-mor); }
 
         .api-fetch-box { background: rgba(96, 29, 194, 0.05); border: 1px dashed var(--neon-mor); padding: 25px; border-radius: 12px; display: flex; flex-direction: column; gap: 15px; margin-bottom: 40px; position: relative; }
         .api-badge { position: absolute; top: -12px; left: 20px; background: var(--neon-mor); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
@@ -77,6 +78,9 @@
         .player-stat-row input, .player-stat-row select { background: #000; border: 1px solid #333; color: white; padding: 8px; border-radius: 6px; font-size: 13px; outline: none; transition: 0.3s; width: 100%; text-align: center; }
         .player-stat-row input:focus, .player-stat-row select:focus { border-color: var(--neon-mor); }
         .player-stat-row input.ign-input { text-align: left; font-weight: bold; color: white; }
+        
+        /* Eşleşme durumuna göre select kutusunun stilleri */
+        .user-matcher-select { transition: 0.3s; }
         
         .agent-input-group { display: flex; align-items: center; gap: 5px; }
         .agent-icon { width: 35px; height: 35px; border-radius: 4px; object-fit: cover; border: 1px solid #444; background: #222; }
@@ -404,7 +408,7 @@
                     winsNeeded = 1;
                 } else {
                     seriesBox.style.display = 'flex'; 
-                    winsNeeded = (currentRoundName === "FİNAL") ? 3 : 2; // BO5 için 3, BO3 için 2 win lazım
+                    winsNeeded = (currentRoundName === "FİNAL") ? 3 : 2; 
                 }
                 
                 let maxMaps = winsNeeded === 1 ? 1 : (winsNeeded === 2 ? 3 : 5);
@@ -469,7 +473,7 @@
 
         // --- YENİ BİR HARİTA (Map 2, Map 3 vb.) GİRİŞİ İÇİN EKRANI HAZIRLAR ---
         async function prepareNewMapUI(order) {
-            currentMapId = null; // null olması Update işlemi sırasında "Insert" (Yeni Kayıt) yapılacağını belirtir
+            currentMapId = null; // null olması Update işlemi sırasında "Insert" yapılacağını belirtir
             document.getElementById('mapNameInput').value = "";
             document.getElementById('scoreA').value = 0;
             document.getElementById('scoreB').value = 0;
@@ -563,7 +567,7 @@
 
                 let cleanName = agent.replace(/[^a-zA-Z0-9]/g, ''); 
                 let formattedAgent = cleanName ? (cleanName.charAt(0).toUpperCase() + cleanName.slice(1).toLowerCase()) : 'unknown';
-                if(formattedAgent === 'Kayo' || formattedAgent === 'KAYO') formattedAgent = 'Kayo';
+                if (formattedAgent === 'Kayo' || formattedAgent === 'KAYO') formattedAgent = 'Kayo';
 
                 container.innerHTML += `
                     <div class="player-stat-row">
@@ -580,13 +584,14 @@
             }
         }
 
+        // --- KAYO FİXİ EKLENMİŞ AJAN İKONU GÜNCELLEYİCİ ---
         function updateAgentIcon(inputEl, iconId) {
             let val = inputEl.value.replace(/[^a-zA-Z0-9]/g, '');
             const icon = document.getElementById(iconId);
             
             if(val.length >= 2) {
                 let formatted = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
-                if (formatted === 'Kayo') formatted = 'Kayo';
+                if (formatted === 'Kayo' || formatted === 'KAYO') formatted = 'Kayo'; // Kayo İstisnası
                 icon.src = `img/imgagents/${formatted}.webp`;
             } else {
                 icon.src = "img/imgagents/unknown.png";
@@ -611,6 +616,7 @@
                     const existingIgn = selectedOption.getAttribute('data-ign');
                     
                     if (!existingIgn || existingIgn.trim() === '' || existingIgn === 'null') {
+                        // PROFİLİ GÜNCELLE
                         await window.supabaseClient.from('profiles')
                             .update({ ign: inGameName })
                             .eq('id', userId);
@@ -618,6 +624,7 @@
                         console.log(`Otomatik IGN Güncellendi: ${userId} -> ${inGameName}`);
                         selectedOption.setAttribute('data-ign', inGameName); 
 
+                        // KULLANICIYA SİSTEM BİLDİRİMİ GÖNDER
                         await window.supabaseClient.from('bildirimler').insert([{
                             kullanici_id: userId,
                             baslik: "Oyun İçi Nick Güncellendi",
@@ -627,7 +634,6 @@
                     }
                 }
 
-                // DÜZENLE menüsünde ACS, ADR, HS inputları yoksa varsayılan 0 atıyoruz
                 const acsInput = row.querySelector('.acs-input');
                 const adrInput = row.querySelector('.adr-input');
                 const hsInput = row.querySelector('.hs-input');
@@ -686,7 +692,6 @@
                         .eq('id', currentMatchId);
                 }
 
-                // EĞER SEÇİLİ OLAN BİR YENİ HARİTAYSA INSERT YAP, DEĞİLSE UPDATE YAP
                 let targetMapId = currentMapId;
                 const selectedVal = document.getElementById('editMapSelect').value;
                 
@@ -711,7 +716,6 @@
                     await window.supabaseClient.from('match_player_stats').delete().eq('map_id', targetMapId);
                 }
 
-                // YENİDEN OLUŞTURULMUŞ VEYA GÜNCELLENMİŞ HARİTA ID'Sİ İLE İSTATİSTİKLERİ YAZ
                 const insertData = [
                     ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, targetMapId)), 
                     ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, targetMapId))
@@ -723,7 +727,6 @@
 
                 showNotification("Seçili harita verileri başarıyla kaydedildi!", "success");
                 
-                // İşlem bittikten sonra dropdown listesini tekrar çek ve son eklenen haritada kal
                 setTimeout(() => {
                     loadExistingMatch(currentMatchId);
                 }, 1500);
@@ -737,7 +740,6 @@
             }
         }
 
-        // --- MAÇI SİLME ---
         async function deleteSelectedMatch() {
             if(!currentMatchId) return;
 
@@ -764,7 +766,7 @@
             }
         }
 
-        // API KISMI
+        // --- YENİ EKLENEN OTOMATİK EŞLEŞTİRMELİ API SİSTEMİ ---
         async function fetchValorantData() {
             const matchId = document.getElementById('apiMatchId').value.trim();
             if (!matchId) return showNotification("Lütfen bir Match ID girin!", "error");
@@ -804,7 +806,7 @@
                 apiPopulateRows('teamAPlayersInputs', bluePlayers);
                 apiPopulateRows('teamBPlayersInputs', redPlayers);
 
-                showNotification("Tüm veriler API'den otomatik dolduruldu!", "success");
+                showNotification("Veriler API'den çekildi ve oyuncular eşleştirildi!", "success");
             } catch (err) {
                 showNotification("API Hatası: " + err.message, "error");
             } finally {
@@ -813,6 +815,7 @@
             }
         }
 
+        // --- YENİ EKLENEN OTOMATİK EŞLEŞTİRMELİ TABLO DOLDURMA SİSTEMİ ---
         function apiPopulateRows(containerId, players) {
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             players.forEach((p, i) => {
@@ -824,8 +827,35 @@
                     const nameEl = actualRow.querySelector('.agent-name-input');
                     if(nameEl) nameEl.value = p.character;
                     
+                    const apiIgn = `${p.name}#${p.tag}`;
                     const ignEl = actualRow.querySelector('.ign-input');
-                    if(ignEl) ignEl.value = `${p.name}#${p.tag}`;
+                    if(ignEl) ignEl.value = apiIgn;
+
+                    // OTOMATİK PROFİL EŞLEŞTİRME 
+                    const selectEl = actualRow.querySelector('.user-matcher-select');
+                    if (selectEl) {
+                        const cleanApiIgn = apiIgn.toLowerCase().replace(/\s+/g, '');
+                        let matched = false;
+                        
+                        for (let j = 0; j < selectEl.options.length; j++) {
+                            const optIgn = selectEl.options[j].getAttribute('data-ign');
+                            
+                            if (optIgn && optIgn.toLowerCase().replace(/\s+/g, '') === cleanApiIgn) {
+                                selectEl.selectedIndex = j; 
+                                selectEl.style.border = "1px solid #00d2ff"; 
+                                selectEl.style.color = "#00d2ff";
+                                matched = true;
+                                break;
+                            }
+                        }
+                        
+                        // Sistemde kayıtlı IGN ile eşleşmediyse sadece uyarı verir, sonsuz döngüye girmez
+                        if (!matched) {
+                            selectEl.style.border = "1px dashed #ff4b4b"; 
+                            selectEl.style.color = "#ff4b4b";
+                            selectEl.selectedIndex = 0; // Varsayılana çek, admin manuel düzeltebilsin
+                        }
+                    }
                     
                     const kEl = actualRow.querySelector('.k-input');
                     if(kEl) kEl.value = p.stats.kills;
@@ -836,7 +866,6 @@
                     const aEl = actualRow.querySelector('.a-input');
                     if(aEl) aEl.value = p.stats.assists;
                     
-                    // Düzenle ekranında normalde acs-adr yok, varsa ekleriz
                     const acsEl = actualRow.querySelector('.acs-input');
                     if(acsEl) acsEl.value = p.calc_acs || 0;
                     
@@ -849,7 +878,6 @@
             });
         }
 
-        // --- FİKSTÜRÜ TEMİZLEME (ARŞİVLEME) ---
         function openArchiveModal() {
             document.getElementById('confirmInput').value = '';
             document.getElementById('archiveModal').classList.add('active');
