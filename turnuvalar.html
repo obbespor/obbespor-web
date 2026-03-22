@@ -121,12 +121,14 @@
 
                 if (!error) {
                     const registeredCount = count || 0;
-                    document.getElementById('valoCounter').innerText = `64/${registeredCount}`;
+                    document.getElementById('valoCounter').innerText = `${registeredCount}/64`;
                 } else {
-                    document.getElementById('valoCounter').innerText = `64/0`;
+                    document.getElementById('valoCounter').innerText = `0/64`;
                 }
             } catch (err) {
                 console.error("Sayaç hatası:", err);
+                // Olası bir hatada sayaç varsayılan haline döner
+                document.getElementById('valoCounter').innerText = `0/64`;
             }
         }
         document.addEventListener('DOMContentLoaded', loadApprovedCount);
