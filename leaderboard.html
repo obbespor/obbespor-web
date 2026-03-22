@@ -21,7 +21,6 @@
         html, body { background-color: #050505; color: white; overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; }
 
         /* --- SAYFA BAŞLIĞI VE TASARIMI --- */
-        /* Masaüstü için padding-top: 150px yapıldı */
         .page-header { text-align: center; padding: 150px 20px 60px; background: radial-gradient(circle at top, #110522 0%, #050505 100%); border-bottom: 1px solid #222; position: relative; }
         .page-title { font-size: clamp(2.2rem, 4vw, 3.8rem); font-weight: 900; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 2px; }
         .page-title span { color: var(--neon-mor); text-shadow: 0 0 25px rgba(96, 29, 194, 0.6); }
@@ -57,7 +56,7 @@
         .rank-badge { 
             display: inline-flex; justify-content: center; align-items: center; 
             width: 34px; height: 34px; 
-            border-radius: 8px; /* Tam yuvarlak yerine hafif köşeli modern yapı */
+            border-radius: 8px;
             font-weight: 900; font-size: 15px; 
             background: rgba(255, 255, 255, 0.05); color: #888; 
             border: 1px solid #333;
@@ -65,27 +64,11 @@
         }
         .data-table tbody tr:hover .rank-badge { transform: scale(1.1); }
         
-        /* 1. Sıra (Altın) */
-        .data-table tr:nth-child(1) .rank-badge { 
-            background: linear-gradient(135deg, #FFDF00, #D4AF37); color: #000; border: none;
-            box-shadow: 0 0 15px rgba(255, 223, 0, 0.5); 
-        }
-        /* 2. Sıra (Gümüş) */
-        .data-table tr:nth-child(2) .rank-badge { 
-            background: linear-gradient(135deg, #E0E0E0, #9E9E9E); color: #000; border: none;
-            box-shadow: 0 0 12px rgba(224, 224, 224, 0.3); 
-        }
-        /* 3. Sıra (Bronz) */
-        .data-table tr:nth-child(3) .rank-badge { 
-            background: linear-gradient(135deg, #CD7F32, #8B4513); color: #fff; border: none;
-            box-shadow: 0 0 12px rgba(205, 127, 50, 0.4); 
-        }
+        .data-table tr:nth-child(1) .rank-badge { background: linear-gradient(135deg, #FFDF00, #D4AF37); color: #000; border: none; box-shadow: 0 0 15px rgba(255, 223, 0, 0.5); }
+        .data-table tr:nth-child(2) .rank-badge { background: linear-gradient(135deg, #E0E0E0, #9E9E9E); color: #000; border: none; box-shadow: 0 0 12px rgba(224, 224, 224, 0.3); }
+        .data-table tr:nth-child(3) .rank-badge { background: linear-gradient(135deg, #CD7F32, #8B4513); color: #fff; border: none; box-shadow: 0 0 12px rgba(205, 127, 50, 0.4); }
 
-        /* 1. Oyuncunun satırını tamamen hafif altın rengiyle vurgulama */
-        .data-table tr:nth-child(1) td { 
-            background: linear-gradient(90deg, rgba(255, 223, 0, 0.06) 0%, transparent 100%);
-            border-bottom: 1px solid rgba(255, 223, 0, 0.2); 
-        }
+        .data-table tr:nth-child(1) td { background: linear-gradient(90deg, rgba(255, 223, 0, 0.06) 0%, transparent 100%); border-bottom: 1px solid rgba(255, 223, 0, 0.2); }
 
         .player-info-cell { display: flex; align-items: center; gap: 15px; text-align: left; }
         .agent-img { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; border: 1px solid #333; background: #000; transition: 0.3s; }
@@ -98,6 +81,9 @@
         .highlight-stat { font-size: 18px; font-weight: 900; color: var(--neon-mor); }
         .data-table tr:nth-child(1) .highlight-stat { color: #FFDF00; text-shadow: 0 0 10px rgba(255, 223, 0, 0.3); }
 
+        /* YENİ: ALT BİLGİ (SUB-STAT) TASARIMI (MOBİL DOSTU) */
+        .sub-stat { display: block; font-size: 10px; color: var(--gri-yazi); font-weight: 500; letter-spacing: 0.5px; margin-top: 2px; }
+
         .loading-state { text-align: center; padding: 80px 20px; color: var(--gri-yazi); }
         .loading-state i { font-size: 40px; color: var(--neon-mor); margin-bottom: 20px; }
 
@@ -107,7 +93,6 @@
             MOBİL UYUMLULUK
         ================================================== */
         @media (max-width: 768px) {
-            /* MOBİLDE YUTULMA SORUNU ÇÖZÜMÜ: Padding-top 190px'e çıkarıldı! */
             .page-header { padding: 190px 15px 40px; } 
             .page-title { font-size: 26px; margin-bottom: 12px; }
             .page-subtitle { font-size: 13px; padding: 0 10px; }
@@ -326,6 +311,7 @@
 
                 const playersMap = {};
                 const agentsMap = {};
+                const totalPicks = statsData.length; // Toplam ajan seçim sayısını bulmak için
 
                 statsData.forEach(stat => {
                     const ign = stat.in_game_name || "Bilinmiyor";
@@ -378,13 +364,16 @@
 
                 const playersArray = Object.values(playersMap);
 
+                // --- YENİ EKLENEN İSTATİSTİK HESAPLAMALARI ---
                 playersArray.forEach(p => {
+                    p.kdRatio = p.totalDeaths > 0 ? (p.totalKills / p.totalDeaths).toFixed(2) : p.totalKills; // K/D Eklendi
                     p.avgAcs = p.mapsPlayed > 0 ? Math.round(p.totalAcs / p.mapsPlayed) : 0;
                     p.avgAdr = p.mapsPlayed > 0 ? Math.round(p.totalAdr / p.mapsPlayed) : 0;
                     p.avgHs = p.mapsPlayed > 0 ? Math.round(p.totalHs / p.mapsPlayed) : 0;
                     p.mainAgent = Object.keys(p.agentsPlayed).reduce((a, b) => p.agentsPlayed[a] > p.agentsPlayed[b] ? a : b, "unknown");
                 });
 
+                // 1. AVCILAR (Kills) - K/D Eklendi
                 const killsSorted = [...playersArray].sort((a, b) => b.totalKills - a.totalKills).slice(0, 10);
                 document.getElementById('tbody-kills').innerHTML = killsSorted.map((p, i) => `
                     <tr>
@@ -392,49 +381,76 @@
                         <td><div class="player-info-cell"><div class="player-name"><span class="player-name-text" title="${p.ign}">${p.ign}</span><span class="team-name-small" title="${p.teamName}">${p.teamName}</span></div></div></td>
                         <td><div class="player-info-cell" style="justify-content:center;">${getAgentImgHtml(p.mainAgent)}</div></td>
                         <td class="hide-mobile">${p.mapsPlayed}</td>
-                        <td class="highlight-stat" style="text-align: right;">${p.totalKills}</td>
+                        <td class="highlight-stat" style="text-align: right;">
+                            ${p.totalKills}
+                            <span class="sub-stat">K/D: ${p.kdRatio}</span>
+                        </td>
                     </tr>
                 `).join('');
 
+                // 2. KESKİN NİŞANCILAR (HS%) - Toplam Kill Eklendi
                 const hsSorted = [...playersArray].filter(p => p.mapsPlayed >= 2).sort((a, b) => b.avgHs - a.avgHs).slice(0, 10);
                 document.getElementById('tbody-hs').innerHTML = hsSorted.length > 0 ? hsSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
                         <td><div class="player-info-cell"><div class="player-name"><span class="player-name-text" title="${p.ign}">${p.ign}</span><span class="team-name-small" title="${p.teamName}">${p.teamName}</span></div></div></td>
-                        <td class="hide-mobile">${p.avgAcs}</td>
-                        <td class="highlight-stat" style="text-align: right;">%${p.avgHs}</td>
+                        <td class="hide-mobile">
+                            <span style="font-weight:bold; color:white;">${p.avgAcs}</span>
+                            <span class="sub-stat">${p.totalKills} Kill</span>
+                        </td>
+                        <td class="highlight-stat" style="text-align: right;">
+                            %${p.avgHs}
+                        </td>
                     </tr>
                 `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 harita oynayan oyuncu bekleniyor.</td></tr>';
 
+                // 3. SAVAŞ MAKİNELERİ (ACS) - K/D/A Görünümü İyileştirildi
                 const acsSorted = [...playersArray].sort((a, b) => b.highestAcsData.acs - a.highestAcsData.acs).slice(0, 10);
                 document.getElementById('tbody-acs').innerHTML = acsSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
                         <td><div class="player-info-cell"><div class="player-name"><span class="player-name-text" title="${p.ign}">${p.ign}</span><span class="team-name-small" title="${p.teamName}">${p.teamName}</span></div></div></td>
                         <td><div class="player-info-cell" style="justify-content:center;">${getAgentImgHtml(p.highestAcsData.agent)}</div></td>
-                        <td class="hide-mobile"><span style="color:#00d2ff;">${p.highestAcsData.k}</span> / <span style="color:#ff4b4b;">${p.highestAcsData.d}</span></td>
+                        <td class="hide-mobile">
+                            <span style="color:#00d2ff; font-weight:bold;">${p.highestAcsData.k}</span> / 
+                            <span style="color:#ff4b4b; font-weight:bold;">${p.highestAcsData.d}</span> / 
+                            <span style="color:#888; font-weight:bold;">${p.highestAcsData.a}</span>
+                        </td>
                         <td class="highlight-stat" style="text-align: right;">${p.highestAcsData.acs}</td>
                     </tr>
                 `).join('');
 
+                // 4. HASAR USTALARI (ADR) - Altına ACS eklendi
                 const adrSorted = [...playersArray].filter(p => p.mapsPlayed >= 2).sort((a, b) => b.avgAdr - a.avgAdr).slice(0, 10);
                 document.getElementById('tbody-adr').innerHTML = adrSorted.length > 0 ? adrSorted.map((p, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
                         <td><div class="player-info-cell"><div class="player-name"><span class="player-name-text" title="${p.ign}">${p.ign}</span><span class="team-name-small" title="${p.teamName}">${p.teamName}</span></div></div></td>
                         <td class="hide-mobile">${p.totalKills}</td>
-                        <td class="highlight-stat" style="text-align: right;">${p.avgAdr}</td>
+                        <td class="highlight-stat" style="text-align: right;">
+                            ${p.avgAdr}
+                            <span class="sub-stat">${p.avgAcs} ACS</span>
+                        </td>
                     </tr>
                 `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 harita oynayan oyuncu bekleniyor.</td></tr>';
 
-                const agentsArray = Object.keys(agentsMap).map(key => ({ name: key, count: agentsMap[key] }));
+                // 5. POPÜLER SEÇİMLER (Agents) - Seçilme Oranı (%) Eklendi
+                const agentsArray = Object.keys(agentsMap).map(key => ({ 
+                    name: key, 
+                    count: agentsMap[key],
+                    pickRate: ((agentsMap[key] / totalPicks) * 100).toFixed(1)
+                }));
                 const agentsSorted = agentsArray.sort((a, b) => b.count - a.count).slice(0, 10);
+                
                 document.getElementById('tbody-agents').innerHTML = agentsSorted.map((a, i) => `
                     <tr>
                         <td><span class="rank-badge">${i + 1}</span></td>
                         <td><div class="player-info-cell"><div class="player-name"><span class="player-name-text" style="text-transform:uppercase;">${a.name}</span></div></div></td>
                         <td><div class="player-info-cell" style="justify-content:center;">${getAgentImgHtml(a.name)}</div></td>
-                        <td class="highlight-stat" style="text-align: right;">${a.count}</td>
+                        <td class="highlight-stat" style="text-align: right;">
+                            ${a.count}
+                            <span class="sub-stat">%${a.pickRate} Seçim</span>
+                        </td>
                     </tr>
                 `).join('');
 
