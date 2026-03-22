@@ -49,8 +49,9 @@
         .roster-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
         
         @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* --- YENİ EKLENEN/GÜNCELLENEN: GENİŞLETİLEBİLİR OYUNCU KARTI STİLLERİ --- */
+        /* GENİŞLETİLEBİLİR OYUNCU KARTI STİLLERİ */
         .roster-item { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 14px 20px; background: linear-gradient(90deg, #111 0%, #0a0a0a 100%); border-radius: 12px; border: 1px solid #222; transition: all 0.3s ease; opacity: 0; animation: slideInUp 0.4s ease forwards; cursor: pointer; }
         .roster-item:hover { border-color: var(--neon-mor); background: linear-gradient(90deg, #181818 0%, #0a0a0a 100%); box-shadow: -5px 0 20px rgba(96, 29, 194, 0.2); }
         .roster-main { display: flex; justify-content: space-between; align-items: center; width: 100%; }
@@ -77,6 +78,15 @@
         .stat-mini-value { font-size: 16px; font-weight: 900; color: white; }
         .stat-mini-value.neon { color: var(--neon-mor); text-shadow: 0 0 10px rgba(96,29,194,0.5); }
 
+        /* ÖZEL ONAY MODALI (CUSTOM CONFIRM) STİLLERİ */
+        .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
+        .modal.active { display: flex; animation: fadeIn 0.3s ease; }
+        .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--kirmizi-iptal); border-radius: 15px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; padding: 40px 30px; }
+        .modal-content i.warning-icon { font-size: 45px; color: var(--kirmizi-iptal); margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(255, 75, 75, 0.6)); }
+        .modal-title { color: white; font-weight: 900; margin-bottom: 15px; font-size: 22px; text-transform: uppercase; }
+        .modal-desc { color: var(--gri-yazi); font-size: 14px; margin-bottom: 30px; line-height: 1.6; }
+        .modal-buttons { display: flex; gap: 15px; justify-content: center; }
+        
         @media (max-width: 768px) {
             .main-content { padding: 40px 5%; }
             .action-btns { flex-direction: column; }
@@ -88,6 +98,7 @@
             .stats-grid-mini { flex-wrap: wrap; }
             .stat-mini-box { flex: 1 1 40%; padding: 8px; }
             .roster-item.open .roster-stats { max-height: 250px; }
+            .modal-content { padding: 30px 20px; }
         }
     </style>
 </head>
@@ -146,6 +157,18 @@
         </div>
     </div>
 
+    <div id="customConfirmModal" class="modal">
+        <div class="modal-content">
+            <i class="fas fa-exclamation-triangle warning-icon"></i>
+            <h3 id="confirmModalTitle" class="modal-title">DİKKAT</h3>
+            <p id="confirmModalDesc" class="modal-desc"></p>
+            <div class="modal-buttons">
+                <button class="edit-mode-btn" style="flex: 1; border-color: #555; color: #aaa;" onclick="closeCustomConfirm()">İptal</button>
+                <button class="warning-btn" id="confirmModalBtn" style="flex: 1; background: var(--kirmizi-iptal); color: white;">Evet, Onaylıyorum</button>
+            </div>
+        </div>
+    </div>
+
     <div id="footer-alani"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -156,16 +179,39 @@
 
     <script>
         let currentUser = null, currentDraftId = null, draftCreatedAt = null, saveTimeout = null, currentStatus = null;
+        let currentConfirmCallback = null;
+
+        // --- YENİ ÖZEL UYARI FONKSİYONLARI ---
+        function openCustomConfirm(title, desc, callback) {
+            document.getElementById('confirmModalTitle').innerText = title;
+            document.getElementById('confirmModalDesc').innerHTML = desc;
+            currentConfirmCallback = callback;
+            
+            const modal = document.getElementById('customConfirmModal');
+            modal.style.display = "flex";
+            setTimeout(() => { modal.classList.add('active'); }, 10);
+        }
+
+        function closeCustomConfirm() {
+            const modal = document.getElementById('customConfirmModal');
+            modal.classList.remove('active');
+            setTimeout(() => { modal.style.display = "none"; }, 300);
+            currentConfirmCallback = null;
+        }
+
+        document.getElementById('confirmModalBtn').addEventListener('click', () => {
+            if (currentConfirmCallback) currentConfirmCallback();
+            closeCustomConfirm();
+        });
+
 
         // Kart açma/kapatma fonksiyonu
         window.togglePlayerStats = function(element) {
             const currentItem = element;
             const isAlreadyOpen = currentItem.classList.contains('open');
             
-            // Açık olan diğer kartları kapat
             document.querySelectorAll('.roster-item').forEach(el => el.classList.remove('open'));
             
-            // Eğer tıkladığımız önceden kapalıysa aç
             if (!isAlreadyOpen) {
                 currentItem.classList.add('open');
             }
@@ -266,7 +312,6 @@
                 .order('created_at', { ascending: true });
 
             if (members) {
-                // --- İSTATİSTİK ÇEKME VE HESAPLAMA MANTIĞI ---
                 const userIds = members.map(m => m.user_id);
                 let playerStats = {};
                 
@@ -289,7 +334,6 @@
                         });
                     }
                 } catch(e) { console.warn("İstatistik çekilemedi, varsayılan değerler gösterilecek."); }
-                // ---------------------------------------------
 
                 let html = '';
                 const mainPlayers = members.filter(m => m.role === 'main');
@@ -319,7 +363,6 @@
                         ? '<i class="fas fa-check" style="color: var(--yesil-guven); font-size: 16px; filter: drop-shadow(0 0 5px var(--yesil-guven));" title="Daveti Onayladı"></i>'
                         : '<i class="fas fa-hourglass-half fa-spin" style="color: var(--mavi-onay); font-size: 16px; filter: drop-shadow(0 0 5px var(--mavi-onay));" title="Onay Bekliyor"></i>';
 
-                    // --- BİREYSEL HESAPLAMALAR ---
                     const pStat = playerStats[m.user_id] || { kills: 0, deaths: 0, assists: 0, acsTotal: 0, mapCount: new Set() };
                     const mapsPlayed = pStat.mapCount instanceof Set ? pStat.mapCount.size : 0;
                     
@@ -465,15 +508,21 @@
             }
         }
 
+        // --- GÜNCELLENMİŞ DÜZENLEME ONAY MODALI ENTEGRASYONU ---
         async function enableEditMode() {
-            const btn = document.getElementById('editDraftBtn');
-            
             if (currentStatus === 'approved') {
-                if (!confirm("DİKKAT: Düzenleme ekranına girerseniz turnuva onayınız iptal olur ve tekrar incelenmeniz gerekir. Devam etmek istiyor musunuz?")) {
-                    return;
-                }
+                openCustomConfirm(
+                    "ONAY İPTAL RİSKİ",
+                    "<b>DİKKAT:</b> Düzenleme ekranına girerseniz turnuva onayınız iptal olur ve başvurunuz tekrar inceleme sırasına alınır.<br><br>Devam etmek istiyor musunuz?",
+                    async () => { await executeEditMode(); }
+                );
+            } else {
+                await executeEditMode();
             }
+        }
 
+        async function executeEditMode() {
+            const btn = document.getElementById('editDraftBtn');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lütfen Bekleyin...';
             btn.disabled = true;
 
@@ -485,7 +534,6 @@
                 btn.disabled = false;
                 return;
             }
-
             location.reload();
         }
 
@@ -746,8 +794,20 @@
             });
         }
 
+        // --- GÜNCELLENMİŞ İPTAL MODALI ENTEGRASYONU ---
         async function cancelDraft(silent = false) {
-            if (!silent && !confirm("Tüm taslak silinecek ve davetler iptal edilecek. Emin misiniz?")) return;
+            if (!silent) {
+                openCustomConfirm(
+                    "BAŞVURUYU İPTAL ET",
+                    "Taslağı silerseniz takımdaki diğer oyunculara giden davetler de iptal edilecektir.<br><br>Emin misiniz?",
+                    async () => { await executeCancelDraft(); }
+                );
+            } else {
+                await executeCancelDraft();
+            }
+        }
+
+        async function executeCancelDraft() {
             if (currentDraftId) {
                 await window.supabaseClient.from('tournament_applications').delete().eq('id', currentDraftId);
                 location.reload();
