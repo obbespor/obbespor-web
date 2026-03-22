@@ -178,6 +178,11 @@
                         <option value="FİNAL">BÜYÜK FİNAL (BO5)</option>
                     </select>
                 </div>
+                
+                <div class="form-group" style="flex:1;">
+                    <label style="color:var(--neon-mor); font-weight: bold; text-transform: uppercase; font-size: 14px;">3. Bracket Pozisyonu</label>
+                    <input type="number" id="roundOrderInput" class="form-control" placeholder="Örn: 1 (Çeyrek Final 1. Maçı)" min="1" value="1">
+                </div>
             </div>
 
             <div id="dynamicMatchArea" style="display: none; animation: fadeIn 0.5s ease; margin-top:20px;">
@@ -387,6 +392,7 @@
             header.innerHTML = `${name.toUpperCase() || defaultName} <span style="font-size:12px; color:${color}; opacity:0.7;">${team === 'A' ? '(Mavi)' : '(Kırmızı)'}</span>`;
         }
 
+        // --- GÜNCELLENEN: İGN VERİSİNİ ÇEKEN FONKSİYON ---
         async function fetchTeamProfiles(team, teamName) {
             if (!teamName || teamName.length < 2) return;
             const containerId = team === 'A' ? 'teamAPlayersInputs' : 'teamBPlayersInputs';
@@ -406,9 +412,10 @@
                 if(team === 'A') currentTeamAId = teamData.id;
                 else currentTeamBId = teamData.id;
 
+                // IGN bilgisini de dahil ederek sorguluyoruz
                 const { data: players, error: playersErr } = await window.supabaseClient
                     .from('application_members')
-                    .select(`user_id, profiles (username)`)
+                    .select(`user_id, profiles (username, ign)`)
                     .eq('application_id', teamData.id)
                     .eq('status', 'accepted'); 
 
@@ -418,7 +425,11 @@
                 if (players && players.length > 0) {
                     players.forEach(p => {
                         const username = p.profiles?.username || "İsimsiz Oyuncu";
-                        optionsHtml += `<option value="${p.user_id}">${username}</option>`;
+                        const ign = p.profiles?.ign;
+                        // IGN varsa "IGN (Username)" formatında gösteriyoruz, yoksa sadece "Username"
+                        const displayName = ign ? `${ign} (${username})` : username;
+                        
+                        optionsHtml += `<option value="${p.user_id}" data-ign="${ign || ''}">${displayName}</option>`;
                     });
                     showNotification(`${teamName} oyuncuları bulundu!`, "success");
                 } else {
@@ -505,10 +516,11 @@
             });
         }
 
-        // --- YENİ EKLENEN: SADECE TARİH VE EŞLEŞME PLANLAMA ---
+        // --- GÜNCELLENEN: SADECE TARİH PLANLAMA KISMINA ROUND ORDER EKLENDİ ---
         async function scheduleMatch() {
             const roundName = document.getElementById('roundNameSelect').value;
             const matchDate = document.getElementById('matchDateInput').value.trim();
+            const roundOrder = parseInt(document.getElementById('roundOrderInput').value) || 1; // Yeni: Bracket Sırası
 
             if(!currentTeamAId || !currentTeamBId) return showNotification("Lütfen önce takımların isimlerini yazıp eşleşmelerini bekleyin.", "error");
             if(!matchDate) return showNotification("Lütfen planlamak için bir tarih girin (Örn: 24 Mart 21:00).", "error");
@@ -519,7 +531,6 @@
             btn.disabled = true;
 
             try {
-                // Maç zaten var mı kontrol et
                 const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
                     .select('id')
                     .eq('round_name', roundName)
@@ -528,17 +539,16 @@
                     .single();
 
                 if (existingMatch) {
-                    // Varsa sadece tarihi güncelle ve durumu bekliyora çek
+                    // Bracket için round_order verisini de gönderiyoruz.
                     const { error: updErr } = await window.supabaseClient.from('bracket_matches')
-                        .update({ match_date: matchDate, status: 'pending', series_score_a: 0, series_score_b: 0, winner_id: null })
+                        .update({ match_date: matchDate, status: 'pending', series_score_a: 0, series_score_b: 0, winner_id: null, round_order: roundOrder })
                         .eq('id', existingMatch.id);
                     if (updErr) throw updErr;
                 } else {
-                    // Yoksa yeni planlanmış maç olarak ekle
                     const { error: insErr } = await window.supabaseClient.from('bracket_matches')
                         .insert([{
                             round_name: roundName,
-                            round_order: 1, 
+                            round_order: roundOrder, 
                             team_a_id: currentTeamAId,
                             team_b_id: currentTeamBId,
                             series_score_a: 0,
@@ -558,7 +568,6 @@
             }
         }
 
-        // --- YENİ EKLENEN: MAÇI SİLME İŞLEMİ ---
         async function deleteMatch() {
             const roundName = document.getElementById('roundNameSelect').value;
 
@@ -579,8 +588,6 @@
                     .single();
 
                 if (existingMatch) {
-                    // Supabase'de ilişkili tabloların Foreign Key "Cascade Delete" ayarı açıksa
-                    // match_maps ve match_player_stats otomatik silinecektir.
                     const { error: delErr } = await window.supabaseClient.from('bracket_matches')
                         .delete()
                         .eq('id', existingMatch.id);
@@ -599,7 +606,49 @@
             }
         }
 
-        // EKSİKSİZ KAYIT İŞLEMİ (ORİJİNAL)
+        // --- GÜNCELLENEN: IGN KONTROLÜ VE OTO-KAYIT İŞLEMİ EKLENDİ ---
+        const collectDataAndUpdateIGN = async (containerId, teamId, mapDataId) => {
+            const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
+            const stats = [];
+            for(let i=1; i<rows.length; i++) {
+                const row = rows[i];
+                const select = row.querySelector('.user-matcher-select');
+                const userId = select.value || null;
+                const inGameName = row.querySelector('.ign-input').value || 'Bilinmiyor';
+
+                // EĞER OYUNCU SEÇİLMİŞSE VE APIDEN BİR IGN GELDİYSE KONTROL ET:
+                if (userId && inGameName && inGameName !== 'Bilinmiyor') {
+                    const selectedOption = select.options[select.selectedIndex];
+                    const existingIgn = selectedOption.getAttribute('data-ign');
+                    
+                    // Oyuncunun profilde IGN'i boşsa veya yoksa otomatik güncelle
+                    if (!existingIgn || existingIgn.trim() === '' || existingIgn === 'null') {
+                        await window.supabaseClient.from('profiles')
+                            .update({ ign: inGameName })
+                            .eq('id', userId);
+                        
+                        console.log(`Otomatik IGN Güncellendi: ${userId} -> ${inGameName}`);
+                        selectedOption.setAttribute('data-ign', inGameName); // tekrar etmesin diye geçici güncelle
+                    }
+                }
+
+                stats.push({
+                    map_id: mapDataId,
+                    team_id: teamId, 
+                    user_id: userId, 
+                    in_game_name: inGameName,
+                    agent_name: row.querySelector('.agent-name-input').value || 'unknown',
+                    kills: parseInt(row.querySelector('.k-input').value) || 0,
+                    deaths: parseInt(row.querySelector('.d-input').value) || 0,
+                    assists: parseInt(row.querySelector('.a-input').value) || 0,
+                    acs: parseInt(row.querySelector('.acs-input').value) || 0,
+                    adr: parseInt(row.querySelector('.adr-input').value) || 0,
+                    hs_percentage: parseInt(row.querySelector('.hs-input').value) || 0
+                });
+            }
+            return stats;
+        };
+
         async function saveMappedStats() {
             const btn = document.getElementById('btnSaveMatch');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> KAYDEDİLİYOR...';
@@ -610,6 +659,7 @@
                 const scoreB = parseInt(document.getElementById('scoreB').value) || 0;
                 const mapName = document.getElementById('mapNameInput').value || 'Bilinmiyor';
                 const matchDate = document.getElementById('matchDateInput').value.trim() || null;
+                const roundOrder = parseInt(document.getElementById('roundOrderInput').value) || 1; // Yeni eklendi
                 
                 let seriesA = parseInt(document.getElementById('seriesScoreA').value) || 0;
                 let seriesB = parseInt(document.getElementById('seriesScoreB').value) || 0;
@@ -650,14 +700,14 @@
                 if (existingMatch) {
                     matchId = existingMatch.id;
                     const { error: updErr } = await window.supabaseClient.from('bracket_matches')
-                        .update({ series_score_a: seriesA, series_score_b: seriesB, winner_id: winnerId, status: matchStatus, match_date: matchDate })
+                        .update({ series_score_a: seriesA, series_score_b: seriesB, winner_id: winnerId, status: matchStatus, match_date: matchDate, round_order: roundOrder })
                         .eq('id', matchId);
                     if (updErr) throw updErr;
                 } else {
                     const { data: newMatch, error: insErr } = await window.supabaseClient.from('bracket_matches')
                         .insert([{
                             round_name: roundName,
-                            round_order: 1, 
+                            round_order: roundOrder, 
                             team_a_id: currentTeamAId,
                             team_b_id: currentTeamBId,
                             series_score_a: seriesA,
@@ -683,31 +733,10 @@
 
                 if(mapErr) throw new Error("Harita kaydedilirken hata: Aynı sıradaki (Map " + mapOrder + ") haritayı tekrar ekliyor olabilirsiniz.");
 
-                const collectData = (containerId, teamId) => {
-                    const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
-                    const stats = [];
-                    for(let i=1; i<rows.length; i++) {
-                        const row = rows[i];
-                        stats.push({
-                            map_id: mapData.id,
-                            team_id: teamId, 
-                            user_id: row.querySelector('.user-matcher-select').value || null, 
-                            in_game_name: row.querySelector('.ign-input').value || 'Bilinmiyor',
-                            agent_name: row.querySelector('.agent-name-input').value || 'unknown',
-                            kills: parseInt(row.querySelector('.k-input').value) || 0,
-                            deaths: parseInt(row.querySelector('.d-input').value) || 0,
-                            assists: parseInt(row.querySelector('.a-input').value) || 0,
-                            acs: parseInt(row.querySelector('.acs-input').value) || 0,
-                            adr: parseInt(row.querySelector('.adr-input').value) || 0,
-                            hs_percentage: parseInt(row.querySelector('.hs-input').value) || 0
-                        });
-                    }
-                    return stats;
-                };
-
+                // Fonksiyonu asenkron yapıp IGN güncellemesini bekleyerek çalıştırıyoruz
                 const insertData = [
-                    ...collectData('teamAPlayersInputs', currentTeamAId), 
-                    ...collectData('teamBPlayersInputs', currentTeamBId)
+                    ...(await collectDataAndUpdateIGN('teamAPlayersInputs', currentTeamAId, mapData.id)), 
+                    ...(await collectDataAndUpdateIGN('teamBPlayersInputs', currentTeamBId, mapData.id))
                 ];
 
                 const { error: statsErr } = await window.supabaseClient.from('match_player_stats').insert(insertData);
