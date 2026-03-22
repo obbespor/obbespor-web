@@ -79,8 +79,8 @@
         
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-size: 12px; color: var(--gri-yazi); margin-bottom: 5px; font-weight: bold; }
-        .input-group input { width: 100%; padding: 12px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; font-family: 'Poppins', sans-serif; outline: none; transition: 0.3s; }
-        .input-group input:focus { border-color: var(--neon-mor); }
+        .input-group input, .input-group textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; font-family: 'Poppins', sans-serif; outline: none; transition: 0.3s; }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--neon-mor); }
         .btn-primary { background: var(--neon-mor); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; display: inline-block; text-align: center; }
         .btn-primary:hover { box-shadow: 0 0 15px rgba(96,29,194,0.5); transform: translateY(-2px); }
 
@@ -229,11 +229,7 @@
                             <label>Yeni Profil İsmi</label>
                             <input type="text" id="newUsernameInput" placeholder="Yeni isminizi girin">
                         </div>
-                        <div class="input-group">
-                            <label>Mevcut Şifreniz (Güvenlik Onayı)</label>
-                            <input type="password" id="currentPasswordForName" placeholder="Onay için şifrenizi girin">
-                        </div>
-                        <button class="btn-primary" onclick="changeProfileName()">İsmi Güncelle</button>
+                        <button class="btn-primary" onclick="initiateNameUpdate()">İsmi Güncelle</button>
                     </div>
 
                     <div class="settings-box">
@@ -246,7 +242,7 @@
                             <label>Yeni Şifre (Tekrar)</label>
                             <input type="password" id="newPasswordConfirm" placeholder="••••••••">
                         </div>
-                        <button class="btn-primary" onclick="changePassword()">Şifreyi Güncelle</button>
+                        <button class="btn-primary" onclick="initiatePasswordUpdate()">Şifreyi Güncelle</button>
                     </div>
 
                     <div class="settings-box">
@@ -289,6 +285,19 @@
             </div>
         </div>
     </main>
+
+    <div id="passwordConfirmModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeCustomModal('passwordConfirmModal')">&times;</span>
+            <div class="modal-title">Güvenlik Onayı</div>
+            <p class="modal-desc">Bu işlemi gerçekleştirmek için lütfen mevcut hesap şifrenizi girin.</p>
+            <div class="input-group">
+                <label>Mevcut Şifreniz</label>
+                <input type="password" id="modalCurrentPassword" placeholder="••••••••">
+            </div>
+            <button class="btn-primary" onclick="confirmActionWithPassword()">Onayla ve Kaydet</button>
+        </div>
+    </div>
 
     <div id="docModal" class="modal" onclick="closeCustomModal('docModal')">
         <div class="modal-content doc-modal-content" onclick="event.stopPropagation()">
@@ -360,8 +369,8 @@
 
     <script>
         let currentUser = null;
+        let pendingAction = null; // İşlemi bekletmek için eklenen değişken
 
-        // İŞTE SÖZLEŞME YAZILARININ OLDUĞU YER BURASI! AŞAĞIDAKİ ALANDAN İÇERİKLERİ DEĞİŞTİREBİLİRSİN.
         const documentContents = {
             kvkk: {
                 title: "KİŞİSEL VERİLERİN İŞLENMESİNE İLİŞKİN AYDINLATMA METNİ",
@@ -494,7 +503,6 @@
             setTimeout(() => { document.getElementById(id).style.display = "none"; }, 300);
         }
 
-        // SÖZLEŞME AÇMA FONKSİYONU
         function openDocModal(docType) {
             document.getElementById('docModalTitle').innerText = documentContents[docType].title;
             document.getElementById('docModalBody').innerHTML = documentContents[docType].body;
@@ -502,7 +510,6 @@
         }
 
         async function initProfile() {
-            // CACHE KONTROLÜ (Hızlı Yükleme)
             const cacheKey = 'obb_profile_cache';
             const cachedProfile = localStorage.getItem(cacheKey);
             if (cachedProfile) {
@@ -549,7 +556,6 @@
                     document.getElementById('marketingToggle').checked = true;
                 }
 
-                // Cache'i Yenile
                 localStorage.setItem(cacheKey, JSON.stringify({
                     username: data.username,
                     bio: data.bio,
@@ -559,7 +565,6 @@
                 }));
             }
 
-            // PARALEL ÇALIŞTIRMA (Hız Optimizasyonu)
             await Promise.all([
                 loadUserStats(currentIgn),
                 loadInvitationsAndTeam()
@@ -568,9 +573,6 @@
             subscribeToInvites();
         }
 
-        // ==========================================
-        // İSTATİSTİKLER VE RÜTBE (RANK) HESAPLAMA
-        // ==========================================
         async function loadUserStats(userIgn) {
             try {
                 let allStats = [];
@@ -631,12 +633,8 @@
             } catch(e) { console.warn("İstatistik hatası:", e); }
         }
 
-        // ==========================================
-        // TAKIM VE DAVET ARAMA MOTORU (GÜNCELLENDİ)
-        // ==========================================
         async function loadInvitationsAndTeam() {
             try {
-                // Supabase Join ile takım detayları çekiliyor
                 const { data: memberships, error } = await window.supabaseClient.from('application_members')
                     .select('*, tournament_applications(team_name, team_tag, status)')
                     .eq('user_id', currentUser.id);
@@ -648,7 +646,6 @@
                 list.innerHTML = '';
                 badge.style.display = "none";
 
-                // Ortak Boş Durum (Empty State) Tasarımı
                 const showEmptyState = () => {
                     title.innerHTML = `<i class="fas fa-users"></i> Takım Durumu`;
                     list.innerHTML = `
@@ -668,13 +665,11 @@
                     return;
                 }
 
-                // 1. Kabul edilmiş (Aktif) bir takımı var mı?
                 const activeTeam = memberships.find(m => m.status === 'accepted');
                 
                 if (activeTeam && activeTeam.tournament_applications) {
                     const teamData = Array.isArray(activeTeam.tournament_applications) ? activeTeam.tournament_applications[0] : activeTeam.tournament_applications;
                     
-                    // Sadece tam onaylı takımları "Mevcut Takımın" olarak göster (Draft aşamasındakileri es geç)
                     if (teamData && teamData.status === 'approved') {
                         title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
                         list.innerHTML = `
@@ -685,11 +680,10 @@
                                 <a href="takim.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
                             </div>
                         `;
-                        return; // Tamamlanmış takım varsa davetleri vs. göstermeye gerek yok
+                        return; 
                     }
                 }
 
-                // 2. Aktif Onaylı takımı yoksa, bekleyen davetleri yükle
                 const pendingInvites = memberships.filter(m => m.status === 'pending');
                 
                 if (pendingInvites.length > 0) {
@@ -714,7 +708,6 @@
                             </div>`;
                     });
 
-                    // Bekleyen davetlerin altına da ek bir Takım Oluştur seçeneği ekleyelim
                     list.innerHTML += `
                         <div style="text-align:center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #333;">
                             <p style="font-size: 13px; color:#777; margin-bottom: 10px;">Veya kendi takımını kurarak lider sen ol!</p>
@@ -724,7 +717,6 @@
                         </div>
                     `;
                 } else {
-                    // Hiç davet de yoksa ve takım da yoksa empty state göster
                     showEmptyState();
                 }
                 
@@ -751,9 +743,6 @@
                 .subscribe();
         }
 
-        // ==========================================
-        // BİO DÜZENLEME
-        // ==========================================
         function openBioEditModal() {
             const currentBio = document.getElementById('userBio').innerText;
             document.getElementById('bioInputContent').value = currentBio === "Açıklama eklenmemiş." ? "" : currentBio;
@@ -773,7 +762,6 @@
                 showNotification("Kaydedilemedi!", "error");
             } else {
                 showNotification("Açıklama başarıyla güncellendi.", "success");
-                // Cache'i güncelle
                 const cacheKey = 'obb_profile_cache';
                 const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
                 cachedProfile.bio = newBio;
@@ -781,9 +769,6 @@
             }
         }
 
-        // ==========================================
-        // IGN DÜZENLEME
-        // ==========================================
         async function openIgnEditModal() {
             try {
                 const { data, error } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).single();
@@ -832,7 +817,6 @@
                     showNotification("Kaydedilemedi!", "error");
                 } else {
                     showNotification("Oyun İçi Nick başarıyla güncellendi!", "success");
-                    // Cache'i güncelle
                     const cacheKey = 'obb_profile_cache';
                     const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
                     cachedProfile.ign = trimmedIgn;
@@ -843,39 +827,35 @@
             }
         }
 
-        // ==========================================
-        // AYARLAR VE GÜVENLİK (YENİLENMİŞ)
-        // ==========================================
-        
-        // ŞİFRE DEĞİŞTİRME
-        async function changePassword() {
+        // --- YENİ GÜVENLİK MODALI VE GÜNCELLEME İŞLEMLERİ ---
+
+        function initiateNameUpdate() {
+            const newName = document.getElementById('newUsernameInput').value.trim();
+            if (!newName) return showNotification("Yeni profil ismi boş bırakılamaz.", "error");
+
+            pendingAction = 'nameUpdate';
+            document.getElementById('modalCurrentPassword').value = '';
+            openCustomModal('passwordConfirmModal');
+        }
+
+        function initiatePasswordUpdate() {
             const newPass = document.getElementById('newPassword').value;
             const confirmPass = document.getElementById('newPasswordConfirm').value;
-            
+
             if (newPass.length < 6) return showNotification("Şifre en az 6 karakter olmalıdır.", "error");
             if (newPass !== confirmPass) return showNotification("Şifreler birbiriyle uyuşmuyor! Lütfen kontrol edin.", "error");
 
-            const { error } = await window.supabaseClient.auth.updateUser({ password: newPass });
-            if (error) {
-                showNotification("Şifre güncellenemedi: " + error.message, "error");
-            } else {
-                showNotification("Şifreniz başarıyla güncellendi!", "success");
-                document.getElementById('newPassword').value = '';
-                document.getElementById('newPasswordConfirm').value = '';
-            }
+            pendingAction = 'passwordUpdate';
+            document.getElementById('modalCurrentPassword').value = ''; 
+            openCustomModal('passwordConfirmModal');
         }
 
-        // PROFİL İSMİ DEĞİŞTİRME (Şifre Onaylı)
-        async function changeProfileName() {
-            const newName = document.getElementById('newUsernameInput').value.trim();
-            const currentPass = document.getElementById('currentPasswordForName').value;
+        async function confirmActionWithPassword() {
+            const currentPass = document.getElementById('modalCurrentPassword').value;
+            if (!currentPass) return showNotification("Lütfen mevcut şifrenizi girin.", "error");
 
-            if (!newName) return showNotification("Yeni profil ismi boş bırakılamaz.", "error");
-            if (!currentPass) return showNotification("Güvenlik onayı için mevcut şifrenizi girmelisiniz.", "error");
-
-            // 1. ADIM: Şifrenin doğru olup olmadığını kontrol et (Arka planda sessizce giriş yapmayı deneriz)
             const { error: authError } = await window.supabaseClient.auth.signInWithPassword({
-                email: currentUser.email, // Kullanıcının e-postasını mevcut oturumdan çekiyoruz
+                email: currentUser.email,
                 password: currentPass
             });
 
@@ -883,29 +863,39 @@
                 return showNotification("Girdiğiniz mevcut şifre yanlış. Lütfen tekrar deneyin.", "error");
             }
 
-            // 2. ADIM: Şifre doğruysa veritabanındaki (profiles tablosu) ismini güncelle
-            const { error: updateError } = await window.supabaseClient.from('profiles')
-                .update({ username: newName })
-                .eq('id', currentUser.id);
+            if (pendingAction === 'nameUpdate') {
+                const newName = document.getElementById('newUsernameInput').value.trim();
+                
+                const { error: updateError } = await window.supabaseClient.from('profiles')
+                    .update({ username: newName })
+                    .eq('id', currentUser.id);
 
-            if (updateError) {
-                showNotification("Profil ismi güncellenirken bir hata oluştu.", "error");
-                console.error("İsim Güncelleme Hatası:", updateError);
-            } else {
-                showNotification("Profil isminiz başarıyla güncellendi!", "success");
+                if (updateError) {
+                    showNotification("Profil ismi güncellenirken bir hata oluştu.", "error");
+                } else {
+                    showNotification("Profil isminiz başarıyla güncellendi!", "success");
+                    document.getElementById('profileNameDisplay').innerText = newName;
+                    document.getElementById('newUsernameInput').value = ''; 
+                    
+                    const cacheKey = 'obb_profile_cache';
+                    const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                    cachedProfile.username = newName;
+                    localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+                    closeCustomModal('passwordConfirmModal');
+                }
+
+            } else if (pendingAction === 'passwordUpdate') {
+                const newPass = document.getElementById('newPassword').value;
+                const { error } = await window.supabaseClient.auth.updateUser({ password: newPass });
                 
-                // Ekranda görünen ismi anında değiştir
-                document.getElementById('profileNameDisplay').innerText = newName;
-                
-                // Kutuları temizle
-                document.getElementById('newUsernameInput').value = '';
-                document.getElementById('currentPasswordForName').value = '';
-                
-                // Tarayıcı önbelleğini (Cache) güncelle ki sayfayı yenileyince eski isim gelmesin
-                const cacheKey = 'obb_profile_cache';
-                const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
-                cachedProfile.username = newName;
-                localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+                if (error) {
+                    showNotification("Şifre güncellenemedi: " + error.message, "error");
+                } else {
+                    showNotification("Şifreniz başarıyla güncellendi!", "success");
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('newPasswordConfirm').value = '';
+                    closeCustomModal('passwordConfirmModal');
+                }
             }
         }
 
@@ -915,9 +905,6 @@
             else showNotification(isChecked ? "Ticari iletişim izni onaylandı." : "Ticari iletişim izni iptal edildi.", "success");
         }
 
-        // ==========================================
-        // AVATAR VE BANNER YÜKLEME
-        // ==========================================
         document.getElementById('avatarUpload').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -928,7 +915,6 @@
             const ext = file.name.split('.').pop().toLowerCase();
             const path = `${currentUser.id}/profil_resmi.${ext}`;
 
-            // Eski dosyaları acımasızca temizle
             await window.supabaseClient.storage.from('avatars').remove([
                 `${currentUser.id}/profil_resmi.jpg`,
                 `${currentUser.id}/profil_resmi.jpeg`,
@@ -948,7 +934,6 @@
                 await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
                 showNotification("Profil resmi başarıyla güncellendi!", "success");
                 
-                // Cache'i güncelle
                 const cacheKey = 'obb_profile_cache';
                 const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
                 cachedProfile.avatar_url = cleanUrl;
@@ -970,7 +955,6 @@
                     closeCustomModal('bannerModal');
                     await window.supabaseClient.from('profiles').update({ banner_url: this.src }).eq('id', currentUser.id);
                     
-                    // Cache'i güncelle
                     const cacheKey = 'obb_profile_cache';
                     const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
                     cachedProfile.banner_url = this.src;
