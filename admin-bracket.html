@@ -394,6 +394,7 @@
             header.innerHTML = `${name.toUpperCase() || defaultName} <span style="font-size:12px; color:${color}; opacity:0.7;">${team === 'A' ? '(Mavi)' : '(Kırmızı)'}</span>`;
         }
 
+        // --- GÜNCELLENMİŞ: TAKIM PROFİLLERİNİ ÇEKERKEN EŞLEŞTİRME YAPAN FONKSİYON ---
         async function fetchTeamProfiles(team, teamName) {
             if (!teamName || teamName.length < 2) return;
             const containerId = team === 'A' ? 'teamAPlayersInputs' : 'teamBPlayersInputs';
@@ -434,7 +435,41 @@
                 } else {
                     optionsHtml = '<option value="">-- Kayıtlı oyuncu yok --</option>';
                 }
-                selects.forEach(select => select.innerHTML = optionsHtml);
+
+                // ÇİFT YÖNLÜ: API DOLDURULMUŞSA EŞLEŞTİRME KONTROLÜ
+                selects.forEach(select => {
+                    select.innerHTML = optionsHtml;
+                    
+                    const row = select.closest('.player-stat-row');
+                    const ignInput = row.querySelector('.ign-input');
+                    
+                    if (ignInput && ignInput.value) {
+                        const apiIgn = ignInput.value.toLowerCase().replace(/\s+/g, '');
+                        let matched = false;
+                        
+                        for (let j = 0; j < select.options.length; j++) {
+                            const optIgnRaw = select.options[j].getAttribute('data-ign');
+                            if (!optIgnRaw) continue;
+                            
+                            const optIgn = optIgnRaw.toLowerCase().replace(/\s+/g, '');
+                            
+                            // BİREBİR EŞLEŞME (Case-insensitive, boşluksuz)
+                            if (optIgn === apiIgn) {
+                                select.selectedIndex = j; 
+                                select.style.border = "1px solid #00d2ff"; 
+                                select.style.color = "#00d2ff";
+                                matched = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!matched && select.options.length > 1) {
+                            select.style.border = "1px dashed #ff4b4b"; 
+                            select.style.color = "#ff4b4b";
+                            select.selectedIndex = 0;
+                        }
+                    }
+                });
 
             } catch (err) {
                 console.warn("Takım araması başarısız:", err.message);
@@ -503,6 +538,7 @@
             }
         }
 
+        // --- GÜNCELLENMİŞ: API'DEN VERİ ÇEKERKEN EŞLEŞTİRME YAPAN FONKSİYON ---
         function populateRows(containerId, players) {
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             players.forEach((p, i) => {
@@ -518,15 +554,20 @@
                     const ignEl = actualRow.querySelector('.ign-input');
                     if(ignEl) ignEl.value = apiIgn;
 
+                    // ÇİFT YÖNLÜ: TAKIM SEÇİLMİŞSE EŞLEŞTİRME KONTROLÜ
                     const selectEl = actualRow.querySelector('.user-matcher-select');
-                    if (selectEl) {
+                    if (selectEl && selectEl.options.length > 1) { 
                         const cleanApiIgn = apiIgn.toLowerCase().replace(/\s+/g, '');
                         let matched = false;
                         
                         for (let j = 0; j < selectEl.options.length; j++) {
-                            const optIgn = selectEl.options[j].getAttribute('data-ign');
+                            const optIgnRaw = selectEl.options[j].getAttribute('data-ign');
+                            if (!optIgnRaw) continue;
                             
-                            if (optIgn && optIgn.toLowerCase().replace(/\s+/g, '') === cleanApiIgn) {
+                            const optIgn = optIgnRaw.toLowerCase().replace(/\s+/g, '');
+                            
+                            // BİREBİR EŞLEŞME
+                            if (optIgn === cleanApiIgn) {
                                 selectEl.selectedIndex = j; 
                                 selectEl.style.border = "1px solid #00d2ff"; 
                                 selectEl.style.color = "#00d2ff";
@@ -565,14 +606,12 @@
 
         // --- AKILLI EKRAN TEMİZLEME FONKSİYONU ---
         function clearScreen(full = false) {
-            // Her halükarda harita bazlı verileri temizle
             document.getElementById('scoreA').value = 0;
             document.getElementById('scoreB').value = 0;
             document.getElementById('mapNameInput').value = "";
             document.getElementById('apiMatchId').value = "";
 
             if (full) {
-                // Maç bitmişse veya tarih planlandıysa her şeyi sıfırla
                 document.getElementById('teamAName').value = "";
                 document.getElementById('teamBName').value = "";
                 document.getElementById('seriesScoreA').value = 0;
@@ -589,11 +628,9 @@
                 generateEmptyRows('teamAPlayersInputs');
                 generateEmptyRows('teamBPlayersInputs');
             } else {
-                // Maç devam ediyorsa sadece bir sonraki haritaya geç
                 const mapOrder = parseInt(document.getElementById('mapOrderSelect').value) || 1;
                 document.getElementById('mapOrderSelect').value = mapOrder < 5 ? mapOrder + 1 : 5;
                 
-                // Oyuncu satırlarını temizle ama takım listesini yeniden çek (Dropdownlar için)
                 generateEmptyRows('teamAPlayersInputs');
                 generateEmptyRows('teamBPlayersInputs');
                 
@@ -644,7 +681,6 @@
                 }
                 showNotification("Eşleşme başarıyla planlandı ve fikstüre eklendi!", "success");
                 
-                // BAŞARILI İŞLEM SONRASI EKRANI TEMİZLE
                 setTimeout(() => clearScreen(true), 1500);
 
             } catch (err) {
@@ -683,7 +719,6 @@
                     if (delErr) throw delErr;
                     showNotification("Eşleşme ve ona bağlı tüm veriler başarıyla silindi!", "success");
                     
-                    // SİLME İŞLEMİ SONRASI EKRANI TEMİZLE
                     clearScreen(true);
                 } else {
                     showNotification("Bu turda aradığınız takımlar arasında kaydedilmiş bir eşleşme bulunamadı.", "error");
@@ -838,8 +873,6 @@
 
                 showNotification("Harita ve Liderlik Tablosu verileri başarıyla işlendi!", "success");
                 
-                // --- AKILLI TEMİZLEME İŞLEMİ TETİKLEMESİ ---
-                // Eğer maç tamamlandıysa full temizlik yapar, değilse sadece haritayı sıfırlar.
                 setTimeout(() => {
                     clearScreen(matchStatus === 'finished');
                 }, 1500);
