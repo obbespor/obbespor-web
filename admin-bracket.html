@@ -442,7 +442,6 @@
             }
         }
 
-        // Kayo hatasını çözen ikon güncelleyicisi
         function updateAgentIcon(inputEl, iconId) {
             let val = inputEl.value.replace(/[^a-zA-Z0-9]/g, '');
             const icon = document.getElementById(iconId);
@@ -504,11 +503,10 @@
             }
         }
 
-        // --- GÜNCELLENMİŞ: OTOMATİK PROFİL EŞLEŞTİRME VE LİSTE DOLDURMA ---
         function populateRows(containerId, players) {
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             players.forEach((p, i) => {
-                const actualRow = rows[i+1]; // İlk satır header olduğu için +1
+                const actualRow = rows[i+1]; 
                 if(actualRow) {
                     const iconEl = actualRow.querySelector('.agent-icon');
                     if(iconEl) iconEl.src = p.assets.agent.small;
@@ -516,12 +514,10 @@
                     const nameEl = actualRow.querySelector('.agent-name-input');
                     if(nameEl) nameEl.value = p.character;
                     
-                    // API'den gelen tam IGN (Örn: PATRON#TR1)
                     const apiIgn = `${p.name}#${p.tag}`;
                     const ignEl = actualRow.querySelector('.ign-input');
                     if(ignEl) ignEl.value = apiIgn;
 
-                    // --- OTOMATİK PROFİL EŞLEŞTİRME SİSTEMİ ---
                     const selectEl = actualRow.querySelector('.user-matcher-select');
                     if (selectEl) {
                         const cleanApiIgn = apiIgn.toLowerCase().replace(/\s+/g, '');
@@ -539,14 +535,12 @@
                             }
                         }
                         
-                        // Eşleşmediyse uyar, index 0'a atıp manual seçimi bekle
                         if (!matched) {
                             selectEl.style.border = "1px dashed #ff4b4b"; 
                             selectEl.style.color = "#ff4b4b";
                             selectEl.selectedIndex = 0;
                         }
                     }
-                    // ------------------------------------------
                     
                     const kEl = actualRow.querySelector('.k-input');
                     if(kEl) kEl.value = p.stats.kills;
@@ -567,6 +561,45 @@
                     if(hsEl) hsEl.value = p.calc_hs || 0;
                 }
             });
+        }
+
+        // --- AKILLI EKRAN TEMİZLEME FONKSİYONU ---
+        function clearScreen(full = false) {
+            // Her halükarda harita bazlı verileri temizle
+            document.getElementById('scoreA').value = 0;
+            document.getElementById('scoreB').value = 0;
+            document.getElementById('mapNameInput').value = "";
+            document.getElementById('apiMatchId').value = "";
+
+            if (full) {
+                // Maç bitmişse veya tarih planlandıysa her şeyi sıfırla
+                document.getElementById('teamAName').value = "";
+                document.getElementById('teamBName').value = "";
+                document.getElementById('seriesScoreA').value = 0;
+                document.getElementById('seriesScoreB').value = 0;
+                document.getElementById('matchDateInput').value = "";
+                document.getElementById('mapOrderSelect').value = "1";
+                document.getElementById('roundOrderInput').value = "1";
+                
+                syncTeamName('A', '');
+                syncTeamName('B', '');
+                currentTeamAId = null;
+                currentTeamBId = null;
+                
+                generateEmptyRows('teamAPlayersInputs');
+                generateEmptyRows('teamBPlayersInputs');
+            } else {
+                // Maç devam ediyorsa sadece bir sonraki haritaya geç
+                const mapOrder = parseInt(document.getElementById('mapOrderSelect').value) || 1;
+                document.getElementById('mapOrderSelect').value = mapOrder < 5 ? mapOrder + 1 : 5;
+                
+                // Oyuncu satırlarını temizle ama takım listesini yeniden çek (Dropdownlar için)
+                generateEmptyRows('teamAPlayersInputs');
+                generateEmptyRows('teamBPlayersInputs');
+                
+                if(currentTeamAId) fetchTeamProfiles('A', document.getElementById('teamAName').value);
+                if(currentTeamBId) fetchTeamProfiles('B', document.getElementById('teamBName').value);
+            }
         }
 
         async function scheduleMatch() {
@@ -610,6 +643,10 @@
                     if (insErr) throw insErr;
                 }
                 showNotification("Eşleşme başarıyla planlandı ve fikstüre eklendi!", "success");
+                
+                // BAŞARILI İŞLEM SONRASI EKRANI TEMİZLE
+                setTimeout(() => clearScreen(true), 1500);
+
             } catch (err) {
                 console.error(err);
                 showNotification("Hata: " + err.message, "error");
@@ -645,6 +682,9 @@
                     
                     if (delErr) throw delErr;
                     showNotification("Eşleşme ve ona bağlı tüm veriler başarıyla silindi!", "success");
+                    
+                    // SİLME İŞLEMİ SONRASI EKRANI TEMİZLE
+                    clearScreen(true);
                 } else {
                     showNotification("Bu turda aradığınız takımlar arasında kaydedilmiş bir eşleşme bulunamadı.", "error");
                 }
@@ -657,7 +697,6 @@
             }
         }
 
-        // İGN GÜNCELLEME VE BİLDİRİM ATMA
         const collectDataAndUpdateIGN = async (containerId, teamId, mapDataId) => {
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             const stats = [];
@@ -672,7 +711,6 @@
                     const existingIgn = selectedOption.getAttribute('data-ign');
                     
                     if (!existingIgn || existingIgn.trim() === '' || existingIgn === 'null') {
-                        // PROFİLİ GÜNCELLE
                         await window.supabaseClient.from('profiles')
                             .update({ ign: inGameName })
                             .eq('id', userId);
@@ -680,7 +718,6 @@
                         console.log(`Otomatik IGN Güncellendi: ${userId} -> ${inGameName}`);
                         selectedOption.setAttribute('data-ign', inGameName); 
 
-                        // KULLANICIYA SİSTEM BİLDİRİMİ GÖNDER
                         await window.supabaseClient.from('bildirimler').insert([{
                             kullanici_id: userId,
                             baslik: "Oyun İçi Nick Güncellendi",
@@ -801,13 +838,11 @@
 
                 showNotification("Harita ve Liderlik Tablosu verileri başarıyla işlendi!", "success");
                 
+                // --- AKILLI TEMİZLEME İŞLEMİ TETİKLEMESİ ---
+                // Eğer maç tamamlandıysa full temizlik yapar, değilse sadece haritayı sıfırlar.
                 setTimeout(() => {
-                    document.getElementById('scoreA').value = 0;
-                    document.getElementById('scoreB').value = 0;
-                    document.getElementById('mapNameInput').value = "";
-                    const nextOrder = mapOrder < 5 ? mapOrder + 1 : 5;
-                    document.getElementById('mapOrderSelect').value = nextOrder;
-                }, 2000);
+                    clearScreen(matchStatus === 'finished');
+                }, 1500);
 
             } catch(err) {
                 console.error("Kayıt Hatası:", err);
