@@ -1,3 +1,4 @@
+/* --- GENEL FOOTER YAPISI --- */
 footer {
     background-color: var(--nav-bg); 
     border-top: 2px solid var(--neon-mor);
@@ -5,6 +6,8 @@ footer {
     margin-top: auto;
     color: white;
 }
+
+/* --- SPONSOR TICKER --- */
 .sponsor-ticker {
     width: 100%;
     padding-bottom: 50px;
@@ -43,17 +46,18 @@ footer {
     display: flex;
     width: max-content;
     animation: scroll-loop 40s linear infinite;
-    align-items: center; /* Logoların yükseklikleri farklıysa ortalar */
+    align-items: center; /* Logoların yükseklikleri farklıysa dikeyde ortalar */
 }
 
-/* 🚀 TÜM FİLTRELER KALDIRILDI - ORİJİNAL RENKLER */
+/* 🚀 LOGO AYARLARI: Orijinal Renkler ve Yüksek Netlik */
 .ticker-scroll img {
-    height: 65px; /* Okunaklı ve büyük bir boyut */
+    height: 70px; /* Büyük ve prestijli görünüm */
     width: auto;
     margin: 0 60px;
-    filter: none; /* Hiçbir renk müdahalesi yok */
-    opacity: 1;    /* Tam görünürlük */
+    filter: none !important; /* Tüm renk değiştirme filtreleri iptal edildi */
+    opacity: 1; /* Logolar tam belirgin */
     transition: transform 0.3s ease;
+    image-rendering: -webkit-optimize-contrast; /* Tarayıcıda daha keskin görünüm sağlar */
 }
 
 .ticker-wrapper:hover .ticker-scroll {
@@ -61,7 +65,7 @@ footer {
 }
 
 .ticker-scroll img:hover {
-    transform: scale(1.1); /* Sadece hafif bir büyüme efekti */
+    transform: scale(1.1); /* Üzerine gelince tatlı bir büyüme */
 }
 
 @keyframes scroll-loop {
@@ -69,11 +73,95 @@ footer {
     to { transform: translateX(-50%); }
 }
 
-/* Mobilde Görünüm */
-@media (max-width: 768px) {
-    .ticker-scroll img { 
-        height: 40px; 
-        margin: 0 35px; 
-    }
+/* --- FOOTER GRID VE İÇERİK --- */
+.footer-grid { 
+    display: grid; 
+    grid-template-columns: 1.5fr 1fr 1fr; 
+    gap: 50px; 
+    margin-bottom: 50px; 
 }
 
+.footer-brand h2 { 
+    font-size: 28px; 
+    font-weight: 900; 
+    margin-bottom: 20px; 
+    border-bottom: 2px solid var(--neon-mor); 
+    display: inline-block; 
+    text-transform: uppercase; 
+}
+
+.footer-brand p { 
+    color: var(--gri-yazi); 
+    font-size: 15px; 
+    max-width: 350px; 
+    margin-bottom: 25px; 
+    line-height: 1.6;
+}
+
+.social-icons { display: flex; gap: 15px; }
+.social-icons a { 
+    width: 45px; height: 45px; 
+    background: #111; border: 1px solid #222; 
+    border-radius: 50%; display: flex; 
+    align-items: center; justify-content: center; 
+    color: white; text-decoration: none; 
+    transition: 0.3s; 
+}
+
+.social-icons a:hover { 
+    background: var(--neon-mor); 
+    transform: translateY(-3px); 
+    box-shadow: 0 0 15px var(--neon-mor); 
+}
+
+.footer-column h3 { 
+    font-size: 18px; 
+    font-weight: 700; 
+    color: var(--neon-mor); 
+    margin-bottom: 25px; 
+    text-transform: uppercase; 
+}
+
+.footer-column ul { list-style: none; padding: 0; }
+.footer-column ul li { margin-bottom: 12px; }
+.footer-column ul li a { 
+    color: white; 
+    text-decoration: none; 
+    font-size: 15px; 
+    transition: 0.3s; 
+}
+
+.footer-column ul li a:hover { color: var(--neon-mor); padding-left: 5px; }
+
+.contact-item { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    color: var(--gri-yazi); 
+    font-size: 15px; 
+    margin-bottom: 15px; 
+}
+
+.contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
+
+.footer-bottom { 
+    text-align: center; 
+    border-top: 1px solid rgba(255,255,255,0.05); 
+    padding-top: 30px; 
+    color: #555; 
+    font-size: 13px; 
+}
+
+/* --- MOBİL UYUMLULUK --- */
+@media (max-width: 768px) {
+    .sponsor-ticker { padding-bottom: 40px; }
+    .ticker-scroll img { 
+        height: 45px; 
+        margin: 0 35px; 
+    }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+    .footer-brand { grid-column: span 2; text-align: center; padding-bottom: 30px; }
+    .footer-brand p { max-width: 100%; margin: 0 auto 25px; }
+    .social-icons { justify-content: center; }
+    footer { padding: 50px 8% 30px; }
+}
