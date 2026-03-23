@@ -1,4 +1,10 @@
-/* --- SPONSOR TICKER --- */
+footer {
+    background-color: var(--nav-bg); 
+    border-top: 2px solid var(--neon-mor);
+    padding: 40px 10% 40px; 
+    margin-top: auto;
+    color: white;
+}
 .sponsor-ticker {
     width: 100%;
     padding-bottom: 50px;
@@ -70,3 +76,4 @@
         margin: 0 35px; 
     }
 }
+
