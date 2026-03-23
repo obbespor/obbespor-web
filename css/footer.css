@@ -16,12 +16,13 @@ footer {
 
 .ticker-title {
     text-align: center;
-    font-size: 11px; /* 10px çok küçüktü, 11px daha okunaklı */
+    font-size: 12px;
     color: var(--gri-yazi);
     letter-spacing: 5px;
     margin-bottom: 30px;
     text-transform: uppercase;
-    opacity: 0.8; /* Başlığın görünürlüğünü de artırdık */
+    opacity: 0.9;
+    font-weight: bold;
 }
 
 .ticker-wrapper {
@@ -47,15 +48,12 @@ footer {
     animation: scroll-loop 40s linear infinite;
 }
 
-/* 🚀 DÜZELTİLEN KISIM (LOGOLARIN GÖRÜNÜMÜ) */
+/* 🚀 DÜZELTİLEN KISIM (LOGOLARIN BÜYÜTÜLMESİ VE NETLİĞİ) */
 .ticker-scroll img {
-    height: 38px; /* Logoları biraz daha belirgin hale getirdik */
-    margin: 0 50px;
-    /* Eğer logoların (Ordu Kent Konseyi vb.) orijinali SİYAH renkliyse, aşağıdaki satırı silip yerine şunu yaz: 
-       filter: invert(1) grayscale(100%); 
-       Bu işlem siyah logoları otomatik olarak beyaza çevirir ve karanlık temada harika durur. */
-    filter: grayscale(100%) brightness(1.3); /* Siyah beyaz yapar ve parlaklığını %30 artırır */
-    opacity: 0.75; /* 0.4 çok soluktu, 0.75 gözü yormayan ama net okunan ideal değerdir */
+    height: 70px; /* Logolar ciddi şekilde büyütüldü */
+    margin: 0 70px; /* Büyüdükleri için aralarındaki nefes alma boşluğu artırıldı */
+    filter: invert(1) grayscale(100%) contrast(1.5) brightness(1.2); /* Siyah arka planda parlak ve keskin */
+    opacity: 0.85; /* Daha belirgin yapıldı */
     transition: all 0.4s ease;
 }
 
@@ -64,9 +62,9 @@ footer {
 }
 
 .ticker-scroll img:hover {
-    filter: grayscale(0%) brightness(1); /* Üzerine gelince orijinal rengine döner */
-    opacity: 1; /* Tamamen belirginleşir */
-    transform: scale(1.15); /* Hafifçe büyür */
+    filter: invert(1) grayscale(0%) contrast(1.2) brightness(1.5); /* Üzerine gelince orijinal renge döner ve parlar */
+    opacity: 1; /* Tamamen görünür olur */
+    transform: scale(1.1); /* Hafif büyür */
 }
 
 @keyframes scroll-loop {
@@ -156,7 +154,10 @@ footer {
 /* --- MOBİL UYUMLULUK --- */
 @media (max-width: 768px) {
     .sponsor-ticker { padding-bottom: 40px; }
-    .ticker-scroll img { height: 30px; margin: 0 25px; } /* Mobilde de boyutu hafif artırdık */
+    .ticker-scroll img { 
+        height: 45px; /* Mobilde de logolar daha büyük */
+        margin: 0 40px; 
+    }
     .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
     .footer-brand { grid-column: span 2; text-align: center; padding-bottom: 30px; }
     .footer-brand p { max-width: 100%; margin: 0 auto 25px; }
