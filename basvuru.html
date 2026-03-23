@@ -235,19 +235,20 @@
             }
         };
 
-        // 🚀 1. HIZLANDIRILMIŞ: PARALEL SORGULAR (PROMISE.ALL)
+        // 🚀 1. HIZLANDIRILMIŞ VE ÖNBELLEKLENMİŞ BAŞLANGIÇ
         async function initPageData() {
             try {
-                const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
-                if (authError || !user) { window.location.href = 'kayit.html'; return; }
-                currentUser = user;
+                // getUser() yerine getSession() kullanarak ağ sorgusunu iptal ettik, tarayıcı hafızasını kullandık. (HIZ X2)
+                const { data: { session }, error: authError } = await window.supabaseClient.auth.getSession();
+                if (authError || !session) { window.location.href = 'kayit.html'; return; }
+                currentUser = session.user;
 
                 // Arayüzü hemen çizmeye başla, kullanıcı beyaz ekran görmesin
                 renderPlayerInputs();
 
                 // Tüm gerekli verileri TEK SEFERDE, aynı anda çekiyoruz
                 const [profileRes, membershipsRes] = await Promise.all([
-                    window.supabaseClient.from('profiles').select('username').eq('id', user.id).maybeSingle(),
+                    window.supabaseClient.from('profiles').select('username').eq('id', currentUser.id).maybeSingle(),
                     window.supabaseClient.from('application_members')
                         .select('id, status, application_id, tournament_applications(*)')
                         .eq('user_id', currentUser.id)
@@ -267,6 +268,7 @@
             }
         }
 
+        // 🚀 2. LAZY LOADING: Kadroyu anında yükler, İstatistikleri arka planda yükler
         async function showRosterScreen(appId, isCaptain, status, captainId, teamName, teamTag) {
             document.getElementById('teamForm').style.display = 'none';
             document.getElementById('draftInfoBox').style.display = 'none';
@@ -337,6 +339,10 @@
                 infoText.style.display = 'none';
             }
 
+            // Görüntü kirliliğini önlemek için önce ufak bir loading ekle
+            rosterList.innerHTML = `<div style="text-align:center; padding: 30px;"><i class="fas fa-spinner fa-spin fa-2x" style="color:var(--neon-mor);"></i></div>`;
+
+            // Kadroyu Çek
             const { data: members } = await window.supabaseClient.from('application_members')
                 .select('*, profiles(username)')
                 .eq('application_id', appId)
@@ -345,33 +351,13 @@
 
             if (members) {
                 const userIds = members.map(m => m.user_id);
-                let playerStats = {};
-                
-                try {
-                    const { data: statsData } = await window.supabaseClient
-                        .from('match_player_stats')
-                        .select('user_id, kills, deaths, assists, acs, map_id')
-                        .in('user_id', userIds);
-                        
-                    if (statsData && statsData.length > 0) {
-                        statsData.forEach(stat => {
-                            if (!playerStats[stat.user_id]) {
-                                playerStats[stat.user_id] = { kills: 0, deaths: 0, assists: 0, acsTotal: 0, mapCount: new Set() };
-                            }
-                            playerStats[stat.user_id].kills += (stat.kills || 0);
-                            playerStats[stat.user_id].deaths += (stat.deaths || 0);
-                            playerStats[stat.user_id].assists += (stat.assists || 0);
-                            playerStats[stat.user_id].acsTotal += (stat.acs || 0);
-                            if(stat.map_id) playerStats[stat.user_id].mapCount.add(stat.map_id);
-                        });
-                    }
-                } catch(e) { console.warn("İstatistik çekilemedi, varsayılan değerler gösterilecek."); }
-
                 let html = '';
+                
                 const mainPlayers = members.filter(m => m.role === 'main');
                 const subPlayers = members.filter(m => m.role === 'sub');
                 const allPlayers = [...mainPlayers, ...subPlayers];
 
+                // KADROYU ANINDA (İSTATİSTİKLERİ BEKLEMEDEN) ÇİZ
                 allPlayers.forEach((m, index) => {
                     const username = m.profiles?.username || "Bilinmeyen Oyuncu";
                     let roleText = 'Yedek';
@@ -395,19 +381,8 @@
                         ? '<i class="fas fa-check" style="color: var(--yesil-guven); font-size: 16px; filter: drop-shadow(0 0 5px var(--yesil-guven));" title="Daveti Onayladı"></i>'
                         : '<i class="fas fa-hourglass-half fa-spin" style="color: var(--mavi-onay); font-size: 16px; filter: drop-shadow(0 0 5px var(--mavi-onay));" title="Onay Bekliyor"></i>';
 
-                    const pStat = playerStats[m.user_id] || { kills: 0, deaths: 0, assists: 0, acsTotal: 0, mapCount: new Set() };
-                    const mapsPlayed = pStat.mapCount instanceof Set ? pStat.mapCount.size : 0;
-                    
-                    const kdaStr = mapsPlayed > 0 ? `${pStat.kills} / ${pStat.deaths} / ${pStat.assists}` : "0 / 0 / 0";
-                    const avgACS = mapsPlayed > 0 ? Math.round(pStat.acsTotal / mapsPlayed) : 0;
-                    
-                    let kdRatio = "0.00";
-                    if (mapsPlayed > 0) {
-                        kdRatio = pStat.deaths > 0 ? (pStat.kills / pStat.deaths).toFixed(2) : (pStat.kills > 0 ? "Mükemmel" : "0.00");
-                    }
-
                     html += `
-                        <li class="roster-item" style="animation-delay: ${index * 0.1}s;" onclick="togglePlayerStats(this)">
+                        <li class="roster-item" style="animation-delay: ${index * 0.05}s;" onclick="togglePlayerStats(this)">
                             <div class="roster-main">
                                 <div class="player-info">
                                     <div class="player-avatar" style="color: ${iconColor}; border-color: ${iconColor};">
@@ -427,27 +402,78 @@
                                 <div class="stats-grid-mini">
                                     <div class="stat-mini-box">
                                         <div class="stat-mini-title">OYNANAN HARİTA</div>
-                                        <div class="stat-mini-value">${mapsPlayed}</div>
+                                        <div class="stat-mini-value" id="stat-maps-${m.user_id}"><i class="fas fa-spinner fa-spin" style="font-size:12px; color:#555;"></i></div>
                                     </div>
                                     <div class="stat-mini-box" style="flex: 1.5;">
                                         <div class="stat-mini-title">TOPLAM K/D/A</div>
-                                        <div class="stat-mini-value">${kdaStr}</div>
+                                        <div class="stat-mini-value" id="stat-kda-${m.user_id}">-</div>
                                     </div>
                                     <div class="stat-mini-box">
                                         <div class="stat-mini-title">K/D ORANI</div>
-                                        <div class="stat-mini-value neon">${kdRatio}</div>
+                                        <div class="stat-mini-value neon" id="stat-kdratio-${m.user_id}">-</div>
                                     </div>
                                     <div class="stat-mini-box">
                                         <div class="stat-mini-title">ORTALAMA ACS</div>
-                                        <div class="stat-mini-value neon">${avgACS}</div>
+                                        <div class="stat-mini-value neon" id="stat-acs-${m.user_id}">-</div>
                                     </div>
                                 </div>
                             </div>
                         </li>
                     `;
                 });
+                
                 rosterList.innerHTML = html;
+
+                // Arayüz Çizildikten Sonra İstatistikleri Arka Planda (Non-Blocking) Getir
+                fetchAndRenderRosterStats(userIds);
             }
+        }
+
+        // İstatistikleri çekip yerine koyan yepyeni fonksiyonumuz
+        async function fetchAndRenderRosterStats(userIds) {
+            if (!userIds || userIds.length === 0) return;
+            try {
+                const { data: statsData } = await window.supabaseClient
+                    .from('match_player_stats')
+                    .select('user_id, kills, deaths, assists, acs, map_id')
+                    .in('user_id', userIds);
+
+                let playerStats = {};
+                if (statsData && statsData.length > 0) {
+                    statsData.forEach(stat => {
+                        if (!playerStats[stat.user_id]) {
+                            playerStats[stat.user_id] = { kills: 0, deaths: 0, assists: 0, acsTotal: 0, mapCount: new Set() };
+                        }
+                        playerStats[stat.user_id].kills += (stat.kills || 0);
+                        playerStats[stat.user_id].deaths += (stat.deaths || 0);
+                        playerStats[stat.user_id].assists += (stat.assists || 0);
+                        playerStats[stat.user_id].acsTotal += (stat.acs || 0);
+                        if(stat.map_id) playerStats[stat.user_id].mapCount.add(stat.map_id);
+                    });
+                }
+
+                userIds.forEach(uid => {
+                    const pStat = playerStats[uid] || { kills: 0, deaths: 0, assists: 0, acsTotal: 0, mapCount: new Set() };
+                    const mapsPlayed = pStat.mapCount instanceof Set ? pStat.mapCount.size : 0;
+                    const kdaStr = mapsPlayed > 0 ? `${pStat.kills} / ${pStat.deaths} / ${pStat.assists}` : "0 / 0 / 0";
+                    const avgACS = mapsPlayed > 0 ? Math.round(pStat.acsTotal / mapsPlayed) : 0;
+                    
+                    let kdRatio = "0.00";
+                    if (mapsPlayed > 0) {
+                        kdRatio = pStat.deaths > 0 ? (pStat.kills / pStat.deaths).toFixed(2) : (pStat.kills > 0 ? "Mükemmel" : "0.00");
+                    }
+
+                    const elMaps = document.getElementById(`stat-maps-${uid}`);
+                    const elKda = document.getElementById(`stat-kda-${uid}`);
+                    const elKdRatio = document.getElementById(`stat-kdratio-${uid}`);
+                    const elAcs = document.getElementById(`stat-acs-${uid}`);
+
+                    if(elMaps) elMaps.innerHTML = mapsPlayed;
+                    if(elKda) elKda.innerHTML = kdaStr;
+                    if(elKdRatio) elKdRatio.innerHTML = kdRatio;
+                    if(elAcs) elAcs.innerHTML = avgACS;
+                });
+            } catch(e) { console.warn("İstatistik çekilemedi"); }
         }
 
         function renderPlayerInputs() {
@@ -479,7 +505,6 @@
                 </div>`;
         }
 
-        // 🚀 2. HIZLANDIRILMIŞ: VERİTABANI BEKLEMESİZ SORGULAMA (Filtreleme)
         async function loadOrCreateDraft(username, memberships) {
             // Paralel çektiğimiz veriyi burada JavaScript ile ayırıyoruz. Ekstra yükleme/bekleme yok.
             const acceptedMemberships = memberships.filter(m => m.status === 'accepted');
@@ -510,13 +535,15 @@
                         document.getElementById('teamForm').style.display = 'block';
                         fillCaptainSlot(username); 
                         
-                        // Arka planda başlasınlar, ekranı kitlemesinler
+                        // Arka planda başlasınlar, ekranı ve kod akışını kitlemesinler
                         loadDraftMembers(); 
                         startCountdown();
                     } else {
+                        // showRosterScreen'in de önündeki await'i kaldırdık
                         showRosterScreen(currentDraftId, true, targetTeam.status, targetTeam.captain_id, targetTeam.team_name, targetTeam.team_tag);
                     }
                 } else {
+                    // showRosterScreen'in de önündeki await'i kaldırdık
                     showRosterScreen(currentDraftId, false, targetTeam.status, targetTeam.captain_id, targetTeam.team_name, targetTeam.team_tag);
                 }
                 return; 
