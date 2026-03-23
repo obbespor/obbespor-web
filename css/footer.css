@@ -16,12 +16,12 @@ footer {
 
 .ticker-title {
     text-align: center;
-    font-size: 10px;
+    font-size: 11px; /* 10px çok küçüktü, 11px daha okunaklı */
     color: var(--gri-yazi);
     letter-spacing: 5px;
     margin-bottom: 30px;
     text-transform: uppercase;
-    opacity: 0.6;
+    opacity: 0.8; /* Başlığın görünürlüğünü de artırdık */
 }
 
 .ticker-wrapper {
@@ -47,11 +47,15 @@ footer {
     animation: scroll-loop 40s linear infinite;
 }
 
+/* 🚀 DÜZELTİLEN KISIM (LOGOLARIN GÖRÜNÜMÜ) */
 .ticker-scroll img {
-    height: 32px; /* Sponsor logoları için ideal yükseklik */
+    height: 38px; /* Logoları biraz daha belirgin hale getirdik */
     margin: 0 50px;
-    filter: grayscale(100%);
-    opacity: 0.4;
+    /* Eğer logoların (Ordu Kent Konseyi vb.) orijinali SİYAH renkliyse, aşağıdaki satırı silip yerine şunu yaz: 
+       filter: invert(1) grayscale(100%); 
+       Bu işlem siyah logoları otomatik olarak beyaza çevirir ve karanlık temada harika durur. */
+    filter: grayscale(100%) brightness(1.3); /* Siyah beyaz yapar ve parlaklığını %30 artırır */
+    opacity: 0.75; /* 0.4 çok soluktu, 0.75 gözü yormayan ama net okunan ideal değerdir */
     transition: all 0.4s ease;
 }
 
@@ -60,9 +64,9 @@ footer {
 }
 
 .ticker-scroll img:hover {
-    filter: grayscale(0%);
-    opacity: 1;
-    transform: scale(1.15);
+    filter: grayscale(0%) brightness(1); /* Üzerine gelince orijinal rengine döner */
+    opacity: 1; /* Tamamen belirginleşir */
+    transform: scale(1.15); /* Hafifçe büyür */
 }
 
 @keyframes scroll-loop {
@@ -152,7 +156,7 @@ footer {
 /* --- MOBİL UYUMLULUK --- */
 @media (max-width: 768px) {
     .sponsor-ticker { padding-bottom: 40px; }
-    .ticker-scroll img { height: 26px; margin: 0 25px; }
+    .ticker-scroll img { height: 30px; margin: 0 25px; } /* Mobilde de boyutu hafif artırdık */
     .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
     .footer-brand { grid-column: span 2; text-align: center; padding-bottom: 30px; }
     .footer-brand p { max-width: 100%; margin: 0 auto 25px; }
