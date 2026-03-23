@@ -394,7 +394,6 @@
             header.innerHTML = `${name.toUpperCase() || defaultName} <span style="font-size:12px; color:${color}; opacity:0.7;">${team === 'A' ? '(Mavi)' : '(Kırmızı)'}</span>`;
         }
 
-        // --- GÜNCELLENMİŞ: TAKIM PROFİLLERİNİ ÇEKERKEN EŞLEŞTİRME YAPAN FONKSİYON ---
         async function fetchTeamProfiles(team, teamName) {
             if (!teamName || teamName.length < 2) return;
             const containerId = team === 'A' ? 'teamAPlayersInputs' : 'teamBPlayersInputs';
@@ -436,7 +435,6 @@
                     optionsHtml = '<option value="">-- Kayıtlı oyuncu yok --</option>';
                 }
 
-                // ÇİFT YÖNLÜ: API DOLDURULMUŞSA EŞLEŞTİRME KONTROLÜ
                 selects.forEach(select => {
                     select.innerHTML = optionsHtml;
                     
@@ -453,7 +451,6 @@
                             
                             const optIgn = optIgnRaw.toLowerCase().replace(/\s+/g, '');
                             
-                            // BİREBİR EŞLEŞME (Case-insensitive, boşluksuz)
                             if (optIgn === apiIgn) {
                                 select.selectedIndex = j; 
                                 select.style.border = "1px solid #00d2ff"; 
@@ -538,7 +535,6 @@
             }
         }
 
-        // --- GÜNCELLENMİŞ: API'DEN VERİ ÇEKERKEN EŞLEŞTİRME YAPAN FONKSİYON ---
         function populateRows(containerId, players) {
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             players.forEach((p, i) => {
@@ -554,7 +550,6 @@
                     const ignEl = actualRow.querySelector('.ign-input');
                     if(ignEl) ignEl.value = apiIgn;
 
-                    // ÇİFT YÖNLÜ: TAKIM SEÇİLMİŞSE EŞLEŞTİRME KONTROLÜ
                     const selectEl = actualRow.querySelector('.user-matcher-select');
                     if (selectEl && selectEl.options.length > 1) { 
                         const cleanApiIgn = apiIgn.toLowerCase().replace(/\s+/g, '');
@@ -566,7 +561,6 @@
                             
                             const optIgn = optIgnRaw.toLowerCase().replace(/\s+/g, '');
                             
-                            // BİREBİR EŞLEŞME
                             if (optIgn === cleanApiIgn) {
                                 selectEl.selectedIndex = j; 
                                 selectEl.style.border = "1px solid #00d2ff"; 
@@ -604,7 +598,6 @@
             });
         }
 
-        // --- AKILLI EKRAN TEMİZLEME FONKSİYONU ---
         function clearScreen(full = false) {
             document.getElementById('scoreA').value = 0;
             document.getElementById('scoreB').value = 0;
@@ -653,16 +646,16 @@
             btn.disabled = true;
 
             try {
+                // --- BURASI GÜNCELLENDİ (round_order a göre arıyor) ---
                 const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
                     .select('id')
                     .eq('round_name', roundName)
-                    .eq('team_a_id', currentTeamAId)
-                    .eq('team_b_id', currentTeamBId)
-                    .single();
+                    .eq('round_order', roundOrder)
+                    .maybeSingle();
 
                 if (existingMatch) {
                     const { error: updErr } = await window.supabaseClient.from('bracket_matches')
-                        .update({ match_date: matchDate, status: 'pending', series_score_a: 0, series_score_b: 0, winner_id: null, round_order: roundOrder })
+                        .update({ team_a_id: currentTeamAId, team_b_id: currentTeamBId, match_date: matchDate, status: 'pending', series_score_a: 0, series_score_b: 0, winner_id: null })
                         .eq('id', existingMatch.id);
                     if (updErr) throw updErr;
                 } else {
@@ -694,9 +687,9 @@
 
         async function deleteMatch() {
             const roundName = document.getElementById('roundNameSelect').value;
+            const roundOrder = parseInt(document.getElementById('roundOrderInput').value) || 1;
 
-            if(!currentTeamAId || !currentTeamBId) return showNotification("Silmek istediğiniz maçın iki takımını da aratıp seçmelisiniz.", "error");
-            if(!confirm("DİKKAT: Bu eşleşmeyi ve ona bağlı olan tüm harita istatistiklerini kalıcı olarak silmek istediğinize emin misiniz?")) return;
+            if(!confirm(`DİKKAT: ${roundName} - ${roundOrder}. Pozisyon'daki eşleşmeyi ve ona bağlı olan tüm harita istatistiklerini kalıcı olarak silmek istediğinize emin misiniz?`)) return;
 
             const btn = document.getElementById('btnDeleteMatch');
             const originalText = btn.innerHTML;
@@ -704,12 +697,12 @@
             btn.disabled = true;
 
             try {
+                // --- BURASI GÜNCELLENDİ (round_order a göre arıyor) ---
                 const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
                     .select('id')
                     .eq('round_name', roundName)
-                    .eq('team_a_id', currentTeamAId)
-                    .eq('team_b_id', currentTeamBId)
-                    .single();
+                    .eq('round_order', roundOrder)
+                    .maybeSingle();
 
                 if (existingMatch) {
                     const { error: delErr } = await window.supabaseClient.from('bracket_matches')
@@ -717,11 +710,11 @@
                         .eq('id', existingMatch.id);
                     
                     if (delErr) throw delErr;
-                    showNotification("Eşleşme ve ona bağlı tüm veriler başarıyla silindi!", "success");
+                    showNotification(`${roundOrder}. Pozisyondaki eşleşme başarıyla silindi!`, "success");
                     
                     clearScreen(true);
                 } else {
-                    showNotification("Bu turda aradığınız takımlar arasında kaydedilmiş bir eşleşme bulunamadı.", "error");
+                    showNotification("Bu turda ve pozisyonda kayıtlı bir eşleşme bulunamadı.", "error");
                 }
             } catch (err) {
                 console.error(err);
@@ -818,19 +811,27 @@
                     winnerId = scoreA > scoreB ? currentTeamAId : currentTeamBId; 
                 }
 
+                // --- BURASI GÜNCELLENDİ (round_order a göre arıyor) ---
                 const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
                     .select('id')
                     .eq('round_name', roundName)
-                    .eq('team_a_id', currentTeamAId)
-                    .eq('team_b_id', currentTeamBId)
-                    .single();
+                    .eq('round_order', roundOrder)
+                    .maybeSingle();
 
                 let matchId;
 
                 if (existingMatch) {
                     matchId = existingMatch.id;
                     const { error: updErr } = await window.supabaseClient.from('bracket_matches')
-                        .update({ series_score_a: seriesA, series_score_b: seriesB, winner_id: winnerId, status: matchStatus, match_date: matchDate, round_order: roundOrder })
+                        .update({ 
+                            team_a_id: currentTeamAId, 
+                            team_b_id: currentTeamBId,
+                            series_score_a: seriesA, 
+                            series_score_b: seriesB, 
+                            winner_id: winnerId, 
+                            status: matchStatus, 
+                            match_date: matchDate 
+                        })
                         .eq('id', matchId);
                     if (updErr) throw updErr;
                 } else {
