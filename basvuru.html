@@ -214,17 +214,31 @@
             }
         };
 
+        // 🚀 1. HIZLANDIRILMIŞ: PARALEL SORGULAR (PROMISE.ALL)
         async function initPageData() {
             try {
                 const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
                 if (authError || !user) { window.location.href = 'kayit.html'; return; }
                 currentUser = user;
 
-                const { data: profileData } = await window.supabaseClient.from('profiles').select('username').eq('id', user.id).maybeSingle();
-                const username = profileData?.username || "KAPTAN";
-
+                // Arayüzü hemen çizmeye başla, kullanıcı beyaz ekran görmesin
                 renderPlayerInputs();
-                await loadOrCreateDraft(username); 
+
+                // Tüm gerekli verileri TEK SEFERDE, aynı anda çekiyoruz
+                const [profileRes, membershipsRes] = await Promise.all([
+                    window.supabaseClient.from('profiles').select('username').eq('id', user.id).maybeSingle(),
+                    window.supabaseClient.from('application_members')
+                        .select('id, status, application_id, tournament_applications(*)')
+                        .eq('user_id', currentUser.id)
+                        .in('status', ['accepted', 'pending']) 
+                ]);
+
+                const username = profileRes.data?.username || "KAPTAN";
+                const memberships = membershipsRes.data || [];
+
+                // Çekilen veriyi fonksiyona aktar
+                await loadOrCreateDraft(username, memberships); 
+                
                 setupAutoSave();
                 subscribeToDraftUpdates();
             } catch (err) {
@@ -444,15 +458,15 @@
                 </div>`;
         }
 
-        async function loadOrCreateDraft(username) {
-            const { data: memberships } = await window.supabaseClient.from('application_members')
-                .select('application_id, tournament_applications(*)')
-                .eq('user_id', currentUser.id)
-                .eq('status', 'accepted');
+        // 🚀 2. HIZLANDIRILMIŞ: VERİTABANI BEKLEMESİZ SORGULAMA (Filtreleme)
+        async function loadOrCreateDraft(username, memberships) {
+            // Paralel çektiğimiz veriyi burada JavaScript ile ayırıyoruz. Ekstra yükleme/bekleme yok.
+            const acceptedMemberships = memberships.filter(m => m.status === 'accepted');
+            const pendingInvites = memberships.filter(m => m.status === 'pending');
 
             let activeTeams = [];
-            if (memberships && memberships.length > 0) {
-                activeTeams = memberships
+            if (acceptedMemberships.length > 0) {
+                activeTeams = acceptedMemberships
                     .map(m => Array.isArray(m.tournament_applications) ? m.tournament_applications[0] : m.tournament_applications)
                     .filter(t => t !== null);
             }
@@ -474,38 +488,32 @@
                         document.getElementById('draftInfoBox').style.display = 'block';
                         document.getElementById('teamForm').style.display = 'block';
                         fillCaptainSlot(username); 
-                        await loadDraftMembers(); 
+                        
+                        // Arka planda başlasınlar, ekranı kitlemesinler
+                        loadDraftMembers(); 
                         startCountdown();
                     } else {
-                        await showRosterScreen(currentDraftId, true, targetTeam.status, targetTeam.captain_id, targetTeam.team_name, targetTeam.team_tag);
+                        showRosterScreen(currentDraftId, true, targetTeam.status, targetTeam.captain_id, targetTeam.team_name, targetTeam.team_tag);
                     }
                 } else {
-                    await showRosterScreen(currentDraftId, false, targetTeam.status, targetTeam.captain_id, targetTeam.team_name, targetTeam.team_tag);
+                    showRosterScreen(currentDraftId, false, targetTeam.status, targetTeam.captain_id, targetTeam.team_name, targetTeam.team_tag);
                 }
                 return; 
             }
 
-            // === YENİ EKLENEN BLOK: Bekleyen Davet Kontrolü ===
-            const { data: pendingInvites } = await window.supabaseClient
-                .from('application_members')
-                .select('id')
-                .eq('user_id', currentUser.id)
-                .eq('status', 'pending');
-
-            if (pendingInvites && pendingInvites.length > 0) {
+            // Javascript ile zaten bildiğimiz "Bekleyen davet var mı" kontrolü
+            if (pendingInvites.length > 0) {
                 if(typeof showNotification === 'function') {
                     showNotification("Bekleyen bir takım davetiniz var! Yeni takım kurmadan önce profilinizden bu daveti değerlendirmelisiniz.", "warning");
                 } else {
                     alert("Bekleyen bir takım davetiniz var! Yeni takım kurmadan önce profilinizden bu daveti değerlendirmelisiniz.");
                 }
                 
-                // Kullanıcıyı profiline yönlendiriyoruz
                 setTimeout(() => {
                     window.location.href = 'profil.html';
-                }, 2000); // 2 saniye mesajı okuma payı
-                return; // Yeni draft (takım) oluşturmasını engelle!
+                }, 2000); 
+                return; 
             }
-            // ====================================================
 
             const { data: newDraft } = await window.supabaseClient.from('tournament_applications').insert({
                 captain_id: currentUser.id, team_name: '', team_tag: '', status: 'draft'
