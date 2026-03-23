@@ -651,16 +651,16 @@
         // ==========================================
         async function loadInvitationsAndTeam() {
             try {
-                // 1. Önce kullanıcının tüm üyelik durumlarını çekiyoruz
+                // 1. Önce kullanıcının tüm üyelik durumlarını ve bağlı olduğu takımları çekiyoruz
                 const { data: memberships, error } = await window.supabaseClient.from('application_members')
-                    .select('*')
+                    .select('*, tournament_applications(team_name, team_tag, status)')
                     .eq('user_id', currentUser.id)
                     .order('created_at', { ascending: false });
-                
+
                 const list = document.getElementById('notificationsList');
                 const title = document.getElementById('inviteSectionTitle');
                 const badge = document.getElementById('notifBadge');
-                
+
                 list.innerHTML = '';
                 badge.style.display = "none";
 
@@ -677,73 +677,62 @@
                         </div>
                     `;
                 };
-                
+
                 if (error || !memberships || memberships.length === 0) {
                     showEmptyState();
                     return;
                 }
 
-                // 2. Kabul edilmiş aktif takımı bul
-                const activeTeamMember = memberships.find(m => m.status === 'accepted');
-                
+                // 2. Kabul edilmiş ve statüsü DRAFT OLMAYAN aktif takımı bul
+                const activeTeamMember = memberships.find(m => {
+                    if (m.status !== 'accepted') return false;
+                    const teamData = Array.isArray(m.tournament_applications) ? m.tournament_applications[0] : m.tournament_applications;
+                    return teamData && teamData.status !== 'draft';
+                });
+
                 if (activeTeamMember) {
-                    // TAKIM VERİSİNİ DOĞRUDAN VE AYRICA ÇEKİYORUZ (Turnuvalarım sayfasındaki gibi garanti yöntem)
-                    const { data: teamData } = await window.supabaseClient.from('tournament_applications')
-                        .select('team_name, team_tag, status')
-                        .eq('id', activeTeamMember.application_id)
-                        .single();
-                    
-                    if (teamData) {
-                        let teamStatusText = "Bilinmiyor";
-                        let teamStatusColor = "#777";
-                        let teamStatusIcon = "fa-info-circle";
+                    const teamData = Array.isArray(activeTeamMember.tournament_applications) ? activeTeamMember.tournament_applications[0] : activeTeamMember.tournament_applications;
 
-                        if (teamData.status === 'approved') {
-                            teamStatusText = "Turnuvaya Hazır";
-                            teamStatusColor = "var(--yesil-guven)";
-                            teamStatusIcon = "fa-check-circle";
-                        } else if (teamData.status === 'pending') {
-                            teamStatusText = "Başvuru İncelemede";
-                            teamStatusColor = "var(--mavi-onay)";
-                            teamStatusIcon = "fa-clock";
-                        } else if (teamData.status === 'draft') {
-                            teamStatusText = "Kurulum Aşamasında";
-                            teamStatusColor = "var(--neon-mor)";
-                            teamStatusIcon = "fa-tools";
-                        } else if (teamData.status === 'rejected') {
-                            teamStatusText = "Reddedildi";
-                            teamStatusColor = "var(--kirmizi-iptal)";
-                            teamStatusIcon = "fa-times-circle";
-                        }
+                    let teamStatusText = "Bilinmiyor";
+                    let teamStatusColor = "#777";
+                    let teamStatusIcon = "fa-info-circle";
 
-                        title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
-                        list.innerHTML = `
-                            <div class="active-team-card">
-                                <span class="team-tag-large">${teamData.team_tag || 'LOBİ'}</span>
-                                <h3>${teamData.team_name || 'İSİMSİZ TAKIM'}</h3>
-                                <p>Durum: <span style="color:${teamStatusColor}; font-weight:bold;"><i class="fas ${teamStatusIcon}"></i> ${teamStatusText}</span></p>
-                                <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
-                            </div>
-                        `;
-                        return; // Aktif takım varsa davetleri göstermiyoruz ve fonksiyonu bitiriyoruz.
+                    if (teamData.status === 'approved') {
+                        teamStatusText = "Turnuvaya Hazır";
+                        teamStatusColor = "var(--yesil-guven)";
+                        teamStatusIcon = "fa-check-circle";
+                    } else if (teamData.status === 'pending') {
+                        teamStatusText = "Başvuru İncelemede";
+                        teamStatusColor = "var(--mavi-onay)";
+                        teamStatusIcon = "fa-clock";
+                    } else if (teamData.status === 'rejected') {
+                        teamStatusText = "Reddedildi";
+                        teamStatusColor = "var(--kirmizi-iptal)";
+                        teamStatusIcon = "fa-times-circle";
                     }
+
+                    title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
+                    list.innerHTML = `
+                        <div class="active-team-card">
+                            <span class="team-tag-large">${teamData.team_tag || 'LOBİ'}</span>
+                            <h3>${teamData.team_name || 'İSİMSİZ TAKIM'}</h3>
+                            <p>Durum: <span style="color:${teamStatusColor}; font-weight:bold;"><i class="fas ${teamStatusIcon}"></i> ${teamStatusText}</span></p>
+                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
+                        </div>
+                    `;
+                    return; // Aktif (draft olmayan) takım varsa, davetleri göstermiyoruz.
                 }
 
                 // 3. Aktif takım yoksa, bekleyen davetleri göster
                 const pendingInvites = memberships.filter(m => m.status === 'pending');
-                
+
                 if (pendingInvites.length > 0) {
                     title.innerHTML = `<i class="fas fa-users"></i> Takım Davetleri`;
                     badge.innerText = pendingInvites.length;
                     badge.style.display = "inline-block";
-                    
-                    // Davetler için takımların bilgilerini tek tek çekiyoruz
+
                     for (let inv of pendingInvites) {
-                        const { data: tData } = await window.supabaseClient.from('tournament_applications')
-                            .select('team_name, team_tag')
-                            .eq('id', inv.application_id)
-                            .maybeSingle();
-                            
+                        const tData = Array.isArray(inv.tournament_applications) ? inv.tournament_applications[0] : inv.tournament_applications;
                         const teamName = tData?.team_name || "Bilinmeyen Takım";
                         const teamTag = tData?.team_tag || "LOBİ";
                         const roleText = inv.role === 'main' ? 'Asil' : 'Yedek';
@@ -769,7 +758,7 @@
                 } else {
                     showEmptyState();
                 }
-                
+
             } catch (err) {
                 console.error("Takım/Davet yükleme hatası:", err);
                 document.getElementById('notificationsList').innerHTML = `<div style="text-align:center; color:#ff4b4b; padding:20px;">Takım bilgileri alınırken bağlantı hatası oluştu.</div>`;
