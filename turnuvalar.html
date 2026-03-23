@@ -47,8 +47,13 @@
         .filter-btn.active, .filter-btn:hover { background: var(--neon-mor); border-color: var(--neon-mor); }
 
         .t-list-grid { display: flex; flex-direction: column; gap: 25px; }
+        
+        /* Kartların varsayılan durumları */
         .t-wide-card { background: linear-gradient(145deg, #0a0a0a, #16072b); border: 1px solid #222; border-radius: 15px; display: flex; align-items: center; padding: 25px; transition: 0.4s; }
         .t-wide-card:hover { border-color: var(--neon-mor); transform: translateX(10px); box-shadow: 0 0 20px rgba(96,29,194,0.2); }
+        
+        /* Filtreleme için gizleme class'ı */
+        .hide-card { display: none !important; }
 
         .t-image { width: 100px; height: 100px; background: var(--neon-mor); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; flex-shrink: 0; }
         .t-details { flex: 1; padding: 0 40px; }
@@ -56,12 +61,16 @@
         .tag { font-size: 11px; padding: 4px 10px; border-radius: 5px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
         .live { background: #ff0044; box-shadow: 0 0 10px #ff0044; }
         .open { background: var(--neon-mor); }
+        .finished { background: #555; } /* Sonuçlanmış turnuva etiketi için renk */
+        
         .t-meta { margin-top: 15px; display: flex; gap: 25px; color: var(--gri-yazi); font-size: 14px; }
         .t-meta strong { color: white; }
 
         .view-btn, .register-btn { padding: 12px 30px; border-radius: 6px; border: none; font-weight: 900; cursor: pointer; transition: 0.3s; text-transform: uppercase; min-width: 150px; }
         .view-btn { background: white; color: black; }
         .register-btn { background: var(--neon-mor); color: white; }
+        .finished-btn { background: #333; color: #ccc; cursor: not-allowed; } /* Sonuçlanmış buton stili */
+        
         .counter-highlight { color: var(--neon-mor) !important; font-size: 16px; font-weight: 900; transition: 0.3s; }
 
         @media (max-width: 768px) {
@@ -69,7 +78,7 @@
             .t-wide-card { flex-direction: column; text-align: center; padding: 30px 20px; }
             .t-details { padding: 20px 0; }
             .t-meta { justify-content: center; flex-direction: column; gap: 8px; }
-            .view-btn, .register-btn { width: 100%; }
+            .view-btn, .register-btn, .finished-btn { width: 100%; }
         }
     </style>
 </head>
@@ -83,20 +92,21 @@
 
     <main class="t-container">
         <div class="filters">
-            <button class="filter-btn active">GÜNCEL</button>
-            <button class="filter-btn">AKTİF</button>
-            <button class="filter-btn">SONUÇLANMIŞ</button>
+            <button class="filter-btn active" onclick="filterTournaments('all')">GÜNCEL</button>
+            <button class="filter-btn" onclick="filterTournaments('active')">AKTİF</button>
+            <button class="filter-btn" onclick="filterTournaments('finished')">SONUÇLANMIŞ</button>
         </div>
 
         <div class="t-list-grid">
-            <div class="t-wide-card">
+            
+            <div class="t-wide-card filter-item filter-active">
                 <div class="t-image">VALO</div>
                 <div class="t-details">
                     <span class="tag live">BAŞLADI</span>
                     <h2>OBB 1. VALORANT TOPLULUK TURNUVASI</h2>
                     <p>Ordu'nun en iyileri belli oluyor!</p>
                     <div class="t-meta">
-                        <span><strong>Ödül:</strong> 10.000</span>
+                        <span><strong>Ödül:</strong> 10.000 TL</span>
                         <span><strong>Kayıtlı:</strong> <span id="valoCounter" class="counter-highlight">Yükleniyor...</span></span>
                     </div>
                 </div>
@@ -105,7 +115,7 @@
                 </div>
             </div>
             
-            <div class="t-wide-card">
+            <div class="t-wide-card filter-item filter-upcoming">
                 <div class="t-image" style="background: #1d4ed8;">FİFA</div>
                 <div class="t-details">
                     <span class="tag open">YAKINDA</span>
@@ -113,13 +123,28 @@
                     <p>FİFA oyuncuları 2v2 ile karşı karşıya</p>
                     <div class="t-meta">
                         <span><strong>Ödül:</strong> Belirtilmemiş</span>
-                        <span><strong>Kayıtlı:</strong> 16/0</span> 
+                        <span><strong>Kayıtlı:</strong> 0/16</span> 
                     </div>
                 </div>
                 <div class="t-action">
                     <button class="register-btn">BELİRTİLMEMİŞ</button>
                 </div>
             </div>
+
+            <div class="t-wide-card filter-item filter-finished hide-card">
+                <div class="t-image" style="background: #333;">ESKİ</div>
+                <div class="t-details">
+                    <span class="tag finished">SONUÇLANDI</span>
+                    <h2>OBB BETA TEST TURNUVASI</h2> <p>İlk test turnuvamızın şampiyonu belli oldu.</p> <div class="t-meta">
+                        <span><strong>Ödül:</strong> Donanım Seti</span>
+                        <span><strong>Kazanan:</strong> Takım X</span>
+                    </div>
+                </div>
+                <div class="t-action">
+                    <button class="finished-btn" disabled>TAMAMLANDI</button>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -132,7 +157,43 @@
     <script src="js/app.js"></script>
 
     <script>
-        // Sadece bu sayfanın ihtiyacı olan Sayaç Fonksiyonu
+        // Basit JS Filtreleme Mantığı
+        function filterTournaments(category) {
+            // 1. Butonların aktiflik durumunu değiştir
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // 2. Kartları gizle veya göster
+            const allCards = document.querySelectorAll('.filter-item');
+            
+            allCards.forEach(card => {
+                if (category === 'all') {
+                    // 'Güncel' seçilirse aktif ve yakındakileri göster, sonuçlanmışları gizle
+                    if (card.classList.contains('filter-active') || card.classList.contains('filter-upcoming')) {
+                        card.classList.remove('hide-card');
+                    } else {
+                        card.classList.add('hide-card');
+                    }
+                } else if (category === 'active') {
+                    // Sadece aktif olanları göster
+                    if (card.classList.contains('filter-active')) {
+                        card.classList.remove('hide-card');
+                    } else {
+                        card.classList.add('hide-card');
+                    }
+                } else if (category === 'finished') {
+                    // Sadece sonuçlanmışları göster
+                    if (card.classList.contains('filter-finished')) {
+                        card.classList.remove('hide-card');
+                    } else {
+                        card.classList.add('hide-card');
+                    }
+                }
+            });
+        }
+
+        // Sayaç Fonksiyonu
         async function loadApprovedCount() {
             try {
                 const { count, error } = await window.supabaseClient
@@ -148,7 +209,6 @@
                 }
             } catch (err) {
                 console.error("Sayaç hatası:", err);
-                // Olası bir hatada sayaç varsayılan haline döner
                 document.getElementById('valoCounter').innerText = `0/64`;
             }
         }
