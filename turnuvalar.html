@@ -61,7 +61,6 @@
         .tag { font-size: 11px; padding: 4px 10px; border-radius: 5px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
         .live { background: #ff0044; box-shadow: 0 0 10px #ff0044; }
         .open { background: var(--neon-mor); }
-        .finished { background: #555; } /* Sonuçlanmış turnuva etiketi için renk */
         
         .t-meta { margin-top: 15px; display: flex; gap: 25px; color: var(--gri-yazi); font-size: 14px; }
         .t-meta strong { color: white; }
@@ -77,7 +76,7 @@
             .t-wide-card { flex-direction: column; text-align: center; padding: 30px 20px; }
             .t-details { padding: 20px 0; }
             .t-meta { justify-content: center; flex-direction: column; gap: 8px; }
-            .view-btn, .register-btn, .finished-btn { width: 100%; }
+            .view-btn, .register-btn { width: 100%; }
         }
     </style>
 </head>
@@ -130,17 +129,19 @@
                 </div>
             </div>
 
-            <div class="t-wide-card filter-item filter-upcoming hide-card">
-                <div class="t-image" style="background: #333;">ESKİ</div>
+            <div class="t-wide-card filter-item filter-finished hide-card">
+                <div class="t-image" style="background: #1d4ed8;">FİFA</div>
                 <div class="t-details">
                     <span class="tag open">SONUÇLANDI</span>
-                    <h2>OBB 1. DOSTLUK KARŞILAŞMASI</h2> <p>İlk dostluk turnuvamızın şampiyonu belli oldu.</p> <div class="t-meta">
-                        <span><strong>Ödül:</strong> Dostluk</span>
-                        <span><strong>Kazanan:</strong> OBB E-SPORTS</span>
+                    <h2>OBB BETA TEST TURNUVASI</h2>
+                    <p>İlk test turnuvamızın şampiyonu belli oldu.</p>
+                    <div class="t-meta">
+                        <span><strong>Ödül:</strong> Belirtilmemiş</span>
+                        <span><strong>Kayıtlı:</strong> 16/16</span> 
                     </div>
                 </div>
                 <div class="t-action">
-                    <button class="register-btn" disabled>TAMAMLANDI</button>
+                    <button class="register-btn">İNCELE</button>
                 </div>
             </div>
 
