@@ -115,35 +115,72 @@
                 const userId = session.user.id;
                 let appId = null;
 
-                const { data: capData } = await db.from('tournament_applications').select('id, status').eq('captain_id', userId).maybeSingle();
-                if (capData) appId = capData.id;
-                else {
-                    const { data: memData } = await db.from('application_members').select('application_id').eq('user_id', userId).neq('status', 'rejected').maybeSingle();
-                    if (memData) appId = memData.application_id;
+                // 1. Önce kullanıcının KAPTAN olduğu ve DRAFT OLMAYAN kayıtları kontrol et
+                const { data: capData } = await db.from('tournament_applications')
+                    .select('id, status')
+                    .eq('captain_id', userId)
+                    .neq('status', 'draft')
+                    .limit(1);
+
+                if (capData && capData.length > 0) {
+                    appId = capData[0].id;
+                } else {
+                    // 2. Eğer kaptan değilse, ÜYESİ olduğu ve DRAFT OLMAYAN takımı bul
+                    // Supabase'in inner join filtrelemesi kullanılarak parent table (tournament_applications) filtrelenir
+                    const { data: memData } = await db.from('application_members')
+                        .select('application_id, tournament_applications!inner(status)')
+                        .eq('user_id', userId)
+                        .neq('status', 'rejected')
+                        .neq('tournament_applications.status', 'draft')
+                        .limit(1);
+                        
+                    if (memData && memData.length > 0) {
+                        appId = memData[0].application_id;
+                    }
                 }
 
                 if (!appId) { emptyState.style.display = 'flex'; return; }
 
-                const { data: teamData } = await db.from('tournament_applications').select('team_name, team_tag, captain_id, status').eq('id', appId).single();
-                if (!teamData) { emptyState.style.display = 'flex'; return; }
+                // Takım verisini çek (zaten draft olmadığını garantiledik, ama güvenlik için status de alıyoruz)
+                const { data: teamData } = await db.from('tournament_applications')
+                    .select('team_name, team_tag, captain_id, status')
+                    .eq('id', appId)
+                    .single();
+                    
+                if (!teamData || teamData.status === 'draft') { 
+                    emptyState.style.display = 'flex'; 
+                    return; 
+                }
                 
-                emptyState.style.display = 'none'; activeState.style.display = 'block'; 
+                emptyState.style.display = 'none'; 
+                activeState.style.display = 'block'; 
 
                 document.getElementById('display-team-name').innerText = teamData.team_name || "İsimsiz Takım";
                 document.getElementById('display-team-tag').innerText = teamData.team_tag ? `[${teamData.team_tag}]` : "[-]";
                 
                 const badge = document.getElementById('appStatusBadge');
-                if(teamData.status === 'approved') { badge.innerText = "ONAYLANDI"; badge.style.color = "var(--yesil-guven)"; badge.style.borderColor = "var(--yesil-guven)"; }
-                else if(teamData.status === 'pending') { badge.innerText = "İncelemede"; }
+                if(teamData.status === 'approved') { 
+                    badge.innerText = "ONAYLANDI"; 
+                    badge.style.color = "var(--yesil-guven)"; 
+                    badge.style.borderColor = "var(--yesil-guven)"; 
+                } else if(teamData.status === 'pending') { 
+                    badge.innerText = "İncelemede"; 
+                }
 
                 const rosterContainer = document.getElementById('display-roster');
                 rosterContainer.innerHTML = ''; 
 
-                const { data: members } = await db.from('application_members').select('role, user_id, status').eq('application_id', appId).neq('status', 'rejected');
+                const { data: members } = await db.from('application_members')
+                    .select('role, user_id, status')
+                    .eq('application_id', appId)
+                    .neq('status', 'rejected');
+                    
                 let userIds = members ? members.map(m => m.user_id) : [];
                 if (!userIds.includes(teamData.captain_id)) userIds.push(teamData.captain_id);
 
-                const { data: profiles } = await db.from('profiles').select('id, username, avatar_url').in('id', userIds);
+                const { data: profiles } = await db.from('profiles')
+                    .select('id, username, avatar_url')
+                    .in('id', userIds);
 
                 if (profiles) {
                     const captain = profiles.find(p => p.id === teamData.captain_id);
@@ -168,7 +205,10 @@
                         });
                     }
                 }
-            } catch (error) { emptyState.style.display = 'flex'; }
+            } catch (error) { 
+                console.error("Turnuva geçmişi yüklenirken hata oluştu:", error);
+                emptyState.style.display = 'flex'; 
+            }
         });
     </script>
 </body>
