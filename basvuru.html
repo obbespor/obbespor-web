@@ -485,6 +485,28 @@
                 return; 
             }
 
+            // === YENİ EKLENEN BLOK: Bekleyen Davet Kontrolü ===
+            const { data: pendingInvites } = await window.supabaseClient
+                .from('application_members')
+                .select('id')
+                .eq('user_id', currentUser.id)
+                .eq('status', 'pending');
+
+            if (pendingInvites && pendingInvites.length > 0) {
+                if(typeof showNotification === 'function') {
+                    showNotification("Bekleyen bir takım davetiniz var! Yeni takım kurmadan önce profilinizden bu daveti değerlendirmelisiniz.", "warning");
+                } else {
+                    alert("Bekleyen bir takım davetiniz var! Yeni takım kurmadan önce profilinizden bu daveti değerlendirmelisiniz.");
+                }
+                
+                // Kullanıcıyı profiline yönlendiriyoruz
+                setTimeout(() => {
+                    window.location.href = 'profil.html';
+                }, 2000); // 2 saniye mesajı okuma payı
+                return; // Yeni draft (takım) oluşturmasını engelle!
+            }
+            // ====================================================
+
             const { data: newDraft } = await window.supabaseClient.from('tournament_applications').insert({
                 captain_id: currentUser.id, team_name: '', team_tag: '', status: 'draft'
             }).select().single();
@@ -819,7 +841,6 @@
                 const logoFile = document.getElementById('teamLogo').files[0];
                 let logoUrl = "";
                 
-                // DOSYA FORMATI GÜVENLİK KONTROLÜ (EKLENDİ)
                 if (logoFile) {
                     const allowedExtensions = ['png', 'jpg', 'jpeg', 'webp'];
                     const fileExt = logoFile.name.split('.').pop().toLowerCase();
