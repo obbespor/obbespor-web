@@ -141,8 +141,8 @@
                         </div>
                     </div>
                     <div class="input-group">
-                        <label>Takım Logosu (PNG, Max 2MB) *</label>
-                        <input type="file" id="teamLogo" accept="image/png" required>
+                        <label>Takım Logosu (PNG, JPG, WEBP, Max 2MB) *</label>
+                        <input type="file" id="teamLogo" accept="image/png, image/jpeg, image/jpg, image/webp" required>
                     </div>
                     <h3 style="margin: 20px 0 10px; font-size: 14px; color: var(--neon-mor);">ASIL KADRO</h3>
                     <div id="mainPlayers"></div>
@@ -181,7 +181,6 @@
         let currentUser = null, currentDraftId = null, draftCreatedAt = null, saveTimeout = null, currentStatus = null;
         let currentConfirmCallback = null;
 
-        // --- YENİ ÖZEL UYARI FONKSİYONLARI ---
         function openCustomConfirm(title, desc, callback) {
             document.getElementById('confirmModalTitle').innerText = title;
             document.getElementById('confirmModalDesc').innerHTML = desc;
@@ -204,8 +203,6 @@
             closeCustomConfirm();
         });
 
-
-        // Kart açma/kapatma fonksiyonu
         window.togglePlayerStats = function(element) {
             const currentItem = element;
             const isAlreadyOpen = currentItem.classList.contains('open');
@@ -508,7 +505,6 @@
             }
         }
 
-        // --- GÜNCELLENMİŞ DÜZENLEME ONAY MODALI ENTEGRASYONU ---
         async function enableEditMode() {
             if (currentStatus === 'approved') {
                 openCustomConfirm(
@@ -794,7 +790,6 @@
             });
         }
 
-        // --- GÜNCELLENMİŞ İPTAL MODALI ENTEGRASYONU ---
         async function cancelDraft(silent = false) {
             if (!silent) {
                 openCustomConfirm(
@@ -824,6 +819,23 @@
                 const logoFile = document.getElementById('teamLogo').files[0];
                 let logoUrl = "";
                 
+                // DOSYA FORMATI GÜVENLİK KONTROLÜ (EKLENDİ)
+                if (logoFile) {
+                    const allowedExtensions = ['png', 'jpg', 'jpeg', 'webp'];
+                    const fileExt = logoFile.name.split('.').pop().toLowerCase();
+                    
+                    if (!allowedExtensions.includes(fileExt)) {
+                        if(typeof showNotification === 'function') {
+                            showNotification(`Hata: Sadece PNG, JPG veya WEBP formatında yükleme yapabilirsiniz.`, "error");
+                        } else {
+                            alert(`Hata: Sadece PNG, JPG veya WEBP formatında yükleme yapabilirsiniz.`);
+                        }
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = "BAŞVURUYU TAMAMLA VE GÖNDER";
+                        return; 
+                    }
+                }
+
                 if (logoFile) {
                     const maxSzeInMB = 2;
                     const maxSizeInBytes = maxSzeInMB * 1024 * 1024;
