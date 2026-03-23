@@ -52,7 +52,7 @@ footer {
 .ticker-scroll img {
     height: 70px; /* Logolar ciddi şekilde büyütüldü */
     margin: 0 70px; /* Büyüdükleri için aralarındaki nefes alma boşluğu artırıldı */
-    filter: grayscale(100%) contrast(1.5) brightness(1.2); /* Siyah arka planda parlak ve keskin */
+    filter: contrast(1.5) brightness(1.2); /* Siyah arka planda parlak ve keskin */
     opacity: 0.85; /* Daha belirgin yapıldı */
     transition: all 0.4s ease;
 }
@@ -62,7 +62,7 @@ footer {
 }
 
 .ticker-scroll img:hover {
-    filter: grayscale(0%) contrast(1.2) brightness(1.5); /* Üzerine gelince orijinal renge döner ve parlar */
+    filter: contrast(1.2) brightness(1.5); /* Üzerine gelince orijinal renge döner ve parlar */
     opacity: 1; /* Tamamen görünür olur */
     transform: scale(1.1); /* Hafif büyür */
 }
@@ -166,7 +166,7 @@ footer {
 }
 /* Sadece Kent Konseyi logosu için görünmezlik filtresini kaldır */
 .ticker-scroll img[src*="kentkonsey"] {
-    filter: grayscale(100%) brightness(1.5) !important; /* Invert kaldırıldı, parlaklık artırıldı */
+    filter: brightness(1.5) !important; /* Invert kaldırıldı, parlaklık artırıldı */
 }
 
 /* Üzerine gelince renklenmesi için */
