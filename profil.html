@@ -683,44 +683,59 @@
                     return;
                 }
 
-                // 2. Kabul edilmiş ve statüsü DRAFT OLMAYAN aktif takımı bul
-                const activeTeamMember = memberships.find(m => {
-                    if (m.status !== 'accepted') return false;
-                    const teamData = Array.isArray(m.tournament_applications) ? m.tournament_applications[0] : m.tournament_applications;
-                    return teamData && teamData.status !== 'draft';
-                });
+                // 2. Kabul edilmiş aktif takımı bul (Draft olsa bile buluyoruz ki ekrana özel tasarım basalım)
+                const activeTeamMember = memberships.find(m => m.status === 'accepted');
 
                 if (activeTeamMember) {
                     const teamData = Array.isArray(activeTeamMember.tournament_applications) ? activeTeamMember.tournament_applications[0] : activeTeamMember.tournament_applications;
 
-                    let teamStatusText = "Bilinmiyor";
-                    let teamStatusColor = "#777";
-                    let teamStatusIcon = "fa-info-circle";
+                    if (teamData) {
+                        // YENİ EKLENEN KISIM: Eğer oyuncunun kabul ettiği takım "DRAFT" aşamasındaysa
+                        if (teamData.status === 'draft') {
+                            title.innerHTML = `<i class="fas fa-hourglass-half"></i> Onay Bekleniyor`;
+                            list.innerHTML = `
+                                <div class="active-team-card" style="background: linear-gradient(135deg, rgba(96, 29, 194, 0.05) 0%, rgba(10, 10, 10, 0.9) 100%);">
+                                    <i class="fas fa-check-circle fa-3x" style="color: var(--neon-mor); margin-bottom: 15px; filter: drop-shadow(0 0 10px var(--neon-mor));"></i>
+                                    <h3>${teamData.team_name ? teamData.team_name.toUpperCase() : 'BİR TAKIM'} DAVETİNİ KABUL ETTİN!</h3>
+                                    <p style="color: var(--gri-yazi); margin-bottom: 20px; font-size: 14px;">Takımınız şu an oluşturulma aşamasında. Kaptanınız kadroyu tamamlayıp başvuruyu gönderene kadar lütfen bekleyiniz.</p>
+                                    <div style="display: inline-block; background: rgba(96, 29, 194, 0.2); border: 1px solid var(--neon-mor); padding: 8px 20px; border-radius: 8px; font-weight: bold; color: var(--neon-mor);">
+                                        <i class="fas fa-tools"></i> Kurulum Aşamasında (Draft)
+                                    </div>
+                                </div>
+                            `;
+                            return; // Fonksiyonu bitir, davetleri gösterme
+                        }
 
-                    if (teamData.status === 'approved') {
-                        teamStatusText = "Turnuvaya Hazır";
-                        teamStatusColor = "var(--yesil-guven)";
-                        teamStatusIcon = "fa-check-circle";
-                    } else if (teamData.status === 'pending') {
-                        teamStatusText = "Başvuru İncelemede";
-                        teamStatusColor = "var(--mavi-onay)";
-                        teamStatusIcon = "fa-clock";
-                    } else if (teamData.status === 'rejected') {
-                        teamStatusText = "Reddedildi";
-                        teamStatusColor = "var(--kirmizi-iptal)";
-                        teamStatusIcon = "fa-times-circle";
+                        // Eğer takım draft değilse, mevcut takım mantığı çalışsın
+                        let teamStatusText = "Bilinmiyor";
+                        let teamStatusColor = "#777";
+                        let teamStatusIcon = "fa-info-circle";
+
+                        if (teamData.status === 'approved') {
+                            teamStatusText = "Turnuvaya Hazır";
+                            teamStatusColor = "var(--yesil-guven)";
+                            teamStatusIcon = "fa-check-circle";
+                        } else if (teamData.status === 'pending') {
+                            teamStatusText = "Başvuru İncelemede";
+                            teamStatusColor = "var(--mavi-onay)";
+                            teamStatusIcon = "fa-clock";
+                        } else if (teamData.status === 'rejected') {
+                            teamStatusText = "Reddedildi";
+                            teamStatusColor = "var(--kirmizi-iptal)";
+                            teamStatusIcon = "fa-times-circle";
+                        }
+
+                        title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
+                        list.innerHTML = `
+                            <div class="active-team-card">
+                                <span class="team-tag-large">${teamData.team_tag || 'LOBİ'}</span>
+                                <h3>${teamData.team_name || 'İSİMSİZ TAKIM'}</h3>
+                                <p>Durum: <span style="color:${teamStatusColor}; font-weight:bold;"><i class="fas ${teamStatusIcon}"></i> ${teamStatusText}</span></p>
+                                <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
+                            </div>
+                        `;
+                        return; // Aktif takım varsa, davetleri göstermiyoruz.
                     }
-
-                    title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
-                    list.innerHTML = `
-                        <div class="active-team-card">
-                            <span class="team-tag-large">${teamData.team_tag || 'LOBİ'}</span>
-                            <h3>${teamData.team_name || 'İSİMSİZ TAKIM'}</h3>
-                            <p>Durum: <span style="color:${teamStatusColor}; font-weight:bold;"><i class="fas ${teamStatusIcon}"></i> ${teamStatusText}</span></p>
-                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
-                        </div>
-                    `;
-                    return; // Aktif (draft olmayan) takım varsa, davetleri göstermiyoruz.
                 }
 
                 // 3. Aktif takım yoksa, bekleyen davetleri göster
