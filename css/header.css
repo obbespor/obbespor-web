@@ -142,3 +142,33 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
         box-shadow: 0 0 50px rgba(96, 29, 194, 0.4), 0 0 200px rgba(0,0,0,0.95) !important;
     }
 }
+/* --- LOGO VE METİN HİZALAMASI --- */
+.logo { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; /* Logo ile yazı arasındaki boşluk */
+    font-size: 24px; 
+    font-weight: 800; 
+    color: white; 
+    text-decoration: none; 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
+}
+.header-logo {
+    height: 45px; /* Masaüstü için ideal logo boyutu */
+    width: auto;
+    object-fit: contain;
+}
+.logo span { color: var(--neon-mor); }
+
+/* --- HEADER MOBİL UYUMLULUK (Sadece logoyu ilgilendiren kısım eklendi) --- */
+@media (max-width: 768px) {
+    /* Mobilde sıkışmayı önlemek için logo ve yazı boyutunu hafif küçültüyoruz */
+    .logo {
+        font-size: 20px;
+        gap: 8px;
+    }
+    .header-logo {
+        height: 35px; /* Mobilde logo biraz daha küçülür */
+    }
+}
