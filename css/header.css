@@ -10,7 +10,7 @@ header.main-nav.nav-hidden { transform: translateY(-110%); }
 .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
 .logo span { color: var(--neon-mor); }
 
-nav ul { list-style: none; display: flex; align-items: center; gap: 20px; margin: 0; padding: 0; }
+nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
 nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
 nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
 
@@ -30,6 +30,7 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
     display: none; position: absolute; right: 0; top: 100%; background: #0d0d0d;
     min-width: 200px; border: 1px solid var(--neon-mor); border-radius: 12px;
     padding: 5px 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+    /* NİNJALAR İÇİN MASAÜSTÜNDE GECİKME KALDIRILDI! Sadece normal açılma efekti var. */
     animation: menuFadeIn 0.2s ease-out;
 }
 .dropdown-content::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
@@ -92,59 +93,12 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
 /* ANİMASYONLAR */
 @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* YENİ: MOBİL HAYALET TIKLAMA KORUYUCUSU */
+/* YENİ: MOBİL HAYALET TIKLAMA KORUYUCUSU (Masaüstünü Etkilemez) */
 @keyframes preventGhostClick {
     0% { pointer-events: none; }
     99% { pointer-events: none; }
     100% { pointer-events: auto; }
 }
-
-/* ==================================================
-   GOOGLE TRANSLATE ÖZELLEŞTİRMESİ
-   ================================================== */
-.language-selector {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-/* Çeviri Kutusunun Ana Görünümü */
-.goog-te-gadget-simple {
-    background-color: transparent !important; /* Arka planı menüyle uyumlu hale getirdik */
-    border: 1px solid rgba(255,255,255,0.2) !important; /* Hafif bir sınır çizgisi */
-    border-radius: 6px !important;
-    padding: 6px 10px !important;
-    font-family: 'Poppins', sans-serif !important;
-    color: white !important;
-    transition: 0.3s ease !important;
-    display: flex !important;
-    align-items: center !important;
-    cursor: pointer;
-}
-
-.goog-te-gadget-simple:hover {
-    border-color: var(--neon-mor) !important;
-    box-shadow: 0 0 10px rgba(96, 29, 194, 0.3) !important;
-}
-
-/* İçindeki yazılar */
-.goog-te-gadget-simple span {
-    color: white !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-}
-
-/* Google'ın varsayılan ikonunu ve ayırıcı çizgisini gizle */
-.goog-te-gadget-icon { display: none !important; }
-.goog-te-gadget-simple img { display: none !important; }
-.goog-te-menu-value span:nth-child(3) { display:none !important; } /* Ok işaretini gizler */
-.goog-te-menu-value span:nth-child(5) { display:none !important; }
-
-/* Çeviri yapıldığında üstte çıkan Google barını gizle ve sayfa kaymasını önle */
-.goog-te-banner-frame.skiptranslate { display: none !important; }
-body { top: 0px !important; }
-
 
 /* HEADER MOBİL UYUMLULUK */
 @media (max-width: 768px) {
@@ -186,19 +140,5 @@ body { top: 0px !important; }
         margin: 0 !important;
         padding: 0 !important;
         box-shadow: 0 0 50px rgba(96, 29, 194, 0.4), 0 0 200px rgba(0,0,0,0.95) !important;
-    }
-
-    /* MOBİLDE ÇEVİRİ BUTONU OPTİMİZASYONU */
-    .language-selector {
-        margin: 0;
-        padding: 0;
-    }
-    
-    .goog-te-gadget-simple {
-        padding: 4px 6px !important;
-        border: 1px solid rgba(255,255,255,0.1) !important; /* Mobilde daha hafif çizgi */
-    }
-    .goog-te-gadget-simple span {
-        font-size: 10px !important; /* Diğer menü linkleriyle aynı boyutta */
     }
 }
