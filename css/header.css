@@ -100,7 +100,7 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
 }
 
 /* ==================================================
-   GOOGLE TRANSLATE ÖZELLEŞTİRMESİ VE MOBİL UYUM
+   GOOGLE TRANSLATE ÖZELLEŞTİRMESİ
    ================================================== */
 .language-selector {
     display: inline-flex;
@@ -111,10 +111,10 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
 
 /* Çeviri Kutusunun Ana Görünümü */
 .goog-te-gadget-simple {
-    background-color: #0a0a0a !important;
-    border: 1px solid #333 !important;
-    border-radius: 8px !important;
-    padding: 6px 12px !important;
+    background-color: transparent !important; /* Arka planı menüyle uyumlu hale getirdik */
+    border: 1px solid rgba(255,255,255,0.2) !important; /* Hafif bir sınır çizgisi */
+    border-radius: 6px !important;
+    padding: 6px 10px !important;
     font-family: 'Poppins', sans-serif !important;
     color: white !important;
     transition: 0.3s ease !important;
@@ -144,6 +144,7 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
 /* Çeviri yapıldığında üstte çıkan Google barını gizle ve sayfa kaymasını önle */
 .goog-te-banner-frame.skiptranslate { display: none !important; }
 body { top: 0px !important; }
+
 
 /* HEADER MOBİL UYUMLULUK */
 @media (max-width: 768px) {
@@ -194,9 +195,10 @@ body { top: 0px !important; }
     }
     
     .goog-te-gadget-simple {
-        padding: 4px 8px !important;
+        padding: 4px 6px !important;
+        border: 1px solid rgba(255,255,255,0.1) !important; /* Mobilde daha hafif çizgi */
     }
     .goog-te-gadget-simple span {
-        font-size: 10px !important; /* Mobilde diğer menülerle aynı boyuta çektik */
+        font-size: 10px !important; /* Diğer menü linkleriyle aynı boyutta */
     }
 }
