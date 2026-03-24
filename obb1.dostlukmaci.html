@@ -1,16 +1,27 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-9VH0LHNCS3');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OBB 1. DOSTLUK MÜSABAKASI | OBB E-SPORTS</title>
+    <title>Turnuvalar | OBB E-SPORTS</title>
     
     <meta name="description" content="Ordu'dan yükselen e-spor topluluğu OBB E-SPORTS'a katıl! Rekabete ortak ol, takımını kur, turnuvalarda yeteneğini göster ve zafere ulaş.">
+    <meta name="keywords" content="e-spor, ordu e-spor, obb esports, valorant turnuvası, cs2 turnuvası, takım bul, e-spor kayıt, obb">
+    <meta name="author" content="OBB E-SPORTS">
     <meta name="theme-color" content="#601dc2"> 
+    
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="OBB E-SPORTS">
+    <meta property="og:title" content="Turnuvalar | OBB E-SPORTS">
+    <meta property="og:description" content="Ordu'dan yükselen e-spor topluluğu OBB E-SPORTS'a katıl! Turnuvalarda rekabet et ve zafere ulaş.">
+    <meta property="og:url" content="https://obbesports.com">
+    <meta property="og:image" content="https://obbesports.com/img/obblogo.png">
     
     <link rel="icon" type="image/png" href="img/obblogo.png">
     <link rel="apple-touch-icon" href="img/obblogo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <link rel="stylesheet" href="css/global.css">
@@ -18,510 +29,229 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        body { background-color: #050505; color: white; overflow-x: hidden; }
+        /* --- BU SAYFAYA ÖZEL CSS (SADECE KARTLAR VE FİLTRELER) --- */
+        .t-header-banner { text-align: center; padding: 80px 20px; background: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(35,8,62,0.8) 50%, rgba(0,0,0,1) 100%); border-bottom: 1px solid rgba(96, 29, 194, 0.3); }
+        .t-header-banner h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; }
+        .purple-text { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
+
+        .t-container { max-width: 1200px; margin: 0 auto; padding: 60px 10%; }
+        .filters { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; }
+        .filter-btn { background: #111; border: 1px solid #333; color: white; padding: 10px 30px; border-radius: 25px; cursor: pointer; transition: 0.3s; font-weight: bold; letter-spacing: 1px; }
+        .filter-btn.active, .filter-btn:hover { background: var(--neon-mor); border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96,29,194,0.4); }
+
+        .t-list-grid { display: flex; flex-direction: column; gap: 30px; }
         
-        /* --- SAYFA BAŞLIĞI --- */
-        .page-header { text-align: center; padding: 40px 20px 40px; background: radial-gradient(circle at top, #110522 0%, #050505 100%); border-bottom: 1px solid #222; }
-        .page-title { font-size: 36px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; }
-        .page-title span { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
-        .page-subtitle { color: var(--gri-yazi); font-size: 14px; font-weight: 500; }
-
-        /* --- TEK MAÇLIK GÖRÜNÜM --- */
-        .bracket-scroll-area { width: 100%; display: flex; justify-content: center; padding-top: 60px; padding-bottom: 80px; }
-        .bracket-column { display: flex; flex-direction: column; width: 350px; position: relative; }
-        .round-header { position: absolute; top: -50px; left: 0; right: 0; text-align: center; color: gold; font-weight: 900; text-transform: uppercase; font-size: 16px; letter-spacing: 1px; border-bottom: 2px solid gold; padding-bottom: 10px; z-index: 10; }
-
-        /* --- MAÇ KARTI TASARIMI --- */
-        .match-card { background: #0a0a0a; border: 1px solid gold; border-radius: 8px; position: relative; z-index: 5; cursor: pointer; transition: 0.3s; box-shadow: 0 0 20px rgba(255, 215, 0, 0.15); margin: 0; }
-        .match-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3); z-index: 10; }
+        /* STANDART KART TASARIMI (Aktif ve Yakında olanlar için) */
+        .t-wide-card { background: linear-gradient(145deg, #0a0a0a, #16072b); border: 1px solid #222; border-radius: 16px; display: flex; align-items: center; padding: 25px; transition: 0.4s; overflow: hidden; position: relative; }
+        .t-wide-card:hover { border-color: var(--neon-mor); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(96,29,194,0.3); }
         
-        .match-info-bar { background: #111; padding: 8px 15px; font-size: 12px; color: var(--gri-yazi); font-weight: bold; display: flex; justify-content: space-between; border-bottom: 1px solid #222; border-radius: 7px 7px 0 0; }
-        .team { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid #1a1a1a; }
-        .team:last-child { border-bottom: none; border-radius: 0 0 7px 7px; }
+        .hide-card { display: none !important; }
+
+        .t-image { width: 100px; height: 100px; background: var(--neon-mor); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 22px; flex-shrink: 0; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        .t-details { flex: 1; padding: 0 40px; z-index: 2; }
+        .t-details h2 { font-size: 22px; margin-bottom: 5px; color: #fff; text-transform: uppercase; }
         
-        .team-info { display: flex; align-items: center; gap: 12px; }
-        .team-logo { width: 25px; height: 25px; object-fit: contain; background: #000; border-radius: 4px; }
-        .team-name { font-size: 15px; font-weight: 700; color: white; }
-        .score { font-size: 20px; font-weight: 900; color: white; }
+        .tag { font-size: 11px; padding: 5px 12px; border-radius: 5px; font-weight: bold; text-transform: uppercase; margin-bottom: 12px; display: inline-block; letter-spacing: 1px; }
+        .live { background: #ff0044; box-shadow: 0 0 10px #ff0044; }
+        .open { background: var(--neon-mor); }
+        .finished-tag { background: #555; }
         
-        .team.winner { background: rgba(255, 215, 0, 0.05); border-left: 4px solid gold; }
-        .team.winner .team-name, .team.winner .score { color: gold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-        .team.loser { opacity: 0.6; border-left: 4px solid transparent; }
+        .t-meta { margin-top: 15px; display: flex; gap: 25px; color: var(--gri-yazi); font-size: 14px; }
+        .t-meta strong { color: white; }
 
-        /* --- DETAY MODALI --- */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(8px); padding: 20px; }
-        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
-        .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+        .view-btn, .register-btn { padding: 14px 35px; border-radius: 8px; border: none; font-weight: 900; cursor: pointer; transition: 0.3s; text-transform: uppercase; min-width: 160px; font-size: 14px; letter-spacing: 1px; }
+        .view-btn { background: white; color: black; }
+        .view-btn:hover { background: #eee; transform: scale(1.05); }
+        .register-btn { background: var(--neon-mor); color: white; box-shadow: 0 0 15px rgba(96,29,194,0.4); }
+        .register-btn:hover { background: #7a26f0; transform: scale(1.05); box-shadow: 0 0 25px rgba(96,29,194,0.6); }
         
-        .modal-content::-webkit-scrollbar { width: 8px; }
-        .modal-content::-webkit-scrollbar-track { background: #111; border-radius: 0 15px 15px 0; }
-        .modal-content::-webkit-scrollbar-thumb { background: var(--neon-mor); border-radius: 8px; }
+        .counter-highlight { color: var(--neon-mor) !important; font-size: 16px; font-weight: 900; transition: 0.3s; }
 
-        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 28px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; z-index: 10; }
-        .close-btn:hover { color: var(--kirmizi-iptal); }
-
-        .modal-header { padding: 40px 20px; background: radial-gradient(circle at center, #1a0a2e 0%, #0a0a0a 100%); text-align: center; border-bottom: 1px solid #222; }
-        .scoreboard { display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 15px;}
-        .modal-team { display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1; }
-        .modal-team img { width: 60px; height: 60px; object-fit: contain; border-radius: 8px; }
-        .modal-team-name { font-size: 20px; font-weight: 900; color: white; text-transform: uppercase; text-align: center; }
-        .modal-score { font-size: 48px; font-weight: 900; color: white; }
-        .modal-score.winner { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
-        .modal-vs { font-size: 16px; color: #555; font-weight: bold; }
-
-        .map-tabs-container { display: flex; justify-content: center; gap: 10px; margin: 20px 20px 0; flex-wrap: wrap; }
-        .map-tab-btn { background: #111; border: 1px solid #333; color: var(--gri-yazi); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 900; transition: 0.3s; font-family: 'Poppins', sans-serif; letter-spacing: 1px; }
-        .map-tab-btn:hover { background: #222; color: white; }
-        .map-tab-btn.active { background: var(--neon-mor); color: white; border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); }
-
-        .map-stats-block { display: none; margin: 20px; background: #111; border-radius: 12px; border: 1px solid #222; overflow: hidden; animation: fadeIn 0.4s ease; }
-        .map-stats-block.active { display: block; }
-        
-        .map-name-header { background: var(--neon-mor); color: white; padding: 12px; margin: 0; font-size: 15px; font-weight: 900; text-align: center; letter-spacing: 1px; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 15px; }
-        .map-score-display { background: rgba(0,0,0,0.3); padding: 3px 12px; border-radius: 20px; font-size: 18px; color: gold; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
-        
-        .stats-tables-container { display: flex; flex-direction: column; gap: 0; }
-        .table-half { width: 100%; border-bottom: 1px solid #222; }
-        .table-half:last-child { border-bottom: none; }
-        
-        .team-header-bar { padding: 8px 15px; font-size: 13px; font-weight: 900; color: white; text-align: center; }
-        .team-a-bar { background: rgba(0, 210, 255, 0.1); border-bottom: 2px solid #00d2ff; color: #00d2ff; }
-        .team-b-bar { background: rgba(255, 75, 75, 0.1); border-bottom: 2px solid #ff4b4b; color: #ff4b4b; }
-
-        .stats-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
-        .stats-table th { color: var(--gri-yazi); padding: 10px; border-bottom: 1px solid #333; font-size: 11px; text-transform: uppercase; }
-        .stats-table td { padding: 10px; border-bottom: 1px solid #222; color: white; vertical-align: middle; }
-        .stats-table tr:hover td { background: #1a1a1a; }
-        .stats-table tr:last-child td { border-bottom: none; }
-        
-        .stat-ign-cell { text-align: left; font-weight: bold; }
-        .stat-agent-img { width: 35px; height: 35px; border-radius: 4px; object-fit: cover; border: 1px solid #444; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-
-        @media (min-width: 768px) {
-            .stats-tables-container { flex-direction: row; }
-            .table-half { width: 50%; border-bottom: none; border-right: 1px solid #222; }
-            .table-half:last-child { border-right: none; }
+        /* ==========================================================
+           🚀 YENİ TASARIM: EKRAN GÖRÜNTÜSÜNDEKİ MAÇ PANOSU (SCOREBOARD)
+           ========================================================== */
+        .scoreboard-card { 
+            background: linear-gradient(135deg, #2b0b57 0%, #11032b 100%); 
+            border: 2px solid var(--neon-mor); 
+            flex-direction: column; 
+            padding: 30px; 
+            text-align: center;
+            box-shadow: 0 0 40px rgba(96,29,194,0.2);
         }
+        .scoreboard-card:hover { transform: scale(1.02); box-shadow: 0 0 50px rgba(96,29,194,0.5); }
 
+        .score-header { font-size: 14px; font-weight: 900; color: #d4b3ff; letter-spacing: 3px; margin-bottom: 25px; text-transform: uppercase; }
+        
+        .score-teams-container { display: flex; justify-content: center; align-items: center; width: 100%; gap: 50px; }
+        
+        .score-team { display: flex; flex-direction: column; align-items: center; gap: 15px; flex: 1; }
+        .score-team img { width: 90px; height: 90px; object-fit: contain; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 15px; }
+        .score-team-name { font-size: 22px; font-weight: 900; color: white; text-transform: uppercase; text-align: center; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        
+        .score-center { display: flex; align-items: center; gap: 20px; }
+        .score-number { font-size: 65px; font-weight: 900; color: white; text-shadow: 0 0 30px rgba(96,29,194,0.8); line-height: 1; }
+        .score-divider { font-size: 40px; font-weight: 900; color: rgba(255,255,255,0.5); }
+        
+        .scoreboard-card .t-action { margin-top: 30px; width: 100%; display: flex; justify-content: center; }
+        
+        /* MOBİL UYUM */
         @media (max-width: 768px) {
-            .page-title { font-size: 24px; }
-            .scoreboard { gap: 10px; }
-            .modal-team img { width: 40px; height: 40px; }
-            .modal-team-name { font-size: 14px; }
-            .modal-score { font-size: 32px; }
-            .stat-agent-img { width: 25px; height: 25px; }
-            .stats-table td { padding: 6px; font-size: 11px; }
-            .map-tab-btn { padding: 8px 12px; font-size: 11px; flex: 1 1 40%; text-align: center; }
-            .bracket-column { width: 90%; margin: 0 auto; }
+            .t-container { padding: 40px 5%; }
+            .t-wide-card { flex-direction: column; text-align: center; padding: 30px 20px; }
+            .t-details { padding: 20px 0; }
+            .t-meta { justify-content: center; flex-direction: column; gap: 8px; }
+            .view-btn, .register-btn { width: 100%; }
+            
+            /* Scoreboard Mobil Ayarları */
+            .score-teams-container { gap: 15px; }
+            .score-team img { width: 60px; height: 60px; }
+            .score-team-name { font-size: 14px; }
+            .score-number { font-size: 45px; }
+            .score-divider { font-size: 30px; }
         }
     </style>
 </head>
 <body>
-
     <div id="header-alani"></div>
 
-    <div class="page-header">
-        <h1 class="page-title">OBB 1. DOSTLUK <span>MÜSABAKASI</span></h1>
-        <p class="page-subtitle">BO3 Formatı - 5v5 Valorant Gösteri Maçı</p>
-    </div>
+    <section class="t-header-banner">
+        <h1>AKTİF <span class="purple-text">TURNUVALAR</span></h1>
+        <p>Yeteneklerini sergile, ödülleri topla ve efsane ol.</p>
+    </section>
 
-    <div class="bracket-scroll-area">
-        <div class="bracket-column">
-            <div class="round-header">GÖSTERİ MAÇI (BO3)</div>
-            
-            <div class="match-card" onclick="openModal()">
-                <div class="match-info-bar">
-                    <span>BO3</span>
-                    <span style="color:var(--neon-mor);">TAMAMLANDI</span>
-                </div>
-                
-                <div class="team winner">
-                    <div class="team-info">
-                        <img src="img/obblogo.png" class="team-logo" alt="Takım 1">
-                        <span class="team-name">OBB E-SPORTS</span>
-                    </div>
-                    <span class="score">2</span>
-                </div>
-                
-                <div class="team loser">
-                    <div class="team-info">
-                        <img src="img/unknown.webp" class="team-logo" alt="Takım 2">
-                        <span class="team-name">ZWEİN ESPORTS</span>
-                    </div>
-                    <span class="score">1</span>
-                </div>
-            </div>
-            
+    <main class="t-container">
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterTournaments('all')">GÜNCEL</button>
+            <button class="filter-btn" onclick="filterTournaments('active')">AKTİF</button>
+            <button class="filter-btn" onclick="filterTournaments('finished')">SONUÇLANMIŞ</button>
         </div>
-    </div>
 
-    <div class="modal-overlay" id="matchModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div class="t-list-grid">
             
-            <div class="modal-header">
-                <span style="font-size: 12px; font-weight: 900; color: var(--gri-yazi); letter-spacing: 2px;">SERİ SKORU</span>
-                <div class="scoreboard">
-                    <div class="modal-team">
-                        <img src="img/obblogo.png" alt="Takım A">
-                        <span class="modal-team-name">OBB E-SPORTS</span>
+            <div class="t-wide-card filter-item filter-active">
+                <div class="t-image">VALO</div>
+                <div class="t-details">
+                    <span class="tag live">BAŞLADI</span>
+                    <h2>OBB 1. VALORANT TOPLULUK TURNUVASI</h2>
+                    <p>Ordu'nun en iyileri belli oluyor!</p>
+                    <div class="t-meta">
+                        <span><strong>Ödül:</strong> 10.000 TL</span>
+                        <span><strong>Kayıtlı:</strong> <span id="valoCounter" class="counter-highlight">Yükleniyor...</span></span>
                     </div>
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        <span class="modal-score winner">2</span>
-                        <span class="modal-vs">-</span>
-                        <span class="modal-score">1</span>
-                    </div>
-                    <div class="modal-team">
-                        <img src="img/unknown.webp" alt="Takım B">
-                        <span class="modal-team-name">ZWEİN ESPORTS</span>
-                    </div>
+                </div>
+                <div class="t-action">
+                    <button class="view-btn" onclick="window.location.href='basvuru.html'">ŞİMDİ BAŞVUR</button>
                 </div>
             </div>
             
-            <div class="map-tabs-container">
-                <button class="map-tab-btn active" onclick="switchMap('map1', this)">1. HARİTA: ASCENT</button>
-                <button class="map-tab-btn" onclick="switchMap('map2', this)">2. HARİTA: BİND</button>
-                <button class="map-tab-btn" onclick="switchMap('map3', this)">3. HARİTA: SPLİT</button>
+            <div class="t-wide-card filter-item filter-upcoming">
+                <div class="t-image" style="background: #1d4ed8;">FİFA</div>
+                <div class="t-details">
+                    <span class="tag open">YAKINDA</span>
+                    <h2>OBB 1. FİFA TOPLULUK TURNUVASI</h2>
+                    <p>FİFA oyuncuları 2v2 ile karşı karşıya</p>
+                    <div class="t-meta">
+                        <span><strong>Ödül:</strong> Belirtilmemiş</span>
+                        <span><strong>Kayıtlı:</strong> 0/16</span> 
+                    </div>
+                </div>
+                <div class="t-action">
+                    <button class="register-btn" style="background: #333; box-shadow: none;">BELİRTİLMEMİŞ</button>
+                </div>
             </div>
 
-            <div id="map1" class="map-stats-block active">
-                <div class="map-name-header">
-                    <span>1. HARİTA: ASCENT</span>
-                    <span class="map-score-display">8 - 13</span> </div>
-                <div class="stats-tables-container">
+            <div class="t-wide-card filter-item filter-finished hide-card scoreboard-card">
+                <div class="score-header">SERİ SKORU - OBB 1. DOSTLUK MÜSABAKASI</div>
+                
+                <div class="score-teams-container">
+                    <div class="score-team">
+                        <img src="img/obblogo.png" alt="OBB E-SPORTS">
+                        <span class="score-team-name">OBB E-SPORTS</span>
+                    </div>
                     
-                    <div class="table-half">
-                        <div class="team-header-bar team-a-bar">OBB E-SPORTS</div>
-                        <table class="stats-table">
-                            <thead><tr><th>AJAN</th><th class="stat-ign-cell">OYUNCU</th><th>K</th><th>D</th><th>A</th></tr></thead>
-                            <tbody>
-                                <tr>
-                                    <td><img src="img/imgagents/Sage.webp" class="stat-agent-img" alt="Sage"></td>
-                                    <td class="stat-ign-cell">cattY</td>
-                                    <td style="font-weight:900; color:#00d2ff;">28</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">16</td>
-                                    <td style="font-weight:900; color:#888;">4</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Jett.webp" class="stat-agent-img" alt="Jett"></td>
-                                    <td class="stat-ign-cell">LOD Swash</td>
-                                    <td style="font-weight:900; color:#00d2ff;">16</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">17</td>
-                                    <td style="font-weight:900; color:#888;">5</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Chamber.webp" class="stat-agent-img" alt="Chamber"></td>
-                                    <td class="stat-ign-cell">EXpuls0</td>
-                                    <td style="font-weight:900; color:#00d2ff;">15</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">16</td>
-                                    <td style="font-weight:900; color:#888;">2</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Skye.webp" class="stat-agent-img" alt="Skye"></td>
-                                    <td class="stat-ign-cell">3R3N</td>
-                                    <td style="font-weight:900; color:#00d2ff;">7</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">18</td>
-                                    <td style="font-weight:900; color:#888;">7</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Brimstone.webp" class="stat-agent-img" alt="Brimstone"></td>
-                                    <td class="stat-ign-cell">canTÜRKİYE</td>
-                                    <td style="font-weight:900; color:#00d2ff;">6</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">19</td>
-                                    <td style="font-weight:900; color:#888;">9</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="score-center">
+                        <span class="score-number" style="color: #fff;">2</span>
+                        <span class="score-divider">-</span>
+                        <span class="score-number" style="color: #fff;">1</span>
                     </div>
+                    
+                    <div class="score-team">
+                        <img src="img/unknown.webp" style="background: white;" alt="ZWEİN ESPORTS">
+                        <span class="score-team-name">ZWEİN ESPORTS</span>
+                    </div>
+                </div>
 
-                    <div class="table-half">
-                        <div class="team-header-bar team-b-bar">ZWEİN ESPORTS</div>
-                        <table class="stats-table">
-                            <thead><tr><th>AJAN</th><th class="stat-ign-cell">OYUNCU</th><th>K</th><th>D</th><th>A</th></tr></thead>
-                            <tbody>
-                                <tr>
-                                    <td><img src="img/imgagents/Sova.webp" class="stat-agent-img" alt="Sova"></td>
-                                    <td class="stat-ign-cell">Efebeyy</td>
-                                    <td style="font-weight:900; color:#00d2ff;">21</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">13</td>
-                                    <td style="font-weight:900; color:#888;">5</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Reyna.webp" class="stat-agent-img" alt="Reyna"></td>
-                                    <td class="stat-ign-cell">hollenfeuer</td>
-                                    <td style="font-weight:900; color:#00d2ff;">20</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">16</td>
-                                    <td style="font-weight:900; color:#888;">3</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Jett.webp" class="stat-agent-img" alt="Jett"></td>
-                                    <td class="stat-ign-cell">worteX</td>
-                                    <td style="font-weight:900; color:#00d2ff;">19</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">15</td>
-                                    <td style="font-weight:900; color:#888;">6</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Deadlock.webp" class="stat-agent-img" alt="Deadlock"></td>
-                                    <td class="stat-ign-cell">Kurenai</td>
-                                    <td style="font-weight:900; color:#00d2ff;">17</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">13</td>
-                                    <td style="font-weight:900; color:#888;">4</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Omen.webp" class="stat-agent-img" alt="Omen"></td>
-                                    <td class="stat-ign-cell">Lesimurg</td>
-                                    <td style="font-weight:900; color:#00d2ff;">9</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">15</td>
-                                    <td style="font-weight:900; color:#888;">3</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="map2" class="map-stats-block">
-                <div class="map-name-header">
-                    <span>2. HARİTA: BİND</span>
-                    <span class="map-score-display">13 - 11</span>
-                </div>
-                <div class="stats-tables-container">
-                    <div class="table-half">
-                        <div class="team-header-bar team-a-bar">OBB E-SPORTS</div>
-                        <table class="stats-table">
-                            <thead><tr><th>AJAN</th><th class="stat-ign-cell">OYUNCU</th><th>K</th><th>D</th><th>A</th></tr></thead>
-                            <tbody>
-                                <tr>
-                                    <td><img src="img/imgagents/Clove.webp" class="stat-agent-img" alt="Clove"></td>
-                                    <td class="stat-ign-cell">cattY</td>
-                                    <td style="font-weight:900; color:#00d2ff;">21</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">12</td>
-                                    <td style="font-weight:900; color:#888;">10</td>
-                                </tr>
-                                                                <tr>
-                                    <td><img src="img/imgagents/Reyna.webp" class="stat-agent-img" alt="Reyna"></td>
-                                    <td class="stat-ign-cell">Turuncu</td>
-                                    <td style="font-weight:900; color:#00d2ff;">21</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">15</td>
-                                    <td style="font-weight:900; color:#888;">3</td>
-                                </tr>
-                                                                <tr>
-                                    <td><img src="img/imgagents/Skye.webp" class="stat-agent-img" alt="Skye"></td>
-                                    <td class="stat-ign-cell">3R3N</td>
-                                    <td style="font-weight:900; color:#00d2ff;">20</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">14</td>
-                                    <td style="font-weight:900; color:#888;">7</td>
-                                </tr>
-                                                                <tr>
-                                    <td><img src="img/imgagents/Sage.webp" class="stat-agent-img" alt="Sage"></td>
-                                    <td class="stat-ign-cell">LOD Swash</td>
-                                    <td style="font-weight:900; color:#00d2ff;">15</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">13</td>
-                                    <td style="font-weight:900; color:#888;">9</td>
-                                </tr>
-                                                                <tr>
-                                    <td><img src="img/imgagents/Chamber.webp" class="stat-agent-img" alt="Chamber"></td>
-                                    <td class="stat-ign-cell">EXpuls0</td>
-                                    <td style="font-weight:900; color:#00d2ff;">6</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">14</td>
-                                    <td style="font-weight:900; color:#888;">2</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="table-half">
-                        <div class="team-header-bar team-b-bar">ZWEİN ESPORTS</div>
-                        <table class="stats-table">
-                            <thead><tr><th>AJAN</th><th class="stat-ign-cell">OYUNCU</th><th>K</th><th>D</th><th>A</th></tr></thead>
-                            <tbody>
-                                <tr>
-                                    <td><img src="img/imgagents/Sova.webp" class="stat-agent-img" alt="Sova"></td>
-                                    <td class="stat-ign-cell">Efebeyy</td>
-                                    <td style="font-weight:900; color:#00d2ff;">16</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">16</td>
-                                    <td style="font-weight:900; color:#888;">2</td>
-                                </tr>
-                                                                <tr>
-                                    <td><img src="img/imgagents/Reyna.webp" class="stat-agent-img" alt="Reyna"></td>
-                                    <td class="stat-ign-cell">Kurenai</td>
-                                    <td style="font-weight:900; color:#00d2ff;">15</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">16</td>
-                                    <td style="font-weight:900; color:#888;">4</td>
-                                </tr>
-                                                                <tr>
-                                    <td><img src="img/imgagents/Omen.webp" class="stat-agent-img" alt="Omen"></td>
-                                    <td class="stat-ign-cell">Lesimurg</td>
-                                    <td style="font-weight:900; color:#00d2ff;">13</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">18</td>
-                                    <td style="font-weight:900; color:#888;">4</td>
-                                </tr>
-                                                                <tr>
-                                    <td><img src="img/imgagents/Jett.webp" class="stat-agent-img" alt="Jett"></td>
-                                    <td class="stat-ign-cell">hollenfeuer</td>
-                                    <td style="font-weight:900; color:#00d2ff;">12</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">18</td>
-                                    <td style="font-weight:900; color:#888;">5</td>
-                                </tr>
-                                                                <tr>
-                                    <td><img src="img/imgagents/Phoenix.webp" class="stat-agent-img" alt="Phoenix"></td>
-                                    <td class="stat-ign-cell">worteX</td>
-                                    <td style="font-weight:900; color:#00d2ff;">12</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">15</td>
-                                    <td style="font-weight:900; color:#888;">4</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="map3" class="map-stats-block">
-                <div class="map-name-header">
-                    <span>3. HARİTA: SPLİT</span>
-                    <span class="map-score-display">15 - 13</span>
-                </div>
-                <div class="stats-tables-container">
-                    <div class="table-half">
-                        <div class="team-header-bar team-a-bar">OBB E-SPORTS</div>
-                        <table class="stats-table">
-                            <thead><tr><th>AJAN</th><th class="stat-ign-cell">OYUNCU</th><th>K</th><th>D</th><th>A</th></tr></thead>
-                            <tbody>
-                                <tr>
-                                    <td><img src="img/imgagents/Astra.webp" class="stat-agent-img" alt="Astra"></td>
-                                    <td class="stat-ign-cell">cattY</td>
-                                    <td style="font-weight:900; color:#00d2ff;">36</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">19</td>
-                                    <td style="font-weight:900; color:#888;">12</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Sage.webp" class="stat-agent-img" alt="Sage"></td>
-                                    <td class="stat-ign-cell">LOD Swash</td>
-                                    <td style="font-weight:900; color:#00d2ff;">22</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">20</td>
-                                    <td style="font-weight:900; color:#888;">11</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Reyna.webp" class="stat-agent-img" alt="Reyna"></td>
-                                    <td class="stat-ign-cell">Turuncu</td>
-                                    <td style="font-weight:900; color:#00d2ff;">21</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">19</td>
-                                    <td style="font-weight:900; color:#888;">8</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Fade.webp" class="stat-agent-img" alt="Fade"></td>
-                                    <td class="stat-ign-cell">3R3N</td>
-                                    <td style="font-weight:900; color:#00d2ff;">17</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">20</td>
-                                    <td style="font-weight:900; color:#888;">7</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Chamber.webp" class="stat-agent-img" alt="Chamber"></td>
-                                    <td class="stat-ign-cell">EXpul0</td>
-                                    <td style="font-weight:900; color:#00d2ff;">15</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">20</td>
-                                    <td style="font-weight:900; color:#888;">1</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="table-half">
-                        <div class="team-header-bar team-b-bar">ZWEİN ESPORTS</div>
-                        <table class="stats-table">
-                            <thead><tr><th>AJAN</th><th class="stat-ign-cell">OYUNCU</th><th>K</th><th>D</th><th>A</th></tr></thead>
-                            <tbody>
-                                <tr>
-                                    <td><img src="img/imgagents/Neon.webp" class="stat-agent-img" alt="Neon"></td>
-                                    <td class="stat-ign-cell">worteX</td>
-                                    <td style="font-weight:900; color:#00d2ff;">27</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">22</td>
-                                    <td style="font-weight:900; color:#888;">4</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Sova.webp" class="stat-agent-img" alt="Sova"></td>
-                                    <td class="stat-ign-cell">Efebeyy</td>
-                                    <td style="font-weight:900; color:#00d2ff;">26</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">20</td>
-                                    <td style="font-weight:900; color:#888;">6</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Vyse.webp" class="stat-agent-img" alt="Vyse"></td>
-                                    <td class="stat-ign-cell">Kurenai</td>
-                                    <td style="font-weight:900; color:#00d2ff;">18</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">21</td>
-                                    <td style="font-weight:900; color:#888;">11</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Jett.webp" class="stat-agent-img" alt="Jett"></td>
-                                    <td class="stat-ign-cell">hollenfeuer</td>
-                                    <td style="font-weight:900; color:#00d2ff;">15</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">26</td>
-                                    <td style="font-weight:900; color:#888;">4</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="img/imgagents/Omen.webp" class="stat-agent-img" alt="Omen"></td>
-                                    <td class="stat-ign-cell">Lesimurg</td>
-                                    <td style="font-weight:900; color:#00d2ff;">12</td>
-                                    <td style="font-weight:900; color:#ff4b4b;">22</td>
-                                    <td style="font-weight:900; color:#888;">10</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="t-action">
+                  <button class="register-btn" onclick="window.location.href='obb1.dostlukmaci.html'">MAÇ İSTATİSTİKLERİNİ İNCELE</button>
                 </div>
             </div>
 
         </div>
-    </div>
+    </main>
 
     <div id="footer-alani"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/bildirimler.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+
     <script>
-        // Üst Kısım ve Alt Kısım Yükleyici (Eğer harici dosya kullanıyorsan)
-        async function loadComponents() {
+        // Kart Filtreleme
+        function filterTournaments(category) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const allCards = document.querySelectorAll('.filter-item');
+            
+            allCards.forEach(card => {
+                if (category === 'all') {
+                    if (card.classList.contains('filter-active') || card.classList.contains('filter-upcoming')) {
+                        card.classList.remove('hide-card');
+                    } else {
+                        card.classList.add('hide-card');
+                    }
+                } else if (category === 'active') {
+                    if (card.classList.contains('filter-active')) {
+                        card.classList.remove('hide-card');
+                    } else {
+                        card.classList.add('hide-card');
+                    }
+                } else if (category === 'finished') {
+                    if (card.classList.contains('filter-finished')) {
+                        card.classList.remove('hide-card');
+                    } else {
+                        card.classList.add('hide-card');
+                    }
+                }
+            });
+        }
+
+        // Supabase Aktif Kayıtlı Oyuncu Sayacı
+        async function loadApprovedCount() {
             try {
-                const headerRes = await fetch("components/header.html");
-                if(headerRes.ok) document.getElementById('header-alani').innerHTML = await headerRes.text();
-                
-                const footerRes = await fetch("components/footer.html");
-                if(footerRes.ok) document.getElementById('footer-alani').innerHTML = await footerRes.text();
-            } catch(e) { console.error("Komponent yüklenemedi", e); }
+                if (!window.supabaseClient) return; // config.js yüklenmediyse bekle
+                const { count, error } = await window.supabaseClient
+                    .from('tournament_applications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'approved');
+
+                if (!error) {
+                    const registeredCount = count || 0;
+                    document.getElementById('valoCounter').innerText = `${registeredCount}/64`;
+                } else {
+                    document.getElementById('valoCounter').innerText = `0/64`;
+                }
+            } catch (err) {
+                console.error("Sayaç hatası:", err);
+                document.getElementById('valoCounter').innerText = `0/64`;
+            }
         }
         
-        // Modalı Açan Fonksiyon
-        function openModal() {
-            document.getElementById('matchModal').classList.add('active');
-            document.body.style.overflow = 'hidden'; 
-        }
-
-        // Modalı Kapatan Fonksiyon
-        function closeModal() {
-            document.getElementById('matchModal').classList.remove('active');
-            document.body.style.overflow = 'auto'; 
-        }
-
-        // Harita Sekmelerini Değiştiren Fonksiyon
-        function switchMap(mapId, btnElement) {
-            // Aktif buton rengini değiştir
-            document.querySelectorAll('.map-tab-btn').forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
-
-            // İlgili harita alanını göster, diğerlerini gizle
-            document.querySelectorAll('.map-stats-block').forEach(block => block.classList.remove('active'));
-            document.getElementById(mapId).classList.add('active');
-        }
-
-        // Boşluğa tıklayınca modalı kapatma
-        document.getElementById('matchModal').addEventListener('click', (e) => { 
-            if(e.target === document.getElementById('matchModal')) {
-                closeModal();
-            }
-        });
-
-        window.addEventListener('DOMContentLoaded', () => {
-            loadComponents();
-        });
+        // app.js içindeki loadComponents bittiğinde sayacı çalıştır
+        document.addEventListener('DOMContentLoaded', loadApprovedCount);
     </script>
 </body>
 </html>
