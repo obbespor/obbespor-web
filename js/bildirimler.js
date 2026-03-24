@@ -448,3 +448,35 @@ window.addEventListener('DOMContentLoaded', () => {
     // SAYFA YÜKLENDİĞİNDE ÇEREZ KONTROLÜNÜ BAŞLAT
     initCookieConsent();
 });
+// Google Çeviri Ayar Fonksiyonunu Global Olarak Tanımla
+window.googleTranslateElementInit = function() {
+    new google.translate.TranslateElement({
+        pageLanguage: 'tr', 
+        includedLanguages: 'en,de,ru,fr,ar', // İstenen diller
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        autoDisplay: false
+    }, 'google_translate_element');
+};
+
+// Senin mevcut loadComponents fonksiyonun (Bunu bul ve içini güncellle)
+async function loadComponents() {
+    try {
+        const headerRes = await fetch("components/header.html");
+        if(headerRes.ok) document.getElementById('header-alani').innerHTML = await headerRes.text();
+        
+        const footerRes = await fetch("components/footer.html");
+        if(footerRes.ok) document.getElementById('footer-alani').innerHTML = await footerRes.text();
+
+        // 🚀 HEADER YÜKLENDİKTEN SONRA ÇEVİRİ SCRİPTİNİ ZORLA ÇALIŞTIR
+        if (!document.getElementById('google-translate-script')) {
+            let translateScript = document.createElement("script");
+            translateScript.id = 'google-translate-script';
+            translateScript.type = "text/javascript";
+            translateScript.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+            document.body.appendChild(translateScript);
+        }
+
+    } catch(e) { 
+        console.error("Komponent yüklenemedi", e); 
+    }
+}
