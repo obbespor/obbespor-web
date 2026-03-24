@@ -7,7 +7,7 @@ footer {
     color: white;
 }
 
-/* --- SPONSOR TICKER (YENİ) --- */
+/* --- SPONSOR TICKER --- */
 .sponsor-ticker {
     width: 100%;
     padding-bottom: 50px;
@@ -46,25 +46,26 @@ footer {
     display: flex;
     width: max-content;
     animation: scroll-loop 40s linear infinite;
+    align-items: center; /* Logoların yükseklikleri farklıysa dikeyde ortalar */
 }
 
-/* 🚀 DÜZELTİLEN KISIM (LOGOLARIN BÜYÜTÜLMESİ VE NETLİĞİ) */
+/* 🚀 LOGO AYARLARI: Orijinal Renkler ve Yüksek Netlik */
 .ticker-scroll img {
-    height: 70px; /* Logolar ciddi şekilde büyütüldü */
-    margin: 0 70px; /* Büyüdükleri için aralarındaki nefes alma boşluğu artırıldı */
-    filter: contrast(1.5) brightness(1.2); /* Siyah arka planda parlak ve keskin */
-    opacity: 0.85; /* Daha belirgin yapıldı */
-    transition: all 0.4s ease;
+    height: 70px; /* Büyük ve prestijli görünüm */
+    width: auto;
+    margin: 0 60px;
+    filter: none !important; /* Tüm renk değiştirme filtreleri iptal edildi */
+    opacity: 1; /* Logolar tam belirgin */
+    transition: transform 0.3s ease;
+    image-rendering: -webkit-optimize-contrast; /* Tarayıcıda daha keskin görünüm sağlar */
 }
 
 .ticker-wrapper:hover .ticker-scroll {
-    animation-play-state: paused; /* Üzerine gelince durur */
+    animation-play-state: paused;
 }
 
 .ticker-scroll img:hover {
-    filter: contrast(1.2) brightness(1.5); /* Üzerine gelince orijinal renge döner ve parlar */
-    opacity: 1; /* Tamamen görünür olur */
-    transform: scale(1.1); /* Hafif büyür */
+    transform: scale(1.1); /* Üzerine gelince tatlı bir büyüme */
 }
 
 @keyframes scroll-loop {
@@ -155,21 +156,12 @@ footer {
 @media (max-width: 768px) {
     .sponsor-ticker { padding-bottom: 40px; }
     .ticker-scroll img { 
-        height: 45px; /* Mobilde de logolar daha büyük */
-        margin: 0 40px; 
+        height: 45px; 
+        margin: 0 35px; 
     }
     .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
     .footer-brand { grid-column: span 2; text-align: center; padding-bottom: 30px; }
     .footer-brand p { max-width: 100%; margin: 0 auto 25px; }
     .social-icons { justify-content: center; }
     footer { padding: 50px 8% 30px; }
-}
-/* Sadece Kent Konseyi logosu için görünmezlik filtresini kaldır */
-.ticker-scroll img[src*="kentkonsey"] {
-    filter: brightness(1.5) !important; /* Invert kaldırıldı, parlaklık artırıldı */
-}
-
-/* Üzerine gelince renklenmesi için */
-.ticker-scroll img[src*="kentkonsey"]:hover {
-    filter: grayscale(0%) brightness(1) !important;
 }
