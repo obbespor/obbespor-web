@@ -197,7 +197,7 @@
             <div class="avatar-wrapper">
                 <img src="img/obblogo.png" alt="Avatar" class="profile-avatar" id="userAvatar">
                 <label for="avatarUpload" class="edit-avatar-btn"><i class="fas fa-camera"></i></label>
-                <input type="file" id="avatarUpload" accept="image/png, image/jpeg" style="display: none;">
+                <input type="file" id="avatarUpload" accept="image/png, image/jpeg, image/webp" style="display: none;">
             </div>
 
             <div class="rank-badge" id="userRank">YÜKLENİYOR...</div>
@@ -1003,43 +1003,94 @@
             else showNotification(isChecked ? "Ticari iletişim izni onaylandı." : "Ticari iletişim izni iptal edildi.", "success");
         }
 
+        // --- YENİ EKLENEN OPTİMİZE AVATAR YÜKLEME KODU ---
         document.getElementById('avatarUpload').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
-            if (file.size > 2 * 1024 * 1024) return showNotification("Dosya 2MB'den küçük olmalı.", "error");
-            
+
+            // Yükleniyor hissi vermek için resmi hemen ekranda gösterelim
             document.getElementById('userAvatar').src = URL.createObjectURL(file);
-            
-            const ext = file.name.split('.').pop().toLowerCase();
-            const path = `${currentUser.id}/profil_resmi.${ext}`;
 
-            await window.supabaseClient.storage.from('avatars').remove([
-                `${currentUser.id}/profil_resmi.jpg`,
-                `${currentUser.id}/profil_resmi.jpeg`,
-                `${currentUser.id}/profil_resmi.png`,
-                `${currentUser.id}/profil_resmi.webp`,
-                `${currentUser.id}/profil_resmi.gif`
-            ]);
+            // Resmi tarayıcı hafızasına alıyoruz
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
 
-            const { error } = await window.supabaseClient.storage.from('avatars').upload(path, file, { 
-                upsert: true, 
-                cacheControl: '0' 
-            });
-            
-            if (!error) {
-                const { data } = window.supabaseClient.storage.from('avatars').getPublicUrl(path);
-                const cleanUrl = data.publicUrl.split('?')[0];
-                await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
-                showNotification("Profil resmi başarıyla güncellendi!", "success");
-                
-                const cacheKey = 'obb_profile_cache';
-                const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
-                cachedProfile.avatar_url = cleanUrl;
-                localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+            img.onload = async () => {
+                // Maksimum boyutlar (Profil resmi için 500x500 piksel fazlasıyla yeterli ve çok hafiftir)
+                const MAX_WIDTH = 500;
+                const MAX_HEIGHT = 500;
+                let width = img.width;
+                let height = img.height;
 
-            } else {
-                showNotification("Profil resmi yüklenirken hata oluştu: " + error.message, "error");
-            }
+                // En-boy oranını koruyarak yeniden boyutlandırma hesaplaması
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height = Math.round(height * (MAX_WIDTH / width));
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width = Math.round(width * (MAX_HEIGHT / height));
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                // Canvas oluşturup resmi yeni boyutlarıyla çizdiriyoruz
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Resmi WebP formatında ve %80 kalite ile sıkıştırıyoruz (0.8)
+                canvas.toBlob(async (blob) => {
+                    
+                    // Son güvenlik kontrolü
+                    if (blob.size > 2 * 1024 * 1024) {
+                        return showNotification("Dosya çok büyük. Lütfen başka bir resim deneyin.", "error");
+                    }
+
+                    // Dosya adını standartlaştırıyoruz (Artık hepsi webp olacak)
+                    const fileExt = 'webp';
+                    const path = `${currentUser.id}/profil_resmi.${fileExt}`;
+
+                    // Çakışmaları önlemek için eski tüm formatları temizle
+                    await window.supabaseClient.storage.from('avatars').remove([
+                        `${currentUser.id}/profil_resmi.jpg`,
+                        `${currentUser.id}/profil_resmi.jpeg`,
+                        `${currentUser.id}/profil_resmi.png`,
+                        `${currentUser.id}/profil_resmi.webp`,
+                        `${currentUser.id}/profil_resmi.gif`
+                    ]);
+
+                    // Sıkıştırılmış blob verisini Supabase'e yükle
+                    const { error } = await window.supabaseClient.storage.from('avatars').upload(path, blob, { 
+                        upsert: true, 
+                        cacheControl: '3600' 
+                    });
+                    
+                    if (!error) {
+                        const { data } = window.supabaseClient.storage.from('avatars').getPublicUrl(path);
+                        const cleanUrl = data.publicUrl.split('?')[0];
+                        
+                        // Veritabanını yeni URL ile güncelle
+                        await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
+                        showNotification("Profil resmi başarıyla optimize edildi ve güncellendi!", "success");
+                        
+                        // Cache'i güncelle
+                        const cacheKey = 'obb_profile_cache';
+                        const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                        cachedProfile.avatar_url = cleanUrl;
+                        localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+
+                        // Ekranda güncel (önbelleğe takılmayan) resmi göster
+                        document.getElementById('userAvatar').src = cleanUrl + "?t=" + Date.now();
+
+                    } else {
+                        showNotification("Profil resmi yüklenirken hata oluştu: " + error.message, "error");
+                    }
+                }, 'image/webp', 0.8); // 0.8 kalite, gözle görülür fark olmadan max sıkıştırma sağlar
+            };
         });
 
         function openBannerModal() {
