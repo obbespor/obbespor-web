@@ -13,6 +13,10 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
+        /* --- ADMİN HEADER AKTİF SEKME STİLİ --- */
+        nav ul li a { cursor: pointer; }
+        .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
+
         .admin-container { padding: 40px 10%; flex: 1; overflow-x: hidden; }
         
         /* BAŞLIK VE BUTON ALANI İÇİN YENİ DÜZEN */
@@ -86,6 +90,8 @@
         .btn-save-match { color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 10px; letter-spacing: 1px; }
         .btn-save-match:hover { transform: translateY(-3px); }
 
+        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
+
         @media (max-width: 768px) {
             .page-header-row { flex-direction: column; gap: 15px; text-align: center; }
             .api-input-row { flex-direction: column; }
@@ -97,7 +103,52 @@
 </head>
 <body>
 
-    <div id="header-alani"></div>
+    <div id="loadingScreen">
+        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
+        <h2>Güvenlik Kontrolü Yapılıyor...</h2>
+    </div>
+
+    <header class="main-nav" id="mainHeader">
+        <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
+        <nav>
+            <ul>
+                <li><a href="index.html">ANA SAYFA</a></li>
+                <li><a href="admin.html#onay">ONAY</a></li>
+                <li><a href="admin.html#takimlar">ONAYLI</a></li>
+                <li><a href="admin-bracket.html" class="active-admin-tab">BRACKET<i class="fas fa-external-link-alt" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                
+                <li class="nav-bell desktop-only">
+                    <a href="#" onclick="toggleNotifPanel('desktopPanel', event)">
+                        <i class="fas fa-bell"></i>
+                        <span class="notif-badge" id="badge-desktop">0</span>
+                    </a>
+                    <div class="notif-panel" id="desktopPanel" onclick="event.stopPropagation()">
+                        <div class="notif-header">
+                            <h4>Bildirimler</h4>
+                            <button class="clear-btn" onclick="clearNotifications(event)">Tümünü Temizle</button>
+                        </div>
+                        <div class="notif-body" id="notif-list-desktop"></div>
+                    </div>
+                </li>
+
+                <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="floating-bell mobile-only" onclick="toggleNotifPanel('mobilePanel', event)">
+        <i class="fas fa-bell"></i>
+        <span class="notif-badge" id="badge-mobile">0</span>
+        <div class="notif-panel mobile-panel" id="mobilePanel" onclick="event.stopPropagation()">
+            <div class="notif-header">
+                <h4>Bildirimler</h4>
+                <button class="clear-btn" onclick="clearNotifications(event)">Tümünü Temizle</button>
+            </div>
+            <div class="notif-body" id="notif-list-mobile"></div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
 
     <main class="admin-container">
         
@@ -216,20 +267,53 @@
     <script src="js/config.js"></script>
     <script src="js/bildirimler.js"></script>
     <script src="js/auth.js"></script> 
-    <script src="js/admin-core.js"></script> <script>
+
+    <script>
         let currentTeamAId = null;
         let currentTeamBId = null;
 
-        // Sayfa Başlatıcı (Yeni Düzen)
         async function initAdminBracketPage() {
-            await loadAdminComponents('nav-bracket');
-            checkAdminAuthAndInit(() => {
-                initHybridUI("manuel"); 
-                handleRoundChange();
+            try {
+                const footerRes = await fetch("components/footer.html");
+                if(footerRes.ok) document.getElementById('footer-alani').innerHTML = await footerRes.text();
+            } catch(e) { console.error("Komponent yüklenemedi", e); }
+
+            let lastScrollTop = 0;
+            const header = document.getElementById("mainHeader");
+            window.addEventListener("scroll", function() {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                if (scrollTop > lastScrollTop && scrollTop > 100) header.classList.add("nav-hidden");
+                else header.classList.remove("nav-hidden");
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+            }, false);
+
+            document.addEventListener("click", function(event) {
+                const isClickInsideBell = event.target.closest('.nav-bell') || event.target.closest('.floating-bell');
+                const isClickInsidePanel = event.target.closest('.notif-panel');
+                if (!isClickInsideBell && !isClickInsidePanel) {
+                    document.querySelectorAll('.notif-panel').forEach(p => p.classList.remove('active'));
+                }
             });
+
+            if (typeof checkUserStatus === "function") await checkUserStatus();
+            if (typeof initNotifications === "function") initNotifications();
+            checkAdminAccess();
+            
+            handleRoundChange();
         }
 
-        // Aşağıdaki fonksiyonların hiçbirinin içeriğine DOKUNULMADI, orijinal mantığın aynı şekilde işleyecek.
+        async function checkAdminAccess() {
+            try {
+                const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
+                if (authError || !user) throw new Error("Giriş yapılmadı.");
+                const { data: profile } = await window.supabaseClient.from('profiles').select('role').eq('id', user.id).single();
+                if (!profile || profile.role !== 'admin') throw new Error("Yetkisiz erişim.");
+                document.getElementById('loadingScreen').style.display = 'none';
+                
+                initHybridUI("manuel"); 
+            } catch (err) { window.location.replace("index.html"); }
+        }
+
         function handleRoundChange() {
             const roundName = document.getElementById('roundNameSelect').value;
             const seriesBox = document.getElementById('seriesScoreBox');
@@ -562,6 +646,7 @@
             btn.disabled = true;
 
             try {
+                // --- BURASI GÜNCELLENDİ (round_order a göre arıyor) ---
                 const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
                     .select('id')
                     .eq('round_name', roundName)
@@ -612,6 +697,7 @@
             btn.disabled = true;
 
             try {
+                // --- BURASI GÜNCELLENDİ (round_order a göre arıyor) ---
                 const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
                     .select('id')
                     .eq('round_name', roundName)
@@ -725,6 +811,7 @@
                     winnerId = scoreA > scoreB ? currentTeamAId : currentTeamBId; 
                 }
 
+                // --- BURASI GÜNCELLENDİ (round_order a göre arıyor) ---
                 const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
                     .select('id')
                     .eq('round_name', roundName)
