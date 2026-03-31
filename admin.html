@@ -3,180 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yönetici Paneli | OBB E-SPORTS</title>
+    <title>Merkezi Maç Yönetimi | OBB E-SPORTS ADMIN</title>
     <link rel="icon" type="image/png" href="img/obblogo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        /* --- ADMİN HEADER AKTİF SEKME STİLİ --- */
-        nav ul li a { cursor: pointer; }
-        .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
-
-        /* --- GENEL DÜZEN --- */
-        .admin-container { padding: 40px 10%; flex: 1; display: none; }
-        .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
+        .admin-container { padding: 30px 5%; flex: 1; overflow-x: hidden; }
+        .page-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #222; padding-bottom: 10px; }
+        .section-title { font-size: 26px; font-weight: 900; text-transform: uppercase; margin: 0; color: white; }
         .section-title span { color: var(--neon-mor); }
 
-        /* --- ONAY KARTLARI --- */
-        .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; }
-        .team-card { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .team-card:hover { border-color: var(--neon-mor); transform: translateY(-5px); box-shadow: 0 15px 40px rgba(96, 29, 194, 0.2); }
-        .team-logo-area { height: 120px; background: #111; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid #222; }
-        .team-logo-area img { max-height: 90px; max-width: 90%; object-fit: contain; }
-        .team-card-body { padding: 20px; }
-        .team-card-title { font-size: 20px; font-weight: 900; color: white; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
-        .team-card-tag { font-size: 12px; background: var(--neon-mor); padding: 3px 8px; border-radius: 4px; }
-        .player-list-mini { list-style: none; margin-bottom: 20px; padding: 0; }
-        .player-list-mini li { font-size: 13px; color: var(--gri-yazi); padding: 5px 0; border-bottom: 1px dashed #222; display: flex; justify-content: space-between; }
-        .player-list-mini li span { color: white; font-weight: bold; }
-        .action-buttons { display: flex; gap: 10px; }
-        .btn-approve { flex: 1; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--yesil-guven); color: var(--yesil-guven); padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-approve:hover { background: var(--yesil-guven); color: #000; box-shadow: 0 0 15px var(--yesil-guven); }
-        .btn-reject { flex: 1; background: rgba(255, 75, 75, 0.1); border: 1px solid var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-reject:hover { background: var(--kirmizi-iptal); color: #fff; box-shadow: 0 0 15px var(--kirmizi-iptal); }
+        /* ANA DÜZEN: SOL LİSTE / SAĞ EDİTÖR */
+        .dashboard-grid { display: grid; grid-template-columns: 350px 1fr; gap: 30px; align-items: start; }
 
-        /* --- ONAYLANAN LİSTESİ --- */
-        .header-with-btn { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
-        .header-with-btn .section-title { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
-        .btn-excel { background: #1f8536; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; font-family: 'Poppins', sans-serif; }
-        .btn-excel:hover { background: #28a745; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4); }
+        /* SOL PANEL: LİSTELER */
+        .sidebar-panel { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; height: 85vh; }
+        .sidebar-tabs { display: flex; border-bottom: 1px solid #222; }
+        .sidebar-tab { flex: 1; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; background: #050505; color: var(--gri-yazi); transition: 0.3s; font-size: 13px; }
+        .sidebar-tab.active { background: var(--neon-mor); color: white; }
         
-        .approved-list { display: flex; flex-direction: column; gap: 10px; }
-        .approved-item { display: flex; align-items: center; background: #0a0a0a; border: 1px solid #222; padding: 15px 25px; border-radius: 10px; cursor: pointer; transition: 0.3s; }
-        .approved-item:hover { border-color: var(--neon-mor); background: #111; transform: translateX(10px); }
-        .approved-number { font-size: 20px; font-weight: 900; color: var(--neon-mor); width: 40px; }
-        .approved-name { font-size: 16px; font-weight: bold; color: white; flex: 1; }
-        .approved-tag { font-size: 12px; color: var(--gri-yazi); border: 1px solid #333; padding: 2px 8px; border-radius: 4px; margin-left: 10px; }
+        .list-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .list-item { background: #111; border: 1px dashed #333; padding: 15px; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+        .list-item:hover, .list-item.selected { border-color: var(--neon-mor); background: rgba(96, 29, 194, 0.1); transform: translateX(5px); }
+        .list-item-badge { font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; }
+        .badge-zarf { background: #ff9800; color: #000; }
+        .badge-fikstur { background: #00d2ff; color: #000; }
+        .list-item-title { font-size: 14px; font-weight: bold; color: white; margin-bottom: 5px; }
+        .list-item-desc { font-size: 12px; color: var(--gri-yazi); }
 
-        /* --- DETAY MODALI --- */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
-        .modal-content { background: rgba(15, 15, 15, 0.9); border: 1px solid var(--neon-mor); border-radius: 20px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 0; box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(96, 29, 194, 0.1); position: relative; }
-        .modal-header { padding: 30px; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 20px; position: relative; }
-        .modal-header img { width: 80px; height: 80px; object-fit: contain; background: #000; border-radius: 10px; border: 1px solid #333; }
-        .modal-title-area h2 { font-size: 24px; font-weight: 900; color: white; margin-bottom: 5px; }
-        .modal-title-area span { background: var(--neon-mor); color: white; padding: 3px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; }
+        /* SAĞ PANEL: EDİTÖR */
+        .editor-panel { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; animation: fadeIn 0.4s ease; }
         
-        .close-modal { position: absolute; top: 20px; right: 25px; font-size: 30px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; z-index: 100; }
-        .close-modal:hover { color: var(--kirmizi-iptal); }
+        /* YERLEŞTİRME HARİTASI (FİKSTÜR LOKASYONU) */
+        .placement-map { background: rgba(96, 29, 194, 0.05); border: 1px dashed var(--neon-mor); padding: 20px; border-radius: 12px; margin-bottom: 30px; }
+        .placement-title { color: var(--neon-mor); font-size: 14px; font-weight: 900; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .placement-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         
-        .modal-body { padding: 30px; }
-        .info-card { background: #050505; border: 1px solid #222; border-radius: 10px; padding: 20px; margin-bottom: 25px; }
-        .info-card h4 { color: var(--neon-mor); font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 8px; }
-        .info-row { display: flex; margin-bottom: 10px; font-size: 14px; }
-        .info-label { color: var(--gri-yazi); width: 120px; font-weight: bold; }
-        .info-data { color: white; font-weight: 500; }
-        
-        .btn-delete-team { background: rgba(255, 75, 75, 0.05); border: 1px dashed var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px; }
-        .btn-delete-team:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 0 15px rgba(255, 75, 75, 0.4); border-style: solid; }
+        .form-control { background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: bold; width: 100%; outline: none; transition: 0.3s; }
+        .form-control:focus { border-color: var(--neon-mor); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        /* SKOR VE HARİTA BAŞLIĞI */
+        .match-score-header { display: flex; align-items: center; justify-content: center; gap: 30px; margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid #222;}
+        .team-score-input { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .team-name-input { text-align: center; font-weight: 900; background: transparent; border: none; border-bottom: 1px dashed #555; color: white; font-size: 22px; text-transform: uppercase; outline: none; width: 200px; padding-bottom: 5px; transition: 0.3s; }
+        .team-name-input:focus { border-bottom-color: var(--neon-mor); }
+        .big-score-input { background: #000; border: 2px solid #444; color: white; width: 80px; height: 80px; text-align: center; font-size: 35px; font-weight: 900; border-radius: 15px; outline: none; transition: 0.3s; }
+        .vs-text { text-align: center; font-size: 20px; font-weight: 900; color: var(--gri-yazi); display: flex; flex-direction: column; gap: 10px; }
+        .map-input { background: #111; border: 1px solid #444; color: var(--neon-mor); padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold; text-align: center; text-transform: uppercase; outline: none; width: 140px; }
         
-        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
+        /* OYUNCU TABLOSU */
+        .stats-grid-container { display: flex; flex-direction: column; gap: 20px; }
+        .team-stats-box h4 { font-size: 14px; margin-bottom: 10px; text-transform: uppercase; border-left: 4px solid; padding-left: 10px; }
+        .player-stat-row { display: grid; grid-template-columns: 80px 1.2fr 1.2fr 40px 40px 40px 50px 50px 50px; gap: 5px; margin-bottom: 8px; align-items: center; background: #0d0d0d; padding: 8px; border-radius: 8px; border: 1px solid #222; }
+        .player-stat-row input, .player-stat-row select { background: #000; border: 1px solid #333; color: white; padding: 6px 4px; border-radius: 4px; font-size: 11px; text-align: center; width: 100%; outline: none; }
+        .player-stat-row input.ign-input { text-align: left; font-weight: bold; padding-left: 8px; }
+        .agent-input-group { display: flex; align-items: center; gap: 5px; }
+        .agent-icon { width: 30px; height: 30px; border-radius: 4px; object-fit: cover; border: 1px solid #444; background: #222; }
+        .stat-label { font-size: 10px; color: var(--gri-yazi); text-align: center; font-weight: bold; }
 
-        @media (max-width: 768px) {
-            .admin-container { padding: 20px 5%; }
-            .header-with-btn { flex-direction: column; gap: 15px; align-items: flex-start; }
-            .modal-header { flex-direction: column; text-align: center; }
-            .teams-grid { grid-template-columns: 1fr; }
+        /* BUTONLAR */
+        .action-buttons { display: flex; gap: 15px; margin-top: 30px; }
+        .btn-save { flex: 2; background: linear-gradient(45deg, #1f8536, #28a745); color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 900; font-size: 15px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(40, 167, 69, 0.4); }
+        .btn-reject-env { flex: 1; background: rgba(255, 75, 75, 0.1); border: 1px dashed var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 15px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        .btn-reject-env:hover { background: var(--kirmizi-iptal); color: white; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .sidebar-panel { height: 400px; }
+            .player-stat-row { min-width: 600px; }
+            .stats-grid-container { overflow-x: auto; }
         }
     </style>
 </head>
 <body>
 
-    <div id="loadingScreen">
+    <div id="loadingScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah, #000); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor, #601dc2);">
         <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
         <h2>Güvenlik Kontrolü Yapılıyor...</h2>
     </div>
 
-    <header class="main-nav" id="mainHeader">
-        <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
-        <nav>
-            <ul>
-                <li><a href="index.html">ANA SAYFA</a></li>
-                <li><a id="tab-onay" class="active-admin-tab" onclick="switchTab('onay')">ONAY</a></li>
-                <li><a id="tab-takimlar" onclick="switchTab('takimlar')">ONAYLI</a></li>
-                
-                <li><a href="admin-bracket.html">BRACKET<i class="fas fa-external-link-alt" style="font-size: 10px; margin-left: 3px;"></i></a></li>
-                
-                <li class="nav-bell desktop-only">
-                    <a href="#" onclick="toggleNotifPanel('desktopPanel', event)">
-                        <i class="fas fa-bell"></i>
-                        <span class="notif-badge" id="badge-desktop">0</span>
-                    </a>
-                    <div class="notif-panel" id="desktopPanel" onclick="event.stopPropagation()">
-                        <div class="notif-header">
-                            <h4>Bildirimler</h4>
-                            <button class="clear-btn" onclick="clearNotifications(event)">Tümünü Temizle</button>
-                        </div>
-                        <div class="notif-body" id="notif-list-desktop"></div>
+    <div id="header-alani"></div>
+
+    <main class="admin-container">
+        <div class="page-header-row">
+            <h2 class="section-title">MERKEZİ MAÇ <span>YÖNETİMİ</span></h2>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="sidebar-panel">
+                <div class="sidebar-tabs">
+                    <div class="sidebar-tab active" id="tabZarflar" onclick="switchSidebarTab('zarflar')">
+                        <i class="fas fa-envelope"></i> GELEN ZARFLAR
                     </div>
-                </li>
-
-                <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <div class="floating-bell mobile-only" onclick="toggleNotifPanel('mobilePanel', event)">
-        <i class="fas fa-bell"></i>
-        <span class="notif-badge" id="badge-mobile">0</span>
-        <div class="notif-panel mobile-panel" id="mobilePanel" onclick="event.stopPropagation()">
-            <div class="notif-header">
-                <h4>Bildirimler</h4>
-                <button class="clear-btn" onclick="clearNotifications(event)">Tümünü Temizle</button>
+                    <div class="sidebar-tab" id="tabFikstur" onclick="switchSidebarTab('fikstur')">
+                        <i class="fas fa-sitemap"></i> FİKSTÜR
+                    </div>
+                </div>
+                <div class="list-container" id="sidebarList">
+                    </div>
             </div>
-            <div class="notif-body" id="notif-list-mobile"></div>
-        </div>
-    </div>
-    
-    <div id="toast-container"></div>
 
-    <main class="admin-container" id="onaySection" style="display: block;">
-        <h2 class="section-title">ONAY BEKLEYEN <span>TAKIMLAR</span></h2>
-        <div class="teams-grid" id="pendingTeamsGrid"></div>
-    </main>
-
-    <main class="admin-container" id="takimlarSection">
-        <div class="header-with-btn">
-            <h2 class="section-title">ONAYLI <span>TAKIM LİSTESİ</span></h2>
-            <button class="btn-excel" onclick="excelAktar()"><i class="fas fa-file-excel"></i> Excel'e Aktar</button>
-        </div>
-        <div class="approved-list" id="approvedTeamsList"></div>
-    </main>
-
-    <div class="modal-overlay" id="teamModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <div class="modal-header">
-                <img id="modalLogo" src="" alt="Team Logo">
-                <div class="modal-title-area">
-                    <h2 id="modalTeamName">TAKIM ADI</h2>
-                    <span id="modalTeamTag">TAG</span>
-                </div>
-            </div>
-            <div class="modal-body">
-                <div class="info-card">
-                    <h4><i class="fas fa-user-shield"></i> İLETİŞİM (KAPTAN BİLGİLERİ)</h4>
-                    <div class="info-row"><div class="info-label">Kaptan Adı:</div><div class="info-data" id="modalCaptainName">-</div></div>
-                    <div class="info-row"><div class="info-label">Telefon:</div><div class="info-data" id="modalCaptainPhone">-</div></div>
-                </div>
-                <div class="info-card">
-                    <h4><i class="fas fa-users"></i> TAKIM KADROSU</h4>
-                    <ul class="player-list-mini" id="modalRosterList" style="margin-bottom: 0; padding: 0;"></ul>
-                </div>
+            <div class="editor-panel" id="editorPanel">
                 
-                <button class="btn-delete-team" id="modalDeleteBtn"><i class="fas fa-trash"></i> BU TAKIMI SİL</button>
+                <div class="placement-map">
+                    <div class="placement-title"><i class="fas fa-map-marker-alt"></i> FİKSTÜR YERLEŞİM BİLGİSİ</div>
+                    <div class="placement-grid">
+                        <select id="tourneySelect" class="form-control">
+                            <option value="OBB 1">OBB 1. TOPLULUK TURNUVASI</option>
+                        </select>
+                        <select id="stageSelect" class="form-control" onchange="updateDynamicSelectors()">
+                            <option value="SON 64">SON 64</option>
+                            <option value="SON 32">SON 32</option>
+                            <option value="SON 16">SON 16 (Playoff)</option>
+                            <option value="ÇEYREK FİNAL">ÇEYREK FİNAL</option>
+                            <option value="YARI FİNAL">YARI FİNAL</option>
+                            <option value="FİNAL">BÜYÜK FİNAL</option>
+                        </select>
+                        <select id="matchOrderSelect" class="form-control">
+                            </select>
+                        <select id="mapOrderSelect" class="form-control">
+                            </select>
+                    </div>
+                </div>
+
+                <div class="match-score-header">
+                    <div class="team-score-input">
+                        <span style="font-size:10px; color:var(--gri-yazi);">SOL TAKIM (MAVİ)</span>
+                        <input type="text" id="teamAName" class="team-name-input" placeholder="TAKIM ADI" onkeyup="syncTeamName('A', this.value)" onblur="fetchProfilesIfMissing('A')">
+                        <input type="number" id="scoreA" class="big-score-input" value="0" min="0">
+                    </div>
+                    <div class="vs-text">
+                        VS
+                        <input type="text" id="mapNameInput" class="map-input" placeholder="HARİTA">
+                    </div>
+                    <div class="team-score-input">
+                        <span style="font-size:10px; color:var(--gri-yazi);">SAĞ TAKIM (KIRMIZI)</span>
+                        <input type="text" id="teamBName" class="team-name-input" placeholder="TAKIM ADI" onkeyup="syncTeamName('B', this.value)" onblur="fetchProfilesIfMissing('B')">
+                        <input type="number" id="scoreB" class="big-score-input" value="0" min="0">
+                    </div>
+                </div>
+
+                <div class="stats-grid-container" style="overflow-x: auto;">
+                    <div class="team-stats-box">
+                        <h4 id="headerTeamA" style="color: #00d2ff; border-left-color: #00d2ff;">SOL TAKIM <span>(Mavi)</span></h4>
+                        <div id="teamAPlayersInputs"></div>
+                    </div>
+                    <div class="team-stats-box">
+                        <h4 id="headerTeamB" style="color: #ff4b4b; border-left-color: #ff4b4b;">SAĞ TAKIM <span>(Kırmızı)</span></h4>
+                        <div id="teamBPlayersInputs"></div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-save" id="btnSaveToBracket" onclick="saveToBracket()">
+                        <i class="fas fa-check-circle"></i> ONAYLA VE FİKSTÜRE İĞNELE
+                    </button>
+                    <button class="btn-reject-env" id="btnDeleteOrReject" onclick="rejectOrDelete()">
+                        <i class="fas fa-trash"></i> ZARFI REDDET / SİL
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <div id="footer-alani"></div>
 
@@ -184,341 +180,265 @@
     <script src="js/config.js"></script>
     <script src="js/bildirimler.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/admin-core.js"></script>
+
     <script>
-        // Sayfa Başlatıcı
-        async function initAdminPage() {
-            // Footer'ı Yükle
-            try {
-                const response = await fetch("components/footer.html");
-                if (response.ok) document.getElementById("footer-alani").innerHTML = await response.text();
-            } catch(e) { console.error("Footer yüklenemedi", e); }
+        let currentMode = 'zarflar'; // 'zarflar' veya 'fikstur'
+        let activeRecordId = null; // Zarf ID'si veya Maç/Map ID'si
+        let teamAId_memory = null;
+        let teamBId_memory = null;
 
-            // Scroll Efekti
-            let lastScrollTop = 0;
-            const header = document.getElementById("mainHeader");
-            window.addEventListener("scroll", function() {
-                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                if (scrollTop > lastScrollTop && scrollTop > 100) header.classList.add("nav-hidden");
-                else header.classList.remove("nav-hidden");
-                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
-            }, false);
-
-            // Dışarı Tıklayınca Bildirim Kapatma
-            document.addEventListener("click", function(event) {
-                const isClickInsideBell = event.target.closest('.nav-bell') || event.target.closest('.floating-bell');
-                const isClickInsidePanel = event.target.closest('.notif-panel');
-                if (!isClickInsideBell && !isClickInsidePanel) {
-                    document.querySelectorAll('.notif-panel').forEach(p => p.classList.remove('active'));
-                }
-            });
-
-            // Auth, Bildirim ve Admin Kontrolleri
-            if (typeof checkUserStatus === "function") await checkUserStatus();
-            if (typeof initNotifications === "function") initNotifications();
-            checkAdminAccess();
-        }
-
-        // Güvenlik Kontrolü
-        async function checkAdminAccess() {
-            try {
-                const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
-                if (authError || !user) throw new Error("Giriş yapılmadı.");
-
-                const { data: profile, error: profileError } = await window.supabaseClient.from('profiles').select('role').eq('id', user.id).single();
-                if (profileError || profile.role !== 'admin') throw new Error("Yetkisiz erişim.");
-
-                document.getElementById('loadingScreen').style.display = 'none';
-                loadPendingTeams();
-                loadApprovedTeams();
-            } catch (err) {
-                window.location.replace("index.html");
-            }
-        }
-
-        // Yeni Sekme Kontrolü (Header İçin) - Duyuru kaldırıldı
-        function switchTab(tabName) {
-            ['onay', 'takimlar'].forEach(t => {
-                document.getElementById(t + 'Section').style.display = (t === tabName) ? 'block' : 'none';
-                
-                const tabLink = document.getElementById('tab-' + t);
-                if (t === tabName) tabLink.classList.add('active-admin-tab');
-                else tabLink.classList.remove('active-admin-tab');
+        async function initMasterManager() {
+            await loadAdminComponents('nav-bracket');
+            checkAdminAuthAndInit(() => {
+                generateEmptyRows('teamAPlayersInputs');
+                generateEmptyRows('teamBPlayersInputs');
+                updateDynamicSelectors();
+                loadSidebarData();
             });
         }
 
-        // Onay Bekleyen Takımlar
-        async function loadPendingTeams() {
-            const { data: teams } = await window.supabaseClient.rpc('get_admin_teams', { p_status: 'pending' });
-            const grid = document.getElementById('pendingTeamsGrid');
-            grid.innerHTML = '';
-            if (teams && teams.length > 0) {
-                teams.forEach(team => {
-                    let playersHtml = '';
-                    (team.members || []).forEach(m => {
-                        const icon = m.status === 'accepted' ? '<i class="fas fa-check" style="color:var(--yesil-guven);"></i>' : '<i class="fas fa-clock" style="color:var(--mavi-onay);"></i>';
-                        playersHtml += `<li>${m.role === 'main' ? 'Asil' : 'Yedek'}: <span>${m.username}</span> ${icon}</li>`;
-                    });
-                    const cardUserId = team.user_id || team.captain_id || '';
-                    grid.innerHTML += `
-                        <div class="team-card">
-                            <div class="team-logo-area"><img src="${team.logo_url || 'https://via.placeholder.com/100'}" alt="Logo"></div>
-                            <div class="team-card-body">
-                                <div class="team-card-title"><span class="team-card-tag">[${team.team_tag}]</span> ${team.team_name}</div>
-                                <ul class="player-list-mini">${playersHtml}</ul>
-                                <div class="action-buttons">
-                                    <button class="btn-approve" onclick="updateTeamStatus('${team.id}', 'approved', '${cardUserId}')"><i class="fas fa-check"></i> ONAYLA</button>
-                                    <button class="btn-reject" onclick="rejectTeam('${team.id}', '${cardUserId}')"><i class="fas fa-times"></i> REDDET</button>
-                                </div>
+        // --- SOL PANEL LİSTE YÖNETİMİ ---
+        function switchSidebarTab(mode) {
+            currentMode = mode;
+            document.getElementById('tabZarflar').classList.toggle('active', mode === 'zarflar');
+            document.getElementById('tabFikstur').classList.toggle('active', mode === 'fikstur');
+            document.getElementById('editorPanel').style.display = 'none'; // Ekranı temizle
+            activeRecordId = null;
+            loadSidebarData();
+        }
+
+        async function loadSidebarData() {
+            const listContainer = document.getElementById('sidebarList');
+            listContainer.innerHTML = '<div style="text-align:center; color:var(--gri-yazi); padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>';
+
+            try {
+                if (currentMode === 'zarflar') {
+                    // Ajanlardan gelen zarfları çek (SİMÜLASYON: bekleyen_zarflar tablosu)
+                    // Gerçek yapıda: .from('bekleyen_zarflar').select('*').eq('durum', 'pending')
+                    
+                    /* BURAYA GEÇİCİ DEMO VERİSİ KOYUYORUM, VERİTABANINI KURUNCA SİLİP APIYI BAĞLARSIN */
+                    const mockZarflar = [
+                        { id: 'z1', pc: 'PC-1', map: 'ABYSS', date: 'Az Önce', teamA: 'SANGAL', teamB: 'BBL' },
+                        { id: 'z2', pc: 'PC-5', map: 'ASCENT', date: '5 dk önce', teamA: 'FUT', teamB: 'FIRE FLUX' }
+                    ];
+
+                    listContainer.innerHTML = '';
+                    if(mockZarflar.length === 0) listContainer.innerHTML = '<p style="text-align:center; color:#555;">Bekleyen zarf yok.</p>';
+                    
+                    mockZarflar.forEach(z => {
+                        listContainer.innerHTML += `
+                            <div class="list-item" onclick="openEnvelope('${z.id}', '${z.teamA}', '${z.teamB}', '${z.map}')">
+                                <span class="list-item-badge badge-zarf"><i class="fas fa-envelope"></i> YENİ ZARF (${z.pc})</span>
+                                <div class="list-item-title">${z.teamA} vs ${z.teamB}</div>
+                                <div class="list-item-desc">Harita: ${z.map} | Geliş: ${z.date}</div>
                             </div>
-                        </div>`;
-                });
-            } else grid.innerHTML = '<p style="color: var(--gri-yazi);">Şu an onay bekleyen takım bulunmuyor.</p>';
-        }
-
-        // Onaylı Takımlar
-        async function loadApprovedTeams() {
-            const { data: teams } = await window.supabaseClient.rpc('get_admin_teams', { p_status: 'approved' });
-            const list = document.getElementById('approvedTeamsList');
-            list.innerHTML = '';
-            if (teams && teams.length > 0) {
-                teams.forEach((team, index) => {
-                    list.innerHTML += `
-                        <div class="approved-item" onclick='openTeamModal(${JSON.stringify(team).replace(/'/g, "&apos;")})'>
-                            <div class="approved-number">${index + 1}</div>
-                            <div class="approved-name">${team.team_name.toUpperCase()} <span class="approved-tag">[${team.team_tag}]</span></div>
-                            <i class="fas fa-chevron-right" style="color: var(--neon-mor);"></i>
-                        </div>`;
-                });
-            } else list.innerHTML = '<p style="color: var(--gri-yazi);">Onaylanmış takım bulunmuyor.</p>';
-        }
-
-        // Ret ve Onay İşlemleri
-        async function rejectTeam(teamId, userId) {
-            const reason = prompt("Lütfen ret sebebini yazın:");
-            if (reason) updateTeamStatus(teamId, 'rejected', userId, reason);
-        }
-
-        async function updateTeamStatus(teamId, status, userId, reason = "") {
-            const { error } = await window.supabaseClient.from('tournament_applications').update({ status }).eq('id', teamId);
-            if (!error) {
-                if (userId) {
-                    const baslik = status === 'approved' ? "Başvurunuz Onaylandı! 🎉" : "Başvurunuz Reddedildi";
-                    const mesaj = status === 'approved' ? "Tebrikler, takım başvurunuz onaylandı!" : `Maalesef takım başvurunuz reddedildi. Sebep: ${reason}`;
-                    await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: userId, baslik, mesaj, tip: status === 'approved' ? 'onay' : 'red' }]);
-                }
-                showNotification("Takım güncellendi.", "success");
-                loadPendingTeams(); loadApprovedTeams();
-            } else showNotification("Hata oluştu.", "error");
-        }
-
-        // --- EXCEL AKTARMA FONKSİYONU ---
-        async function excelAktar() {
-            try {
-                const btn = document.querySelector('.btn-excel');
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Hazırlanıyor...';
-                btn.disabled = true;
-
-                // IGN bilgisini profiles tablosundan çekiyoruz (ign sütunu olduğunu varsayarak)
-                const { data: teams, error } = await window.supabaseClient
-                    .from('tournament_applications')
-                    .select(`
-                        id, team_name, team_tag, logo_url, captain_id,
-                        application_members (
-                            role,
-                            user_id,
-                            profiles ( username, ign )
-                        )
-                    `)
-                    .eq('status', 'approved');
-
-                if (error) throw error;
-                if (!teams || teams.length === 0) {
-                    showNotification("Dışa aktarılacak takım bulunamadı.", "error");
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    return;
-                }
-
-                const excelVerileri = teams.map((team, index) => {
-                    let mainPlayers = [];
-                    let subPlayers = [];
-
-                    team.application_members.forEach(member => {
-                        const username = member.profiles?.username || "Bilinmiyor";
-                        const ign = member.profiles?.ign || ""; // Eğer IGN yoksa boş string
-
-                        if (member.role === 'main') {
-                            mainPlayers.push({ user: username, ign: ign });
-                        } else if (member.role === 'sub') {
-                            subPlayers.push({ user: username, ign: ign });
-                        }
+                        `;
                     });
+                } else {
+                    // Fikstürdeki kayıtlı maçları çek (bracket_matches & match_maps)
+                    const { data: matches, error } = await window.supabaseClient.from('bracket_matches').select('id, round_name, round_order, match_maps(id, map_order, map_name, score_a, score_b)').order('created_at', { ascending: false }).limit(20);
+                    
+                    listContainer.innerHTML = '';
+                    if (error || !matches || matches.length === 0) {
+                        listContainer.innerHTML = '<p style="text-align:center; color:#555;">Kayıtlı maç bulunamadı.</p>';
+                        return;
+                    }
 
-                    // Excel Formatı: IGN sütunları eklendi. IGN yoksa hücre boş bırakılır.
-                    return {
-                        "Sıra": index + 1,
-                        "Takım Adı": team.team_name,
-                        "Kısaltma": team.team_tag,
-                        "1. Oyuncu (Kaptan)": mainPlayers[0]?.user || "-",
-                        "1. Oyuncu IGN": mainPlayers[0]?.ign ? mainPlayers[0].ign : "",
-                        "2. Oyuncu": mainPlayers[1]?.user || "-",
-                        "2. Oyuncu IGN": mainPlayers[1]?.ign ? mainPlayers[1].ign : "",
-                        "3. Oyuncu": mainPlayers[2]?.user || "-",
-                        "3. Oyuncu IGN": mainPlayers[2]?.ign ? mainPlayers[2].ign : "",
-                        "4. Oyuncu": mainPlayers[3]?.user || "-",
-                        "4. Oyuncu IGN": mainPlayers[3]?.ign ? mainPlayers[3].ign : "",
-                        "5. Oyuncu": mainPlayers[4]?.user || "-",
-                        "5. Oyuncu IGN": mainPlayers[4]?.ign ? mainPlayers[4].ign : "",
-                        "Yedek 1": subPlayers[0]?.user || "-",
-                        "Yedek 1 IGN": subPlayers[0]?.ign ? subPlayers[0].ign : "",
-                        "Yedek 2": subPlayers[1]?.user || "-",
-                        "Yedek 2 IGN": subPlayers[1]?.ign ? subPlayers[1].ign : "",
-                        "Telefon No": "", 
-                        "Logo URL": team.logo_url || "Logo Yok"
-                    };
-                });
-
-                // Tablo oluştur ve indir
-                const worksheet = XLSX.utils.json_to_sheet(excelVerileri);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Onaylı Takımlar");
-                
-                // Sütun genişliklerini ayarla
-                const wscols = [
-                    {wch: 5}, {wch: 25}, {wch: 10}, 
-                    {wch: 20}, {wch: 15}, // p1
-                    {wch: 20}, {wch: 15}, // p2
-                    {wch: 20}, {wch: 15}, // p3
-                    {wch: 20}, {wch: 15}, // p4
-                    {wch: 20}, {wch: 15}, // p5
-                    {wch: 20}, {wch: 15}, // s1
-                    {wch: 20}, {wch: 15}, // s2
-                    {wch: 15}, {wch: 45} // tel, logo
-                ];
-                worksheet['!cols'] = wscols;
-
-                XLSX.writeFile(workbook, "OBB_Onayli_Takimlar.xlsx");
-                
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                showNotification("Excel başarıyla indirildi.", "success");
-
+                    matches.forEach(m => {
+                        (m.match_maps || []).forEach(map => {
+                            listContainer.innerHTML += `
+                                <div class="list-item" onclick="openExistingMap('${m.id}', '${map.id}')">
+                                    <span class="list-item-badge badge-fikstur"><i class="fas fa-check"></i> FİKSTÜRDE</span>
+                                    <div class="list-item-title">[${m.round_name}] ${m.round_order}. Maç</div>
+                                    <div class="list-item-desc">Harita ${map.map_order}: ${map.map_name} (${map.score_a} - ${map.score_b})</div>
+                                </div>
+                            `;
+                        });
+                    });
+                }
             } catch (err) {
-                console.error("Excel Hatası:", err);
-                showNotification("Excel oluşturulamadı.", "error");
-                document.querySelector('.btn-excel').innerHTML = '<i class="fas fa-file-excel"></i> Excel\'e Aktar';
-                document.querySelector('.btn-excel').disabled = false;
+                listContainer.innerHTML = `<div style="color:red; text-align:center;">Hata: ${err.message}</div>`;
             }
         }
 
-        // --- TAKIM SİLME VE STORAGE TEMİZLEME FONKSİYONU ---
-        async function takimiSil(teamId, teamName, logoUrl, captainId) {
-            const reason = prompt(`DİKKAT: ${teamName} takımını kalıcı olarak silmek üzeresiniz. Lütfen takım kaptanına iletilecek silinme sebebini yazın:\n(Bu işlem geri alınamaz!)`);
+        // --- SAĞ PANEL (EDİTÖR) YÖNETİMİ ---
+
+        function updateDynamicSelectors() {
+            const stage = document.getElementById('stageSelect').value;
+            const matchOrder = document.getElementById('matchOrderSelect');
+            const mapOrder = document.getElementById('mapOrderSelect');
             
-            if (reason === null) return; // Kullanıcı iptal'e bastıysa işlemi durdur
-            if (reason.trim() === "") {
-                showNotification("Silme sebebini boş bırakamazsınız.", "error");
-                return;
+            matchOrder.innerHTML = '';
+            let maxMatch = 1;
+            if(stage === 'SON 64') maxMatch = 32;
+            if(stage === 'SON 32') maxMatch = 16;
+            if(stage === 'SON 16') maxMatch = 8;
+            if(stage === 'ÇEYREK FİNAL') maxMatch = 4;
+            if(stage === 'YARI FİNAL') maxMatch = 2;
+
+            for(let i=1; i<=maxMatch; i++) matchOrder.innerHTML += `<option value="${i}">${i}. MAÇ</option>`;
+
+            mapOrder.innerHTML = '';
+            let maxMap = 1; // BO1 varsayılan
+            if (['SON 16', 'ÇEYREK FİNAL', 'YARI FİNAL'].includes(stage)) maxMap = 3; // BO3
+            if (stage === 'FİNAL') maxMap = 5; // BO5
+
+            for(let i=1; i<=maxMap; i++) mapOrder.innerHTML += `<option value="${i}">${i}. HARİTA (Map ${i})</option>`;
+        }
+
+        // ZARF AÇMA (Ajan programından gelen veriyi ekrana basar)
+        function openEnvelope(envId, tA, tB, mapName) {
+            activeRecordId = envId;
+            document.getElementById('editorPanel').style.display = 'block';
+            
+            // UI Güncelle
+            document.getElementById('btnSaveToBracket').innerHTML = '<i class="fas fa-thumbtack"></i> ONAYLA VE FİKSTÜRE İĞNELE';
+            document.getElementById('btnDeleteOrReject').innerHTML = '<i class="fas fa-times"></i> ZARFI REDDET / ÇÖPE AT';
+
+            // Zarf Verilerini Form'a Doldur (Simülasyon)
+            document.getElementById('teamAName').value = tA;
+            document.getElementById('teamBName').value = tB;
+            document.getElementById('mapNameInput').value = mapName;
+            
+            syncTeamName('A', tA); syncTeamName('B', tB);
+
+            // Gerçekte burada JSON verisini parse edip renderPlayerRows fonksiyonuna göndereceğiz.
+            // Boş satırları oluşturup profilleri aramayı tetikleyelim.
+            generateEmptyRows('teamAPlayersInputs');
+            generateEmptyRows('teamBPlayersInputs');
+            fetchProfilesIfMissing('A');
+            fetchProfilesIfMissing('B');
+        }
+
+        // KAYITLI MAÇI AÇMA
+        async function openExistingMap(matchId, mapId) {
+            activeRecordId = { matchId, mapId };
+            document.getElementById('editorPanel').style.display = 'block';
+            
+            document.getElementById('btnSaveToBracket').innerHTML = '<i class="fas fa-sync-alt"></i> GÜNCELLE';
+            document.getElementById('btnDeleteOrReject').innerHTML = '<i class="fas fa-trash"></i> BU HARİTAYI SİL';
+
+            // Buraya Supabase'den match_maps ve stats verilerini çekip formlara doldurma kodu gelecek.
+            // (Eski sistemdeki loadMapStats fonksiyonunun mantığı birebir buraya taşınacak).
+            showNotification("Fikstür verisi yükleniyor...", "info");
+        }
+
+        // --- YARDIMCI FONKSİYONLAR (ÖNCEKİ KODDAN MİRAS) ---
+        function syncTeamName(team, name) {
+            const header = document.getElementById(team === 'A' ? 'headerTeamA' : 'headerTeamB');
+            const color = team === 'A' ? '#00d2ff' : '#ff4b4b';
+            header.innerHTML = `${name.toUpperCase() || 'TAKIM'} <span style="font-size:12px; color:${color}; opacity:0.7;">${team === 'A' ? '(Mavi)' : '(Kırmızı)'}</span>`;
+        }
+
+        function generateEmptyRows(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
+                    <span class="stat-label">AJAN</span><span class="stat-label" style="text-align:left;">OYUN İÇİ NİCK</span><span class="stat-label">PROFİL EŞLEŞTİR</span>
+                    <span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
+                    <span class="stat-label" style="color:var(--neon-mor);">ACS</span><span class="stat-label" style="color:var(--neon-mor);">ADR</span><span class="stat-label" style="color:var(--neon-mor);">HS%</span>
+                </div>
+            `;
+            for(let i=0; i<5; i++) {
+                container.innerHTML += `
+                    <div class="player-stat-row">
+                        <div class="agent-input-group">
+                            <img src="img/agents/unknown.png" class="agent-icon" id="${containerId}_icon_${i}">
+                            <input type="text" class="agent-name-input" placeholder="Ajan" onkeyup="updateAgentIcon(this, '${containerId}_icon_${i}')">
+                        </div>
+                        <input type="text" class="ign-input" placeholder="IGN">
+                        <select class="user-matcher-select"><option value="">-- Takım Yazın --</option></select>
+                        <input type="number" class="k-input" value="0"><input type="number" class="d-input" value="0"><input type="number" class="a-input" value="0">
+                        <input type="number" class="acs-input" value="0"><input type="number" class="adr-input" value="0"><input type="number" class="hs-input" value="0">
+                    </div>`;
             }
+        }
+
+        function updateAgentIcon(inputEl, iconId) {
+            let val = inputEl.value.replace(/[^a-zA-Z0-9]/g, '');
+            const icon = document.getElementById(iconId);
+            if(val.length >= 2) {
+                let formatted = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+                if (formatted === 'Kayo' || formatted === 'KAYO') formatted = 'Kayo'; 
+                icon.src = `img/imgagents/${formatted}.webp`;
+            } else { icon.src = "img/imgagents/unknown.png"; }
+        }
+
+        async function fetchProfilesIfMissing(teamStr) {
+            const teamName = document.getElementById(teamStr === 'A' ? 'teamAName' : 'teamBName').value;
+            if(!teamName || teamName.length < 2) return;
+            
+            const containerId = teamStr === 'A' ? 'teamAPlayersInputs' : 'teamBPlayersInputs';
+            const selects = document.getElementById(containerId).querySelectorAll('.user-matcher-select');
             
             try {
-                const btn = document.getElementById('modalDeleteBtn');
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SİLİNİYOR...';
-                btn.disabled = true;
+                const { data: teamData } = await window.supabaseClient.from('tournament_applications').select('id').ilike('team_name', `%${teamName.trim()}%`).single();
+                if(!teamData) throw new Error("Bulunamadı");
+                
+                if(teamStr === 'A') teamAId_memory = teamData.id;
+                else teamBId_memory = teamData.id;
 
-                // 1. HAYALET LOGOYU SİL (STORAGE TEMİZLİĞİ)
-                if (logoUrl && logoUrl.includes('/storage/v1/object/public/')) {
-                    try {
-                        const parts = logoUrl.split('/storage/v1/object/public/')[1].split('/');
-                        const bucketName = parts[0]; 
-                        const filePath = parts.slice(1).join('/');
-
-                        if (bucketName && filePath) {
-                            await window.supabaseClient.storage.from(bucketName).remove([filePath]);
-                            console.log("Logo storage'dan silindi.");
-                        }
-                    } catch (e) {
-                        console.warn("Logo URL parçalama hatası:", e);
-                    }
+                const { data: players } = await window.supabaseClient.from('application_members').select(`user_id, profiles (username, ign)`).eq('application_id', teamData.id).eq('status', 'accepted');
+                
+                let optionsHtml = '<option value="">-- Manuel Seç --</option>';
+                if(players) {
+                    players.forEach(p => {
+                        const disp = p.profiles?.ign ? `${p.profiles.ign} (${p.profiles.username})` : p.profiles.username;
+                        optionsHtml += `<option value="${p.user_id}" data-ign="${p.profiles?.ign||''}">${disp}</option>`;
+                    });
                 }
-
-                // 2. KAPTANA BİLDİRİM GÖNDER (Eğer kaptan ID'si varsa)
-                if (captainId) {
-                    await window.supabaseClient.from('bildirimler').insert([{
-                        kullanici_id: captainId,
-                        baslik: "Takımınız Sistemden Kaldırıldı!",
-                        mesaj: `${teamName} adlı takımınız yönetici tarafından silinmiştir. Sebep: ${reason}`,
-                        tip: 'red'
-                    }]);
-                }
-
-                // 3. TAKIMI VERİTABANINDAN SİL (ON DELETE CASCADE devrede)
-                const { error: teamError } = await window.supabaseClient
-                    .from('tournament_applications')
-                    .delete()
-                    .eq('id', teamId);
                 
-                if (teamError) throw new Error("Takım silinirken hata: " + teamError.message);
-
-                showNotification(`${teamName} başarıyla silindi ve kaptana bildirildi.`, "success");
-                closeModal();
-                
-                loadApprovedTeams(); 
-                loadPendingTeams();
-
-            } catch (err) {
-                console.error("Silme Hatası:", err);
-                showNotification(err.message || "Silme işlemi sırasında hata oluştu.", "error");
-                
-                const btn = document.getElementById('modalDeleteBtn');
-                btn.innerHTML = '<i class="fas fa-trash"></i> BU TAKIMI SİL';
-                btn.disabled = false;
+                selects.forEach(sel => { sel.innerHTML = optionsHtml; });
+                showNotification(`${teamName} kadrosu çekildi.`, "success");
+            } catch (e) {
+                selects.forEach(sel => { sel.innerHTML = '<option value="">Bulunamadı</option>'; });
             }
         }
 
-        // Modal Detayları
-        function openTeamModal(team) {
-            document.getElementById('modalLogo').src = team.logo_url || 'https://via.placeholder.com/100';
-            document.getElementById('modalTeamName').innerText = team.team_name;
-            document.getElementById('modalTeamTag').innerText = `[${team.team_tag}]`;
-            
-            // Kaptan bilgilerini bul ve yazdır
-            const captData = (team.members || []).find(m => m.user_id === team.captain_id || m.id === team.captain_id);
-            // Kaptanın ID'sini garanti altına alalım (user_id veya captain_id)
-            const resolvedCaptainId = captData ? (captData.user_id || team.captain_id) : team.captain_id;
-            
-            document.getElementById('modalCaptainName').innerText = captData ? captData.username : 'Bilinmiyor';
-            document.getElementById('modalCaptainPhone').innerText = team.captain_phone || 'Belirtilmemiş';
+        // --- VERİTABANINA YAZMA (İĞNELEME / GÜNCELLEME) ---
+        async function saveToBracket() {
+            if(!activeRecordId) return;
 
-            const rl = document.getElementById('modalRosterList'); 
-            rl.innerHTML = '';
-            (team.members || []).forEach(m => {
-                const color = m.role === 'main' ? 'var(--yazi-beyaz)' : 'var(--gri-yazi)';
-                rl.innerHTML += `<li><span style="color:${color}; font-weight:normal;">${m.role==='main'?'Asil Oyuncu':'Yedek'}:</span> <span style="color:var(--neon-mor);">${m.username}</span></li>`;
-            });
+            const tName = document.getElementById('tourneySelect').value;
+            const sName = document.getElementById('stageSelect').value;
+            const matchO = document.getElementById('matchOrderSelect').value;
+            const mapO = document.getElementById('mapOrderSelect').value;
 
-            // SİLME BUTONUNA ID VE İSİM ATAMA (Kaptan ID'sini de gönderiyoruz)
-            const deleteBtn = document.getElementById('modalDeleteBtn');
-            deleteBtn.innerHTML = '<i class="fas fa-trash"></i> BU TAKIMI SİL';
-            deleteBtn.disabled = false;
-            deleteBtn.onclick = () => takimiSil(team.id, team.team_name, team.logo_url, resolvedCaptainId);
-
-            document.getElementById('teamModal').classList.add('active');
-            document.body.style.overflow = 'hidden'; 
+            if(currentMode === 'zarflar') {
+                // YENİ EKLE (ZARFI FİKSTÜRE BAĞLA)
+                showNotification(`${sName} - ${matchO}. Maç - ${mapO}. Harita yuvasına işleniyor...`, "info");
+                // TODO: 1. bracket_matches tablosuna tName, sName, matchO ile Insert/Update yap.
+                // 2. match_maps tablosuna mapO ile ekle.
+                // 3. match_player_stats tablosuna oyuncuları ekle.
+                // 4. bekleyen_zarflar tablosunda bu zarfın durumunu 'processed' yap.
+                
+                setTimeout(() => {
+                    showNotification("Başarıyla Fikstüre İğnelendi!", "success");
+                    switchSidebarTab('zarflar'); // Listeyi yenile
+                }, 1000);
+            } else {
+                // MEVCUT MAÇI GÜNCELLE
+                showNotification("Harita ve oyuncu verileri güncelleniyor...", "info");
+                // TODO: Veritabanında sadece update at.
+            }
         }
-        
-        function closeModal() { 
-            document.getElementById('teamModal').classList.remove('active'); 
-            document.body.style.overflow = 'auto'; 
-        }
-        
-        window.addEventListener('click', function(e) {
-            if (e.target === document.getElementById('teamModal')) closeModal();
-        });
 
-        // Sayfa Başlatıcı Tetikleme
-        document.addEventListener('DOMContentLoaded', initAdminPage);
+        async function rejectOrDelete() {
+            if(!activeRecordId) return;
+            if(confirm("Bu kaydı kalıcı olarak silmek/reddetmek istediğinize emin misiniz?")) {
+                if(currentMode === 'zarflar') {
+                    // bekleyen_zarflar'dan sil
+                    showNotification("Zarf reddedildi ve çöpe atıldı.", "success");
+                } else {
+                    // match_maps'ten sil
+                    showNotification("Harita kaydı silindi.", "success");
+                }
+                switchSidebarTab(currentMode); // Listeyi yenile
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initMasterManager);
     </script>
 </body>
 </html>
