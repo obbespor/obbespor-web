@@ -756,13 +756,19 @@ async function loadInvitationsAndTeam() {
                 let draftTeamData = null;
 
                 // Kabul edilen takımları tarayıp "Gerçek" ve "Taslak" olarak sınıflandıralım
-                if (acceptedMemberships.length > 0) {
-                    const teamIds = acceptedMemberships.map(m => m.team_id);
-                    
-                    const { data: apps } = await window.supabaseClient.from('tournament_applications')
-                        .select('team_id, status')
-                        .in('team_id', teamIds)
-                        .order('created_at', { ascending: false });
+// Kabul edilen takımları tarayıp "Gerçek" ve "Taslak" olarak sınıflandıralım
+if (acceptedMemberships.length > 0) {
+    // Null olan ID'leri filtreliyoruz ki Supabase 400 hatası atmasın
+    const teamIds = acceptedMemberships.map(m => m.team_id).filter(id => id != null);
+    
+    let apps = [];
+    if (teamIds.length > 0) {
+        const { data: fetchedApps } = await window.supabaseClient.from('tournament_applications')
+            .select('team_id, status')
+            .in('team_id', teamIds)
+            .order('created_at', { ascending: false });
+        if (fetchedApps) apps = fetchedApps;
+    }
                     
                     for (let m of acceptedMemberships) {
                         const app = apps?.find(a => a.team_id === m.team_id);
