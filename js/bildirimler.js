@@ -10,22 +10,19 @@ function cevirSupabaseHatasi(hataMesaji) {
     if (!hataMesaji) return "Bilinmeyen bir hata oluştu.";
     
     const msg = hataMesaji.toLowerCase();
-
     const saniyeElesmesi = msg.match(/after (\d+) seconds/i);
     if (saniyeElesmesi) return `Güvenlik gereği, yeni bir istek yapmadan önce ${saniyeElesmesi[1]} saniye beklemelisiniz.`;
 
     if (msg.includes("invalid login credentials")) return "E-posta adresi veya şifre hatalı.";
-    if (msg.includes("email not confirmed")) return "Giriş yapmadan önce e-posta adresinize gelen linkten hesabınızı onaylamalısınız.";
-    if (msg.includes("user already registered")) return "Bu e-posta adresi sistemimizde zaten kayıtlı.";
-    if (msg.includes("password should be at least")) return "Şifreniz çok kısa, en az 6 karakter olmalıdır.";
-    if (msg.includes("email link is invalid or has expired")) return "Doğrulama linkinin süresi dolmuş veya geçersiz. Lütfen yeni bir şifre sıfırlama isteği gönderin.";
-    if (msg.includes("too many requests") || msg.includes("rate limit")) return "Çok fazla deneme yaptınız. Lütfen birkaç dakika bekleyip tekrar deneyin.";
-    if (msg.includes("network error") || msg.includes("failed to fetch")) return "Bağlantı hatası! Lütfen internetinizi kontrol edin.";
+    if (msg.includes("email not confirmed")) return "Giriş yapmadan önce e-postayı onaylamalısınız.";
+    if (msg.includes("user already registered")) return "Bu e-posta zaten kayıtlı.";
+    if (msg.includes("too many requests")) return "Çok fazla deneme yaptınız. Lütfen bekleyin.";
+    if (msg.includes("network error")) return "Bağlantı hatası oluştu.";
     
     return hataMesaji.replace('Hata: ', '').replace('Error: ', ''); 
 }
 
-// --- BİLDİRİM BALONCUĞU (TOAST) GÖSTERİMİ ---
+// --- BİLDİRİM BALONCUĞU (TOAST) ---
 window.showNotification = function(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
@@ -55,7 +52,7 @@ function getIconForType(tip) {
     }
 }
 
-// --- KİŞİSEL BİLDİRİMLERİ VERİTABANINDAN ÇEKME (DUYURULAR KALDIRILDI) ---
+// --- KİŞİSEL BİLDİRİMLERİ ÇEKME ---
 window.fetchRealNotifications = async function() {
     try {
         const { data: { user } } = await window.supabaseClient.auth.getUser();
@@ -64,7 +61,6 @@ window.fetchRealNotifications = async function() {
         const { data: kisiselData } = await window.supabaseClient.from('bildirimler').select('*').eq('kullanici_id', user.id); 
 
         let harmanlanmisList = [];
-
         if (kisiselData) {
             kisiselData.forEach(item => {
                 harmanlanmisList.push({
@@ -73,17 +69,16 @@ window.fetchRealNotifications = async function() {
                 });
             });
         }
-
         initGlobalInviteSystem(user.id, harmanlanmisList);
     } catch (err) { console.error("Bildirim çekilemedi:", err); }
 };
 
-// --- KİŞİSEL BİLDİRİMLERİ GERÇEK ZAMANLI (REALTIME) DİNLEME (DUYURULAR KALDIRILDI) ---
+// --- REALTIME DİNLEME ---
 window.listenRealtimeNotifications = async function() {
     const { data: { user } } = await window.supabaseClient.auth.getUser();
     if (!user) return;
 
-    window.supabaseClient.channel('kisisel-bildirimler')
+    window.supabaseClient.channel('kisisel-bildirimler-' + user.id)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bildirimler', filter: `kullanici_id=eq.${user.id}` },
         (payload) => {
             const yeni = payload.new;
@@ -108,21 +103,11 @@ window.renderNotifications = function() {
     let htmlContent = window.myNotifications.length === 0 ? `<div class="notif-empty">Şu an yeni bir bildiriminiz yok.</div>` : "";
 
     window.myNotifications.forEach(notif => {
-        let targetUrl = "javascript:void(0)"; 
-        let cursorStyle = "cursor: default;";
-        
-        if (notif.tip === 'davet') {
-            targetUrl = "profil.html#davetler"; 
-            cursorStyle = "cursor: pointer;";
-        } else if (notif.tip === 'onay' || notif.tip === 'red') {
-            targetUrl = "profil.html"; 
-            cursorStyle = "cursor: pointer;";
-        }
-
+        let targetUrl = notif.tip === 'davet' ? "profil.html#davetler" : (notif.tip === 'onay' || notif.tip === 'red' ? "profil.html" : "javascript:void(0)");
         let onClickAttr = targetUrl !== "javascript:void(0)" ? `onclick="window.location.href='${targetUrl}'"` : "";
 
         htmlContent += `
-            <div class="notif-item" ${onClickAttr} style="${cursorStyle}">
+            <div class="notif-item" ${onClickAttr} style="${targetUrl !== "javascript:void(0)" ? 'cursor:pointer' : 'cursor:default'}">
                 <i class="fas ${notif.icon}" style="color: ${notif.color};"></i>
                 <div class="notif-item-content">
                     <strong>${notif.title}</strong>
@@ -151,27 +136,19 @@ window.toggleNotifPanel = function(panelId, event) {
     if (!isActive) panel.classList.add("active");
 };
 
-// --- BİLDİRİM SİLME İŞLEMİ (SADECE KİŞİSEL BİLDİRİMLER KALDI) ---
 window.clearNotifications = async function(event) {
     if(event) event.stopPropagation();
     try {
         const { data: { user } } = await window.supabaseClient.auth.getUser();
         if (!user) return;
-
-        // Sadece kullanıcının kendi bildirimlerini veritabanından siliyoruz
         await window.supabaseClient.from('bildirimler').delete().eq('kullanici_id', user.id);
-
-        // Duyuru filtreleme ve gizleme (localStorage) mantığı tamamen kaldırıldı
-        
         window.myNotifications = [];
         renderNotifications();
         showNotification("Tüm bildirimler temizlendi.", "success");
     } catch (err) { console.error("Temizleme hatası:", err); }
 };
 
-// --- GLOBAL DAVET SİSTEMİ (YENİ MİMARİYE UYARLANDI) ---
-
-// --- GLOBAL DAVET SİSTEMİ (YENİ MİMARİYE UYARLANDI) ---
+// --- GLOBAL DAVET SİSTEMİ (MİMARİ DÜZELTİLDİ) ---
 window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = []) {
     const { data: pendingInvites } = await window.supabaseClient
         .from('team_members')
@@ -182,26 +159,20 @@ window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = 
     let alertedInvites = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
     let newAlertsFound = false;
 
-    if (pendingInvites && pendingInvites.length > 0) {
+    if (pendingInvites) {
         pendingInvites.forEach(invite => {
             const teamName = invite.teams?.name || "Bir takım";
-            
             if (!alertedInvites.includes(invite.id)) {
                 showNotification(`🔔 ${teamName} takımından davet aldın!`, "info");
                 alertedInvites.push(invite.id);
                 newAlertsFound = true;
             }
-
             mevcutHarmanlanmisList.push({
-                id: invite.id,
-                tablo: 'team_members',
-                tip: 'davet',
-                title: 'Yeni Takım Daveti!',
-                text: `${teamName} seni takımına davet ediyor.`,
+                id: invite.id, tablo: 'team_members', tip: 'davet',
+                title: 'Yeni Takım Daveti!', text: `${teamName} seni takıma çağırıyor.`,
                 created_at: invite.created_at || new Date().toISOString()
             });
         });
-
         if (newAlertsFound) sessionStorage.setItem('alertedInvites', JSON.stringify(alertedInvites));
     }
 
@@ -210,71 +181,34 @@ window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = 
         const styleObj = getIconForType(item.tip);
         return { ...item, icon: styleObj.icon, color: styleObj.color };
     });
-    
     renderNotifications();
 
-    // HATA ÇÖZÜMÜ: Eğer kanal zaten varsa önce onu kapatıyoruz ki üst üste binmesin.
     if (window.globalInviteChannel) {
         window.supabaseClient.removeChannel(window.globalInviteChannel);
     }
 
-    window.globalInviteChannel = window.supabaseClient.channel('global-invite-listener-' + userId);
+    window.globalInviteChannel = window.supabaseClient.channel('global-invite-' + userId);
     window.globalInviteChannel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'team_members', filter: `user_id=eq.${userId}` }, 
         async (payload) => {
             const tId = payload.new.team_id;
             const { data: teamData } = await window.supabaseClient.from('teams').select('name').eq('id', tId).single();
             const teamName = teamData ? teamData.name : "Bir takım";
             
-            if (typeof showNotification === "function") {
-                showNotification(`🔔 YENİ DAVET: ${teamName} seni takımına çağırıyor! Hemen profiline göz at.`, "success");
-            }
+            showNotification(`🔔 YENİ DAVET: ${teamName} seni bekliyor!`, "success");
 
-            let currentAlerts = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
-            currentAlerts.push(payload.new.id);
-            sessionStorage.setItem('alertedInvites', JSON.stringify(currentAlerts));
+            let alerted = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
+            alerted.push(payload.new.id);
+            sessionStorage.setItem('alertedInvites', JSON.stringify(alerted));
             
             window.myNotifications.unshift({ 
-                id: payload.new.id, tablo: 'team_members', tip: 'davet', 
-                icon: 'fa-envelope-open-text', color: '#f39c12', 
+                id: payload.new.id, tablo: 'team_members', tip: 'davet', icon: 'fa-envelope-open-text', color: '#f39c12', 
                 title: 'Yeni Davet!', text: `${teamName} seni çağırıyor.`,
                 created_at: payload.new.created_at || new Date().toISOString()
             });
             window.myNotifications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             window.renderNotifications();
         }).subscribe();
-}
-    window.myNotifications = mevcutHarmanlanmisList.map(item => {
-        const styleObj = getIconForType(item.tip);
-        return { ...item, icon: styleObj.icon, color: styleObj.color };
-    });
-    
-    renderNotifications();
-
-    window.supabaseClient.channel('global-invite-listener')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'team_members', filter: `user_id=eq.${userId}` }, 
-        async (payload) => {
-            const tId = payload.new.team_id;
-            const { data: teamData } = await window.supabaseClient.from('teams').select('name').eq('id', tId).single();
-            const teamName = teamData ? teamData.name : "Bir takım";
-            
-            if (typeof showNotification === "function") {
-                showNotification(`🔔 YENİ DAVET: ${teamName} seni takımına çağırıyor! Hemen profiline göz at.`, "success");
-            }
-
-            let currentAlerts = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
-            currentAlerts.push(payload.new.id);
-            sessionStorage.setItem('alertedInvites', JSON.stringify(currentAlerts));
-            
-            window.myNotifications.unshift({ 
-                id: payload.new.id, tablo: 'team_members', tip: 'davet', 
-                icon: 'fa-envelope-open-text', color: '#f39c12', 
-                title: 'Yeni Davet!', text: `${teamName} seni çağırıyor.`,
-                created_at: payload.new.created_at || new Date().toISOString()
-            });
-            window.myNotifications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            window.renderNotifications();
-        }).subscribe();
-}
+};
 
 // ==========================================
 // KVKK OPT-IN ÇEREZ (COOKIE) YÖNETİM SİSTEMİ
@@ -306,17 +240,13 @@ function initCookieConsent() {
     const consentStatus = localStorage.getItem('obb_cookie_consent');
 
     if (consentStatus === 'accepted') {
-        // Önceden onay verildiyse Analytics'i anında başlat
         injectGoogleAnalytics();
     } else if (!consentStatus) {
-        // Hiç seçim yapılmadıysa banner'ı göster (Veri toplama KAPALI)
         renderCookieBanner();
     }
-    // 'rejected' durumu varsa hiçbir şey yapma (Sessizce zorunlu çerezlerle devam et)
 }
 
 function renderCookieBanner() {
-    // CSS'i dinamik olarak sayfaya bas
     const style = document.createElement('style');
     style.innerHTML = `
         .cookie-banner-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10,10,10,0.98); border-top: 2px solid var(--neon-mor); z-index: 9999; padding: 25px 5%; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.9); transform: translateY(100%); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -348,7 +278,6 @@ function renderCookieBanner() {
     `;
     document.head.appendChild(style);
 
-    // Banner HTML'ini bas
     const banner = document.createElement('div');
     banner.id = 'obbCookieBanner';
     banner.className = 'cookie-banner-wrapper';
@@ -364,7 +293,6 @@ function renderCookieBanner() {
     `;
     document.body.appendChild(banner);
 
-    // Modal HTML'ini bas
     const modal = document.createElement('div');
     modal.id = 'obbCookieModal';
     modal.className = 'cookie-modal-overlay';
@@ -377,25 +305,19 @@ function renderCookieBanner() {
             <div class="cookie-modal-body">${cookiePolicyContent}</div>
         </div>
     `;
-    // Modalın dışına tıklayınca kapatma özelliği
     modal.onclick = closeCookiePolicyModal;
     document.body.appendChild(modal);
 
-    // Animasyonla ekrana çıkart
     setTimeout(() => { banner.classList.add('show'); }, 500);
 }
 
-// Kullanıcının kararı işleniyor
 window.handleCookieConsent = function(status) {
     localStorage.setItem('obb_cookie_consent', status);
-    
     const banner = document.getElementById('obbCookieBanner');
     if (banner) {
         banner.classList.remove('show');
         setTimeout(() => { banner.remove(); }, 600);
     }
-
-    // Eğer kabul edildiyse analitiği çalıştır
     if (status === 'accepted') {
         injectGoogleAnalytics();
     }
@@ -417,9 +339,7 @@ window.closeCookiePolicyModal = function() {
     }
 };
 
-// --- DİNAMİK GOOGLE ANALYTICS ENJEKSİYONU ---
 function injectGoogleAnalytics() {
-    // Aynı scriptin birden fazla eklenmesini engelle
     if (document.getElementById('ga-script-inject')) return;
 
     const script1 = document.createElement('script');
@@ -438,8 +358,8 @@ function injectGoogleAnalytics() {
     document.head.appendChild(script2);
 }
 
-// URL kontrolü tetikleyicisi
 window.addEventListener('DOMContentLoaded', () => {
+    initCookieConsent();
     const urlParams = new URLSearchParams(window.location.search);
     const isVerified = urlParams.get('verified') === 'true';
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -483,7 +403,4 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 500);
         window.history.replaceState({}, document.title, window.location.pathname);
     }
-
-    // SAYFA YÜKLENDİĞİNDE ÇEREZ KONTROLÜNÜ BAŞLAT
-    initCookieConsent();
 });
