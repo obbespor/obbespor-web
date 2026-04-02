@@ -47,7 +47,7 @@
 
         .leaderboard-container { padding: 40px 5% 80px; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; width: 100%; box-sizing: border-box; }
 
-        /* --- FİLTRELEME SEKMELERİ --- */
+        /* --- FİLTRELEME SEKMELER --- */
         .category-tabs-wrapper { overflow-x: auto; padding-bottom: 15px; margin-bottom: 30px; scrollbar-width: none; }
         .category-tabs-wrapper::-webkit-scrollbar { display: none; }
         .category-tabs { display: flex; flex-wrap: nowrap; justify-content: flex-start; gap: 12px; padding: 0 5px; width: max-content; margin: 0 auto; }
@@ -315,9 +315,11 @@
 
         async function fetchLeaderboardData() {
             try {
-                const { data: teamsData } = await window.supabaseClient.from('tournament_applications').select('id, team_name');
+                // --- YENİ MİMARİ: Takım isimlerini 'teams' tablosundan çekiyoruz ---
+                const { data: teamsData } = await window.supabaseClient.from('teams').select('id, name');
                 const teamMap = {};
-                if (teamsData) teamsData.forEach(t => teamMap[t.id] = t.team_name);
+                if (teamsData) teamsData.forEach(t => teamMap[t.id] = t.name);
+                // ----------------------------------------------------------------------
 
                 const { data: statsData, error } = await window.supabaseClient.from('match_player_stats').select('*');
                 if (error) throw error;
@@ -330,7 +332,7 @@
 
                 const playersMap = {};
                 const agentsMap = {};
-                const totalPicks = statsData.length; // Toplam ajan seçim sayısını bulmak için
+                const totalPicks = statsData.length; 
 
                 statsData.forEach(stat => {
                     const ign = stat.in_game_name || "Bilinmiyor";
@@ -383,16 +385,15 @@
 
                 const playersArray = Object.values(playersMap);
 
-                // --- YENİ EKLENEN İSTATİSTİK HESAPLAMALARI ---
                 playersArray.forEach(p => {
-                    p.kdRatio = p.totalDeaths > 0 ? (p.totalKills / p.totalDeaths).toFixed(2) : p.totalKills; // K/D Eklendi
+                    p.kdRatio = p.totalDeaths > 0 ? (p.totalKills / p.totalDeaths).toFixed(2) : p.totalKills; 
                     p.avgAcs = p.mapsPlayed > 0 ? Math.round(p.totalAcs / p.mapsPlayed) : 0;
                     p.avgAdr = p.mapsPlayed > 0 ? Math.round(p.totalAdr / p.mapsPlayed) : 0;
                     p.avgHs = p.mapsPlayed > 0 ? Math.round(p.totalHs / p.mapsPlayed) : 0;
                     p.mainAgent = Object.keys(p.agentsPlayed).reduce((a, b) => p.agentsPlayed[a] > p.agentsPlayed[b] ? a : b, "unknown");
                 });
 
-                // 1. AVCILAR (Kills) - K/D Eklendi
+                // 1. AVCILAR (Kills)
                 const killsSorted = [...playersArray].sort((a, b) => b.totalKills - a.totalKills).slice(0, 10);
                 document.getElementById('tbody-kills').innerHTML = killsSorted.map((p, i) => `
                     <tr>
@@ -407,7 +408,7 @@
                     </tr>
                 `).join('');
 
-                // 2. KESKİN NİŞANCILAR (HS%) - Toplam Kill Eklendi
+                // 2. KESKİN NİŞANCILAR (HS%) 
                 const hsSorted = [...playersArray].filter(p => p.mapsPlayed >= 2).sort((a, b) => b.avgHs - a.avgHs).slice(0, 10);
                 document.getElementById('tbody-hs').innerHTML = hsSorted.length > 0 ? hsSorted.map((p, i) => `
                     <tr>
@@ -423,7 +424,7 @@
                     </tr>
                 `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 harita oynayan oyuncu bekleniyor.</td></tr>';
 
-                // 3. SAVAŞ MAKİNELERİ (ACS) - K/D/A Görünümü İyileştirildi
+                // 3. SAVAŞ MAKİNELERİ (ACS)
                 const acsSorted = [...playersArray].sort((a, b) => b.highestAcsData.acs - a.highestAcsData.acs).slice(0, 10);
                 document.getElementById('tbody-acs').innerHTML = acsSorted.map((p, i) => `
                     <tr>
@@ -439,7 +440,7 @@
                     </tr>
                 `).join('');
 
-                // 4. HASAR USTALARI (ADR) - Altına ACS eklendi
+                // 4. HASAR USTALARI (ADR)
                 const adrSorted = [...playersArray].filter(p => p.mapsPlayed >= 2).sort((a, b) => b.avgAdr - a.avgAdr).slice(0, 10);
                 document.getElementById('tbody-adr').innerHTML = adrSorted.length > 0 ? adrSorted.map((p, i) => `
                     <tr>
@@ -453,7 +454,7 @@
                     </tr>
                 `).join('') : '<tr><td colspan="4" style="text-align:center; padding: 20px;">En az 2 harita oynayan oyuncu bekleniyor.</td></tr>';
 
-                // 5. POPÜLER SEÇİMLER (Agents) - Seçilme Oranı (%) Eklendi
+                // 5. POPÜLER SEÇİMLER (Agents)
                 const agentsArray = Object.keys(agentsMap).map(key => ({ 
                     name: key, 
                     count: agentsMap[key],
