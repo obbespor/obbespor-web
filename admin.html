@@ -389,6 +389,7 @@
         }
 
         // --- YENİ İLİŞKİSEL MİMARİ İLE TAKIM ÇEKME FONKSİYONLARI ---
+// --- YENİ İLİŞKİSEL MİMARİ İLE TAKIM ÇEKME FONKSİYONLARI ---
         async function fetchTeamsWithMembers(statusFilter) {
             const { data: apps, error } = await window.supabaseClient
                 .from('tournament_applications')
@@ -404,7 +405,9 @@
             
             if (error || !apps) return [];
 
-            return apps.map(app => {
+            // HATA ÇÖZÜMÜ: Eğer app.teams 'null' ise (yani takım silinmiş ama başvurusu kalmışsa)
+            // .filter(app => app.teams) diyerek o bozuk kayıtları atlıyor ve çöküşü engelliyoruz!
+            return apps.filter(app => app.teams).map(app => {
                 const t = app.teams;
                 return {
                     id: app.id, 
