@@ -664,7 +664,6 @@
                 updateFormStatus();
             }
         }
-
 function attachSearchEvents() {
             document.querySelectorAll('.player-search').forEach(input => {
                 
@@ -690,7 +689,6 @@ function attachSearchEvents() {
                                              .map(el => el.value.trim().toLowerCase())
                                              .filter(name => name !== "");
 
-                    // YENİ MİMARİ: Artık eski team_id sütununu aramıyoruz, sadece isme göre profilleri çekiyoruz
                     const { data: profiles } = await window.supabaseClient.from('profiles')
                                                     .select('username, id')
                                                     .ilike('username', `%${query}%`)
@@ -709,27 +707,81 @@ function attachSearchEvents() {
                     const busyUserIds = [];
 
                     if (userMemberships && userMemberships.length > 0) {
-                        const teamIdsToCheck = [...new Set(userMemberships.map(m => m.team_id))];
+                        // HATA ÇÖZÜMÜ: null veya geçersiz takım ID'lerini filtreliyoruz
+                        const teamIdsToCheck = [...new Set(userMemberships.map(m => m.team_id))].filter(id => id != null);
                         
-                        // Bu takımların gerçek bir turnuva başvurusu var mı?
-                        const { data: apps } = await window.supabaseClient.from('tournament_applications')
-                            .select('team_id')
-                            .in('team_id', teamIdsToCheck);
-                            
-                        const appliedTeamIds = apps ? apps.map(a => a.team_id) : [];
+                        let appliedTeamIds = [];
+                        
+                        // HATA ÇÖZÜMÜ: Eğer kontrol edilecek takım ID'si yoksa (boş diziyse) veritabanına boşuna sorgu atıp 400 hatası almıyoruz!
+                        if (teamIdsToCheck.length > 0) {
+                            const { data: apps } = await window.supabaseClient.from('tournament_applications')
+                                .select('team_id')
+                                .in('team_id', teamIdsToCheck);
+                                
+                            if (apps) {
+                                appliedTeamIds = apps.map(a => a.team_id);
+                            }
+                        }
                         
                         userMemberships.forEach(m => {
                             const isCaptain = m.teams?.captain_id === m.user_id;
                             const hasApplication = appliedTeamIds.includes(m.team_id);
                             
-                            // Eğer başkasının takımındaysa (kaptan değilse) KESİN MEŞGUL
-                            // Eğer kendi takımıysa (kaptansa) ama turnuvaya başvurduysa KESİN MEŞGUL
                             if (!isCaptain || hasApplication) {
                                 busyUserIds.push(m.user_id);
                             }
                         });
                     }
                     // --- KONTROL BİTTİ ---
+
+                    const filteredPlayers = profiles.filter(u => 
+                        !selectedIds.includes(u.id) && 
+                        !selectedUsernames.includes(u.username.toLowerCase()) &&
+                        !busyUserIds.includes(u.id)
+                    ).slice(0, 5);
+
+                    filteredPlayers.forEach(u => {
+                        const div = document.createElement('div');
+                        div.innerHTML = `<i class="fas fa-user"></i> ${u.username}`;
+                        div.onclick = async () => {
+                            input.setAttribute('data-user-id', u.id);
+                            input.value = u.username;
+                            input.readOnly = true;
+                            list.innerHTML = '';
+                            
+                            const tick = document.getElementById(input.id + '-tick');
+                            tick.style.display = 'block';
+                            tick.className = 'fas fa-spinner fa-spin status-tick grey';
+
+                            const role = input.id.startsWith('main') ? 'main' : 'sub';
+                            
+                            const { data: newMember, error } = await window.supabaseClient.from('team_members').insert({
+                                team_id: currentTeamId,
+                                user_id: u.id, role: role, status: 'pending'
+                            }).select().single();
+
+                            if (error) {
+                                input.value = '';
+                                input.readOnly = false;
+                                input.removeAttribute('data-user-id');
+                                tick.style.display = 'none';
+                                if(typeof showNotification === 'function') showNotification("Oyuncu eklenirken bir sorun oluştu.", "error");
+                                return;
+                            }
+
+                            if (newMember) {
+                                input.setAttribute('data-member-id', newMember.id);
+                                input.setAttribute('data-status', 'pending');
+                                tick.className = 'fas fa-check-circle status-tick grey';
+                                document.getElementById(input.id + '-remove').style.display = 'block';
+                                updateFormStatus();
+                            }
+                        };
+                        list.appendChild(div);
+                    });
+                });
+            });
+        }
 
                     const filteredPlayers = profiles.filter(u => 
                         !selectedIds.includes(u.id) && 
