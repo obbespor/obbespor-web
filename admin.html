@@ -301,804 +301,713 @@
     <script src="js/config.js"></script>
     <script src="js/bildirimler.js"></script>
     <script src="js/auth.js"></script>
- <script>
-        let currentUser = null, currentTeamId = null, draftCreatedAt = null, saveTimeout = null, currentStatus = null;
-        let currentConfirmCallback = null;
-        let activeTournamentId = null; 
+<script>
+        let globalTeamMap = {}; 
+        let teamAId_memory = null;
+        let teamBId_memory = null;
+        let currentMode = 'zarflar';
+        let activeRecordId = null;
 
-        function openCustomConfirm(title, desc, callback) {
-            document.getElementById('confirmModalTitle').innerText = title;
-            document.getElementById('confirmModalDesc').innerHTML = desc;
-            currentConfirmCallback = callback;
-            
-            const modal = document.getElementById('customConfirmModal');
-            modal.style.display = "flex";
-            setTimeout(() => { modal.classList.add('active'); }, 10);
+        async function initAdminPage() {
+            try {
+                const response = await fetch("components/footer.html");
+                if (response.ok) document.getElementById("footer-alani").innerHTML = await response.text();
+            } catch(e) { console.error("Footer yüklenemedi", e); }
+
+            let lastScrollTop = 0;
+            const header = document.getElementById("mainHeader");
+            window.addEventListener("scroll", function() {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                if (scrollTop > lastScrollTop && scrollTop > 100) header.classList.add("nav-hidden");
+                else header.classList.remove("nav-hidden");
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+            }, false);
+
+            document.addEventListener("click", function(event) {
+                const isClickInsideBell = event.target.closest('.nav-bell') || event.target.closest('.floating-bell');
+                const isClickInsidePanel = event.target.closest('.notif-panel');
+                if (!isClickInsideBell && !isClickInsidePanel) {
+                    document.querySelectorAll('.notif-panel').forEach(p => p.classList.remove('active'));
+                }
+            });
+
+            if (typeof checkUserStatus === "function") await checkUserStatus();
+            if (typeof initNotifications === "function") initNotifications();
+            checkAdminAccess();
         }
 
-        function closeCustomConfirm() {
-            const modal = document.getElementById('customConfirmModal');
-            modal.classList.remove('active');
-            setTimeout(() => { modal.style.display = "none"; }, 300);
-            currentConfirmCallback = null;
-        }
+        async function checkAdminAccess() {
+            try {
+                if (!window.supabaseClient) throw new Error("Supabase bağlantısı yok.");
+                const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
+                if (authError || !user) throw new Error("Giriş yapılmadı.");
 
-        document.getElementById('confirmModalBtn').addEventListener('click', () => {
-            if (currentConfirmCallback) currentConfirmCallback();
-            closeCustomConfirm();
-        });
+                const { data: profile, error: profileError } = await window.supabaseClient.from('profiles').select('role').eq('id', user.id).single();
+                if (profileError || profile.role !== 'admin') throw new Error("Yetkisiz erişim.");
 
-        window.togglePlayerStats = function(element) {
-            const currentItem = element;
-            const isAlreadyOpen = currentItem.classList.contains('open');
-            
-            document.querySelectorAll('.roster-item').forEach(el => el.classList.remove('open'));
-            
-            if (!isAlreadyOpen) {
-                currentItem.classList.add('open');
+                document.getElementById('loadingScreen').style.display = 'none';
+                
+                await loadTournamentsToSelect();
+
+                loadPendingTeams();
+                loadApprovedTeams();
+                
+                generateEmptyRows('teamAPlayersInputs');
+                generateEmptyRows('teamBPlayersInputs');
+                updateDynamicSelectors();
+                loadSidebarData();
+
+            } catch (err) {
+                window.location.replace("index.html");
             }
+        }
+
+        async function loadTournamentsToSelect() {
+            const { data: tournaments } = await window.supabaseClient.from('tournaments').select('id, name').order('created_at', { ascending: false });
+            const select = document.getElementById('tourneySelect');
+            select.innerHTML = '';
+            if (tournaments && tournaments.length > 0) {
+                tournaments.forEach(t => select.innerHTML += `<option value="${t.id}">${t.name}</option>`);
+            } else {
+                select.innerHTML = `<option value="">Önce Turnuva Oluşturun</option>`;
+            }
+        }
+
+        function switchTab(tabName) {
+            ['onay', 'takimlar', 'fikstur'].forEach(t => {
+                const section = document.getElementById(t + 'Section');
+                if (section) section.style.display = (t === tabName) ? 'block' : 'none';
+                
+                const tabLink = document.getElementById('tab-' + t);
+                if(tabLink) {
+                    if (t === tabName) tabLink.classList.add('active-admin-tab');
+                    else tabLink.classList.remove('active-admin-tab');
+                }
+            });
+            if(tabName === 'fikstur') updateDynamicSelectors();
+        }
+
+        // --- YENİ İLİŞKİSEL MİMARİ VE GİZLİ KASA İLE TAKIM ÇEKME ---
+        async function fetchTeamsWithMembers(statusFilter) {
+            try {
+                const { data: apps, error } = await window.supabaseClient
+                    .from('tournament_applications')
+                    .select(`
+                        id,
+                        status,
+                        teams (
+                            id, name, tag, logo_url, captain_id,
+                            team_members (
+                                id, user_id, role, status, 
+                                profiles (
+                                    username, ign,
+                                    user_contacts (phone, email)
+                                )
+                            )
+                        )
+                    `)
+                    .eq('status', statusFilter);
+                
+                if (error || !apps) return [];
+
+                return apps.filter(app => app.teams).map(app => {
+                    const t = app.teams;
+                    return {
+                        id: app.id, 
+                        team_id: t.id,
+                        team_name: t.name,
+                        team_tag: t.tag,
+                        logo_url: t.logo_url,
+                        captain_id: t.captain_id,
+                        members: (t.team_members || []).map(tm => {
+                            let contactData = tm.profiles?.user_contacts;
+                            if (Array.isArray(contactData)) contactData = contactData[0];
+
+                            return {
+                                id: tm.id,
+                                user_id: tm.user_id,
+                                role: tm.role,
+                                status: tm.status,
+                                username: tm.profiles?.username || 'Bilinmiyor',
+                                ign: tm.profiles?.ign || '',
+                                phone: contactData?.phone || 'Belirtilmemiş',
+                                email: contactData?.email || 'Belirtilmemiş'
+                            };
+                        })
+                    };
+                });
+            } catch (err) {
+                console.error("Veri çekme hatası:", err);
+                return [];
+            }
+        }
+
+        async function loadPendingTeams() {
+            const teams = await fetchTeamsWithMembers('pending');
+            const grid = document.getElementById('pendingTeamsGrid');
+            grid.innerHTML = '';
+            
+            if (teams && teams.length > 0) {
+                teams.forEach(team => {
+                    let playersHtml = '';
+                    (team.members || []).forEach(m => {
+                        const icon = m.status === 'accepted' ? '<i class="fas fa-check" style="color:var(--yesil-guven);"></i>' : '<i class="fas fa-clock" style="color:var(--mavi-onay);"></i>';
+                        playersHtml += `<li>${m.role === 'main' ? 'Asil' : 'Yedek'}: <span>${m.username}</span> ${icon}</li>`;
+                    });
+                    const cardUserId = team.captain_id || '';
+                    grid.innerHTML += `
+                        <div class="team-card">
+                            <div class="team-logo-area"><img src="${team.logo_url || 'https://via.placeholder.com/100'}" alt="Logo"></div>
+                            <div class="team-card-body">
+                                <div class="team-card-title"><span class="team-card-tag">[${team.team_tag}]</span> ${team.team_name}</div>
+                                <ul class="player-list-mini">${playersHtml}</ul>
+                                <div class="action-buttons">
+                                    <button class="btn-approve" onclick="updateTeamStatus('${team.id}', 'approved', '${cardUserId}')"><i class="fas fa-check"></i> ONAYLA</button>
+                                    <button class="btn-reject" onclick="rejectTeam('${team.id}', '${cardUserId}')"><i class="fas fa-times"></i> REDDET</button>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            } else grid.innerHTML = '<p style="color: var(--gri-yazi);">Şu an onay bekleyen takım bulunmuyor.</p>';
+        }
+
+        async function loadApprovedTeams() {
+            const teams = await fetchTeamsWithMembers('approved');
+            const list = document.getElementById('approvedTeamsList');
+            list.innerHTML = '';
+            if (teams && teams.length > 0) {
+                teams.forEach((team, index) => {
+                    list.innerHTML += `
+                        <div class="approved-item" onclick='openTeamModal(${JSON.stringify(team).replace(/'/g, "&apos;")})'>
+                            <div class="approved-number">${index + 1}</div>
+                            <div class="approved-name">${team.team_name.toUpperCase()} <span class="approved-tag">[${team.team_tag}]</span></div>
+                            <i class="fas fa-chevron-right" style="color: var(--neon-mor);"></i>
+                        </div>`;
+                });
+            } else list.innerHTML = '<p style="color: var(--gri-yazi);">Onaylanmış takım bulunmuyor.</p>';
+        }
+
+        async function rejectTeam(appId, userId) {
+            const reason = prompt("Lütfen ret sebebini yazın:");
+            if (reason) updateTeamStatus(appId, 'rejected', userId, reason);
+        }
+
+        async function updateTeamStatus(appId, status, userId, reason = "") {
+            const { error } = await window.supabaseClient.from('tournament_applications').update({ status }).eq('id', appId);
+            if (!error) {
+                if (userId) {
+                    const baslik = status === 'approved' ? "Başvurunuz Onaylandı! 🎉" : "Başvurunuz Reddedildi";
+                    const mesaj = status === 'approved' ? "Tebrikler, takım başvurunuz onaylandı!" : `Maalesef takım başvurunuz reddedildi. Sebep: ${reason}`;
+                    await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: userId, baslik, mesaj, tip: status === 'approved' ? 'onay' : 'red' }]);
+                }
+                showNotification("Takım başarıyla güncellendi.", "success");
+                await loadPendingTeams(); 
+                await loadApprovedTeams();
+            } else showNotification("Hata oluştu: " + error.message, "error");
+        }
+
+        async function excelAktar() {
+            try {
+                const btn = document.querySelector('.btn-excel');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Hazırlanıyor...';
+                btn.disabled = true;
+
+                const teams = await fetchTeamsWithMembers('approved');
+
+                if (!teams || teams.length === 0) { showNotification("Dışa aktarılacak takım bulunamadı.", "error"); btn.innerHTML = originalText; btn.disabled = false; return; }
+
+                const excelVerileri = teams.map((team, index) => {
+                    let mainPlayers = []; let subPlayers = [];
+                    team.members.forEach(member => {
+                        if (member.role === 'main') mainPlayers.push({ user: member.username, ign: member.ign });
+                        else if (member.role === 'sub') subPlayers.push({ user: member.username, ign: member.ign });
+                    });
+
+                    const captData = team.members.find(m => m.user_id === team.captain_id);
+
+                    return {
+                        "Sıra": index + 1, "Takım Adı": team.team_name, "Kısaltma": team.team_tag,
+                        "Kaptan İletişim": captData?.phone || "-", "Kaptan E-Posta": captData?.email || "-",
+                        "1. Oyuncu (Kaptan)": mainPlayers[0]?.user || "-", "1. Oyuncu IGN": mainPlayers[0]?.ign || "",
+                        "2. Oyuncu": mainPlayers[1]?.user || "-", "2. Oyuncu IGN": mainPlayers[1]?.ign || "",
+                        "3. Oyuncu": mainPlayers[2]?.user || "-", "3. Oyuncu IGN": mainPlayers[2]?.ign || "",
+                        "4. Oyuncu": mainPlayers[3]?.user || "-", "4. Oyuncu IGN": mainPlayers[3]?.ign || "",
+                        "5. Oyuncu": mainPlayers[4]?.user || "-", "5. Oyuncu IGN": mainPlayers[4]?.ign || "",
+                        "Yedek 1": subPlayers[0]?.user || "-", "Yedek 1 IGN": subPlayers[0]?.ign || "",
+                        "Yedek 2": subPlayers[1]?.user || "-", "Yedek 2 IGN": subPlayers[1]?.ign || "",
+                        "Logo URL": team.logo_url || "Logo Yok"
+                    };
+                });
+
+                const worksheet = XLSX.utils.json_to_sheet(excelVerileri);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Onaylı Takımlar");
+                XLSX.writeFile(workbook, "OBB_Onayli_Takimlar.xlsx");
+                
+                btn.innerHTML = originalText; btn.disabled = false;
+                showNotification("Excel başarıyla indirildi.", "success");
+            } catch (err) { showNotification("Excel oluşturulamadı.", "error"); }
+        }
+
+        async function takimiSil(appId, teamName, logoUrl, captainId) {
+            const reason = prompt(`DİKKAT: ${teamName} takımının BAŞVURUSUNU kalıcı olarak silmek üzeresiniz. Sebep yazın:`);
+            if (reason === null) return;
+            if (reason.trim() === "") return showNotification("Sebep boş bırakılamaz.", "error");
+            
+            try {
+                if (captainId) {
+                    await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: captainId, baslik: "Başvurunuz Silindi!", mesaj: `Sebep: ${reason}`, tip: 'red' }]);
+                }
+
+                const { error: teamError } = await window.supabaseClient.from('tournament_applications').delete().eq('id', appId);
+                if (teamError) throw teamError;
+
+                showNotification(`${teamName} başvurusu başarıyla silindi.`, "success");
+                closeModal(); loadApprovedTeams(); loadPendingTeams(); loadSidebarData();
+            } catch (err) { showNotification("Silme işlemi sırasında hata oluştu.", "error"); }
+        }
+
+        function openTeamModal(team) {
+            document.getElementById('modalLogo').src = team.logo_url || 'https://via.placeholder.com/100';
+            document.getElementById('modalTeamName').innerText = team.team_name;
+            document.getElementById('modalTeamTag').innerText = `[${team.team_tag}]`;
+            
+            const captData = (team.members || []).find(m => m.user_id === team.captain_id);
+            document.getElementById('modalCaptainName').innerText = captData ? captData.username : 'Bilinmiyor';
+            document.getElementById('modalCaptainPhone').innerText = captData ? captData.phone : 'Belirtilmemiş'; 
+            document.getElementById('modalCaptainEmail').innerText = captData ? captData.email : 'Belirtilmemiş'; 
+
+            const rl = document.getElementById('modalRosterList'); rl.innerHTML = '';
+            (team.members || []).forEach(m => {
+                const color = m.role === 'main' ? 'var(--yazi-beyaz)' : 'var(--gri-yazi)';
+                rl.innerHTML += `<li><span style="color:${color}; font-weight:normal;">${m.role==='main'?'Asil':'Yedek'}:</span> <span style="color:var(--neon-mor);">${m.username}</span></li>`;
+            });
+
+            const deleteBtn = document.getElementById('modalDeleteBtn');
+            deleteBtn.onclick = () => takimiSil(team.id, team.team_name, team.logo_url, team.captain_id);
+            document.getElementById('teamModal').classList.add('active');
+        }
+        
+        function closeModal() { document.getElementById('teamModal').classList.remove('active'); }
+        window.addEventListener('click', function(e) { if (e.target === document.getElementById('teamModal')) closeModal(); });
+
+        /* =========================================================================
+           YENİ ZARF VE FİKSTÜR SİSTEMİ SCRİPTLERİ
+           ========================================================================= */
+
+        function switchSidebarTab(mode) {
+            currentMode = mode;
+            document.getElementById('tabZarflar').classList.toggle('active', mode === 'zarflar');
+            document.getElementById('tabFikstur').classList.toggle('active', mode === 'fikstur');
+            document.getElementById('editorPanel').style.display = 'none';
+            activeRecordId = null;
+            loadSidebarData();
+        }
+
+        async function loadSidebarData() {
+            const listContainer = document.getElementById('sidebarList');
+            listContainer.innerHTML = '<div style="text-align:center; color:var(--gri-yazi); padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>';
+
+            try {
+                const { data: teams } = await window.supabaseClient.from('teams').select('id, name');
+                if (teams) teams.forEach(t => globalTeamMap[t.id] = t.name);
+
+                if (currentMode === 'zarflar') {
+                    const { data: zarflar, error } = await window.supabaseClient.from('bekleyen_zarflar').select('*').eq('durum', 'pending').order('created_at', { ascending: false });
+                    
+                    listContainer.innerHTML = '';
+                    if(error || !zarflar || zarflar.length === 0) {
+                        listContainer.innerHTML = '<p style="text-align:center; color:#555; padding:20px;">Bekleyen yeni zarf yok.</p>';
+                        return;
+                    }
+                    
+                    zarflar.forEach(z => {
+                        const mData = z.match_data || {};
+                        const teamA = mData.teamA || "Takım A";
+                        const teamB = mData.teamB || "Takım B";
+                        const mapName = mData.mapName || "Bilinmiyor";
+                        
+                        listContainer.innerHTML += `
+                            <div class="list-item" onclick="openEnvelope('${z.id}')">
+                                <span class="list-item-badge badge-zarf"><i class="fas fa-envelope"></i> YENİ ZARF (${z.pc_name || 'Bilinmiyor'})</span>
+                                <div class="list-item-title">${teamA} vs ${teamB}</div>
+                                <div class="list-item-desc">Harita: ${mapName}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    const { data: matches, error } = await window.supabaseClient.from('bracket_matches').select('id, round_name, round_order, match_maps(id, map_order, map_name, score_a, score_b)').order('created_at', { ascending: false }).limit(30);
+                    
+                    listContainer.innerHTML = '';
+                    if (error || !matches || matches.length === 0) {
+                        listContainer.innerHTML = '<p style="text-align:center; color:#555; padding:20px;">Fikstürde kayıtlı maç bulunamadı.</p>';
+                        return;
+                    }
+
+                    matches.forEach(m => {
+                        (m.match_maps || []).forEach(map => {
+                            listContainer.innerHTML += `
+                                <div class="list-item" onclick="openExistingMap('${m.id}', '${map.id}')">
+                                    <span class="list-item-badge badge-fikstur"><i class="fas fa-check"></i> FİKSTÜRDE</span>
+                                    <div class="list-item-title">[${m.round_name}] ${m.round_order}. Maç</div>
+                                    <div class="list-item-desc">Harita ${map.map_order}: ${map.map_name} (${map.score_a} - ${map.score_b})</div>
+                                </div>
+                            `;
+                        });
+                    });
+                }
+            } catch (err) {
+                listContainer.innerHTML = `<div style="color:red; text-align:center;">Hata: ${err.message}</div>`;
+            }
+        }
+
+        function updateDynamicSelectors() {
+            const stage = document.getElementById('stageSelect').value;
+            const matchOrder = document.getElementById('matchOrderSelect');
+            const mapOrder = document.getElementById('mapOrderSelect');
+            
+            matchOrder.innerHTML = '';
+            let maxMatch = 1;
+            if(stage.includes('SON 64')) maxMatch = 32;
+            if(stage.includes('SON 32')) maxMatch = 16;
+            if(stage.includes('SON 16')) maxMatch = 8;
+            if(stage.includes('ÇEYREK')) maxMatch = 4;
+            if(stage.includes('YARI')) maxMatch = 2;
+
+            for(let i=1; i<=maxMatch; i++) matchOrder.innerHTML += `<option value="${i}">${i}. MAÇ</option>`;
+
+            mapOrder.innerHTML = '';
+            let maxMap = 1; 
+            if (stage.includes('SON 16') || stage.includes('ÇEYREK') || stage.includes('YARI')) maxMap = 3; 
+            if (stage.includes('FİNAL')) maxMap = 5; 
+
+            for(let i=1; i<=maxMap; i++) mapOrder.innerHTML += `<option value="${i}">${i}. HARİTA</option>`;
+        }
+
+        async function openEnvelope(envId) {
+            activeRecordId = envId;
+            document.getElementById('editorPanel').style.display = 'block';
+            document.getElementById('btnSaveToBracket').innerHTML = '<i class="fas fa-thumbtack"></i> ONAYLA VE FİKSTÜRE İĞNELE';
+            document.getElementById('btnDeleteOrReject').innerHTML = '<i class="fas fa-times"></i> ZARFI REDDET / ÇÖPE AT';
+
+            try {
+                const { data: zarf, error } = await window.supabaseClient.from('bekleyen_zarflar').select('match_data').eq('id', envId).single();
+                if(error || !zarf) throw new Error("Zarf verisi okunamadı.");
+
+                const mData = zarf.match_data || {};
+                const tA = mData.teamA || "";
+                const tB = mData.teamB || "";
+                
+                document.getElementById('teamAName').value = tA;
+                document.getElementById('teamBName').value = tB;
+                document.getElementById('mapNameInput').value = mData.mapName || "";
+                document.getElementById('scoreA').value = mData.scoreA || 0;
+                document.getElementById('scoreB').value = mData.scoreB || 0;
+                
+                syncTeamName('A', tA); syncTeamName('B', tB);
+
+                generateEmptyRows('teamAPlayersInputs');
+                generateEmptyRows('teamBPlayersInputs');
+                
+                await fetchProfilesIfMissing('A');
+                await fetchProfilesIfMissing('B');
+
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function openExistingMap(matchId, mapId) {
+            activeRecordId = { matchId, mapId };
+            document.getElementById('editorPanel').style.display = 'block';
+            document.getElementById('btnSaveToBracket').innerHTML = '<i class="fas fa-sync-alt"></i> HARİTAYI GÜNCELLE';
+            document.getElementById('btnDeleteOrReject').innerHTML = '<i class="fas fa-trash"></i> BU HARİTAYI SİL';
+
+            try {
+                const { data: match } = await window.supabaseClient.from('bracket_matches').select('*').eq('id', matchId).single();
+                const { data: mapData } = await window.supabaseClient.from('match_maps').select('*').eq('id', mapId).single();
+                
+                if(!match || !mapData) return;
+
+                teamAId_memory = match.team_a_id;
+                teamBId_memory = match.team_b_id;
+                
+                const nameA = globalTeamMap[teamAId_memory] || "TAKIM A";
+                const nameB = globalTeamMap[teamBId_memory] || "TAKIM B";
+
+                document.getElementById('teamAName').value = nameA;
+                document.getElementById('teamBName').value = nameB;
+                document.getElementById('mapNameInput').value = mapData.map_name;
+                document.getElementById('scoreA').value = mapData.score_a;
+                document.getElementById('scoreB').value = mapData.score_b;
+
+                syncTeamName('A', nameA); syncTeamName('B', nameB);
+
+                const stageSelect = document.getElementById('stageSelect');
+                for (let i = 0; i < stageSelect.options.length; i++) {
+                    if (stageSelect.options[i].value.includes(match.round_name)) { stageSelect.selectedIndex = i; break; }
+                }
+                updateDynamicSelectors();
+                document.getElementById('matchOrderSelect').value = match.round_order;
+                document.getElementById('mapOrderSelect').value = mapData.map_order;
+
+                const { data: stats } = await window.supabaseClient.from('match_player_stats').select('*').eq('map_id', mapId);
+                const teamAStats = stats ? stats.filter(s => s.team_id === teamAId_memory) : [];
+                const teamBStats = stats ? stats.filter(s => s.team_id === teamBId_memory) : [];
+
+                renderPlayerRows('teamAPlayersInputs', teamAStats);
+                renderPlayerRows('teamBPlayersInputs', teamBStats);
+
+                if (match.tournament_id) {
+                    document.getElementById('tourneySelect').value = match.tournament_id;
+                }
+
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        function syncTeamName(team, name) {
+            const header = document.getElementById(team === 'A' ? 'headerTeamA' : 'headerTeamB');
+            const color = team === 'A' ? '#00d2ff' : '#ff4b4b';
+            header.innerHTML = `${name.toUpperCase() || 'TAKIM'} <span style="font-size:12px; color:${color}; opacity:0.7;">${team === 'A' ? '(Mavi)' : '(Kırmızı)'}</span>`;
+        }
+
+        function generateEmptyRows(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
+                    <span class="stat-label">AJAN</span><span class="stat-label" style="text-align:left;">OYUN İÇİ NİCK</span><span class="stat-label">PROFİL EŞLEŞTİR</span>
+                    <span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
+                    <span class="stat-label" style="color:var(--neon-mor);">ACS</span><span class="stat-label" style="color:var(--neon-mor);">ADR</span><span class="stat-label" style="color:var(--neon-mor);">HS%</span>
+                </div>
+            `;
+            for(let i=0; i<5; i++) {
+                container.innerHTML += `
+                    <div class="player-stat-row">
+                        <div class="agent-input-group">
+                            <img src="img/agents/unknown.png" class="agent-icon" id="${containerId}_icon_${i}">
+                            <input type="text" class="agent-name-input" placeholder="Ajan" onkeyup="updateAgentIcon(this, '${containerId}_icon_${i}')">
+                        </div>
+                        <input type="text" class="ign-input" placeholder="IGN">
+                        <select class="user-matcher-select"><option value="">-- Takım Yazın --</option></select>
+                        <input type="number" class="k-input" value="0"><input type="number" class="d-input" value="0"><input type="number" class="a-input" value="0">
+                        <input type="number" class="acs-input" value="0"><input type="number" class="adr-input" value="0"><input type="number" class="hs-input" value="0">
+                    </div>`;
+            }
+        }
+
+        function renderPlayerRows(containerId, playersData) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
+                    <span class="stat-label">AJAN</span><span class="stat-label" style="text-align:left;">OYUN İÇİ NİCK</span><span class="stat-label" style="display:none;">USER ID</span>
+                    <span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
+                    <span class="stat-label" style="color:var(--neon-mor);">ACS</span><span class="stat-label" style="color:var(--neon-mor);">ADR</span><span class="stat-label" style="color:var(--neon-mor);">HS%</span>
+                </div>
+            `;
+            
+            for(let i=0; i<5; i++) {
+                const p = playersData[i] || {};
+                const agent = p.agent_name || "";
+                const ign = p.in_game_name || "";
+                let cleanName = agent.replace(/[^a-zA-Z0-9]/g, ''); 
+                let fAgent = cleanName ? (cleanName.charAt(0).toUpperCase() + cleanName.slice(1).toLowerCase()) : 'unknown';
+                if (fAgent === 'Kayo' || fAgent === 'KAYO') fAgent = 'Kayo';
+
+                container.innerHTML += `
+                    <div class="player-stat-row">
+                        <div class="agent-input-group">
+                            <img src="img/imgagents/${fAgent}.webp" class="agent-icon" onerror="this.src='img/imgagents/unknown.png'" id="${containerId}_icon_${i}">
+                            <input type="text" class="agent-name-input" placeholder="Ajan" value="${agent}" onkeyup="updateAgentIcon(this, '${containerId}_icon_${i}')">
+                        </div>
+                        <input type="text" class="ign-input" placeholder="IGN" value="${ign}">
+                        <input type="hidden" class="hidden-user-id" value="${p.user_id || ''}">
+                        <input type="number" class="k-input" value="${p.kills||0}"><input type="number" class="d-input" value="${p.deaths||0}"><input type="number" class="a-input" value="${p.assists||0}">
+                        <input type="number" class="acs-input" value="${p.acs||0}"><input type="number" class="adr-input" value="${p.adr||0}"><input type="number" class="hs-input" value="${p.hs_percentage||0}">
+                    </div>`;
+            }
+        }
+
+        function updateAgentIcon(inputEl, iconId) {
+            let val = inputEl.value.replace(/[^a-zA-Z0-9]/g, '');
+            const icon = document.getElementById(iconId);
+            if(val.length >= 2) {
+                let formatted = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+                if (formatted === 'Kayo' || formatted === 'KAYO') formatted = 'Kayo'; 
+                icon.src = `img/imgagents/${formatted}.webp`;
+            } else { icon.src = "img/imgagents/unknown.png"; }
+        }
+
+        async function fetchProfilesIfMissing(teamStr) {
+            const teamName = document.getElementById(teamStr === 'A' ? 'teamAName' : 'teamBName').value;
+            if(!teamName || teamName.length < 2) return;
+            
+            const containerId = teamStr === 'A' ? 'teamAPlayersInputs' : 'teamBPlayersInputs';
+            const selects = document.getElementById(containerId).querySelectorAll('.user-matcher-select');
+            if(selects.length === 0) return; 
+            
+            try {
+                const { data: teamData } = await window.supabaseClient.from('teams').select('id').ilike('name', `%${teamName.trim()}%`).single();
+                if(!teamData) throw new Error("Bulunamadı");
+                
+                if(teamStr === 'A') teamAId_memory = teamData.id;
+                else teamBId_memory = teamData.id;
+
+                const { data: players } = await window.supabaseClient.from('team_members').select(`user_id, profiles (username, ign)`).eq('team_id', teamData.id).eq('status', 'accepted');
+                
+                let optionsHtml = '<option value="">-- Manuel Seç --</option>';
+                if(players) {
+                    players.forEach(p => {
+                        const disp = p.profiles?.ign ? `${p.profiles.ign} (${p.profiles.username})` : p.profiles.username;
+                        optionsHtml += `<option value="${p.user_id}" data-ign="${p.profiles?.ign||''}">${disp}</option>`;
+                    });
+                }
+                
+                selects.forEach(sel => { sel.innerHTML = optionsHtml; });
+            } catch (e) {
+                selects.forEach(sel => { sel.innerHTML = '<option value="">Bulunamadı</option>'; });
+            }
+        }
+
+        const collectDataAndUpdateIGN = async (containerId, teamId, mapDataId) => {
+            const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
+            const stats = [];
+            for(let i=1; i<rows.length; i++) {
+                const row = rows[i];
+                const hiddenInput = row.querySelector('.hidden-user-id');
+                const select = row.querySelector('.user-matcher-select');
+                
+                const userId = (hiddenInput && hiddenInput.value) ? hiddenInput.value : (select ? select.value : null);
+                const inGameName = row.querySelector('.ign-input').value || 'Bilinmiyor';
+
+                if (select && userId && inGameName && inGameName !== 'Bilinmiyor') {
+                    const selectedOption = select.options[select.selectedIndex];
+                    const existingIgn = selectedOption.getAttribute('data-ign');
+                    if (!existingIgn || existingIgn.trim() === '') {
+                        await window.supabaseClient.from('profiles').update({ ign: inGameName }).eq('id', userId);
+                        selectedOption.setAttribute('data-ign', inGameName); 
+                    }
+                }
+
+                stats.push({
+                    map_id: mapDataId, team_id: teamId, user_id: userId, in_game_name: inGameName,
+                    agent_name: row.querySelector('.agent-name-input').value || 'unknown',
+                    kills: parseInt(row.querySelector('.k-input').value) || 0,
+                    deaths: parseInt(row.querySelector('.d-input').value) || 0,
+                    assists: parseInt(row.querySelector('.a-input').value) || 0,
+                    acs: parseInt(row.querySelector('.acs-input').value) || 0,
+                    adr: parseInt(row.querySelector('.adr-input').value) || 0,
+                    hs_percentage: parseInt(row.querySelector('.hs-input').value) || 0
+                });
+            }
+            return stats;
         };
 
-        async function initPageData() {
-            try {
-                const { data: { session }, error: authError } = await window.supabaseClient.auth.getSession();
-                if (authError || !session) { window.location.href = 'kayit.html'; return; }
-                currentUser = session.user;
+        async function saveToBracket() {
+            if(!activeRecordId) return;
 
-                renderPlayerInputs();
-
-                const [profileRes, membershipsRes, tournamentRes] = await Promise.all([
-                    window.supabaseClient.from('profiles').select('username').eq('id', currentUser.id).maybeSingle(),
-                    window.supabaseClient.from('team_members')
-                        .select('id, status, team_id, teams(*)')
-                        .eq('user_id', currentUser.id)
-                        .in('status', ['accepted', 'pending']),
-                    window.supabaseClient.from('tournaments').select('id').eq('status', 'upcoming').limit(1).maybeSingle()
-                ]);
-
-                const username = profileRes.data?.username || "KAPTAN";
-                const memberships = membershipsRes.data || [];
-                
-                if (tournamentRes.data) {
-                    activeTournamentId = tournamentRes.data.id;
-                }
-
-                await loadOrCreateDraft(username, memberships); 
-                
-                setupAutoSave();
-                subscribeToDraftUpdates();
-            } catch (err) {
-                console.error("Başlatma hatası:", err);
-            }
-        }
-
-        async function showRosterScreen(teamId, isCaptain, captainId, teamName, teamTag) {
-            document.getElementById('teamForm').style.display = 'none';
-            document.getElementById('draftInfoBox').style.display = 'none';
-            document.getElementById('pendingScreen').style.display = 'block';
-            
-            const headerDiv = document.getElementById('rosterHeader');
-            const rosterList = document.getElementById('rosterList');
-            const rosterTitleElement = document.querySelector('.roster-title');
-            const editBtn = document.getElementById('editDraftBtn');
-            const infoText = document.getElementById('pendingInfoText');
-
-            let displayName = "TAKIM KADROSU";
-            if (teamName && teamTag) {
-                displayName = `[${teamTag.toUpperCase()}] ${teamName.toUpperCase()}`;
-            } else if (teamName) {
-                displayName = teamName.toUpperCase();
-            }
-            rosterTitleElement.innerHTML = `<i class="fas fa-users"></i> ${displayName}`;
-
-            let appStatus = 'none';
-            if (activeTournamentId) {
-                const { data: appData } = await window.supabaseClient.from('tournament_applications')
-                    .select('status')
-                    .eq('team_id', teamId)
-                    .eq('tournament_id', activeTournamentId)
-                    .maybeSingle();
-                
-                if (appData) appStatus = appData.status;
-            }
-            
-            currentStatus = appStatus;
-
-            if (appStatus === 'none') {
-                headerDiv.innerHTML = `
-                    <i class="fas fa-tools fa-3x" style="color: var(--mavi-onay); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--mavi-onay));"></i>
-                    <h3 style="color: var(--mavi-onay); font-size: 22px; font-weight: 900; letter-spacing: 0.5px;">Takım Kurulum Aşamasında</h3>
-                    <p style="color: var(--gri-yazi); font-size: 14px; margin-top: 10px;">Kaptanınız kadroyu ayarlıyor ve başvuruyu tamamlaması bekleniyor.</p>
-                `;
-                editBtn.className = "edit-mode-btn";
-                editBtn.innerHTML = `<i class="fas fa-edit"></i> Takımı Düzenle`;
-                infoText.innerHTML = `<i class="fas fa-info-circle"></i> Düzenleme moduna geçtiğinizde halihazırda onay vermiş oyuncuların durumları bozulmaz.`;
-
-            } else if (appStatus === 'pending') {
-                headerDiv.innerHTML = `
-                    <i class="fas fa-clock fa-3x" style="color: var(--mavi-onay); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--mavi-onay));"></i>
-                    <h3 style="color: var(--mavi-onay); font-size: 22px; font-weight: 900; letter-spacing: 0.5px;">Başvuru İncelemede</h3>
-                    <p style="color: var(--gri-yazi); font-size: 14px; margin-top: 10px;">Takım başvurunuz turnuva yöneticileri tarafından inceleniyor.</p>
-                `;
-                editBtn.className = "warning-btn";
-                editBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Başvuruyu Geri Çek (Düzenle)`;
-                infoText.innerHTML = `<i class="fas fa-info-circle"></i> Takımda değişiklik yaparsanız başvurunuz sıradan çıkar ve tekrar incelenir.`;
-
-            } else if (appStatus === 'approved') {
-                headerDiv.innerHTML = `
-                    <i class="fas fa-check-circle fa-3x" style="color: var(--yesil-guven); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--yesil-guven));"></i>
-                    <h3 style="color: var(--yesil-guven); font-size: 22px; font-weight: 900; letter-spacing: 0.5px;">Tebrikler, Onaylandınız!</h3>
-                    <p style="color: var(--gri-yazi); font-size: 14px; margin-top: 10px;">Takımınız turnuvaya başarıyla kabul edildi. Sahada görüşmek üzere!</p>
-                `;
-                editBtn.className = "warning-btn";
-                editBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Kadroyu/Logoyu Değiştir`;
-                infoText.innerHTML = `<i class="fas fa-exclamation-circle" style="color: var(--kirmizi-iptal);"></i> DİKKAT: Düzenleme yaparsanız onayınız iptal olur ve tekrar inceleme sırasına girersiniz!`;
-
-            } else if (appStatus === 'rejected') {
-                headerDiv.innerHTML = `
-                    <i class="fas fa-times-circle fa-3x" style="color: var(--kirmizi-iptal); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--kirmizi-iptal));"></i>
-                    <h3 style="color: var(--kirmizi-iptal); font-size: 22px; font-weight: 900; letter-spacing: 0.5px;">Başvurunuz Reddedildi</h3>
-                    <p style="color: var(--gri-yazi); font-size: 14px; margin-top: 10px;">Lütfen eksiklerinizi (logo, uygunsuz isim) giderip tekrar başvuru yapın.</p>
-                `;
-                editBtn.className = "edit-mode-btn";
-                editBtn.innerHTML = `<i class="fas fa-edit"></i> Hataları Düzelt ve Yeniden Gönder`;
-                infoText.innerHTML = ``;
+            const tourneyId = document.getElementById('tourneySelect').value;
+            if(!tourneyId) {
+                showNotification("Lütfen bir turnuva seçin.", "error");
+                return;
             }
 
-            if (isCaptain) {
-                editBtn.style.display = 'inline-block';
-                infoText.style.display = 'block';
-            } else {
-                editBtn.style.display = 'none';
-                infoText.style.display = 'none';
+            const sNameRaw = document.getElementById('stageSelect').value;
+            const sName = sNameRaw.split(' (')[0]; 
+            const matchO = document.getElementById('matchOrderSelect').value;
+            const mapO = document.getElementById('mapOrderSelect').value;
+            const scoreA = document.getElementById('scoreA').value;
+            const scoreB = document.getElementById('scoreB').value;
+            const mapName = document.getElementById('mapNameInput').value;
+
+            if(!teamAId_memory || !teamBId_memory) {
+                showNotification("Takım ID'leri bulunamadı. Lütfen takım isimlerini kontrol et.", "error");
+                return;
             }
 
-            rosterList.innerHTML = `<div style="text-align:center; padding: 30px;"><i class="fas fa-spinner fa-spin fa-2x" style="color:var(--neon-mor);"></i></div>`;
-
-            const { data: members } = await window.supabaseClient.from('team_members')
-                .select('*, profiles(username)')
-                .eq('team_id', teamId)
-                .order('role', { ascending: true }) 
-                .order('created_at', { ascending: true });
-
-            if (members) {
-                const userIds = members.map(m => m.user_id);
-                let html = '';
-                
-                const mainPlayers = members.filter(m => m.role === 'main');
-                const subPlayers = members.filter(m => m.role === 'sub');
-                const allPlayers = [...mainPlayers, ...subPlayers];
-
-                allPlayers.forEach((m, index) => {
-                    const username = m.profiles?.username || "Bilinmeyen Oyuncu";
-                    let roleText = 'Yedek';
-                    let roleClass = 'role-sub';
-                    let iconColor = 'var(--gri-yazi)';
-                    
-                    if (m.role === 'main') {
-                        if (m.user_id === captainId) {
-                            roleText = 'Kaptan';
-                            roleClass = 'role-captain';
-                            iconColor = 'var(--neon-mor)';
-                        } else {
-                            roleText = 'Asil';
-                            roleClass = 'role-main';
-                            iconColor = 'var(--yazi-beyaz)';
-                        }
-                    }
-
-                    const isAccepted = m.status === 'accepted';
-                    const statusIcon = isAccepted 
-                        ? '<i class="fas fa-check" style="color: var(--yesil-guven); font-size: 16px; filter: drop-shadow(0 0 5px var(--yesil-guven));" title="Daveti Onayladı"></i>'
-                        : '<i class="fas fa-hourglass-half fa-spin" style="color: var(--mavi-onay); font-size: 16px; filter: drop-shadow(0 0 5px var(--mavi-onay));" title="Onay Bekliyor"></i>';
-
-                    html += `
-                        <li class="roster-item" style="animation-delay: ${index * 0.05}s;" onclick="togglePlayerStats(this)">
-                            <div class="roster-main">
-                                <div class="player-info">
-                                    <div class="player-avatar" style="color: ${iconColor}; border-color: ${iconColor};">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div style="display:flex; flex-direction:column; align-items:flex-start;">
-                                        <span class="player-name" style="color: ${iconColor};">${username}</span>
-                                        <span class="click-hint">Genişletmek için tıkla <i class="fas fa-chevron-down"></i></span>
-                                    </div>
-                                    <span class="role-badge ${roleClass}">${roleText}</span>
-                                </div>
-                                <div class="status-icon-box">
-                                    ${statusIcon}
-                                </div>
-                            </div>
-                            <div class="roster-stats">
-                                <div class="stats-grid-mini">
-                                    <div class="stat-mini-box">
-                                        <div class="stat-mini-title">OYNANAN HARİTA</div>
-                                        <div class="stat-mini-value" id="stat-maps-${m.user_id}"><i class="fas fa-spinner fa-spin" style="font-size:12px; color:#555;"></i></div>
-                                    </div>
-                                    <div class="stat-mini-box" style="flex: 1.5;">
-                                        <div class="stat-mini-title">TOPLAM K/D/A</div>
-                                        <div class="stat-mini-value" id="stat-kda-${m.user_id}">-</div>
-                                    </div>
-                                    <div class="stat-mini-box">
-                                        <div class="stat-mini-title">K/D ORANI</div>
-                                        <div class="stat-mini-value neon" id="stat-kdratio-${m.user_id}">-</div>
-                                    </div>
-                                    <div class="stat-mini-box">
-                                        <div class="stat-mini-title">ORTALAMA ACS</div>
-                                        <div class="stat-mini-value neon" id="stat-acs-${m.user_id}">-</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    `;
-                });
-                
-                rosterList.innerHTML = html;
-                fetchAndRenderRosterStats(userIds);
-            }
-        }
-
-        async function fetchAndRenderRosterStats(userIds) {
-            if (!userIds || userIds.length === 0) return;
-            try {
-                const { data: statsData } = await window.supabaseClient
-                    .from('match_player_stats')
-                    .select('user_id, kills, deaths, assists, acs, map_id')
-                    .in('user_id', userIds);
-
-                let playerStats = {};
-                if (statsData && statsData.length > 0) {
-                    statsData.forEach(stat => {
-                        if (!playerStats[stat.user_id]) {
-                            playerStats[stat.user_id] = { kills: 0, deaths: 0, assists: 0, acsTotal: 0, mapCount: new Set() };
-                        }
-                        playerStats[stat.user_id].kills += (stat.kills || 0);
-                        playerStats[stat.user_id].deaths += (stat.deaths || 0);
-                        playerStats[stat.user_id].assists += (stat.assists || 0);
-                        playerStats[stat.user_id].acsTotal += (stat.acs || 0);
-                        if(stat.map_id) playerStats[stat.user_id].mapCount.add(stat.map_id);
-                    });
-                }
-
-                userIds.forEach(uid => {
-                    const pStat = playerStats[uid] || { kills: 0, deaths: 0, assists: 0, acsTotal: 0, mapCount: new Set() };
-                    const mapsPlayed = pStat.mapCount instanceof Set ? pStat.mapCount.size : 0;
-                    const kdaStr = mapsPlayed > 0 ? `${pStat.kills} / ${pStat.deaths} / ${pStat.assists}` : "0 / 0 / 0";
-                    const avgACS = mapsPlayed > 0 ? Math.round(pStat.acsTotal / mapsPlayed) : 0;
-                    
-                    let kdRatio = "0.00";
-                    if (mapsPlayed > 0) {
-                        kdRatio = pStat.deaths > 0 ? (pStat.kills / pStat.deaths).toFixed(2) : (pStat.kills > 0 ? "Mükemmel" : "0.00");
-                    }
-
-                    const elMaps = document.getElementById(`stat-maps-${uid}`);
-                    const elKda = document.getElementById(`stat-kda-${uid}`);
-                    const elKdRatio = document.getElementById(`stat-kdratio-${uid}`);
-                    const elAcs = document.getElementById(`stat-acs-${uid}`);
-
-                    if(elMaps) elMaps.innerHTML = mapsPlayed;
-                    if(elKda) elKda.innerHTML = kdaStr;
-                    if(elKdRatio) elKdRatio.innerHTML = kdRatio;
-                    if(elAcs) elAcs.innerHTML = avgACS;
-                });
-            } catch(e) { console.warn("İstatistik çekilemedi"); }
-        }
-
-        function renderPlayerInputs() {
-            const mDiv = document.getElementById('mainPlayers');
-            const sDiv = document.getElementById('subPlayers');
-            let mHtml = '';
-            let sHtml = '';
-            for(let i=1; i<=5; i++) mHtml += createInputHTML(i, false);
-            for(let i=1; i<=2; i++) sHtml += createInputHTML(i, true);
-            mDiv.innerHTML = mHtml;
-            sDiv.innerHTML = sHtml;
-            attachSearchEvents();
-        }
-
-        function createInputHTML(idx, isSub) {
-            const id = isSub ? `sub_${idx}` : `main_${idx}`;
-            const label = isSub ? `${idx}. Yedek Oyuncu` : `${idx}. Oyuncu ${idx==1 ? '(Kaptan)' : ''}`;
-            const readonlyAttr = (!isSub && idx === 1) ? 'readonly class="main-captain"' : 'class="player-search"';
-            
-            return `
-                <div class="input-group">
-                    <label>${label}</label>
-                    <div class="player-wrapper">
-                        <input type="text" id="${id}" ${readonlyAttr} autocomplete="off" placeholder="Nickname ara...">
-                        <i class="fas fa-check-circle status-tick" id="${id}-tick"></i>
-                        <i class="fas fa-trash remove-player" id="${id}-remove" title="Daveti İptal Et" onclick="removePlayer('${id}')"></i>
-                        <div id="${id}-list" class="autocomplete-items"></div>
-                    </div>
-                </div>`;
-        }
-
-        async function loadOrCreateDraft(username, memberships) {
-            const activeMemberships = memberships.filter(m => m.status === 'accepted' || m.status === 'pending');
-
-            let targetTeam = null;
-            if (activeMemberships.length > 0) {
-                targetTeam = activeMemberships[0].teams; 
-            }
-
-            if (targetTeam) {
-                currentTeamId = targetTeam.id;
-                draftCreatedAt = new Date(targetTeam.created_at).getTime();
-                
-                const isCaptain = targetTeam.captain_id === currentUser.id;
-
-                let appStatus = 'none';
-                if (activeTournamentId) {
-                    const { data: appData } = await window.supabaseClient.from('tournament_applications')
-                        .select('status')
-                        .eq('team_id', currentTeamId)
-                        .eq('tournament_id', activeTournamentId)
-                        .maybeSingle();
-                    if (appData) appStatus = appData.status;
-                }
-
-                if (isCaptain && appStatus === 'none') {
-                    document.getElementById('teamName').value = targetTeam.name || '';
-                    document.getElementById('teamTag').value = targetTeam.tag || '';
-                    document.getElementById('draftInfoBox').style.display = 'block';
-                    document.getElementById('teamForm').style.display = 'block';
-                    fillCaptainSlot(username); 
-                    
-                    loadDraftMembers(); 
-                    startCountdown();
-                } else {
-                    showRosterScreen(currentTeamId, isCaptain, targetTeam.captain_id, targetTeam.name, targetTeam.tag);
-                }
-                return; 
-            }
-
-            const { data: newTeam } = await window.supabaseClient.from('teams').insert({
-                captain_id: currentUser.id, name: `Taslak Takım ${Math.floor(Math.random() * 1000)}`, tag: 'DRFT'
-            }).select().single();
-            
-            if (newTeam) {
-                currentTeamId = newTeam.id;
-                draftCreatedAt = new Date(newTeam.created_at).getTime();
-                
-                document.getElementById('draftInfoBox').style.display = 'block';
-                document.getElementById('teamForm').style.display = 'block';
-                
-                document.getElementById('teamName').value = '';
-                document.getElementById('teamTag').value = '';
-
-                startCountdown();
-
-                await window.supabaseClient.from('team_members').insert({
-                    team_id: currentTeamId, user_id: currentUser.id, role: 'main', status: 'accepted'
-                });
-                
-                fillCaptainSlot(username);
-            }
-        }
-
-        async function enableEditMode() {
-            if (currentStatus === 'approved') {
-                openCustomConfirm(
-                    "ONAY İPTAL RİSKİ",
-                    "<b>DİKKAT:</b> Düzenleme ekranına girerseniz turnuva onayınız iptal olur ve başvurunuz tekrar inceleme sırasına alınır.<br><br>Devam etmek istiyor musunuz?",
-                    async () => { await executeEditMode(); }
-                );
-            } else {
-                await executeEditMode();
-            }
-        }
-
-        async function executeEditMode() {
-            const btn = document.getElementById('editDraftBtn');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lütfen Bekleyin...';
+            const btn = document.getElementById('btnSaveToBracket');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İŞLENİYOR...';
             btn.disabled = true;
 
-            if (activeTournamentId && currentTeamId) {
-                const { error } = await window.supabaseClient.from('tournament_applications')
-                    .delete()
-                    .eq('team_id', currentTeamId)
-                    .eq('tournament_id', activeTournamentId);
-                
-                if (error) {
-                    if(typeof showNotification === 'function') showNotification("Hata oluştu: " + error.message, "error");
-                    btn.innerHTML = '<i class="fas fa-edit"></i> Takımı Düzenle';
-                    btn.disabled = false;
-                    return;
+            try {
+                if(currentMode === 'zarflar') {
+                    const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
+                        .select('id').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
+                    
+                    let matchId;
+                    if(existingMatch) {
+                        matchId = existingMatch.id;
+                        await window.supabaseClient.from('bracket_matches').update({ team_a_id: teamAId_memory, team_b_id: teamBId_memory }).eq('id', matchId);
+                    } else {
+                        const { data: newMatch } = await window.supabaseClient.from('bracket_matches').insert([{
+                            tournament_id: tourneyId, round_name: sName, round_order: matchO, team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live'
+                        }]).select().single();
+                        matchId = newMatch.id;
+                    }
+
+                    const { data: mapData, error: mapErr } = await window.supabaseClient.from('match_maps').insert([{
+                        match_id: matchId, map_order: mapO, map_name: mapName, score_a: scoreA, score_b: scoreB
+                    }]).select().single();
+
+                    if(mapErr) throw new Error("Aynı sıradaki harita (Örn: 1. Harita) zaten dolu olabilir!");
+
+                    const insertData = [
+                        ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, mapData.id)), 
+                        ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, mapData.id))
+                    ];
+                    if(insertData.length > 0) await window.supabaseClient.from('match_player_stats').insert(insertData);
+
+                    await window.supabaseClient.from('bekleyen_zarflar').update({ durum: 'processed' }).eq('id', activeRecordId);
+                    
+                    showNotification("Başarıyla Fikstüre İğnelendi!", "success");
+                    setTimeout(() => switchSidebarTab('zarflar'), 1000);
+
+                } else {
+                    const mapId = activeRecordId.mapId;
+                    await window.supabaseClient.from('match_maps').update({ map_name: mapName, score_a: scoreA, score_b: scoreB }).eq('id', mapId);
+
+                    await window.supabaseClient.from('match_player_stats').delete().eq('map_id', mapId);
+                    const insertData = [
+                        ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, mapId)), 
+                        ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, mapId))
+                    ];
+                    if(insertData.length > 0) await window.supabaseClient.from('match_player_stats').insert(insertData);
+
+                    showNotification("Harita başarıyla güncellendi.", "success");
+                    setTimeout(() => switchSidebarTab('fikstur'), 1000);
                 }
-            }
-            location.reload();
-        }
-
-        function fillCaptainSlot(username) {
-            const captInput = document.getElementById('main_1');
-            if(captInput) {
-                captInput.value = username;
-                captInput.setAttribute('data-user-id', currentUser.id);
-                captInput.setAttribute('data-status', 'accepted');
-                
-                const tick = document.getElementById('main_1-tick');
-                tick.className = 'fas fa-check-circle status-tick blue';
-                tick.style.display = 'block';
-            }
-            updateFormStatus();
-        }
-
-        async function loadDraftMembers() {
-            const { data: members } = await window.supabaseClient.from('team_members')
-                .select('*, profiles(username)')
-                .eq('team_id', currentTeamId);
-                
-            if(members) {
-                let mainIndex = 2; 
-                let subIndex = 1;
-                
-                members.forEach(m => {
-                    if (m.user_id !== currentUser.id) { 
-                        let inputId = m.role === 'main' ? 'main_' + mainIndex++ : 'sub_' + subIndex++;
-                        const input = document.getElementById(inputId);
-                        
-                        if(input) {
-                            input.value = m.profiles?.username || "Bilinmiyor";
-                            input.readOnly = true;
-                            input.setAttribute('data-user-id', m.user_id);
-                            input.setAttribute('data-member-id', m.id);
-                            input.setAttribute('data-status', m.status);
-                            
-                            const tick = document.getElementById(inputId + '-tick');
-                            tick.className = m.status === 'accepted' ? 'fas fa-check-circle status-tick blue' : 'fas fa-check-circle status-tick grey';
-                            tick.style.display = 'block';
-                            
-                            document.getElementById(inputId + '-remove').style.display = 'block';
-                        }
-                    }
-                });
-                updateFormStatus();
-            }
-        }
-
-        function attachSearchEvents() {
-            document.querySelectorAll('.player-search').forEach(input => {
-                
-                input.addEventListener('blur', function() {
-                    setTimeout(() => {
-                        if (!this.readOnly && this.value !== '') {
-                            this.value = ''; 
-                            document.getElementById(this.id + '-list').innerHTML = '';
-                        }
-                    }, 200);
-                });
-
-                input.addEventListener('input', async function() {
-                    const query = this.value;
-                    const list = document.getElementById(this.id + '-list');
-                    list.innerHTML = '';
-                    if (query.length < 2) return;
-
-                    const selectedIds = Array.from(document.querySelectorAll('input[id^="main_"], input[id^="sub_"]'))
-                                             .map(el => el.getAttribute('data-user-id'))
-                                             .filter(id => id && id.trim() !== "");
-                    const selectedUsernames = Array.from(document.querySelectorAll('input[id^="main_"], input[id^="sub_"]'))
-                                             .map(el => el.value.trim().toLowerCase())
-                                             .filter(name => name !== "");
-
-                    const { data: profiles } = await window.supabaseClient.from('profiles')
-                                                    .select('username, id')
-                                                    .ilike('username', `%${query}%`)
-                                                    .limit(15); 
-                    
-                    if (!profiles || profiles.length === 0) return;
-
-                    const profileIds = profiles.map(p => p.id);
-                    
-                    const { data: userMemberships } = await window.supabaseClient.from('team_members')
-                        .select('user_id, status, team_id, teams(captain_id)')
-                        .in('user_id', profileIds)
-                        .in('status', ['accepted', 'pending']);
-
-                    const busyUserIds = [];
-
-                    if (userMemberships && userMemberships.length > 0) {
-                        const teamIdsToCheck = [...new Set(userMemberships.map(m => m.team_id))].filter(id => id != null);
-                        let appliedTeamIds = [];
-                        
-                        if (teamIdsToCheck.length > 0) {
-                            const { data: apps } = await window.supabaseClient.from('tournament_applications')
-                                .select('team_id')
-                                .in('team_id', teamIdsToCheck);
-                                
-                            if (apps) {
-                                appliedTeamIds = apps.map(a => a.team_id);
-                            }
-                        }
-                        
-                        userMemberships.forEach(m => {
-                            const isCaptain = m.teams?.captain_id === m.user_id;
-                            const hasApplication = appliedTeamIds.includes(m.team_id);
-                            
-                            if (!isCaptain || hasApplication) {
-                                busyUserIds.push(m.user_id);
-                            }
-                        });
-                    }
-
-                    const filteredPlayers = profiles.filter(u => 
-                        !selectedIds.includes(u.id) && 
-                        !selectedUsernames.includes(u.username.toLowerCase()) &&
-                        !busyUserIds.includes(u.id)
-                    ).slice(0, 5);
-
-                    filteredPlayers.forEach(u => {
-                        const div = document.createElement('div');
-                        div.innerHTML = `<i class="fas fa-user"></i> ${u.username}`;
-                        div.onclick = async () => {
-                            input.setAttribute('data-user-id', u.id);
-                            input.value = u.username;
-                            input.readOnly = true;
-                            list.innerHTML = '';
-                            
-                            const tick = document.getElementById(input.id + '-tick');
-                            tick.style.display = 'block';
-                            tick.className = 'fas fa-spinner fa-spin status-tick grey';
-
-                            const role = input.id.startsWith('main') ? 'main' : 'sub';
-                            
-                            const { data: newMember, error } = await window.supabaseClient.from('team_members').insert({
-                                team_id: currentTeamId,
-                                user_id: u.id, role: role, status: 'pending'
-                            }).select().single();
-
-                            if (error) {
-                                input.value = '';
-                                input.readOnly = false;
-                                input.removeAttribute('data-user-id');
-                                tick.style.display = 'none';
-                                if(typeof showNotification === 'function') showNotification("Oyuncu eklenirken bir sorun oluştu.", "error");
-                                return;
-                            }
-
-                            if (newMember) {
-                                input.setAttribute('data-member-id', newMember.id);
-                                input.setAttribute('data-status', 'pending');
-                                tick.className = 'fas fa-check-circle status-tick grey';
-                                document.getElementById(input.id + '-remove').style.display = 'block';
-                                updateFormStatus();
-                            }
-                        };
-                        list.appendChild(div);
-                    });
-                });
-            });
-        }
-
-        async function removePlayer(inputId) {
-            const input = document.getElementById(inputId);
-            const memberId = input.getAttribute('data-member-id');
-            if (memberId) {
-                await window.supabaseClient.from('team_members').delete().eq('id', memberId);
-            }
-            input.value = '';
-            input.readOnly = false;
-            input.removeAttribute('data-user-id');
-            input.removeAttribute('data-member-id');
-            input.removeAttribute('data-status');
-            
-            const tick = document.getElementById(inputId + '-tick');
-            tick.className = 'fas fa-check-circle status-tick';
-            tick.style.display = 'none';
-            document.getElementById(inputId + '-remove').style.display = 'none';
-            updateFormStatus();
-        }
-
-        function updateFormStatus() {
-            const mainInputs = Array.from(document.querySelectorAll('[id^="main_"]')).filter(i => i.getAttribute('data-user-id'));
-            const subInputs = Array.from(document.querySelectorAll('[id^="sub_"]')).filter(i => i.getAttribute('data-user-id'));
-            
-            const totalRequired = 5 + subInputs.length;
-            
-            const allActiveInputs = Array.from(document.querySelectorAll('input[id^="main_"], input[id^="sub_"]')).filter(i => i.getAttribute('data-user-id'));
-            const acceptedCount = allActiveInputs.filter(i => i.getAttribute('data-status') === 'accepted').length;
-
-            const btn = document.getElementById('submitBtn');
-            
-            if (mainInputs.length === 5 && acceptedCount === totalRequired) {
-                btn.innerText = "BAŞVURUYU TAMAMLA VE GÖNDER";
+            } catch(e) {
+                console.error(e);
+                showNotification("Hata: " + e.message, "error");
+            } finally {
+                btn.innerHTML = originalText;
                 btn.disabled = false;
-                btn.style.boxShadow = "0 0 20px var(--neon-mor)";
-            } else {
-                btn.innerText = `OYUNCU ONAYLARI BEKLENİYOR (${acceptedCount}/${totalRequired})`;
-                btn.disabled = true;
-                btn.style.boxShadow = "none";
             }
         }
 
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'teamInviteSignal') {
-                const data = JSON.parse(e.newValue);
-                const allInputs = Array.from(document.querySelectorAll('input[id^="main_"], input[id^="sub_"]'));
-                
-                const targetInput = allInputs.find(input => input.getAttribute('data-member-id') === data.id);
-
-                if (targetInput) {
-                    if (data.status === 'accepted') {
-                        targetInput.setAttribute('data-status', 'accepted');
-                        document.getElementById(targetInput.id + '-tick').className = 'fas fa-check-circle status-tick blue';
-                        if(typeof showNotification === 'function') showNotification(`${targetInput.value} daveti kabul etti!`, "success");
-                    } else if (data.status === 'rejected') {
-                        if(typeof showNotification === 'function') showNotification(`${targetInput.value} daveti reddetti. Slot temizlendi.`, "error");
-                        removePlayer(targetInput.id);
-                    }
-                    updateFormStatus(); 
-                }
-            }
-        });
-
-        function subscribeToDraftUpdates() {
-            if(!currentTeamId) return;
-            window.supabaseClient.channel('draft-updates')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members', filter: `team_id=eq.${currentTeamId}` }, payload => {
-                    
-                    if (payload.eventType === 'UPDATE') {
-                        const member = payload.new;
-                        const input = document.querySelector(`[data-member-id="${member.id}"]`);
-                        
-                        if(input && member.status === 'accepted') {
-                            input.setAttribute('data-status', 'accepted');
-                            document.getElementById(input.id + '-tick').className = 'fas fa-check-circle status-tick blue';
-                        }
-                    } 
-                    else if (payload.eventType === 'DELETE') {
-                        const memberId = payload.old.id; 
-                        const input = document.querySelector(`[data-member-id="${memberId}"]`);
-                        
-                        if(input) {
-                            input.value = ''; 
-                            input.readOnly = false;
-                            input.removeAttribute('data-user-id'); 
-                            input.removeAttribute('data-member-id'); 
-                            input.removeAttribute('data-status');
-                            
-                            const tick = document.getElementById(input.id + '-tick');
-                            tick.className = 'fas fa-check-circle status-tick';
-                            tick.style.display = 'none';
-                            document.getElementById(input.id + '-remove').style.display = 'none';
-                        }
-                    }
-                    updateFormStatus();
-                }).subscribe();
-        }
-
-        function setupAutoSave() {
-            const saveInputs = ['teamName', 'teamTag'];
-            saveInputs.forEach(id => {
-                document.getElementById(id).addEventListener('input', () => {
-                    clearTimeout(saveTimeout);
-                    saveTimeout = setTimeout(async () => {
-                        if (currentTeamId) {
-                            await window.supabaseClient.from('teams').update({
-                                name: document.getElementById('teamName').value,
-                                tag: document.getElementById('teamTag').value
-                            }).eq('id', currentTeamId);
-                        }
-                    }, 1000);
-                });
-            });
-        }
-
-        async function cancelDraft(silent = false) {
-            if (!silent) {
-                openCustomConfirm(
-                    "TAKIM KURULUMUNU İPTAL ET",
-                    "Taslağı silerseniz takımdaki diğer oyunculara giden davetler de iptal edilecektir.<br><br>Emin misiniz?",
-                    async () => { await executeCancelDraft(); }
-                );
-            } else {
-                await executeCancelDraft();
-            }
-        }
-
-        async function executeCancelDraft() {
-            if (currentTeamId) {
-                await window.supabaseClient.from('teams').delete().eq('id', currentTeamId);
-                location.reload();
-            }
-        }
-
-        document.getElementById('teamForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = "YÜKLENİYOR...";
+        async function rejectOrDelete() {
+            if(!activeRecordId) return;
+            if(!confirm("Bu kaydı kalıcı olarak silmek/reddetmek istediğinize emin misiniz?")) return;
 
             try {
-                if (!activeTournamentId) {
-                    throw new Error("Şu an aktif bir turnuva bulunamadı.");
+                if(currentMode === 'zarflar') {
+                    await window.supabaseClient.from('bekleyen_zarflar').delete().eq('id', activeRecordId);
+                    showNotification("Zarf çöpe atıldı.", "success");
+                } else {
+                    const mapId = activeRecordId.mapId;
+                    await window.supabaseClient.from('match_maps').delete().eq('id', mapId);
+                    showNotification("Harita kaydı silindi.", "success");
                 }
-
-                const logoFile = document.getElementById('teamLogo').files[0];
-                let logoUrl = "";
-                
-                if (logoFile) {
-                    const allowedExtensions = ['png', 'jpg', 'jpeg', 'webp'];
-                    const fileExt = logoFile.name.split('.').pop().toLowerCase();
-                    
-                    if (!allowedExtensions.includes(fileExt)) {
-                        if(typeof showNotification === 'function') {
-                            showNotification(`Hata: Sadece PNG, JPG veya WEBP formatında yükleme yapabilirsiniz.`, "error");
-                        } else {
-                            alert(`Hata: Sadece PNG, JPG veya WEBP formatında yükleme yapabilirsiniz.`);
-                        }
-                        submitBtn.disabled = false;
-                        submitBtn.innerText = "BAŞVURUYU TAMAMLA VE GÖNDER";
-                        return; 
-                    }
-                    
-                    const maxSzeInMB = 2;
-                    const maxSizeInBytes = maxSzeInMB * 1024 * 1024;
-                    
-                    if (logoFile.size > maxSizeInBytes) {
-                        if(typeof showNotification === 'function') {
-                            showNotification(`Hata: Yüklediğiniz logo çok büyük. Lütfen maksimum ${maxSzeInMB}MB boyutunda bir dosya seçin.`, "error");
-                        } else {
-                            alert(`Hata: Yüklediğiniz logo çok büyük. Lütfen maksimum ${maxSzeInMB}MB boyutunda bir dosya seçin.`);
-                        }
-                        
-                        submitBtn.disabled = false;
-                        submitBtn.innerText = "BAŞVURUYU TAMAMLA VE GÖNDER";
-                        return; 
-                    }
-                    
-                    const fileName = `logo_${currentTeamId}.${fileExt}`; 
-
-                    const { error: uploadError } = await window.supabaseClient.storage
-                        .from('team-logos')
-                        .upload(fileName, logoFile, {
-                            cacheControl: '3600',
-                            upsert: true 
-                        });
-
-                    if (uploadError) throw uploadError;
-
-                    const { data } = window.supabaseClient.storage.from('team-logos').getPublicUrl(fileName);
-                    logoUrl = `${data.publicUrl}?t=${new Date().getTime()}`;
-                }
-
-                await window.supabaseClient.from('teams').update({
-                    name: document.getElementById('teamName').value,
-                    tag: document.getElementById('teamTag').value,
-                    logo_url: logoUrl
-                }).eq('id', currentTeamId);
-
-                const { error: appError } = await window.supabaseClient.from('tournament_applications').insert({
-                    team_id: currentTeamId,
-                    tournament_id: activeTournamentId,
-                    status: 'pending'
-                });
-
-                if (appError) throw appError;
-
-                if(typeof showNotification === 'function') showNotification("Takım başvurunuz turnuva yöneticilerine iletildi.", "success");
-                location.reload();
-                
-            } catch (err) {
-                if(typeof showNotification === 'function') showNotification("Kayıt sırasında hata: " + err.message, "error");
-                submitBtn.disabled = false;
-                submitBtn.innerText = "BAŞVURUYU TAMAMLA VE GÖNDER";
+                switchSidebarTab(currentMode); 
+            } catch (e) {
+                showNotification("Silinirken hata oluştu.", "error");
             }
-        });
-
-        function startCountdown() {
-            setInterval(() => {
-                if(!draftCreatedAt) return;
-                const now = new Date().getTime();
-                const diff = (draftCreatedAt + (3 * 60 * 60 * 1000)) - now;
-                if(diff <= 0) { cancelDraft(true); return; }
-                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                document.getElementById('timeLeft').innerText = `Kalan Süre: ${h}s ${m}d`;
-            }, 60000); 
         }
 
-        document.addEventListener('DOMContentLoaded', initPageData);
+        document.addEventListener('DOMContentLoaded', initAdminPage);
     </script>
 </body>
 </html>
