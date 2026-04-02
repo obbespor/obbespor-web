@@ -665,7 +665,7 @@
             }
         }
 
-        function attachSearchEvents() {
+function attachSearchEvents() {
             document.querySelectorAll('.player-search').forEach(input => {
                 
                 input.addEventListener('blur', function() {
@@ -690,22 +690,46 @@
                                              .map(el => el.value.trim().toLowerCase())
                                              .filter(name => name !== "");
 
+                    // YENİ MİMARİ: Artık eski team_id sütununu aramıyoruz, sadece isme göre profilleri çekiyoruz
                     const { data: profiles } = await window.supabaseClient.from('profiles')
-                                                    .select('username, id, team_id')
+                                                    .select('username, id')
                                                     .ilike('username', `%${query}%`)
-                                                    .is('team_id', null)
                                                     .limit(15); 
                     
                     if (!profiles || profiles.length === 0) return;
 
                     const profileIds = profiles.map(p => p.id);
                     
-                    const { data: busyMembers } = await window.supabaseClient.from('team_members')
-                                                        .select('user_id')
-                                                        .in('user_id', profileIds)
-                                                        .in('status', ['accepted', 'pending']);
-                    
-                    const busyUserIds = busyMembers ? busyMembers.map(m => m.user_id) : [];
+                    // --- AKILLI MEŞGULİYET KONTROLÜ BAŞLIYOR ---
+                    const { data: userMemberships } = await window.supabaseClient.from('team_members')
+                        .select('user_id, status, team_id, teams(captain_id)')
+                        .in('user_id', profileIds)
+                        .in('status', ['accepted', 'pending']);
+
+                    const busyUserIds = [];
+
+                    if (userMemberships && userMemberships.length > 0) {
+                        const teamIdsToCheck = [...new Set(userMemberships.map(m => m.team_id))];
+                        
+                        // Bu takımların gerçek bir turnuva başvurusu var mı?
+                        const { data: apps } = await window.supabaseClient.from('tournament_applications')
+                            .select('team_id')
+                            .in('team_id', teamIdsToCheck);
+                            
+                        const appliedTeamIds = apps ? apps.map(a => a.team_id) : [];
+                        
+                        userMemberships.forEach(m => {
+                            const isCaptain = m.teams?.captain_id === m.user_id;
+                            const hasApplication = appliedTeamIds.includes(m.team_id);
+                            
+                            // Eğer başkasının takımındaysa (kaptan değilse) KESİN MEŞGUL
+                            // Eğer kendi takımıysa (kaptansa) ama turnuvaya başvurduysa KESİN MEŞGUL
+                            if (!isCaptain || hasApplication) {
+                                busyUserIds.push(m.user_id);
+                            }
+                        });
+                    }
+                    // --- KONTROL BİTTİ ---
 
                     const filteredPlayers = profiles.filter(u => 
                         !selectedIds.includes(u.id) && 
