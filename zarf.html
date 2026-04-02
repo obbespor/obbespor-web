@@ -1,1056 +1,337 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yönetici Paneli | OBB E-SPORTS</title>
-    <link rel="icon" type="image/png" href="img/obblogo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Maç Sonucu Gönder | OBB E-SPORTS</title>
+    <link rel="icon" type="image/png" href="img/obblogo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/global.css">
+    
+    <style>
+        body { background: #050505; color: white; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 40px 20px; }
+        
+        .zarf-container { background: #0a0a0a; border: 1px solid #222; border-radius: 20px; width: 100%; max-width: 800px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); overflow: hidden; animation: fadeIn 0.4s ease; }
+        
+        .zarf-header { background: #111; padding: 20px 30px; border-bottom: 2px solid var(--neon-mor); display: flex; justify-content: space-between; align-items: center; }
+        .zarf-header h2 { font-size: 22px; font-weight: 900; margin: 0; }
+        .zarf-header span { color: var(--neon-mor); }
+        
+        .tabs { display: flex; border-bottom: 1px solid #222; background: #0d0d0d; }
+        .tab-btn { flex: 1; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; color: var(--gri-yazi); transition: 0.3s; font-size: 14px; }
+        .tab-btn.active { color: white; border-bottom: 3px solid var(--neon-mor); background: rgba(96, 29, 194, 0.1); }
+        .tab-btn:hover:not(.active) { color: white; background: #111; }
 
-    <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/header.css">
-    <link rel="stylesheet" href="css/footer.css">
-    
-    <style>
-        /* --- ADMİN HEADER AKTİF SEKME STİLİ --- */
-        nav ul li a { cursor: pointer; }
-        .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
+        .tab-content { display: none; padding: 30px; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
 
-        /* --- GENEL DÜZEN --- */
-        .admin-container { padding: 40px 10%; flex: 1; display: none; animation: fadeIn 0.4s ease; }
-        .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; color: white;}
-        .section-title span { color: var(--neon-mor); }
+        /* FORM STİLLERİ */
+        .input-row { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+        .input-group { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 8px; }
+        .input-group label { font-size: 12px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase; }
+        .form-control { background: #000; border: 1px solid #333; color: white; padding: 12px 15px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: bold; outline: none; transition: 0.3s; width: 100%; }
+        .form-control:focus { border-color: var(--neon-mor); box-shadow: 0 0 10px rgba(96, 29, 194, 0.2); }
+        
+        .score-input { font-size: 24px; text-align: center; font-weight: 900; height: 60px; }
+        .vs-divider { display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--gri-yazi); font-size: 20px; padding-top: 25px; }
 
-        /* --- ONAY SİSTEMİ CSS'LERİ --- */
-        .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; }
-        .team-card { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .team-card:hover { border-color: var(--neon-mor); transform: translateY(-5px); box-shadow: 0 15px 40px rgba(96, 29, 194, 0.2); }
-        .team-logo-area { height: 120px; background: #111; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid #222; }
-        .team-logo-area img { max-height: 90px; max-width: 90%; object-fit: contain; }
-        .team-card-body { padding: 20px; }
-        .team-card-title { font-size: 20px; font-weight: 900; color: white; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
-        .team-card-tag { font-size: 12px; background: var(--neon-mor); padding: 3px 8px; border-radius: 4px; }
-        .player-list-mini { list-style: none; margin-bottom: 20px; padding: 0; }
-        .player-list-mini li { font-size: 13px; color: var(--gri-yazi); padding: 5px 0; border-bottom: 1px dashed #222; display: flex; justify-content: space-between; }
-        .player-list-mini li span { color: white; font-weight: bold; }
-        .action-buttons { display: flex; gap: 10px; }
-        .btn-approve { flex: 1; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--yesil-guven); color: var(--yesil-guven); padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-approve:hover { background: var(--yesil-guven); color: #000; box-shadow: 0 0 15px var(--yesil-guven); }
-        .btn-reject { flex: 1; background: rgba(255, 75, 75, 0.1); border: 1px solid var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-reject:hover { background: var(--kirmizi-iptal); color: #fff; box-shadow: 0 0 15px var(--kirmizi-iptal); }
+        .file-upload-area { border: 2px dashed #444; border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.3s; background: #050505; margin-bottom: 30px; position: relative; }
+        .file-upload-area:hover, .file-upload-area.dragover { border-color: var(--neon-mor); background: rgba(96, 29, 194, 0.05); }
+        .file-upload-area i { font-size: 40px; color: var(--neon-mor); margin-bottom: 15px; }
+        .file-upload-area p { color: var(--gri-yazi); font-size: 14px; margin: 0; }
+        .file-input-hidden { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        
+        .preview-img { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 15px; display: none; border: 1px solid #333; }
 
-        .header-with-btn { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
-        .header-with-btn .section-title { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
-        .btn-excel { background: #1f8536; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; font-family: 'Poppins', sans-serif; }
-        .btn-excel:hover { background: #28a745; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4); }
-        
-        .approved-list { display: flex; flex-direction: column; gap: 10px; }
-        .approved-item { display: flex; align-items: center; background: #0a0a0a; border: 1px solid #222; padding: 15px 25px; border-radius: 10px; cursor: pointer; transition: 0.3s; }
-        .approved-item:hover { border-color: var(--neon-mor); background: #111; transform: translateX(10px); }
-        .approved-number { font-size: 20px; font-weight: 900; color: var(--neon-mor); width: 40px; }
-        .approved-name { font-size: 16px; font-weight: bold; color: white; flex: 1; }
-        .approved-tag { font-size: 12px; color: var(--gri-yazi); border: 1px solid #333; padding: 2px 8px; border-radius: 4px; margin-left: 10px; }
+        .submit-btn { width: 100%; padding: 18px; background: var(--neon-mor); color: white; border: none; border-radius: 10px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(96, 29, 194, 0.4); }
+        .submit-btn:disabled { background: #333; color: #777; cursor: not-allowed; box-shadow: none; transform: none; }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
-        .modal-content { background: rgba(15, 15, 15, 0.9); border: 1px solid var(--neon-mor); border-radius: 20px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 0; box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(96, 29, 194, 0.1); position: relative; }
-        .modal-header { padding: 30px; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 20px; position: relative; }
-        .modal-header img { width: 80px; height: 80px; object-fit: contain; background: #000; border-radius: 10px; border: 1px solid #333; }
-        .modal-title-area h2 { font-size: 24px; font-weight: 900; color: white; margin-bottom: 5px; }
-        .modal-title-area span { background: var(--neon-mor); color: white; padding: 3px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; }
-        .close-modal { position: absolute; top: 20px; right: 25px; font-size: 30px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; z-index: 100; }
-        .close-modal:hover { color: var(--kirmizi-iptal); }
-        .modal-body { padding: 30px; }
-        .info-card { background: #050505; border: 1px solid #222; border-radius: 10px; padding: 20px; margin-bottom: 25px; }
-        .info-card h4 { color: var(--neon-mor); font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 8px; }
-        .info-row { display: flex; margin-bottom: 10px; font-size: 14px; }
-        .info-label { color: var(--gri-yazi); width: 120px; font-weight: bold; }
-        .info-data { color: white; font-weight: 500; }
-        .btn-delete-team { background: rgba(255, 75, 75, 0.05); border: 1px dashed var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px; }
-        .btn-delete-team:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 0 15px rgba(255, 75, 75, 0.4); border-style: solid; }
+        /* DEPO YÖNETİMİ STİLLERİ */
+        .storage-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
+        .storage-item { background: #000; border: 1px solid #333; border-radius: 10px; overflow: hidden; position: relative; transition: 0.3s; }
+        .storage-item:hover { border-color: var(--kirmizi-iptal); }
+        .storage-img { width: 100%; height: 120px; object-fit: cover; border-bottom: 1px solid #222; }
+        .storage-info { padding: 10px; font-size: 11px; color: var(--gri-yazi); display: flex; flex-direction: column; gap: 5px; }
+        .storage-info span { color: white; font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .delete-img-btn { width: 100%; background: rgba(255, 75, 75, 0.1); color: var(--kirmizi-iptal); border: none; padding: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; border-top: 1px solid #333; }
+        .delete-img-btn:hover { background: var(--kirmizi-iptal); color: white; }
 
-        /* --- ZARF & FİKSTÜR SİSTEMİ CSS'LERİ --- */
-        .dashboard-grid { display: grid; grid-template-columns: 350px 1fr; gap: 30px; align-items: start; }
-        
-        .sidebar-panel { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; height: 85vh; }
-        .sidebar-tabs { display: flex; border-bottom: 1px solid #222; }
-        .sidebar-tab { flex: 1; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; background: #050505; color: var(--gri-yazi); transition: 0.3s; font-size: 13px; }
-        .sidebar-tab.active { background: var(--neon-mor); color: white; }
-        .list-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .list-item { background: #111; border: 1px dashed #333; padding: 15px; border-radius: 10px; cursor: pointer; transition: 0.3s; }
-        .list-item:hover, .list-item.selected { border-color: var(--neon-mor); background: rgba(96, 29, 194, 0.1); transform: translateX(5px); }
-        .list-item-badge { font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; }
-        .badge-zarf { background: #ff9800; color: #000; }
-        .badge-fikstur { background: #00d2ff; color: #000; }
-        .list-item-title { font-size: 14px; font-weight: bold; color: white; margin-bottom: 5px; }
-        .list-item-desc { font-size: 12px; color: var(--gri-yazi); }
-
-        .editor-panel { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; animation: fadeIn 0.4s ease; }
-        
-        .placement-map { background: rgba(96, 29, 194, 0.05); border: 1px dashed var(--neon-mor); padding: 20px; border-radius: 12px; margin-bottom: 30px; }
-        .placement-title { color: var(--neon-mor); font-size: 14px; font-weight: 900; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .placement-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        
-        .form-control { background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: bold; width: 100%; outline: none; transition: 0.3s; }
-        .form-control:focus { border-color: var(--neon-mor); }
-
-        .match-score-header { display: flex; align-items: center; justify-content: center; gap: 30px; margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid #222;}
-        .team-score-input { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .team-name-input { text-align: center; font-weight: 900; background: transparent; border: none; border-bottom: 1px dashed #555; color: white; font-size: 22px; text-transform: uppercase; outline: none; width: 200px; padding-bottom: 5px; transition: 0.3s; }
-        .team-name-input:focus { border-bottom-color: var(--neon-mor); }
-        .big-score-input { background: #000; border: 2px solid #444; color: white; width: 80px; height: 80px; text-align: center; font-size: 35px; font-weight: 900; border-radius: 15px; outline: none; transition: 0.3s; }
-        .vs-text { text-align: center; font-size: 20px; font-weight: 900; color: var(--gri-yazi); display: flex; flex-direction: column; gap: 10px; }
-        .map-input { background: #111; border: 1px solid #444; color: var(--neon-mor); padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold; text-align: center; text-transform: uppercase; outline: none; width: 140px; }
-        
-        .stats-grid-container { display: flex; flex-direction: column; gap: 20px; }
-        .team-stats-box h4 { font-size: 14px; margin-bottom: 10px; text-transform: uppercase; border-left: 4px solid; padding-left: 10px; }
-        
-        /* GÜNCELLENDİ: ADR ve HS% sütunları çıkartıldı. KDA ve ACS kaldı. */
-        .player-stat-row { display: grid; grid-template-columns: 80px 1.2fr 1.2fr 40px 40px 40px 50px; gap: 5px; margin-bottom: 8px; align-items: center; background: #0d0d0d; padding: 8px; border-radius: 8px; border: 1px solid #222; }
-        .player-stat-row input, .player-stat-row select { background: #000; border: 1px solid #333; color: white; padding: 6px 4px; border-radius: 4px; font-size: 11px; text-align: center; width: 100%; outline: none; }
-        .player-stat-row input.ign-input { text-align: left; font-weight: bold; padding-left: 8px; }
-        .agent-input-group { display: flex; align-items: center; gap: 5px; }
-        .agent-icon { width: 30px; height: 30px; border-radius: 4px; object-fit: cover; border: 1px solid #444; background: #222; }
-        .stat-label { font-size: 10px; color: var(--gri-yazi); text-align: center; font-weight: bold; }
-
-        .btn-save-match { color: white; background: linear-gradient(45deg, #1f8536, #28a745); border: none; padding: 15px; border-radius: 12px; font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 10px; flex: 2; }
-        .btn-save-match:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(40, 167, 69, 0.4); }
-        .btn-reject-env { color: var(--kirmizi-iptal); background: rgba(255, 75, 75, 0.1); border: 1px dashed var(--kirmizi-iptal); padding: 15px; border-radius: 12px; font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 10px; flex: 1; }
-        .btn-reject-env:hover { background: var(--kirmizi-iptal); color: white; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
-
-        @media (max-width: 1024px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
-            .sidebar-panel { height: 400px; }
-            .player-stat-row { min-width: 500px; }
-            .stats-grid-container { overflow-x: auto; }
-        }
-    </style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
+    </style>
 </head>
 <body>
 
-    <div id="loadingScreen">
-        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
-        <h2>Güvenlik Kontrolü Yapılıyor...</h2>
-    </div>
-
-    <header class="main-nav" id="mainHeader">
-        <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
-        <nav>
-            <ul>
-                <li><a href="index.html">ANA SAYFA</a></li>
-                <li><a id="tab-onay" class="active-admin-tab" onclick="switchTab('onay')">ONAY</a></li>
-                <li><a id="tab-takimlar" onclick="switchTab('takimlar')">ONAYLI</a></li>
-                <li><a id="tab-fikstur" onclick="switchTab('fikstur')">ZARFLAR / FİKSTÜR<i class="fas fa-sitemap" style="font-size: 10px; margin-left: 5px;"></i></a></li>
-                <li><a href="mac-yonetim.html">MAÇ YÖNETİMİ<i class="fas fa-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
-                <li><a href="zarf.html">ZARF GÖNDER<i class="fas fa-paper-plane" style="font-size: 10px; margin-left: 3px;"></i></a></li>
-                
-                <li class="nav-bell desktop-only">
-                    <a href="#" onclick="toggleNotifPanel('desktopPanel', event)">
-                        <i class="fas fa-bell"></i>
-                        <span class="notif-badge" id="badge-desktop">0</span>
-                    </a>
-                    <div class="notif-panel" id="desktopPanel" onclick="event.stopPropagation()">
-                        <div class="notif-header">
-                            <h4>Bildirimler</h4>
-                            <button class="clear-btn" onclick="clearNotifications(event)">Tümünü Temizle</button>
-                        </div>
-                        <div class="notif-body" id="notif-list-desktop"></div>
-                    </div>
-                </li>
-                <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <div class="floating-bell mobile-only" onclick="toggleNotifPanel('mobilePanel', event)">
-        <i class="fas fa-bell"></i>
-        <span class="notif-badge" id="badge-mobile">0</span>
-        <div class="notif-panel mobile-panel" id="mobilePanel" onclick="event.stopPropagation()">
-            <div class="notif-header">
-                <h4>Bildirimler</h4>
-                <button class="clear-btn" onclick="clearNotifications(event)">Tümünü Temizle</button>
-            </div>
-            <div class="notif-body" id="notif-list-mobile"></div>
-        </div>
-    </div>
-    <div id="toast-container"></div>
-
-    <main class="admin-container" id="onaySection" style="display: block;">
-        <h2 class="section-title">ONAY BEKLEYEN <span>TAKIMLAR</span></h2>
-        <div class="teams-grid" id="pendingTeamsGrid"></div>
-    </main>
-
-    <main class="admin-container" id="takimlarSection">
-        <div class="header-with-btn">
-            <h2 class="section-title">ONAYLI <span>TAKIM LİSTESİ</span></h2>
-            <button class="btn-excel" onclick="excelAktar()"><i class="fas fa-file-excel"></i> Excel'e Aktar</button>
-        </div>
-        <div class="approved-list" id="approvedTeamsList"></div>
-    </main>
-
-    <div class="modal-overlay" id="teamModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <div class="modal-header">
-                <img id="modalLogo" src="" alt="Team Logo">
-                <div class="modal-title-area">
-                    <h2 id="modalTeamName">TAKIM ADI</h2>
-                    <span id="modalTeamTag">TAG</span>
-                </div>
-            </div>
-            <div class="modal-body">
-                <div class="info-card">
-                    <h4><i class="fas fa-user-shield"></i> İLETİŞİM (KAPTAN BİLGİLERİ)</h4>
-                    <div class="info-row"><div class="info-label">Kaptan Adı:</div><div class="info-data" id="modalCaptainName">-</div></div>
-                    <div class="info-row"><div class="info-label">Telefon:</div><div class="info-data" id="modalCaptainPhone">-</div></div>
-                    <div class="info-row"><div class="info-label">E-Posta:</div><div class="info-data" id="modalCaptainEmail">-</div></div>
-                </div>
-                <div class="info-card">
-                    <h4><i class="fas fa-users"></i> TAKIM KADROSU</h4>
-                    <ul class="player-list-mini" id="modalRosterList" style="margin-bottom: 0; padding: 0;"></ul>
-                </div>
-                <button class="btn-delete-team" id="modalDeleteBtn"><i class="fas fa-trash"></i> BU BAŞVURUYU SİL</button>
-            </div>
-        </div>
-    </div>
-
-    <main class="admin-container" id="fiksturSection">
-        <div class="dashboard-grid">
-            
-            <div class="sidebar-panel">
-                <div class="sidebar-tabs">
-                    <div class="sidebar-tab active" id="tabZarflar" onclick="switchSidebarTab('zarflar')">
-                        <i class="fas fa-envelope"></i> GELEN ZARFLAR
-                    </div>
-                    <div class="sidebar-tab" id="tabFikstur" onclick="switchSidebarTab('fikstur')">
-                        <i class="fas fa-sitemap"></i> FİKSTÜR
-                    </div>
-                </div>
-                <div class="list-container" id="sidebarList">
-                    </div>
-            </div>
-
-            <div class="editor-panel" id="editorPanel">
-                
-                <div class="placement-map">
-                    <div class="placement-title"><i class="fas fa-map-marker-alt"></i> FİKSTÜRDE YER BELİRLE</div>
-                    <div class="placement-grid">
-                        <select id="tourneySelect" class="form-control">
-                            <option value="">Turnuva Yükleniyor...</option>
-                        </select>
-                        <select id="stageSelect" class="form-control" onchange="updateDynamicSelectors()">
-                            <option value="SON 64">SON 64 (BO1)</option>
-                            <option value="SON 32">SON 32 (BO1)</option>
-                            <option value="SON 16">SON 16 (BO3)</option>
-                            <option value="ÇEYREK FİNAL">ÇEYREK FİNAL (BO3)</option>
-                            <option value="YARI FİNAL">YARI FİNAL (BO3)</option>
-                            <option value="FİNAL">BÜYÜK FİNAL (BO5)</option>
-                        </select>
-                        <select id="matchOrderSelect" class="form-control">
-                        </select>
-                        <select id="mapOrderSelect" class="form-control">
-                        </select>
-                    </div>
-                </div>
-
-                <div class="match-score-header">
-                    <div class="team-score-input">
-                        <span style="font-size:10px; color:var(--gri-yazi);">SOL TAKIM (MAVİ)</span>
-                        <input type="text" id="teamAName" class="team-name-input" placeholder="TAKIM ADI" onkeyup="syncTeamName('A', this.value)" onblur="fetchProfilesIfMissing('A')">
-                        <input type="number" id="scoreA" class="big-score-input" value="0" min="0">
-                    </div>
-                    <div class="vs-text">
-                        VS
-                        <input type="text" id="mapNameInput" class="map-input" placeholder="HARİTA YAZIN">
-                    </div>
-                    <div class="team-score-input">
-                        <span style="font-size:10px; color:var(--gri-yazi);">SAĞ TAKIM (KIRMIZI)</span>
-                        <input type="text" id="teamBName" class="team-name-input" placeholder="TAKIM ADI" onkeyup="syncTeamName('B', this.value)" onblur="fetchProfilesIfMissing('B')">
-                        <input type="number" id="scoreB" class="big-score-input" value="0" min="0">
-                    </div>
-                </div>
-
-                <div class="stats-grid-container" style="overflow-x: auto;">
-                    <div class="team-stats-box">
-                        <h4 id="headerTeamA" style="color: #00d2ff; border-left-color: #00d2ff;">SOL TAKIM <span>(Mavi)</span></h4>
-                        <div id="teamAPlayersInputs"></div>
-                    </div>
-                    <div class="team-stats-box">
-                        <h4 id="headerTeamB" style="color: #ff4b4b; border-left-color: #ff4b4b;">SAĞ TAKIM <span>(Kırmızı)</span></h4>
-                        <div id="teamBPlayersInputs"></div>
-                    </div>
-                </div>
-
-                <div style="display:flex; gap:15px; margin-top: 30px;">
-                    <button class="btn-save-match" id="btnSaveToBracket" onclick="saveToBracket()">
-                        <i class="fas fa-check-circle"></i> ONAYLA VE FİKSTÜRE İĞNELE
-                    </button>
-                    <button class="btn-reject-env" id="btnDeleteOrReject" onclick="rejectOrDelete()">
-                        <i class="fas fa-trash"></i> ZARFI REDDET / SİL
-                    </button>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <div id="footer-alani"></div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
-    <script src="js/bildirimler.js"></script>
-    <script src="js/auth.js"></script>
-    <script>
-        let globalTeamMap = {}; 
-        let teamAId_memory = null;
-        let teamBId_memory = null;
-        let currentMode = 'zarflar';
-        let activeRecordId = null;
-
-        async function initAdminPage() {
-            try {
-                const response = await fetch("components/footer.html");
-                if (response.ok) document.getElementById("footer-alani").innerHTML = await response.text();
-            } catch(e) { console.error("Footer yüklenemedi", e); }
-
-            let lastScrollTop = 0;
-            const header = document.getElementById("mainHeader");
-            window.addEventListener("scroll", function() {
-                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                if (scrollTop > lastScrollTop && scrollTop > 100) header.classList.add("nav-hidden");
-                else header.classList.remove("nav-hidden");
-                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
-            }, false);
-
-            document.addEventListener("click", function(event) {
-                const isClickInsideBell = event.target.closest('.nav-bell') || event.target.closest('.floating-bell');
-                const isClickInsidePanel = event.target.closest('.notif-panel');
-                if (!isClickInsideBell && !isClickInsidePanel) {
-                    document.querySelectorAll('.notif-panel').forEach(p => p.classList.remove('active'));
-                }
-            });
-
-            if (typeof checkUserStatus === "function") await checkUserStatus();
-            if (typeof initNotifications === "function") initNotifications();
-            checkAdminAccess();
-        }
-
-        async function checkAdminAccess() {
-            try {
-                if (!window.supabaseClient) throw new Error("Supabase bağlantısı yok.");
-                const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
-                if (authError || !user) throw new Error("Giriş yapılmadı.");
-
-                const { data: profile, error: profileError } = await window.supabaseClient.from('profiles').select('role').eq('id', user.id).single();
-                if (profileError || profile.role !== 'admin') throw new Error("Yetkisiz erişim.");
-
-                document.getElementById('loadingScreen').style.display = 'none';
-                
-                await loadTournamentsToSelect();
-
-                loadPendingTeams();
-                loadApprovedTeams();
-                
-                generateEmptyRows('teamAPlayersInputs');
-                generateEmptyRows('teamBPlayersInputs');
-                updateDynamicSelectors();
-                loadSidebarData();
-
-            } catch (err) {
-                window.location.replace("index.html");
-            }
-        }
-
-        async function loadTournamentsToSelect() {
-            const { data: tournaments } = await window.supabaseClient.from('tournaments').select('id, name').order('created_at', { ascending: false });
-            const select = document.getElementById('tourneySelect');
-            select.innerHTML = '';
-            if (tournaments && tournaments.length > 0) {
-                tournaments.forEach(t => select.innerHTML += `<option value="${t.id}">${t.name}</option>`);
-            } else {
-                select.innerHTML = `<option value="">Önce Turnuva Oluşturun</option>`;
-            }
-        }
-
-        function switchTab(tabName) {
-            ['onay', 'takimlar', 'fikstur'].forEach(t => {
-                const section = document.getElementById(t + 'Section');
-                if (section) section.style.display = (t === tabName) ? 'block' : 'none';
-                
-                const tabLink = document.getElementById('tab-' + t);
-                if(tabLink) {
-                    if (t === tabName) tabLink.classList.add('active-admin-tab');
-                    else tabLink.classList.remove('active-admin-tab');
-                }
-            });
-            if(tabName === 'fikstur') updateDynamicSelectors();
-        }
-
-        // --- GİZLİ KASA İLE TAKIM ÇEKME FONKSİYONU ---
-        async function fetchTeamsWithMembers(statusFilter) {
-            try {
-                const { data: apps, error } = await window.supabaseClient
-                    .from('tournament_applications')
-                    .select(`
-                        id, status,
-                        teams (
-                            id, name, tag, logo_url, captain_id,
-                            team_members (
-                                id, user_id, role, status, 
-                                profiles (
-                                    username, ign,
-                                    user_contacts (phone, email)
-                                )
-                            )
-                        )
-                    `)
-                    .eq('status', statusFilter);
-                
-                if (error || !apps) return [];
-
-                return apps.filter(app => app.teams).map(app => {
-                    const t = app.teams;
-                    return {
-                        id: app.id, team_id: t.id, team_name: t.name, team_tag: t.tag,
-                        logo_url: t.logo_url, captain_id: t.captain_id,
-                        members: (t.team_members || []).map(tm => {
-                            let contactData = tm.profiles?.user_contacts;
-                            if (Array.isArray(contactData)) contactData = contactData[0];
-
-                            return {
-                                id: tm.id, user_id: tm.user_id, role: tm.role, status: tm.status,
-                                username: tm.profiles?.username || 'Bilinmiyor',
-                                ign: tm.profiles?.ign || '',
-                                phone: contactData?.phone || 'Belirtilmemiş',
-                                email: contactData?.email || 'Belirtilmemiş'
-                            };
-                        })
-                    };
-                });
-            } catch (err) {
-                console.error("Veri çekme hatası:", err);
-                return [];
-            }
-        }
-
-        async function loadPendingTeams() {
-            const teams = await fetchTeamsWithMembers('pending');
-            const grid = document.getElementById('pendingTeamsGrid');
-            grid.innerHTML = '';
-            
-            if (teams && teams.length > 0) {
-                teams.forEach(team => {
-                    let playersHtml = '';
-                    (team.members || []).forEach(m => {
-                        const icon = m.status === 'accepted' ? '<i class="fas fa-check" style="color:var(--yesil-guven);"></i>' : '<i class="fas fa-clock" style="color:var(--mavi-onay);"></i>';
-                        playersHtml += `<li>${m.role === 'main' ? 'Asil' : 'Yedek'}: <span>${m.username}</span> ${icon}</li>`;
-                    });
-                    const cardUserId = team.captain_id || '';
-                    grid.innerHTML += `
-                        <div class="team-card">
-                            <div class="team-logo-area"><img src="${team.logo_url || 'https://via.placeholder.com/100'}" alt="Logo"></div>
-                            <div class="team-card-body">
-                                <div class="team-card-title"><span class="team-card-tag">[${team.team_tag}]</span> ${team.team_name}</div>
-                                <ul class="player-list-mini">${playersHtml}</ul>
-                                <div class="action-buttons">
-                                    <button class="btn-approve" onclick="updateTeamStatus('${team.id}', 'approved', '${cardUserId}')"><i class="fas fa-check"></i> ONAYLA</button>
-                                    <button class="btn-reject" onclick="rejectTeam('${team.id}', '${cardUserId}')"><i class="fas fa-times"></i> REDDET</button>
-                                </div>
-                            </div>
-                        </div>`;
-                });
-            } else grid.innerHTML = '<p style="color: var(--gri-yazi);">Şu an onay bekleyen takım bulunmuyor.</p>';
-        }
-
-        async function loadApprovedTeams() {
-            const teams = await fetchTeamsWithMembers('approved');
-            const list = document.getElementById('approvedTeamsList');
-            list.innerHTML = '';
-            if (teams && teams.length > 0) {
-                teams.forEach((team, index) => {
-                    list.innerHTML += `
-                        <div class="approved-item" onclick='openTeamModal(${JSON.stringify(team).replace(/'/g, "&apos;")})'>
-                            <div class="approved-number">${index + 1}</div>
-                            <div class="approved-name">${team.team_name.toUpperCase()} <span class="approved-tag">[${team.team_tag}]</span></div>
-                            <i class="fas fa-chevron-right" style="color: var(--neon-mor);"></i>
-                        </div>`;
-                });
-            } else list.innerHTML = '<p style="color: var(--gri-yazi);">Onaylanmış takım bulunmuyor.</p>';
-        }
-
-        async function rejectTeam(appId, userId) {
-            const reason = prompt("Lütfen ret sebebini yazın:");
-            if (reason) updateTeamStatus(appId, 'rejected', userId, reason);
-        }
-
-        async function updateTeamStatus(appId, status, userId, reason = "") {
-            const { error } = await window.supabaseClient.from('tournament_applications').update({ status }).eq('id', appId);
-            if (!error) {
-                if (userId) {
-                    const baslik = status === 'approved' ? "Başvurunuz Onaylandı! 🎉" : "Başvurunuz Reddedildi";
-                    const mesaj = status === 'approved' ? "Tebrikler, takım başvurunuz onaylandı!" : `Maalesef takım başvurunuz reddedildi. Sebep: ${reason}`;
-                    await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: userId, baslik, mesaj, tip: status === 'approved' ? 'onay' : 'red' }]);
-                }
-                showNotification("Takım başarıyla güncellendi.", "success");
-                await loadPendingTeams(); 
-                await loadApprovedTeams();
-            } else showNotification("Hata oluştu: " + error.message, "error");
-        }
-
-        async function excelAktar() {
-            try {
-                const btn = document.querySelector('.btn-excel');
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Hazırlanıyor...';
-                btn.disabled = true;
-
-                const teams = await fetchTeamsWithMembers('approved');
-
-                if (!teams || teams.length === 0) { showNotification("Dışa aktarılacak takım bulunamadı.", "error"); btn.innerHTML = originalText; btn.disabled = false; return; }
-
-                const excelVerileri = teams.map((team, index) => {
-                    let mainPlayers = []; let subPlayers = [];
-                    team.members.forEach(member => {
-                        if (member.role === 'main') mainPlayers.push({ user: member.username, ign: member.ign });
-                        else if (member.role === 'sub') subPlayers.push({ user: member.username, ign: member.ign });
-                    });
-
-                    const captData = team.members.find(m => m.user_id === team.captain_id);
-
-                    return {
-                        "Sıra": index + 1, "Takım Adı": team.team_name, "Kısaltma": team.team_tag,
-                        "Kaptan İletişim": captData?.phone || "-", "Kaptan E-Posta": captData?.email || "-",
-                        "1. Oyuncu (Kaptan)": mainPlayers[0]?.user || "-", "1. Oyuncu IGN": mainPlayers[0]?.ign || "",
-                        "2. Oyuncu": mainPlayers[1]?.user || "-", "2. Oyuncu IGN": mainPlayers[1]?.ign || "",
-                        "3. Oyuncu": mainPlayers[2]?.user || "-", "3. Oyuncu IGN": mainPlayers[2]?.ign || "",
-                        "4. Oyuncu": mainPlayers[3]?.user || "-", "4. Oyuncu IGN": mainPlayers[3]?.ign || "",
-                        "5. Oyuncu": mainPlayers[4]?.user || "-", "5. Oyuncu IGN": mainPlayers[4]?.ign || "",
-                        "Yedek 1": subPlayers[0]?.user || "-", "Yedek 1 IGN": subPlayers[0]?.ign || "",
-                        "Yedek 2": subPlayers[1]?.user || "-", "Yedek 2 IGN": subPlayers[1]?.ign || "",
-                        "Logo URL": team.logo_url || "Logo Yok"
-                    };
-                });
-
-                const worksheet = XLSX.utils.json_to_sheet(excelVerileri);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Onaylı Takımlar");
-                XLSX.writeFile(workbook, "OBB_Onayli_Takimlar.xlsx");
-                
-                btn.innerHTML = originalText; btn.disabled = false;
-                showNotification("Excel başarıyla indirildi.", "success");
-            } catch (err) { showNotification("Excel oluşturulamadı.", "error"); }
-        }
-
-        async function takimiSil(appId, teamName, logoUrl, captainId) {
-            const reason = prompt(`DİKKAT: ${teamName} takımının BAŞVURUSUNU kalıcı olarak silmek üzeresiniz. Sebep yazın:`);
-            if (reason === null) return;
-            if (reason.trim() === "") return showNotification("Sebep boş bırakılamaz.", "error");
-            
-            try {
-                if (captainId) {
-                    await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: captainId, baslik: "Başvurunuz Silindi!", mesaj: `Sebep: ${reason}`, tip: 'red' }]);
-                }
-
-                const { error: teamError } = await window.supabaseClient.from('tournament_applications').delete().eq('id', appId);
-                if (teamError) throw teamError;
-
-                showNotification(`${teamName} başvurusu başarıyla silindi.`, "success");
-                closeModal(); loadApprovedTeams(); loadPendingTeams(); loadSidebarData();
-            } catch (err) { showNotification("Silme işlemi sırasında hata oluştu.", "error"); }
-        }
-
-        function openTeamModal(team) {
-            document.getElementById('modalLogo').src = team.logo_url || 'https://via.placeholder.com/100';
-            document.getElementById('modalTeamName').innerText = team.team_name;
-            document.getElementById('modalTeamTag').innerText = `[${team.team_tag}]`;
-            
-            const captData = (team.members || []).find(m => m.user_id === team.captain_id);
-            document.getElementById('modalCaptainName').innerText = captData ? captData.username : 'Bilinmiyor';
-            document.getElementById('modalCaptainPhone').innerText = captData ? captData.phone : 'Belirtilmemiş'; 
-            document.getElementById('modalCaptainEmail').innerText = captData ? captData.email : 'Belirtilmemiş'; 
-
-            const rl = document.getElementById('modalRosterList'); rl.innerHTML = '';
-            (team.members || []).forEach(m => {
-                const color = m.role === 'main' ? 'var(--yazi-beyaz)' : 'var(--gri-yazi)';
-                rl.innerHTML += `<li><span style="color:${color}; font-weight:normal;">${m.role==='main'?'Asil':'Yedek'}:</span> <span style="color:var(--neon-mor);">${m.username}</span></li>`;
-            });
-
-            const deleteBtn = document.getElementById('modalDeleteBtn');
-            deleteBtn.onclick = () => takimiSil(team.id, team.team_name, team.logo_url, team.captain_id);
-            document.getElementById('teamModal').classList.add('active');
-        }
-        
-        function closeModal() { document.getElementById('teamModal').classList.remove('active'); }
-        window.addEventListener('click', function(e) { if (e.target === document.getElementById('teamModal')) closeModal(); });
-
-
-        /* =========================================================================
-           ZARF VE FİKSTÜR SİSTEMİ (YAPAY ZEKA OCR İÇİN GÜNCELLENDİ)
-           ========================================================================= */
-
-        function switchSidebarTab(mode) {
-            currentMode = mode;
-            document.getElementById('tabZarflar').classList.toggle('active', mode === 'zarflar');
-            document.getElementById('tabFikstur').classList.toggle('active', mode === 'fikstur');
-            document.getElementById('editorPanel').style.display = 'none';
-            activeRecordId = null;
-            loadSidebarData();
-        }
-
-        async function loadSidebarData() {
-            const listContainer = document.getElementById('sidebarList');
-            listContainer.innerHTML = '<div style="text-align:center; color:var(--gri-yazi); padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>';
-
-            try {
-                const { data: teams } = await window.supabaseClient.from('teams').select('id, name');
-                if (teams) teams.forEach(t => globalTeamMap[t.id] = t.name);
-
-                if (currentMode === 'zarflar') {
-                    const { data: zarflar, error } = await window.supabaseClient.from('bekleyen_zarflar').select('*').eq('durum', 'pending').order('created_at', { ascending: false });
-                    
-                    listContainer.innerHTML = '';
-                    if(error || !zarflar || zarflar.length === 0) {
-                        listContainer.innerHTML = '<p style="text-align:center; color:#555; padding:20px;">Bekleyen yeni zarf yok.</p>';
-                        return;
-                    }
-                    
-                    zarflar.forEach(z => {
-                        const mData = z.match_data || {};
-                        const teamA = mData.teamA || "Takım A";
-                        const teamB = mData.teamB || "Takım B";
-                        const mapName = mData.mapName || "Bilinmiyor";
-                        
-                        listContainer.innerHTML += `
-                            <div class="list-item" onclick="openEnvelope('${z.id}')">
-                                <span class="list-item-badge badge-zarf"><i class="fas fa-envelope"></i> YENİ ZARF (${z.pc_name || 'Bilinmiyor'})</span>
-                                <div class="list-item-title">${teamA} vs ${teamB}</div>
-                                <div class="list-item-desc">Harita: ${mapName}</div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    const { data: matches, error } = await window.supabaseClient.from('bracket_matches').select('id, round_name, round_order, match_maps(id, map_order, map_name, score_a, score_b)').order('created_at', { ascending: false }).limit(30);
-                    
-                    listContainer.innerHTML = '';
-                    if (error || !matches || matches.length === 0) {
-                        listContainer.innerHTML = '<p style="text-align:center; color:#555; padding:20px;">Fikstürde kayıtlı maç bulunamadı.</p>';
-                        return;
-                    }
-
-                    matches.forEach(m => {
-                        (m.match_maps || []).forEach(map => {
-                            listContainer.innerHTML += `
-                                <div class="list-item" onclick="openExistingMap('${m.id}', '${map.id}')">
-                                    <span class="list-item-badge badge-fikstur"><i class="fas fa-check"></i> FİKSTÜRDE</span>
-                                    <div class="list-item-title">[${m.round_name}] ${m.round_order}. Maç</div>
-                                    <div class="list-item-desc">Harita ${map.map_order}: ${map.map_name} (${map.score_a} - ${map.score_b})</div>
-                                </div>
-                            `;
-                        });
-                    });
-                }
-            } catch (err) {
-                listContainer.innerHTML = `<div style="color:red; text-align:center;">Hata: ${err.message}</div>`;
-            }
-        }
-
-        function updateDynamicSelectors() {
-            const stage = document.getElementById('stageSelect').value;
-            const matchOrder = document.getElementById('matchOrderSelect');
-            const mapOrder = document.getElementById('mapOrderSelect');
-            
-            matchOrder.innerHTML = '';
-            let maxMatch = 1;
-            if(stage.includes('SON 64')) maxMatch = 32;
-            if(stage.includes('SON 32')) maxMatch = 16;
-            if(stage.includes('SON 16')) maxMatch = 8;
-            if(stage.includes('ÇEYREK')) maxMatch = 4;
-            if(stage.includes('YARI')) maxMatch = 2;
-
-            for(let i=1; i<=maxMatch; i++) matchOrder.innerHTML += `<option value="${i}">${i}. MAÇ</option>`;
-
-            mapOrder.innerHTML = '';
-            let maxMap = 1; 
-            if (stage.includes('SON 16') || stage.includes('ÇEYREK') || stage.includes('YARI')) maxMap = 3; 
-            if (stage.includes('FİNAL')) maxMap = 5; 
-
-            for(let i=1; i<=maxMap; i++) mapOrder.innerHTML += `<option value="${i}">${i}. HARİTA</option>`;
-        }
-
-        /* --- YAPAY ZEKA VERİLERİNİ OTOMATİK DOLDURMA FONKSİYONU --- */
-        function fillOCRData(containerId, playersData) {
-            if (!playersData || !Array.isArray(playersData)) return;
-            const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
-            
-            // i=1'den başlıyoruz çünkü i=0 başlık (header) satırı
-            for(let i=0; i<Math.min(playersData.length, 5); i++) {
-                const p = playersData[i];
-                const row = rows[i+1];
-                if (!row) continue;
-
-                if(p.agent) {
-                    const agentInput = row.querySelector('.agent-name-input');
-                    agentInput.value = p.agent;
-                    updateAgentIcon(agentInput, `${containerId}_icon_${i}`);
-                }
-                if(p.ign) row.querySelector('.ign-input').value = p.ign;
-                if(p.k !== undefined) row.querySelector('.k-input').value = p.k;
-                if(p.d !== undefined) row.querySelector('.d-input').value = p.d;
-                if(p.a !== undefined) row.querySelector('.a-input').value = p.a;
-                if(p.acs !== undefined) row.querySelector('.acs-input').value = p.acs;
-            }
-        }
-
-        async function openEnvelope(envId) {
-            activeRecordId = envId;
-            document.getElementById('editorPanel').style.display = 'block';
-            document.getElementById('btnSaveToBracket').innerHTML = '<i class="fas fa-thumbtack"></i> ONAYLA VE FİKSTÜRE İĞNELE';
-            document.getElementById('btnDeleteOrReject').innerHTML = '<i class="fas fa-times"></i> ZARFI REDDET / ÇÖPE AT';
-
-            try {
-                const { data: zarf, error } = await window.supabaseClient.from('bekleyen_zarflar').select('match_data').eq('id', envId).single();
-                if(error || !zarf) throw new Error("Zarf verisi okunamadı.");
-
-                const mData = zarf.match_data || {};
-                const tA = mData.teamA || "";
-                const tB = mData.teamB || "";
-                
-                document.getElementById('teamAName').value = tA;
-                document.getElementById('teamBName').value = tB;
-                document.getElementById('mapNameInput').value = mData.mapName || "";
-                document.getElementById('scoreA').value = mData.scoreA || 0;
-                document.getElementById('scoreB').value = mData.scoreB || 0;
-                
-                syncTeamName('A', tA); syncTeamName('B', tB);
-
-                // Önce satırları oluştur
-                generateEmptyRows('teamAPlayersInputs');
-                generateEmptyRows('teamBPlayersInputs');
-                
-                // Yapay Zekadan gelen veriler varsa form kutucuklarına doldur
-                fillOCRData('teamAPlayersInputs', mData.playersA);
-                fillOCRData('teamBPlayersInputs', mData.playersB);
-
-                // Profilleri çek ve eğer Yapay Zeka doğru İGN okuduysa dropdown'ı otomatik eşleştir
-                await fetchProfilesIfMissing('A');
-                await fetchProfilesIfMissing('B');
-
-            } catch(e) {
-                console.error(e);
-            }
-        }
-
-        async function openExistingMap(matchId, mapId) {
-            activeRecordId = { matchId, mapId };
-            document.getElementById('editorPanel').style.display = 'block';
-            document.getElementById('btnSaveToBracket').innerHTML = '<i class="fas fa-sync-alt"></i> HARİTAYI GÜNCELLE';
-            document.getElementById('btnDeleteOrReject').innerHTML = '<i class="fas fa-trash"></i> BU HARİTAYI SİL';
-
-            try {
-                const { data: match } = await window.supabaseClient.from('bracket_matches').select('*').eq('id', matchId).single();
-                const { data: mapData } = await window.supabaseClient.from('match_maps').select('*').eq('id', mapId).single();
-                
-                if(!match || !mapData) return;
-
-                teamAId_memory = match.team_a_id;
-                teamBId_memory = match.team_b_id;
-                
-                const nameA = globalTeamMap[teamAId_memory] || "TAKIM A";
-                const nameB = globalTeamMap[teamBId_memory] || "TAKIM B";
-
-                document.getElementById('teamAName').value = nameA;
-                document.getElementById('teamBName').value = nameB;
-                document.getElementById('mapNameInput').value = mapData.map_name;
-                document.getElementById('scoreA').value = mapData.score_a;
-                document.getElementById('scoreB').value = mapData.score_b;
-
-                syncTeamName('A', nameA); syncTeamName('B', nameB);
-
-                const stageSelect = document.getElementById('stageSelect');
-                for (let i = 0; i < stageSelect.options.length; i++) {
-                    if (stageSelect.options[i].value.includes(match.round_name)) { stageSelect.selectedIndex = i; break; }
-                }
-                updateDynamicSelectors();
-                document.getElementById('matchOrderSelect').value = match.round_order;
-                document.getElementById('mapOrderSelect').value = mapData.map_order;
-
-                const { data: stats } = await window.supabaseClient.from('match_player_stats').select('*').eq('map_id', mapId);
-                const teamAStats = stats ? stats.filter(s => s.team_id === teamAId_memory) : [];
-                const teamBStats = stats ? stats.filter(s => s.team_id === teamBId_memory) : [];
-
-                renderPlayerRows('teamAPlayersInputs', teamAStats);
-                renderPlayerRows('teamBPlayersInputs', teamBStats);
-
-                if (match.tournament_id) {
-                    document.getElementById('tourneySelect').value = match.tournament_id;
-                }
-
-            } catch(e) {
-                console.error(e);
-            }
-        }
-
-        function syncTeamName(team, name) {
-            const header = document.getElementById(team === 'A' ? 'headerTeamA' : 'headerTeamB');
-            const color = team === 'A' ? '#00d2ff' : '#ff4b4b';
-            header.innerHTML = `${name.toUpperCase() || 'TAKIM'} <span style="font-size:12px; color:${color}; opacity:0.7;">${team === 'A' ? '(Mavi)' : '(Kırmızı)'}</span>`;
-        }
-
-        // --- ADR VE HS% SÜTUNLARI ÇIKARTILDI ---
-        function generateEmptyRows(containerId) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = `
-                <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
-                    <span class="stat-label">AJAN</span><span class="stat-label" style="text-align:left;">OYUN İÇİ NİCK</span><span class="stat-label">PROFİL EŞLEŞTİR</span>
-                    <span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
-                    <span class="stat-label" style="color:var(--neon-mor);">ACS</span>
-                </div>
-            `;
-            for(let i=0; i<5; i++) {
-                container.innerHTML += `
-                    <div class="player-stat-row">
-                        <div class="agent-input-group">
-                            <img src="img/agents/unknown.png" class="agent-icon" id="${containerId}_icon_${i}">
-                            <input type="text" class="agent-name-input" placeholder="Ajan" onkeyup="updateAgentIcon(this, '${containerId}_icon_${i}')">
-                        </div>
-                        <input type="text" class="ign-input" placeholder="IGN">
-                        <select class="user-matcher-select"><option value="">-- Takım Yazın --</option></select>
-                        <input type="number" class="k-input" value="0"><input type="number" class="d-input" value="0"><input type="number" class="a-input" value="0">
-                        <input type="number" class="acs-input" value="0">
-                    </div>`;
-            }
-        }
-
-        function renderPlayerRows(containerId, playersData) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = `
-                <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
-                    <span class="stat-label">AJAN</span><span class="stat-label" style="text-align:left;">OYUN İÇİ NİCK</span><span class="stat-label" style="display:none;">USER ID</span>
-                    <span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
-                    <span class="stat-label" style="color:var(--neon-mor);">ACS</span>
-                </div>
-            `;
-            
-            for(let i=0; i<5; i++) {
-                const p = playersData[i] || {};
-                const agent = p.agent_name || "";
-                const ign = p.in_game_name || "";
-                let cleanName = agent.replace(/[^a-zA-Z0-9]/g, ''); 
-                let fAgent = cleanName ? (cleanName.charAt(0).toUpperCase() + cleanName.slice(1).toLowerCase()) : 'unknown';
-                if (fAgent === 'Kayo' || fAgent === 'KAYO') fAgent = 'Kayo';
-
-                container.innerHTML += `
-                    <div class="player-stat-row">
-                        <div class="agent-input-group">
-                            <img src="img/imgagents/${fAgent}.webp" class="agent-icon" onerror="this.src='img/imgagents/unknown.png'" id="${containerId}_icon_${i}">
-                            <input type="text" class="agent-name-input" placeholder="Ajan" value="${agent}" onkeyup="updateAgentIcon(this, '${containerId}_icon_${i}')">
-                        </div>
-                        <input type="text" class="ign-input" placeholder="IGN" value="${ign}">
-                        <input type="hidden" class="hidden-user-id" value="${p.user_id || ''}">
-                        <input type="number" class="k-input" value="${p.kills||0}"><input type="number" class="d-input" value="${p.deaths||0}"><input type="number" class="a-input" value="${p.assists||0}">
-                        <input type="number" class="acs-input" value="${p.acs||0}">
-                    </div>`;
-            }
-        }
-
-        function updateAgentIcon(inputEl, iconId) {
-            let val = inputEl.value.replace(/[^a-zA-Z0-9]/g, '');
-            const icon = document.getElementById(iconId);
-            if(val.length >= 2) {
-                let formatted = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
-                if (formatted === 'Kayo' || formatted === 'KAYO') formatted = 'Kayo'; 
-                icon.src = `img/imgagents/${formatted}.webp`;
-            } else { icon.src = "img/imgagents/unknown.png"; }
-        }
-
-        async function fetchProfilesIfMissing(teamStr) {
-            const teamName = document.getElementById(teamStr === 'A' ? 'teamAName' : 'teamBName').value;
-            if(!teamName || teamName.length < 2) return;
-            
-            const containerId = teamStr === 'A' ? 'teamAPlayersInputs' : 'teamBPlayersInputs';
-            const selects = document.getElementById(containerId).querySelectorAll('.user-matcher-select');
-            if(selects.length === 0) return; 
-            
-            try {
-                const { data: teamData } = await window.supabaseClient.from('teams').select('id').ilike('name', `%${teamName.trim()}%`).single();
-                if(!teamData) throw new Error("Bulunamadı");
-                
-                if(teamStr === 'A') teamAId_memory = teamData.id;
-                else teamBId_memory = teamData.id;
-
-                const { data: players } = await window.supabaseClient.from('team_members').select(`user_id, profiles (username, ign)`).eq('team_id', teamData.id).eq('status', 'accepted');
-                
-                let optionsHtml = '<option value="">-- Manuel Seç --</option>';
-                if(players) {
-                    players.forEach(p => {
-                        const disp = p.profiles?.ign ? `${p.profiles.ign} (${p.profiles.username})` : p.profiles.username;
-                        optionsHtml += `<option value="${p.user_id}" data-ign="${p.profiles?.ign||''}">${disp}</option>`;
-                    });
-                }
-                
-                // YAPAY ZEKA OTOMATİK EŞLEŞTİRME SİSTEMİ
-                selects.forEach((sel) => { 
-                    sel.innerHTML = optionsHtml; 
-                    const row = sel.closest('.player-stat-row');
-                    const currentIgn = row.querySelector('.ign-input').value.trim().toLowerCase();
-                    
-                    if (currentIgn) {
-                        for (let opt of sel.options) {
-                            if (opt.getAttribute('data-ign') && opt.getAttribute('data-ign').toLowerCase() === currentIgn) {
-                                opt.selected = true; // Yapay zeka İGN'yi doğru okuduysa profili otomatik seç!
-                                break;
-                            }
-                        }
-                    }
-                });
-            } catch (e) {
-                selects.forEach(sel => { sel.innerHTML = '<option value="">Bulunamadı</option>'; });
-            }
-        }
-
-        // --- VERİTABANINA YAZMA VE İGN GÜNCELLEME ---
-        const collectDataAndUpdateIGN = async (containerId, teamId, mapDataId) => {
-            const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
-            const stats = [];
-            // i=1 header satırını atlamak için
-            for(let i=1; i<rows.length; i++) {
-                const row = rows[i];
-                const hiddenInput = row.querySelector('.hidden-user-id');
-                const select = row.querySelector('.user-matcher-select');
-                
-                const userId = (hiddenInput && hiddenInput.value) ? hiddenInput.value : (select ? select.value : null);
-                const inGameName = row.querySelector('.ign-input').value || 'Bilinmiyor';
-
-                // Eğer admin yeni bir profil eşleştirmişse, o profildeki İGN'yi de güncelleyelim
-                if (select && userId && inGameName && inGameName !== 'Bilinmiyor') {
-                    const selectedOption = select.options[select.selectedIndex];
-                    const existingIgn = selectedOption.getAttribute('data-ign');
-                    if (!existingIgn || existingIgn.trim() === '') {
-                        await window.supabaseClient.from('profiles').update({ ign: inGameName }).eq('id', userId);
-                        selectedOption.setAttribute('data-ign', inGameName); 
-                    }
-                }
-
-                stats.push({
-                    map_id: mapDataId, team_id: teamId, user_id: userId, in_game_name: inGameName,
-                    agent_name: row.querySelector('.agent-name-input').value || 'unknown',
-                    kills: parseInt(row.querySelector('.k-input').value) || 0,
-                    deaths: parseInt(row.querySelector('.d-input').value) || 0,
-                    assists: parseInt(row.querySelector('.a-input').value) || 0,
-                    acs: parseInt(row.querySelector('.acs-input').value) || 0
-                });
-            }
-            return stats;
-        };
-
-        async function saveToBracket() {
-            if(!activeRecordId) return;
-
-            const tourneyId = document.getElementById('tourneySelect').value;
-            if(!tourneyId) {
-                showNotification("Lütfen bir turnuva seçin.", "error");
-                return;
-            }
-
-            const sNameRaw = document.getElementById('stageSelect').value;
-            const sName = sNameRaw.split(' (')[0]; 
-            const matchO = document.getElementById('matchOrderSelect').value;
-            const mapO = document.getElementById('mapOrderSelect').value;
-            const scoreA = document.getElementById('scoreA').value;
-            const scoreB = document.getElementById('scoreB').value;
-            const mapName = document.getElementById('mapNameInput').value;
-
-            if(!teamAId_memory || !teamBId_memory) {
-                showNotification("Takım ID'leri bulunamadı. Lütfen takım isimlerini kontrol et.", "error");
-                return;
-            }
-
-            const btn = document.getElementById('btnSaveToBracket');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İŞLENİYOR...';
-            btn.disabled = true;
-
-            try {
-                if(currentMode === 'zarflar') {
-                    const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
-                        .select('id').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
-                    
-                    let matchId;
-                    if(existingMatch) {
-                        matchId = existingMatch.id;
-                        await window.supabaseClient.from('bracket_matches').update({ team_a_id: teamAId_memory, team_b_id: teamBId_memory }).eq('id', matchId);
-                    } else {
-                        const { data: newMatch } = await window.supabaseClient.from('bracket_matches').insert([{
-                            tournament_id: tourneyId, round_name: sName, round_order: matchO, team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live'
-                        }]).select().single();
-                        matchId = newMatch.id;
-                    }
-
-                    const { data: mapData, error: mapErr } = await window.supabaseClient.from('match_maps').insert([{
-                        match_id: matchId, map_order: mapO, map_name: mapName, score_a: scoreA, score_b: scoreB
-                    }]).select().single();
-
-                    if(mapErr) throw new Error("Aynı sıradaki harita (Örn: 1. Harita) zaten dolu olabilir!");
-
-                    const insertData = [
-                        ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, mapData.id)), 
-                        ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, mapData.id))
-                    ];
-                    if(insertData.length > 0) await window.supabaseClient.from('match_player_stats').insert(insertData);
-
-                    await window.supabaseClient.from('bekleyen_zarflar').update({ durum: 'processed' }).eq('id', activeRecordId);
-                    
-                    showNotification("Başarıyla Fikstüre İğnelendi!", "success");
-                    setTimeout(() => switchSidebarTab('zarflar'), 1000);
-
-                } else {
-                    const mapId = activeRecordId.mapId;
-                    await window.supabaseClient.from('match_maps').update({ map_name: mapName, score_a: scoreA, score_b: scoreB }).eq('id', mapId);
-
-                    await window.supabaseClient.from('match_player_stats').delete().eq('map_id', mapId);
-                    const insertData = [
-                        ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, mapId)), 
-                        ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, mapId))
-                    ];
-                    if(insertData.length > 0) await window.supabaseClient.from('match_player_stats').insert(insertData);
-
-                    showNotification("Harita başarıyla güncellendi.", "success");
-                    setTimeout(() => switchSidebarTab('fikstur'), 1000);
-                }
-            } catch(e) {
-                console.error(e);
-                showNotification("Hata: " + e.message, "error");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        }
-
-        async function rejectOrDelete() {
-            if(!activeRecordId) return;
-            if(!confirm("Bu kaydı kalıcı olarak silmek/reddetmek istediğinize emin misiniz?")) return;
-
-            try {
-                if(currentMode === 'zarflar') {
-                    await window.supabaseClient.from('bekleyen_zarflar').delete().eq('id', activeRecordId);
-                    showNotification("Zarf çöpe atıldı.", "success");
-                } else {
-                    const mapId = activeRecordId.mapId;
-                    await window.supabaseClient.from('match_maps').delete().eq('id', mapId);
-                    showNotification("Harita kaydı silindi.", "success");
-                }
-                switchSidebarTab(currentMode); 
-            } catch (e) {
-                showNotification("Silinirken hata oluştu.", "error");
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', initAdminPage);
-    </script>
+    <div id="loadingScreen">
+        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
+        <h2>Güvenlik Kontrolü...</h2>
+    </div>
+
+    <div class="zarf-container">
+        <div class="zarf-header">
+            <h2>OBB <span>ZARF SİSTEMİ</span></h2>
+            <a href="admin.html" style="color: var(--gri-yazi); text-decoration: none; font-size: 14px;"><i class="fas fa-arrow-left"></i> Panele Dön</a>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab-btn active" onclick="switchTab('gonder')"><i class="fas fa-paper-plane"></i> Zarf Gönder</div>
+            <div class="tab-btn" onclick="switchTab('depo')"><i class="fas fa-database"></i> Depo Yönetimi</div>
+        </div>
+
+        <div id="gonderTab" class="tab-content active">
+            <form id="zarfForm">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Gönderen PC / Masa Adı</label>
+                        <input type="text" id="pcName" class="form-control" placeholder="Örn: SAHNE-1 veya MASA-12" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Oynanan Harita</label>
+                        <input type="text" id="mapName" class="form-control" placeholder="Örn: Ascent" required>
+                    </div>
+                </div>
+
+                <div class="input-row" style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; border: 1px solid #222;">
+                    <div class="input-group">
+                        <label style="color:#00d2ff;">SOL TAKIM (MAVİ)</label>
+                        <input type="text" id="teamA" class="form-control" placeholder="Takım Adı" required>
+                        <input type="number" id="scoreA" class="form-control score-input" placeholder="0" required min="0">
+                    </div>
+                    <div class="vs-divider">VS</div>
+                    <div class="input-group">
+                        <label style="color:#ff4b4b;">SAĞ TAKIM (KIRMIZI)</label>
+                        <input type="text" id="teamB" class="form-control" placeholder="Takım Adı" required>
+                        <input type="number" id="scoreB" class="form-control score-input" placeholder="0" required min="0">
+                    </div>
+                </div>
+
+                <div class="file-upload-area" id="dropZone">
+                    <input type="file" id="proofImage" class="file-input-hidden" accept="image/png, image/jpeg, image/jpg, image/webp" required>
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p><b>Maç Sonu Görselini Yükle</b></p>
+                    <p style="font-size: 11px; margin-top:5px;">Sürükle bırak, CTRL+V ile yapıştır veya tıklayarak seç (Max 2MB)</p>
+                    <img id="imagePreview" class="preview-img">
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn"><i class="fas fa-rocket"></i> Verileri Fırlat</button>
+            </form>
+        </div>
+
+        <div id="depoTab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <p style="color: var(--gri-yazi); font-size: 13px; margin: 0;">10 günden eski görselleri manuel olarak silerek sunucuda yer açabilirsiniz.</p>
+                <button onclick="loadStorageImages()" style="background:transparent; border:1px solid var(--neon-mor); color:var(--neon-mor); padding:8px 15px; border-radius:8px; cursor:pointer;"><i class="fas fa-sync"></i> Yenile</button>
+            </div>
+            
+            <div id="storageList" class="storage-grid">
+                </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/bildirimler.js"></script>
+
+    <script>
+        let selectedFile = null;
+
+        async function initZarfPage() {
+            try {
+                if (!window.supabaseClient) throw new Error("Supabase bağlantısı yok.");
+                
+                const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
+                if (authError || !user) throw new Error("Giriş yapılmadı.");
+
+                const { data: profile, error: profileError } = await window.supabaseClient.from('profiles').select('role').eq('id', user.id).single();
+                
+                if (profileError || profile.role !== 'admin') {
+                    window.location.replace("index.html"); // Admin değilse anında kov!
+                    return;
+                }
+
+                document.getElementById('loadingScreen').style.display = 'none';
+            } catch (err) {
+                window.location.replace("index.html");
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId + 'Tab').classList.add('active');
+
+            if(tabId === 'depo') loadStorageImages();
+        }
+
+        // Dosya Yükleme ve Önizleme (Sürükle-Bırak & CTRL+V desteği)
+        const fileInput = document.getElementById('proofImage');
+        const imgPreview = document.getElementById('imagePreview');
+        const dropZone = document.getElementById('dropZone');
+
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault(); dropZone.classList.remove('dragover');
+            if(e.dataTransfer.files.length) { fileInput.files = e.dataTransfer.files; handleFileSelect(); }
+        });
+
+        document.addEventListener('paste', (e) => {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let index in items) {
+                const item = items[index];
+                if (item.kind === 'file') {
+                    const blob = item.getAsFile();
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(blob);
+                    fileInput.files = dataTransfer.files;
+                    handleFileSelect();
+                }
+            }
+        });
+
+        function handleFileSelect() {
+            if (fileInput.files && fileInput.files[0]) {
+                selectedFile = fileInput.files[0];
+                if (selectedFile.size > 2 * 1024 * 1024) {
+                    showNotification("Dosya boyutu çok büyük (Max 2MB)", "error");
+                    fileInput.value = ""; selectedFile = null; imgPreview.style.display = 'none';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imgPreview.src = e.target.result;
+                    imgPreview.style.display = 'inline-block';
+                }
+                reader.readAsDataURL(selectedFile);
+            }
+        }
+
+        // FORMU GÖNDERME
+        document.getElementById('zarfForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!selectedFile) return showNotification("Lütfen bir görsel yükleyin.", "error");
+
+            const btn = document.getElementById('submitBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
+            btn.disabled = true;
+
+            try {
+                // 1. Resmi Storage'a Yükle
+                const fileExt = selectedFile.name.split('.').pop().toLowerCase();
+                const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+                
+                const { error: uploadError } = await window.supabaseClient.storage
+                    .from('match-proofs')
+                    .upload(fileName, selectedFile, { cacheControl: '3600', upsert: false });
+
+                if (uploadError) throw uploadError;
+
+                const { data: publicUrlData } = window.supabaseClient.storage.from('match-proofs').getPublicUrl(fileName);
+                const imageUrl = publicUrlData.publicUrl;
+
+                // 2. JSON Verisini Hazırla
+                const matchData = {
+                    teamA: document.getElementById('teamA').value,
+                    teamB: document.getElementById('teamB').value,
+                    scoreA: parseInt(document.getElementById('scoreA').value),
+                    scoreB: parseInt(document.getElementById('scoreB').value),
+                    mapName: document.getElementById('mapName').value,
+                    proofImage: imageUrl,
+                    storageFileName: fileName // Silmek için bu isim lazım
+                };
+
+                // 3. Veritabanına Yaz
+                const { error: dbError } = await window.supabaseClient.from('bekleyen_zarflar').insert([{
+                    pc_name: document.getElementById('pcName').value,
+                    match_data: matchData,
+                    durum: 'pending'
+                }]);
+
+                if (dbError) throw dbError;
+
+                showNotification("Zarf başarıyla Admin Masasına fırlatıldı! 🚀", "success");
+                
+                // Formu temizle
+                document.getElementById('zarfForm').reset();
+                imgPreview.style.display = 'none';
+                selectedFile = null;
+
+            } catch (err) {
+                showNotification("Gönderim Hatası: " + err.message, "error");
+            } finally {
+                btn.innerHTML = '<i class="fas fa-rocket"></i> Verileri Fırlat';
+                btn.disabled = false;
+            }
+        });
+
+        // DEPO YÖNETİMİ (Görselleri Listeleme ve Silme)
+        async function loadStorageImages() {
+            const list = document.getElementById('storageList');
+            list.innerHTML = '<div style="text-align:center; grid-column: 1 / -1;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>';
+
+            try {
+                const { data, error } = await window.supabaseClient.storage.from('match-proofs').list('', { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+                
+                if (error) throw error;
+
+                list.innerHTML = '';
+                const files = data.filter(f => f.name !== '.emptyFolderPlaceholder');
+
+                if (files.length === 0) {
+                    list.innerHTML = '<p style="color:#777; text-align:center; grid-column: 1 / -1;">Depoda görsel bulunmuyor.</p>';
+                    return;
+                }
+
+                files.forEach(file => {
+                    const { data: urlData } = window.supabaseClient.storage.from('match-proofs').getPublicUrl(file.name);
+                    const uploadDate = new Date(file.created_at).toLocaleDateString('tr-TR', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+                    
+                    // 10 günü geçtiyse kırmızı uyarı verelim
+                    const ageInDays = (new Date() - new Date(file.created_at)) / (1000 * 60 * 60 * 24);
+                    const dateColor = ageInDays > 10 ? 'var(--kirmizi-iptal)' : 'var(--gri-yazi)';
+
+                    list.innerHTML += `
+                        <div class="storage-item" id="file-${file.name}">
+                            <a href="${urlData.publicUrl}" target="_blank"><img src="${urlData.publicUrl}" class="storage-img" loading="lazy"></a>
+                            <div class="storage-info">
+                                <span>${file.name}</span>
+                                <div style="color:${dateColor};">📅 ${uploadDate}</div>
+                                <div>💾 ${(file.metadata.size / 1024 / 1024).toFixed(2)} MB</div>
+                            </div>
+                            <button class="delete-img-btn" onclick="deleteStorageFile('${file.name}')"><i class="fas fa-trash"></i> Kalıcı Olarak Sil</button>
+                        </div>
+                    `;
+                });
+
+            } catch (err) {
+                list.innerHTML = `<div style="color:red; text-align:center; grid-column: 1 / -1;">Hata: ${err.message}</div>`;
+            }
+        }
+
+        async function deleteStorageFile(fileName) {
+            if(!confirm("DİKKAT: Bu görseli kalıcı olarak silmek istediğinize emin misiniz?")) return;
+
+            try {
+                const { error } = await window.supabaseClient.storage.from('match-proofs').remove([fileName]);
+                if (error) throw error;
+
+                showNotification("Görsel depodan silindi.", "success");
+                document.getElementById(`file-${fileName}`).remove(); // Ekranda listeden anında uçur
+            } catch (err) {
+                showNotification("Silme başarısız: " + err.message, "error");
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initZarfPage);
+    </script>
 </body>
 </html>
