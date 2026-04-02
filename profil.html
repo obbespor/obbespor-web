@@ -713,9 +713,9 @@
         // ==========================================
         // DÜZELTİLEN FONKSİYON (loadInvitationsAndTeam)
         // ==========================================
-        async function loadInvitationsAndTeam() {
+async function loadInvitationsAndTeam() {
             try {
-                // 1. Önce kullanıcının tüm üyelik durumlarını ve bağlı olduğu takımları çekiyoruz
+                // 1. Kullanıcının üye olduğu tüm takımları ve davetleri çek
                 const { data: memberships, error } = await window.supabaseClient.from('team_members')
                     .select('id, team_id, status, role, teams(id, name, tag, captain_id)')
                     .eq('user_id', currentUser.id)
@@ -747,53 +747,63 @@
                     return;
                 }
 
-                // 2. Kabul edilmiş aktif takımı bul 
-                const activeTeamMember = memberships.find(m => m.status === 'accepted');
+                // 2. YENİ MANTIK: Sadece "Turnuvaya Başvurmuş (İncelemede, Onaylı vs.)" takımları MEVCUT TAKIM say
+                const acceptedMemberships = memberships.filter(m => m.status === 'accepted');
+                let activeTeamData = null;
+                let activeAppStatus = null;
 
-                if (activeTeamMember) {
-                    const teamData = activeTeamMember.teams;
+                if (acceptedMemberships.length > 0) {
+                    const teamIds = acceptedMemberships.map(m => m.team_id);
+                    
+                    // Bu takımlardan herhangi biri turnuvaya başvurmuş mu kontrol et
+                    const { data: apps } = await window.supabaseClient.from('tournament_applications')
+                        .select('team_id, status')
+                        .in('team_id', teamIds)
+                        .order('created_at', { ascending: false });
+                    
+                    if (apps && apps.length > 0) {
+                        const validApp = apps[0]; // En güncel başvuru
+                        const validMembership = acceptedMemberships.find(m => m.team_id === validApp.team_id);
+                        if (validMembership) {
+                            activeTeamData = validMembership.teams;
+                            activeAppStatus = validApp.status;
+                        }
+                    }
+                }
 
-                    // Takımın herhangi bir turnuvaya başvurup başvurmadığını kontrol ediyoruz
-                    const { data: appData } = await window.supabaseClient.from('tournament_applications')
-                        .select('status')
-                        .eq('team_id', teamData.id)
-                        .order('created_at', { ascending: false })
-                        .limit(1)
-                        .maybeSingle();
-
-                    let teamStatusText = "Lobi / Hazırlık";
+                // Eğer başvurusu yapılmış GÜNCEL BİR TAKIM varsa (Taslak değilse)
+                if (activeTeamData) {
+                    let teamStatusText = "Bilinmiyor";
                     let teamStatusColor = "#777";
                     let teamStatusIcon = "fa-tools";
 
-                    if (appData) {
-                        if (appData.status === 'approved') {
-                            teamStatusText = "Turnuvaya Hazır";
-                            teamStatusColor = "var(--yesil-guven)";
-                            teamStatusIcon = "fa-check-circle";
-                        } else if (appData.status === 'pending') {
-                            teamStatusText = "Başvuru İncelemede";
-                            teamStatusColor = "var(--mavi-onay)";
-                            teamStatusIcon = "fa-clock";
-                        } else if (appData.status === 'rejected') {
-                            teamStatusText = "Reddedildi";
-                            teamStatusColor = "var(--kirmizi-iptal)";
-                            teamStatusIcon = "fa-times-circle";
-                        }
+                    if (activeAppStatus === 'approved') {
+                        teamStatusText = "Turnuvaya Hazır";
+                        teamStatusColor = "var(--yesil-guven)";
+                        teamStatusIcon = "fa-check-circle";
+                    } else if (activeAppStatus === 'pending') {
+                        teamStatusText = "Başvuru İncelemede";
+                        teamStatusColor = "var(--mavi-onay)";
+                        teamStatusIcon = "fa-clock";
+                    } else if (activeAppStatus === 'rejected') {
+                        teamStatusText = "Reddedildi";
+                        teamStatusColor = "var(--kirmizi-iptal)";
+                        teamStatusIcon = "fa-times-circle";
                     }
 
                     title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
                     list.innerHTML = `
                         <div class="active-team-card">
-                            <span class="team-tag-large">${teamData.tag || 'LOBİ'}</span>
-                            <h3>${teamData.name || 'İSİMSİZ TAKIM'}</h3>
+                            <span class="team-tag-large">${activeTeamData.tag || 'LOBİ'}</span>
+                            <h3>${activeTeamData.name || 'İSİMSİZ TAKIM'}</h3>
                             <p>Durum: <span style="color:${teamStatusColor}; font-weight:bold;"><i class="fas ${teamStatusIcon}"></i> ${teamStatusText}</span></p>
                             <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
                         </div>
                     `;
-                    return; // Aktif takım varsa, davetleri göstermiyoruz.
+                    return; // Aktif takım olduğu için bekleyen davetleri göstermiyoruz.
                 }
 
-                // 3. Aktif takım yoksa, bekleyen davetleri göster
+                // 3. Başvurulu aktif bir takım yoksa (Sadece taslakları varsa veya hiç takımı yoksa), BEKLEYEN DAVETLERİ GÖSTER
                 const pendingInvites = memberships.filter(m => m.status === 'pending');
 
                 if (pendingInvites.length > 0) {
@@ -816,6 +826,25 @@
                                 </div>
                             </div>`;
                     }
+
+                    list.innerHTML += `
+                        <div style="text-align:center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #333;">
+                            <p style="font-size: 13px; color:#777; margin-bottom: 10px;">Veya kendi takımını kurarak lider sen ol!</p>
+                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none; font-size:13px; padding: 8px 15px;">
+                                <i class="fas fa-plus-circle"></i> Takım Oluştur
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    // Ne aktif takımı ne de bekleyen daveti yok (Belki sadece boş taslağı var)
+                    showEmptyState();
+                }
+
+            } catch (err) {
+                console.error("Takım/Davet yükleme hatası:", err);
+                document.getElementById('notificationsList').innerHTML = `<div style="text-align:center; color:#ff4b4b; padding:20px;">Takım bilgileri alınırken bağlantı hatası oluştu.</div>`;
+            }
+        }
 
                     list.innerHTML += `
                         <div style="text-align:center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #333;">
