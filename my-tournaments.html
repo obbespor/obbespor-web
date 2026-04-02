@@ -88,16 +88,16 @@
         <div id="empty-state">
             <i class="fas fa-ghost"></i>
             <h2>Turnuva Geçmişi Bulunamadı</h2>
-            <p>Şu an herhangi bir turnuvaya kayıtlı görünmüyorsun.</p>
+            <p>Şu an herhangi bir turnuvaya kayıtlı veya bir takımda görünmüyorsun.</p>
             <a href="turnuvalar.html" class="nav-btn" style="margin-top: 15px;">Turnuvalara Göz At</a>
         </div>
 
         <div id="active-state">
             <div class="showcase-card">
-                <div class="showcase-image"></div>
+                <div class="showcase-image" id="showcaseImage"></div>
                 <div class="showcase-content">
                     <span class="status-badge" id="appStatusBadge">Kura Bekleniyor</span>
-                    <h2 class="tourney-title">OBB 1. Topluluk Turnuvası</h2>
+                    <h2 class="tourney-title" id="display-tourney-name">Yükleniyor...</h2>
                     <div class="tourney-meta">
                         <span><i class="fas fa-calendar-alt"></i> Yakında</span>
                         <span><i class="fas fa-trophy"></i> Belirtilmemiş</span>
@@ -134,41 +134,42 @@
                 if (!session) { emptyState.style.display = 'flex'; return; }
 
                 const userId = session.user.id;
-                let appId = null;
 
-                // 1. Önce kullanıcının KAPTAN olduğu ve DRAFT OLMAYAN kayıtları kontrol et
-                const { data: capData } = await db.from('tournament_applications')
-                    .select('id, status')
-                    .eq('captain_id', userId)
-                    .neq('status', 'draft')
-                    .limit(1);
+                // 1. Kullanıcının üyesi olduğu takımı bul (YENİ MİMARİ)
+                const { data: myTeamMembership } = await db.from('team_members')
+                    .select('team_id')
+                    .eq('user_id', userId)
+                    .in('status', ['accepted', 'pending'])
+                    .limit(1)
+                    .maybeSingle();
 
-                if (capData && capData.length > 0) {
-                    appId = capData[0].id;
-                } else {
-                    // 2. Eğer kaptan değilse, ÜYESİ olduğu ve DRAFT OLMAYAN takımı bul
-                    // Supabase'in inner join filtrelemesi kullanılarak parent table (tournament_applications) filtrelenir
-                    const { data: memData } = await db.from('application_members')
-                        .select('application_id, tournament_applications!inner(status)')
-                        .eq('user_id', userId)
-                        .neq('status', 'rejected')
-                        .neq('tournament_applications.status', 'draft')
-                        .limit(1);
-                        
-                    if (memData && memData.length > 0) {
-                        appId = memData[0].application_id;
-                    }
+                if (!myTeamMembership) { 
+                    emptyState.style.display = 'flex'; 
+                    return; 
+                }
+                const teamId = myTeamMembership.team_id;
+
+                // 2. Takım bilgilerini 'teams' tablosundan çek
+                const { data: teamData } = await db.from('teams')
+                    .select('name, tag, captain_id, logo_url')
+                    .eq('id', teamId)
+                    .single();
+
+                if (!teamData) { 
+                    emptyState.style.display = 'flex'; 
+                    return; 
                 }
 
-                if (!appId) { emptyState.style.display = 'flex'; return; }
+                // 3. Takımın turnuva başvurusunu çek
+                const { data: appData } = await db.from('tournament_applications')
+                    .select('status, tournaments(name)')
+                    .eq('team_id', teamId)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
 
-                // Takım verisini çek (zaten draft olmadığını garantiledik, ama güvenlik için status de alıyoruz)
-                const { data: teamData } = await db.from('tournament_applications')
-                    .select('team_name, team_tag, captain_id, status')
-                    .eq('id', appId)
-                    .single();
-                    
-                if (!teamData || teamData.status === 'draft') { 
+                // Eğer başvurusu yoksa (henüz takım oluşturma aşamasındaysa)
+                if (!appData) { 
                     emptyState.style.display = 'flex'; 
                     return; 
                 }
@@ -176,59 +177,71 @@
                 emptyState.style.display = 'none'; 
                 activeState.style.display = 'block'; 
 
-                document.getElementById('display-team-name').innerText = teamData.team_name || "İsimsiz Takım";
-                document.getElementById('display-team-tag').innerText = teamData.team_tag ? `[${teamData.team_tag}]` : "[-]";
+                // DOM Güncellemeleri
+                document.getElementById('display-tourney-name').innerText = appData.tournaments?.name || "OBB 1. Topluluk Turnuvası";
+                document.getElementById('display-team-name').innerText = teamData.name || "İsimsiz Takım";
+                document.getElementById('display-team-tag').innerText = teamData.tag ? `[${teamData.tag}]` : "[-]";
                 
+                // Takım logosunu arka plan olarak ayarla
+                if (teamData.logo_url) {
+                    document.getElementById('showcaseImage').style.backgroundImage = `url('${teamData.logo_url}')`;
+                }
+
+                // Durum Rozetini Güncelle
                 const badge = document.getElementById('appStatusBadge');
-                if(teamData.status === 'approved') { 
+                if (appData.status === 'approved') { 
                     badge.innerText = "ONAYLANDI"; 
                     badge.style.color = "var(--yesil-guven)"; 
                     badge.style.borderColor = "var(--yesil-guven)"; 
-                } else if(teamData.status === 'pending') { 
+                    badge.style.background = "rgba(0, 230, 118, 0.1)";
+                } else if (appData.status === 'pending') { 
                     badge.innerText = "İncelemede"; 
+                    badge.style.color = "var(--mavi-onay)"; 
+                    badge.style.borderColor = "var(--mavi-onay)"; 
+                    badge.style.background = "rgba(0, 210, 255, 0.1)";
+                } else if (appData.status === 'rejected') {
+                    badge.innerText = "REDDEDİLDİ"; 
+                    badge.style.color = "var(--kirmizi-iptal)"; 
+                    badge.style.borderColor = "var(--kirmizi-iptal)"; 
+                    badge.style.background = "rgba(255, 75, 75, 0.1)";
                 }
 
+                // 4. Kadroyu 'team_members' tablosundan çek
                 const rosterContainer = document.getElementById('display-roster');
                 rosterContainer.innerHTML = ''; 
 
-                const { data: members } = await db.from('application_members')
-                    .select('role, user_id, status')
-                    .eq('application_id', appId)
+                const { data: members } = await db.from('team_members')
+                    .select('role, user_id, status, profiles(username, avatar_url)')
+                    .eq('team_id', teamId)
                     .neq('status', 'rejected');
-                    
-                let userIds = members ? members.map(m => m.user_id) : [];
-                if (!userIds.includes(teamData.captain_id)) userIds.push(teamData.captain_id);
 
-                const { data: profiles } = await db.from('profiles')
-                    .select('id, username, avatar_url')
-                    .in('id', userIds);
-
-                if (profiles) {
-                    const captain = profiles.find(p => p.id === teamData.captain_id);
+                if (members) {
+                    // Kaptanı listeye ilk olarak ekle
+                    const captain = members.find(m => m.user_id === teamData.captain_id);
                     if (captain) {
                         rosterContainer.innerHTML += `
                             <div class="roster-item" style="border-left-color: var(--neon-mor);">
-                                <div class="roster-user"><img src="${captain.avatar_url || 'img/obblogo.png'}"><span class="nick">${captain.username}</span></div>
+                                <div class="roster-user"><img src="${captain.profiles?.avatar_url || 'img/obblogo.png'}"><span class="nick">${captain.profiles?.username || 'Kaptan'}</span></div>
                                 <span class="roster-role role-captain"><i class="fas fa-crown"></i> Kaptan</span>
                             </div>`;
                     }
-                    if (members) {
-                        members.forEach(member => {
-                            if (member.user_id === teamData.captain_id) return; 
-                            const p = profiles.find(pr => pr.id === member.user_id);
-                            const username = p ? p.username : "Oyuncu";
-                            const roleText = member.status === 'pending' ? '<i class="fas fa-clock"></i> Bekliyor' : (member.role === 'main' ? 'Asil' : 'Yedek');
-                            rosterContainer.innerHTML += `
-                                <div class="roster-item">
-                                    <div class="roster-user"><img src="${p?.avatar_url || 'img/obblogo.png'}"><span class="nick">${username}</span></div>
-                                    <span class="roster-role">${roleText}</span>
-                                </div>`;
-                        });
-                    }
+                    
+                    // Diğer oyuncuları ekle
+                    members.forEach(member => {
+                        if (member.user_id === teamData.captain_id) return; 
+                        const username = member.profiles?.username || "Oyuncu";
+                        const roleText = member.status === 'pending' ? '<i class="fas fa-clock"></i> Bekliyor' : (member.role === 'main' ? 'Asil' : 'Yedek');
+                        rosterContainer.innerHTML += `
+                            <div class="roster-item">
+                                <div class="roster-user"><img src="${member.profiles?.avatar_url || 'img/obblogo.png'}"><span class="nick">${username}</span></div>
+                                <span class="roster-role">${roleText}</span>
+                            </div>`;
+                    });
                 }
             } catch (error) { 
                 console.error("Turnuva geçmişi yüklenirken hata oluştu:", error);
                 emptyState.style.display = 'flex'; 
+                activeState.style.display = 'none';
             }
         });
     </script>
