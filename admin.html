@@ -206,6 +206,7 @@
                     <h4><i class="fas fa-user-shield"></i> İLETİŞİM (KAPTAN BİLGİLERİ)</h4>
                     <div class="info-row"><div class="info-label">Kaptan Adı:</div><div class="info-data" id="modalCaptainName">-</div></div>
                     <div class="info-row"><div class="info-label">Telefon:</div><div class="info-data" id="modalCaptainPhone">-</div></div>
+                    <div class="info-row"><div class="info-label">E-Posta:</div><div class="info-data" id="modalCaptainEmail">-</div></div>
                 </div>
                 <div class="info-card">
                     <h4><i class="fas fa-users"></i> TAKIM KADROSU</h4>
@@ -389,8 +390,6 @@
         }
 
         // --- YENİ İLİŞKİSEL MİMARİ İLE TAKIM ÇEKME FONKSİYONLARI ---
-// --- YENİ İLİŞKİSEL MİMARİ İLE TAKIM ÇEKME FONKSİYONLARI ---
-      // --- YENİ İLİŞKİSEL MİMARİ İLE TAKIM ÇEKME FONKSİYONLARI ---
         async function fetchTeamsWithMembers(statusFilter) {
             const { data: apps, error } = await window.supabaseClient
                 .from('tournament_applications')
@@ -491,7 +490,7 @@
             if (reason) updateTeamStatus(appId, 'rejected', userId, reason);
         }
 
-async function updateTeamStatus(appId, status, userId, reason = "") {
+        async function updateTeamStatus(appId, status, userId, reason = "") {
             // 1. Veritabanında güncelleme yap
             const { error } = await window.supabaseClient.from('tournament_applications').update({ status }).eq('id', appId);
             
@@ -532,8 +531,12 @@ async function updateTeamStatus(appId, status, userId, reason = "") {
                         else if (member.role === 'sub') subPlayers.push({ user: member.username, ign: member.ign });
                     });
 
+                    // Kaptan bilgilerini bul ve Excel'e ekle
+                    const captData = team.members.find(m => m.user_id === team.captain_id);
+
                     return {
                         "Sıra": index + 1, "Takım Adı": team.team_name, "Kısaltma": team.team_tag,
+                        "Kaptan İletişim": captData?.phone || "-", "Kaptan E-Posta": captData?.email || "-",
                         "1. Oyuncu (Kaptan)": mainPlayers[0]?.user || "-", "1. Oyuncu IGN": mainPlayers[0]?.ign || "",
                         "2. Oyuncu": mainPlayers[1]?.user || "-", "2. Oyuncu IGN": mainPlayers[1]?.ign || "",
                         "3. Oyuncu": mainPlayers[2]?.user || "-", "3. Oyuncu IGN": mainPlayers[2]?.ign || "",
@@ -578,9 +581,11 @@ async function updateTeamStatus(appId, status, userId, reason = "") {
             document.getElementById('modalTeamName').innerText = team.team_name;
             document.getElementById('modalTeamTag').innerText = `[${team.team_tag}]`;
             
+            // Kaptan bilgilerini modalda göster
             const captData = (team.members || []).find(m => m.user_id === team.captain_id);
             document.getElementById('modalCaptainName').innerText = captData ? captData.username : 'Bilinmiyor';
-            document.getElementById('modalCaptainPhone').innerText = 'Profilde Belirtilmemiş'; 
+            document.getElementById('modalCaptainPhone').innerText = captData ? captData.phone : 'Belirtilmemiş'; 
+            document.getElementById('modalCaptainEmail').innerText = captData ? captData.email : 'Belirtilmemiş'; 
 
             const rl = document.getElementById('modalRosterList'); rl.innerHTML = '';
             (team.members || []).forEach(m => {
