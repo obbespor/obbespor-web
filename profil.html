@@ -836,12 +836,20 @@
         }
         // ==========================================
 
-        async function respondInvite(id, action) {
+       async function respondInvite(id, action) {
             if (action === 'accepted') {
-                await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', id);
+                const { error } = await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', id);
+                if (error) {
+                    showNotification("Kabul ederken hata oluştu: " + error.message, "error");
+                    return;
+                }
                 showNotification("Takıma katıldınız!", "success");
             } else {
-                await window.supabaseClient.from('team_members').delete().eq('id', id);
+                const { error } = await window.supabaseClient.from('team_members').delete().eq('id', id);
+                if (error) {
+                    showNotification("Reddederken hata oluştu: " + error.message, "error");
+                    return;
+                }
                 showNotification("Daveti reddettiniz.", "error");
             }
             loadInvitationsAndTeam();
