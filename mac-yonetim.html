@@ -140,8 +140,9 @@
                 <li><a href="index.html">ANA SAYFA</a></li>
                 <li><a href="admin.html#onay">ONAY</a></li>
                 <li><a href="admin.html#takimlar">ONAYLI</a></li>
-                
-                <li><a href="admin-bracket.html" class="active-admin-tab">BRACKET<i class="fas fa-external-link-alt" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <li><a href="admin.html#fikstur">ZARFLAR / FİKSTÜR</a></li>
+                <li><a href="admin-bracket.html">YENİ MAÇ GİR</a></li>
+                <li><a href="#" class="active-admin-tab">MAÇ YÖNETİMİ<i class="fas fa-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 
                 <li class="nav-bell desktop-only">
                     <a href="#" onclick="toggleNotifPanel('desktopPanel', event)">
@@ -340,13 +341,15 @@
             } catch (err) { window.location.replace("index.html"); }
         }
 
+        // --- YENİ MİMARİ GÜNCELLEMESİ (Takımları teams tablosundan çeker) ---
         async function fetchMatchList() {
             const select = document.getElementById('existingMatchSelect');
             select.innerHTML = '<option value="">-- Yükleniyor... --</option>';
 
             try {
-                const { data: teams } = await window.supabaseClient.from('tournament_applications').select('id, team_name');
-                if (teams) teams.forEach(t => globalTeamMap[t.id] = t.team_name);
+                // tournament_applications yerine TEAMS tablosundan çekiyoruz
+                const { data: teams } = await window.supabaseClient.from('teams').select('id, name');
+                if (teams) teams.forEach(t => globalTeamMap[t.id] = t.name);
 
                 const { data: matches, error } = await window.supabaseClient
                     .from('bracket_matches')
@@ -402,7 +405,7 @@
                 const seriesBox = document.getElementById('seriesScoreBox');
                 let winsNeeded = 1;
                 
-                if (['R1', 'R2'].includes(currentRoundName)) {
+                if (['SON 64', 'SON 32'].includes(currentRoundName)) {
                     seriesBox.style.display = 'none'; 
                     winsNeeded = 1;
                 } else {
@@ -447,10 +450,11 @@
             const selects = document.getElementById(containerId).querySelectorAll('.user-matcher-select');
             selects.forEach(select => select.innerHTML = '<option value="">Yükleniyor...</option>');
             try {
+                // YENİ MİMARİ: application_members yerine team_members'dan çek
                 const { data: players, error } = await window.supabaseClient
-                    .from('application_members')
+                    .from('team_members')
                     .select('user_id, profiles(username, ign)')
-                    .eq('application_id', teamId)
+                    .eq('team_id', teamId)
                     .eq('status', 'accepted');
                     
                 let optionsHtml = '<option value="">-- Profil Seç --</option>';
