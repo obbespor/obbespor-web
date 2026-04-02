@@ -475,17 +475,27 @@
             if (reason) updateTeamStatus(appId, 'rejected', userId, reason);
         }
 
-        async function updateTeamStatus(appId, status, userId, reason = "") {
+async function updateTeamStatus(appId, status, userId, reason = "") {
+            // 1. Veritabanında güncelleme yap
             const { error } = await window.supabaseClient.from('tournament_applications').update({ status }).eq('id', appId);
+            
             if (!error) {
+                // 2. Kullanıcıya bildirim gönder
                 if (userId) {
                     const baslik = status === 'approved' ? "Başvurunuz Onaylandı! 🎉" : "Başvurunuz Reddedildi";
                     const mesaj = status === 'approved' ? "Tebrikler, takım başvurunuz onaylandı!" : `Maalesef takım başvurunuz reddedildi. Sebep: ${reason}`;
                     await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: userId, baslik, mesaj, tip: status === 'approved' ? 'onay' : 'red' }]);
                 }
-                showNotification("Takım güncellendi.", "success");
-                loadPendingTeams(); loadApprovedTeams();
-            } else showNotification("Hata oluştu.", "error");
+                
+                showNotification("Takım başarıyla güncellendi.", "success");
+                
+                // 3. KESİN ÇÖZÜM: Ekranın tazelenmesi için fonksiyonları sırayla bekleterek çağır
+                await loadPendingTeams(); 
+                await loadApprovedTeams();
+                
+            } else {
+                showNotification("Hata oluştu: " + error.message, "error");
+            }
         }
 
         async function excelAktar() {
