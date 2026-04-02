@@ -467,6 +467,12 @@
                     <p>Kişisel Verilerin İşlenmesine İlişkin Aydınlatma Metni'ni okudum ve anladım. Katıldığım resmi e-spor liglerinde, çevrimiçi turnuvalarda veya platform içi etkinliklerde elde edilen oyun içi performans görüntülerimin, sesli iletişim kayıtlarımın (voice chat), kullanıcı adımın (nickname) ve varsa web kamerası görüntülerimin kaydedilmesine; canlı, naklen veya banttan ulusal ve uluslararası mecralarda (Twitch, YouTube vb.) yayınlanmasına; turnuva organizatörleri, sponsor markalar ve OBB E-Spor'un ticari iş ortaklarıyla reklam, pazarlama, tanıtım ve PR faaliyetleri kapsamında paylaşılmasına ve bu amaçlarla ticari olarak kullanılmasına tamamen özgür irademle açık rıza veriyorum.</p>
                 `
             },
+            ticari: {
+                title: "TİCARİ İLETİŞİM AÇIK RIZA METNİ",
+                body: `
+                    <p>Kişisel Verilerin İşlenmesine İlişkin Aydınlatma Metni'ni okudum ve anladım. E-posta, SMS ve anlık bildirim (push notification) araçları kullanılarak OBB E-Spor'un düzenleyeceği yeni turnuvalar, etkinlik duyuruları, platform yenilikleri ve sponsor markalara ait kampanya/reklam içerikleri hakkında tarafımla ticari iletişim kurulmasına ve bu kapsamda iletişim verilerimin işlenmesine tamamen özgür irademle açık rıza veriyorum.</p>
+                `
+            },
             sozlesme: {
                 title: "KULLANICI VE HİZMET SÖZLEŞMESİ (TERMS OF SERVICE)",
                 body: `
@@ -710,8 +716,8 @@
         async function loadInvitationsAndTeam() {
             try {
                 // 1. Önce kullanıcının tüm üyelik durumlarını ve bağlı olduğu takımları çekiyoruz
-                const { data: memberships, error } = await window.supabaseClient.from('application_members')
-                    .select('*, tournament_applications(team_name, team_tag, status, captain_id)')
+                const { data: memberships, error } = await window.supabaseClient.from('team_members')
+                    .select('id, team_id, status, role, teams(id, name, tag, captain_id)')
                     .eq('user_id', currentUser.id)
                     .order('created_at', { ascending: false });
 
@@ -742,62 +748,44 @@
                 }
 
                 // 2. Kabul edilmiş aktif takımı bul 
-                const activeTeamMember = memberships.find(m => {
-                    if (m.status !== 'accepted') return false;
-                    const teamData = Array.isArray(m.tournament_applications) ? m.tournament_applications[0] : m.tournament_applications;
-                    if (!teamData) return false;
-                    
-                    // EĞER takım draft ise ve kullanıcı takımın KAPTANI ise, bu bir 'hayalet' drafttır. Görmezden gel ve davetleri göster.
-                    if (teamData.status === 'draft' && teamData.captain_id === currentUser.id) {
-                        return false;
-                    }
-                    
-                    return true; 
-                });
+                const activeTeamMember = memberships.find(m => m.status === 'accepted');
 
                 if (activeTeamMember) {
-                    const teamData = Array.isArray(activeTeamMember.tournament_applications) ? activeTeamMember.tournament_applications[0] : activeTeamMember.tournament_applications;
+                    const teamData = activeTeamMember.teams;
 
-                    // EĞER takım draft aşamasındaysa (kaptanı olmadığımızı yukarıda garantiledik)
-                    if (teamData.status === 'draft') {
-                        title.innerHTML = `<i class="fas fa-hourglass-half"></i> Onay Bekleniyor`;
-                        list.innerHTML = `
-                            <div class="active-team-card" style="background: linear-gradient(135deg, rgba(96, 29, 194, 0.05) 0%, rgba(10, 10, 10, 0.9) 100%);">
-                                <i class="fas fa-check-circle fa-3x" style="color: var(--neon-mor); margin-bottom: 15px; filter: drop-shadow(0 0 10px var(--neon-mor));"></i>
-                                <h3>${teamData.team_name ? teamData.team_name.toUpperCase() : 'BİR TAKIM'} DAVETİNİ KABUL ETTİN!</h3>
-                                <p style="color: var(--gri-yazi); margin-bottom: 20px; font-size: 14px;">Takımınız şu an oluşturulma aşamasında. Kaptanınız kadroyu tamamlayıp başvuruyu gönderene kadar lütfen bekleyiniz.</p>
-                                <div style="display: inline-block; background: rgba(96, 29, 194, 0.2); border: 1px solid var(--neon-mor); padding: 8px 20px; border-radius: 8px; font-weight: bold; color: var(--neon-mor);">
-                                    <i class="fas fa-tools"></i> Kurulum Aşamasında (Draft)
-                                </div>
-                            </div>
-                        `;
-                        return; // Fonksiyonu bitir, davetleri gösterme
-                    }
+                    // Takımın herhangi bir turnuvaya başvurup başvurmadığını kontrol ediyoruz
+                    const { data: appData } = await window.supabaseClient.from('tournament_applications')
+                        .select('status')
+                        .eq('team_id', teamData.id)
+                        .order('created_at', { ascending: false })
+                        .limit(1)
+                        .maybeSingle();
 
-                    // Eğer takım draft değilse (pending/approved/rejected), mevcut takım mantığı çalışsın
-                    let teamStatusText = "Bilinmiyor";
+                    let teamStatusText = "Lobi / Hazırlık";
                     let teamStatusColor = "#777";
-                    let teamStatusIcon = "fa-info-circle";
+                    let teamStatusIcon = "fa-tools";
 
-                    if (teamData.status === 'approved') {
-                        teamStatusText = "Turnuvaya Hazır";
-                        teamStatusColor = "var(--yesil-guven)";
-                        teamStatusIcon = "fa-check-circle";
-                    } else if (teamData.status === 'pending') {
-                        teamStatusText = "Başvuru İncelemede";
-                        teamStatusColor = "var(--mavi-onay)";
-                        teamStatusIcon = "fa-clock";
-                    } else if (teamData.status === 'rejected') {
-                        teamStatusText = "Reddedildi";
-                        teamStatusColor = "var(--kirmizi-iptal)";
-                        teamStatusIcon = "fa-times-circle";
+                    if (appData) {
+                        if (appData.status === 'approved') {
+                            teamStatusText = "Turnuvaya Hazır";
+                            teamStatusColor = "var(--yesil-guven)";
+                            teamStatusIcon = "fa-check-circle";
+                        } else if (appData.status === 'pending') {
+                            teamStatusText = "Başvuru İncelemede";
+                            teamStatusColor = "var(--mavi-onay)";
+                            teamStatusIcon = "fa-clock";
+                        } else if (appData.status === 'rejected') {
+                            teamStatusText = "Reddedildi";
+                            teamStatusColor = "var(--kirmizi-iptal)";
+                            teamStatusIcon = "fa-times-circle";
+                        }
                     }
 
                     title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
                     list.innerHTML = `
                         <div class="active-team-card">
-                            <span class="team-tag-large">${teamData.team_tag || 'LOBİ'}</span>
-                            <h3>${teamData.team_name || 'İSİMSİZ TAKIM'}</h3>
+                            <span class="team-tag-large">${teamData.tag || 'LOBİ'}</span>
+                            <h3>${teamData.name || 'İSİMSİZ TAKIM'}</h3>
                             <p>Durum: <span style="color:${teamStatusColor}; font-weight:bold;"><i class="fas ${teamStatusIcon}"></i> ${teamStatusText}</span></p>
                             <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
                         </div>
@@ -814,9 +802,9 @@
                     badge.style.display = "inline-block";
 
                     for (let inv of pendingInvites) {
-                        const tData = Array.isArray(inv.tournament_applications) ? inv.tournament_applications[0] : inv.tournament_applications;
-                        const teamName = tData?.team_name || "Bilinmeyen Takım";
-                        const teamTag = tData?.team_tag || "LOBİ";
+                        const tData = inv.teams;
+                        const teamName = tData?.name || "Bilinmeyen Takım";
+                        const teamTag = tData?.tag || "LOBİ";
                         const roleText = inv.role === 'main' ? 'Asil' : 'Yedek';
 
                         list.innerHTML += `
@@ -850,10 +838,10 @@
 
         async function respondInvite(id, action) {
             if (action === 'accepted') {
-                await window.supabaseClient.from('application_members').update({ status: 'accepted' }).eq('id', id);
+                await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', id);
                 showNotification("Takıma katıldınız!", "success");
             } else {
-                await window.supabaseClient.from('application_members').delete().eq('id', id);
+                await window.supabaseClient.from('team_members').delete().eq('id', id);
                 showNotification("Daveti reddettiniz.", "error");
             }
             loadInvitationsAndTeam();
@@ -861,7 +849,7 @@
 
         function subscribeToInvites() {
             window.supabaseClient.channel('custom-invites')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'application_members', filter: `user_id=eq.${currentUser.id}` }, () => loadInvitationsAndTeam())
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members', filter: `user_id=eq.${currentUser.id}` }, () => loadInvitationsAndTeam())
                 .subscribe();
         }
 
