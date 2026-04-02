@@ -107,7 +107,9 @@
         
         .stats-grid-container { display: flex; flex-direction: column; gap: 20px; }
         .team-stats-box h4 { font-size: 14px; margin-bottom: 10px; text-transform: uppercase; border-left: 4px solid; padding-left: 10px; }
-        .player-stat-row { display: grid; grid-template-columns: 80px 1.2fr 1.2fr 40px 40px 40px 50px 50px 50px; gap: 5px; margin-bottom: 8px; align-items: center; background: #0d0d0d; padding: 8px; border-radius: 8px; border: 1px solid #222; }
+        
+        /* GÜNCELLENDİ: ADR ve HS% sütunları çıkartıldı. KDA ve ACS kaldı. */
+        .player-stat-row { display: grid; grid-template-columns: 80px 1.2fr 1.2fr 40px 40px 40px 50px; gap: 5px; margin-bottom: 8px; align-items: center; background: #0d0d0d; padding: 8px; border-radius: 8px; border: 1px solid #222; }
         .player-stat-row input, .player-stat-row select { background: #000; border: 1px solid #333; color: white; padding: 6px 4px; border-radius: 4px; font-size: 11px; text-align: center; width: 100%; outline: none; }
         .player-stat-row input.ign-input { text-align: left; font-weight: bold; padding-left: 8px; }
         .agent-input-group { display: flex; align-items: center; gap: 5px; }
@@ -125,7 +127,7 @@
         @media (max-width: 1024px) {
             .dashboard-grid { grid-template-columns: 1fr; }
             .sidebar-panel { height: 400px; }
-            .player-stat-row { min-width: 600px; }
+            .player-stat-row { min-width: 500px; }
             .stats-grid-container { overflow-x: auto; }
         }
     </style>
@@ -350,7 +352,6 @@
                 
                 await loadTournamentsToSelect();
 
-                // Yeni ilişkisel yapıya uygun fonksiyonlar
                 loadPendingTeams();
                 loadApprovedTeams();
                 
@@ -389,55 +390,51 @@
             if(tabName === 'fikstur') updateDynamicSelectors();
         }
 
-        // --- YENİ İLİŞKİSEL MİMARİ İLE TAKIM ÇEKME FONKSİYONLARI ---
+        // --- GİZLİ KASA İLE TAKIM ÇEKME FONKSİYONU ---
         async function fetchTeamsWithMembers(statusFilter) {
-            const { data: apps, error } = await window.supabaseClient
-                .from('tournament_applications')
-                .select(`
-                    id,
-                    status,
-                    teams (
-                        id, name, tag, logo_url, captain_id,
-                        team_members (
-                            id, user_id, role, status, 
-                            profiles (
-                                username, ign,
-                                user_contacts (phone, email)
+            try {
+                const { data: apps, error } = await window.supabaseClient
+                    .from('tournament_applications')
+                    .select(`
+                        id, status,
+                        teams (
+                            id, name, tag, logo_url, captain_id,
+                            team_members (
+                                id, user_id, role, status, 
+                                profiles (
+                                    username, ign,
+                                    user_contacts (phone, email)
+                                )
                             )
                         )
-                    )
-                `)
-                .eq('status', statusFilter);
-            
-            if (error || !apps) return [];
+                    `)
+                    .eq('status', statusFilter);
+                
+                if (error || !apps) return [];
 
-            return apps.filter(app => app.teams).map(app => {
-                const t = app.teams;
-                return {
-                    id: app.id, 
-                    team_id: t.id,
-                    team_name: t.name,
-                    team_tag: t.tag,
-                    logo_url: t.logo_url,
-                    captain_id: t.captain_id,
-                    members: (t.team_members || []).map(tm => {
-                        // Kasa verilerini güvenli bir şekilde objeden veya diziden çıkart
-                        let contactData = tm.profiles?.user_contacts;
-                        if (Array.isArray(contactData)) contactData = contactData[0];
+                return apps.filter(app => app.teams).map(app => {
+                    const t = app.teams;
+                    return {
+                        id: app.id, team_id: t.id, team_name: t.name, team_tag: t.tag,
+                        logo_url: t.logo_url, captain_id: t.captain_id,
+                        members: (t.team_members || []).map(tm => {
+                            let contactData = tm.profiles?.user_contacts;
+                            if (Array.isArray(contactData)) contactData = contactData[0];
 
-                        return {
-                            id: tm.id,
-                            user_id: tm.user_id,
-                            role: tm.role,
-                            status: tm.status,
-                            username: tm.profiles?.username || 'Bilinmiyor',
-                            ign: tm.profiles?.ign || '',
-                            phone: contactData?.phone || 'Belirtilmemiş',
-                            email: contactData?.email || 'Belirtilmemiş'
-                        };
-                    })
-                };
-            });
+                            return {
+                                id: tm.id, user_id: tm.user_id, role: tm.role, status: tm.status,
+                                username: tm.profiles?.username || 'Bilinmiyor',
+                                ign: tm.profiles?.ign || '',
+                                phone: contactData?.phone || 'Belirtilmemiş',
+                                email: contactData?.email || 'Belirtilmemiş'
+                            };
+                        })
+                    };
+                });
+            } catch (err) {
+                console.error("Veri çekme hatası:", err);
+                return [];
+            }
         }
 
         async function loadPendingTeams() {
@@ -491,26 +488,17 @@
         }
 
         async function updateTeamStatus(appId, status, userId, reason = "") {
-            // 1. Veritabanında güncelleme yap
             const { error } = await window.supabaseClient.from('tournament_applications').update({ status }).eq('id', appId);
-            
             if (!error) {
-                // 2. Kullanıcıya bildirim gönder
                 if (userId) {
                     const baslik = status === 'approved' ? "Başvurunuz Onaylandı! 🎉" : "Başvurunuz Reddedildi";
                     const mesaj = status === 'approved' ? "Tebrikler, takım başvurunuz onaylandı!" : `Maalesef takım başvurunuz reddedildi. Sebep: ${reason}`;
                     await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: userId, baslik, mesaj, tip: status === 'approved' ? 'onay' : 'red' }]);
                 }
-                
                 showNotification("Takım başarıyla güncellendi.", "success");
-                
-                // 3. KESİN ÇÖZÜM: Ekranın tazelenmesi için fonksiyonları sırayla bekleterek çağır
                 await loadPendingTeams(); 
                 await loadApprovedTeams();
-                
-            } else {
-                showNotification("Hata oluştu: " + error.message, "error");
-            }
+            } else showNotification("Hata oluştu: " + error.message, "error");
         }
 
         async function excelAktar() {
@@ -531,7 +519,6 @@
                         else if (member.role === 'sub') subPlayers.push({ user: member.username, ign: member.ign });
                     });
 
-                    // Kaptan bilgilerini bul ve Excel'e ekle
                     const captData = team.members.find(m => m.user_id === team.captain_id);
 
                     return {
@@ -581,7 +568,6 @@
             document.getElementById('modalTeamName').innerText = team.team_name;
             document.getElementById('modalTeamTag').innerText = `[${team.team_tag}]`;
             
-            // Kaptan bilgilerini modalda göster
             const captData = (team.members || []).find(m => m.user_id === team.captain_id);
             document.getElementById('modalCaptainName').innerText = captData ? captData.username : 'Bilinmiyor';
             document.getElementById('modalCaptainPhone').innerText = captData ? captData.phone : 'Belirtilmemiş'; 
@@ -603,7 +589,7 @@
 
 
         /* =========================================================================
-           YENİ ZARF VE FİKSTÜR SİSTEMİ SCRİPTLERİ
+           ZARF VE FİKSTÜR SİSTEMİ (YAPAY ZEKA OCR İÇİN GÜNCELLENDİ)
            ========================================================================= */
 
         function switchSidebarTab(mode) {
@@ -695,6 +681,30 @@
             for(let i=1; i<=maxMap; i++) mapOrder.innerHTML += `<option value="${i}">${i}. HARİTA</option>`;
         }
 
+        /* --- YAPAY ZEKA VERİLERİNİ OTOMATİK DOLDURMA FONKSİYONU --- */
+        function fillOCRData(containerId, playersData) {
+            if (!playersData || !Array.isArray(playersData)) return;
+            const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
+            
+            // i=1'den başlıyoruz çünkü i=0 başlık (header) satırı
+            for(let i=0; i<Math.min(playersData.length, 5); i++) {
+                const p = playersData[i];
+                const row = rows[i+1];
+                if (!row) continue;
+
+                if(p.agent) {
+                    const agentInput = row.querySelector('.agent-name-input');
+                    agentInput.value = p.agent;
+                    updateAgentIcon(agentInput, `${containerId}_icon_${i}`);
+                }
+                if(p.ign) row.querySelector('.ign-input').value = p.ign;
+                if(p.k !== undefined) row.querySelector('.k-input').value = p.k;
+                if(p.d !== undefined) row.querySelector('.d-input').value = p.d;
+                if(p.a !== undefined) row.querySelector('.a-input').value = p.a;
+                if(p.acs !== undefined) row.querySelector('.acs-input').value = p.acs;
+            }
+        }
+
         async function openEnvelope(envId) {
             activeRecordId = envId;
             document.getElementById('editorPanel').style.display = 'block';
@@ -717,9 +727,15 @@
                 
                 syncTeamName('A', tA); syncTeamName('B', tB);
 
+                // Önce satırları oluştur
                 generateEmptyRows('teamAPlayersInputs');
                 generateEmptyRows('teamBPlayersInputs');
                 
+                // Yapay Zekadan gelen veriler varsa form kutucuklarına doldur
+                fillOCRData('teamAPlayersInputs', mData.playersA);
+                fillOCRData('teamBPlayersInputs', mData.playersB);
+
+                // Profilleri çek ve eğer Yapay Zeka doğru İGN okuduysa dropdown'ı otomatik eşleştir
                 await fetchProfilesIfMissing('A');
                 await fetchProfilesIfMissing('B');
 
@@ -769,7 +785,6 @@
                 renderPlayerRows('teamAPlayersInputs', teamAStats);
                 renderPlayerRows('teamBPlayersInputs', teamBStats);
 
-                // Tournament dropdown'u da eşitle
                 if (match.tournament_id) {
                     document.getElementById('tourneySelect').value = match.tournament_id;
                 }
@@ -779,20 +794,20 @@
             }
         }
 
-        // --- FORM İŞLEMLERİ (Arayüz) ---
         function syncTeamName(team, name) {
             const header = document.getElementById(team === 'A' ? 'headerTeamA' : 'headerTeamB');
             const color = team === 'A' ? '#00d2ff' : '#ff4b4b';
             header.innerHTML = `${name.toUpperCase() || 'TAKIM'} <span style="font-size:12px; color:${color}; opacity:0.7;">${team === 'A' ? '(Mavi)' : '(Kırmızı)'}</span>`;
         }
 
+        // --- ADR VE HS% SÜTUNLARI ÇIKARTILDI ---
         function generateEmptyRows(containerId) {
             const container = document.getElementById(containerId);
             container.innerHTML = `
                 <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
                     <span class="stat-label">AJAN</span><span class="stat-label" style="text-align:left;">OYUN İÇİ NİCK</span><span class="stat-label">PROFİL EŞLEŞTİR</span>
                     <span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
-                    <span class="stat-label" style="color:var(--neon-mor);">ACS</span><span class="stat-label" style="color:var(--neon-mor);">ADR</span><span class="stat-label" style="color:var(--neon-mor);">HS%</span>
+                    <span class="stat-label" style="color:var(--neon-mor);">ACS</span>
                 </div>
             `;
             for(let i=0; i<5; i++) {
@@ -805,7 +820,7 @@
                         <input type="text" class="ign-input" placeholder="IGN">
                         <select class="user-matcher-select"><option value="">-- Takım Yazın --</option></select>
                         <input type="number" class="k-input" value="0"><input type="number" class="d-input" value="0"><input type="number" class="a-input" value="0">
-                        <input type="number" class="acs-input" value="0"><input type="number" class="adr-input" value="0"><input type="number" class="hs-input" value="0">
+                        <input type="number" class="acs-input" value="0">
                     </div>`;
             }
         }
@@ -816,7 +831,7 @@
                 <div class="player-stat-row" style="background: transparent; border: none; padding-bottom: 0;">
                     <span class="stat-label">AJAN</span><span class="stat-label" style="text-align:left;">OYUN İÇİ NİCK</span><span class="stat-label" style="display:none;">USER ID</span>
                     <span class="stat-label">K</span><span class="stat-label">D</span><span class="stat-label">A</span>
-                    <span class="stat-label" style="color:var(--neon-mor);">ACS</span><span class="stat-label" style="color:var(--neon-mor);">ADR</span><span class="stat-label" style="color:var(--neon-mor);">HS%</span>
+                    <span class="stat-label" style="color:var(--neon-mor);">ACS</span>
                 </div>
             `;
             
@@ -837,7 +852,7 @@
                         <input type="text" class="ign-input" placeholder="IGN" value="${ign}">
                         <input type="hidden" class="hidden-user-id" value="${p.user_id || ''}">
                         <input type="number" class="k-input" value="${p.kills||0}"><input type="number" class="d-input" value="${p.deaths||0}"><input type="number" class="a-input" value="${p.assists||0}">
-                        <input type="number" class="acs-input" value="${p.acs||0}"><input type="number" class="adr-input" value="${p.adr||0}"><input type="number" class="hs-input" value="${p.hs_percentage||0}">
+                        <input type="number" class="acs-input" value="${p.acs||0}">
                     </div>`;
             }
         }
@@ -877,16 +892,31 @@
                     });
                 }
                 
-                selects.forEach(sel => { sel.innerHTML = optionsHtml; });
+                // YAPAY ZEKA OTOMATİK EŞLEŞTİRME SİSTEMİ
+                selects.forEach((sel) => { 
+                    sel.innerHTML = optionsHtml; 
+                    const row = sel.closest('.player-stat-row');
+                    const currentIgn = row.querySelector('.ign-input').value.trim().toLowerCase();
+                    
+                    if (currentIgn) {
+                        for (let opt of sel.options) {
+                            if (opt.getAttribute('data-ign') && opt.getAttribute('data-ign').toLowerCase() === currentIgn) {
+                                opt.selected = true; // Yapay zeka İGN'yi doğru okuduysa profili otomatik seç!
+                                break;
+                            }
+                        }
+                    }
+                });
             } catch (e) {
                 selects.forEach(sel => { sel.innerHTML = '<option value="">Bulunamadı</option>'; });
             }
         }
 
-        // --- VERİTABANINA YAZMA (İĞNELEME / GÜNCELLEME) ---
+        // --- VERİTABANINA YAZMA VE İGN GÜNCELLEME ---
         const collectDataAndUpdateIGN = async (containerId, teamId, mapDataId) => {
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             const stats = [];
+            // i=1 header satırını atlamak için
             for(let i=1; i<rows.length; i++) {
                 const row = rows[i];
                 const hiddenInput = row.querySelector('.hidden-user-id');
@@ -895,6 +925,7 @@
                 const userId = (hiddenInput && hiddenInput.value) ? hiddenInput.value : (select ? select.value : null);
                 const inGameName = row.querySelector('.ign-input').value || 'Bilinmiyor';
 
+                // Eğer admin yeni bir profil eşleştirmişse, o profildeki İGN'yi de güncelleyelim
                 if (select && userId && inGameName && inGameName !== 'Bilinmiyor') {
                     const selectedOption = select.options[select.selectedIndex];
                     const existingIgn = selectedOption.getAttribute('data-ign');
@@ -910,9 +941,7 @@
                     kills: parseInt(row.querySelector('.k-input').value) || 0,
                     deaths: parseInt(row.querySelector('.d-input').value) || 0,
                     assists: parseInt(row.querySelector('.a-input').value) || 0,
-                    acs: parseInt(row.querySelector('.acs-input').value) || 0,
-                    adr: parseInt(row.querySelector('.adr-input').value) || 0,
-                    hs_percentage: parseInt(row.querySelector('.hs-input').value) || 0
+                    acs: parseInt(row.querySelector('.acs-input').value) || 0
                 });
             }
             return stats;
@@ -947,7 +976,6 @@
 
             try {
                 if(currentMode === 'zarflar') {
-                    // YENİ ZARFI İĞNELE 
                     const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
                         .select('id').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
                     
@@ -980,7 +1008,6 @@
                     setTimeout(() => switchSidebarTab('zarflar'), 1000);
 
                 } else {
-                    // MEVCUT HARİTAYI GÜNCELLE
                     const mapId = activeRecordId.mapId;
                     await window.supabaseClient.from('match_maps').update({ map_name: mapName, score_a: scoreA, score_b: scoreB }).eq('id', mapId);
 
