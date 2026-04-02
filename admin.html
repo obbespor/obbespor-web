@@ -216,7 +216,7 @@
                     <h4><i class="fas fa-users"></i> TAKIM KADROSU</h4>
                     <ul class="player-list-mini" id="modalRosterList" style="margin-bottom: 0; padding: 0;"></ul>
                 </div>
-                <button class="btn-delete-team" id="modalDeleteBtn"><i class="fas fa-trash"></i> BU TAKIMI SİL</button>
+                <button class="btn-delete-team" id="modalDeleteBtn"><i class="fas fa-trash"></i> BU BAŞVURUYU SİL</button>
             </div>
         </div>
     </div>
@@ -243,7 +243,7 @@
                     <div class="placement-title"><i class="fas fa-map-marker-alt"></i> FİKSTÜRDE YER BELİRLE</div>
                     <div class="placement-grid">
                         <select id="tourneySelect" class="form-control">
-                            <option value="OBB 1">OBB 1. TOPLULUK TURNUVASI</option>
+                            <option value="">Turnuva Yükleniyor...</option>
                         </select>
                         <select id="stageSelect" class="form-control" onchange="updateDynamicSelectors()">
                             <option value="SON 64">SON 64 (BO1)</option>
@@ -307,9 +307,6 @@
     <script src="js/bildirimler.js"></script>
     <script src="js/auth.js"></script>
     <script>
-        /* =========================================================================
-           ORTAK VE ESKİ ONAY SİSTEMİ SCRİPTLERİ (SENİN KODLARIN - DOKUNULMADI)
-           ========================================================================= */
         let globalTeamMap = {}; 
         let teamAId_memory = null;
         let teamBId_memory = null;
@@ -317,7 +314,6 @@
         let activeRecordId = null;
 
         async function initAdminPage() {
-            // Footer'ı Yükle
             try {
                 const response = await fetch("components/footer.html");
                 if (response.ok) document.getElementById("footer-alani").innerHTML = await response.text();
@@ -356,11 +352,12 @@
 
                 document.getElementById('loadingScreen').style.display = 'none';
                 
-                // Eski fonksiyonlar
+                await loadTournamentsToSelect();
+
+                // Yeni ilişkisel yapıya uygun fonksiyonlar
                 loadPendingTeams();
                 loadApprovedTeams();
                 
-                // Yeni fonksiyonlar
                 generateEmptyRows('teamAPlayersInputs');
                 generateEmptyRows('teamBPlayersInputs');
                 updateDynamicSelectors();
@@ -368,6 +365,17 @@
 
             } catch (err) {
                 window.location.replace("index.html");
+            }
+        }
+
+        async function loadTournamentsToSelect() {
+            const { data: tournaments } = await window.supabaseClient.from('tournaments').select('id, name').order('created_at', { ascending: false });
+            const select = document.getElementById('tourneySelect');
+            select.innerHTML = '';
+            if (tournaments && tournaments.length > 0) {
+                tournaments.forEach(t => select.innerHTML += `<option value="${t.id}">${t.name}</option>`);
+            } else {
+                select.innerHTML = `<option value="">Önce Turnuva Oluşturun</option>`;
             }
         }
 
@@ -385,11 +393,50 @@
             if(tabName === 'fikstur') updateDynamicSelectors();
         }
 
-        // --- ESKİ ONAY FONKSİYONLARI ---
+        // --- YENİ İLİŞKİSEL MİMARİ İLE TAKIM ÇEKME FONKSİYONLARI ---
+        async function fetchTeamsWithMembers(statusFilter) {
+            // Yeni yapıda: applications tablosundan takımı, oradan da üyeleri çekiyoruz
+            const { data: apps, error } = await window.supabaseClient
+                .from('tournament_applications')
+                .select(`
+                    id,
+                    status,
+                    teams (
+                        id, name, tag, logo_url, captain_id,
+                        team_members (id, user_id, role, status, profiles(username, ign))
+                    )
+                `)
+                .eq('status', statusFilter);
+            
+            if (error || !apps) return [];
+
+            // Eski arayüzün (HTML/CSS) bozulmaması için çektiğimiz veriyi eski JSON formatına çeviriyoruz
+            return apps.map(app => {
+                const t = app.teams;
+                return {
+                    id: app.id, // Bu artık application_id (Onaylamak veya silmek için gerekli)
+                    team_id: t.id,
+                    team_name: t.name,
+                    team_tag: t.tag,
+                    logo_url: t.logo_url,
+                    captain_id: t.captain_id,
+                    members: (t.team_members || []).map(tm => ({
+                        id: tm.id,
+                        user_id: tm.user_id,
+                        role: tm.role,
+                        status: tm.status,
+                        username: tm.profiles?.username || 'Bilinmiyor',
+                        ign: tm.profiles?.ign || ''
+                    }))
+                };
+            });
+        }
+
         async function loadPendingTeams() {
-            const { data: teams } = await window.supabaseClient.rpc('get_admin_teams', { p_status: 'pending' });
+            const teams = await fetchTeamsWithMembers('pending');
             const grid = document.getElementById('pendingTeamsGrid');
             grid.innerHTML = '';
+            
             if (teams && teams.length > 0) {
                 teams.forEach(team => {
                     let playersHtml = '';
@@ -397,7 +444,7 @@
                         const icon = m.status === 'accepted' ? '<i class="fas fa-check" style="color:var(--yesil-guven);"></i>' : '<i class="fas fa-clock" style="color:var(--mavi-onay);"></i>';
                         playersHtml += `<li>${m.role === 'main' ? 'Asil' : 'Yedek'}: <span>${m.username}</span> ${icon}</li>`;
                     });
-                    const cardUserId = team.user_id || team.captain_id || '';
+                    const cardUserId = team.captain_id || '';
                     grid.innerHTML += `
                         <div class="team-card">
                             <div class="team-logo-area"><img src="${team.logo_url || 'https://via.placeholder.com/100'}" alt="Logo"></div>
@@ -415,7 +462,7 @@
         }
 
         async function loadApprovedTeams() {
-            const { data: teams } = await window.supabaseClient.rpc('get_admin_teams', { p_status: 'approved' });
+            const teams = await fetchTeamsWithMembers('approved');
             const list = document.getElementById('approvedTeamsList');
             list.innerHTML = '';
             if (teams && teams.length > 0) {
@@ -430,13 +477,14 @@
             } else list.innerHTML = '<p style="color: var(--gri-yazi);">Onaylanmış takım bulunmuyor.</p>';
         }
 
-        async function rejectTeam(teamId, userId) {
+        async function rejectTeam(appId, userId) {
             const reason = prompt("Lütfen ret sebebini yazın:");
-            if (reason) updateTeamStatus(teamId, 'rejected', userId, reason);
+            if (reason) updateTeamStatus(appId, 'rejected', userId, reason);
         }
 
-        async function updateTeamStatus(teamId, status, userId, reason = "") {
-            const { error } = await window.supabaseClient.from('tournament_applications').update({ status }).eq('id', teamId);
+        async function updateTeamStatus(appId, status, userId, reason = "") {
+            // Artık tournament_applications tablosundaki statüyü güncelliyoruz
+            const { error } = await window.supabaseClient.from('tournament_applications').update({ status }).eq('id', appId);
             if (!error) {
                 if (userId) {
                     const baslik = status === 'approved' ? "Başvurunuz Onaylandı! 🎉" : "Başvurunuz Reddedildi";
@@ -455,31 +503,27 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Hazırlanıyor...';
                 btn.disabled = true;
 
-                const { data: teams, error } = await window.supabaseClient.from('tournament_applications')
-                    .select(`id, team_name, team_tag, logo_url, captain_id, application_members (role, user_id, profiles ( username, ign ))`).eq('status', 'approved');
+                const teams = await fetchTeamsWithMembers('approved');
 
-                if (error) throw error;
                 if (!teams || teams.length === 0) { showNotification("Dışa aktarılacak takım bulunamadı.", "error"); btn.innerHTML = originalText; btn.disabled = false; return; }
 
                 const excelVerileri = teams.map((team, index) => {
                     let mainPlayers = []; let subPlayers = [];
-                    team.application_members.forEach(member => {
-                        const username = member.profiles?.username || "Bilinmiyor";
-                        const ign = member.profiles?.ign || "";
-                        if (member.role === 'main') mainPlayers.push({ user: username, ign: ign });
-                        else if (member.role === 'sub') subPlayers.push({ user: username, ign: ign });
+                    team.members.forEach(member => {
+                        if (member.role === 'main') mainPlayers.push({ user: member.username, ign: member.ign });
+                        else if (member.role === 'sub') subPlayers.push({ user: member.username, ign: member.ign });
                     });
 
                     return {
                         "Sıra": index + 1, "Takım Adı": team.team_name, "Kısaltma": team.team_tag,
-                        "1. Oyuncu (Kaptan)": mainPlayers[0]?.user || "-", "1. Oyuncu IGN": mainPlayers[0]?.ign ? mainPlayers[0].ign : "",
-                        "2. Oyuncu": mainPlayers[1]?.user || "-", "2. Oyuncu IGN": mainPlayers[1]?.ign ? mainPlayers[1].ign : "",
-                        "3. Oyuncu": mainPlayers[2]?.user || "-", "3. Oyuncu IGN": mainPlayers[2]?.ign ? mainPlayers[2].ign : "",
-                        "4. Oyuncu": mainPlayers[3]?.user || "-", "4. Oyuncu IGN": mainPlayers[3]?.ign ? mainPlayers[3].ign : "",
-                        "5. Oyuncu": mainPlayers[4]?.user || "-", "5. Oyuncu IGN": mainPlayers[4]?.ign ? mainPlayers[4].ign : "",
-                        "Yedek 1": subPlayers[0]?.user || "-", "Yedek 1 IGN": subPlayers[0]?.ign ? subPlayers[0].ign : "",
-                        "Yedek 2": subPlayers[1]?.user || "-", "Yedek 2 IGN": subPlayers[1]?.ign ? subPlayers[1].ign : "",
-                        "Telefon No": "", "Logo URL": team.logo_url || "Logo Yok"
+                        "1. Oyuncu (Kaptan)": mainPlayers[0]?.user || "-", "1. Oyuncu IGN": mainPlayers[0]?.ign || "",
+                        "2. Oyuncu": mainPlayers[1]?.user || "-", "2. Oyuncu IGN": mainPlayers[1]?.ign || "",
+                        "3. Oyuncu": mainPlayers[2]?.user || "-", "3. Oyuncu IGN": mainPlayers[2]?.ign || "",
+                        "4. Oyuncu": mainPlayers[3]?.user || "-", "4. Oyuncu IGN": mainPlayers[3]?.ign || "",
+                        "5. Oyuncu": mainPlayers[4]?.user || "-", "5. Oyuncu IGN": mainPlayers[4]?.ign || "",
+                        "Yedek 1": subPlayers[0]?.user || "-", "Yedek 1 IGN": subPlayers[0]?.ign || "",
+                        "Yedek 2": subPlayers[1]?.user || "-", "Yedek 2 IGN": subPlayers[1]?.ign || "",
+                        "Logo URL": team.logo_url || "Logo Yok"
                     };
                 });
 
@@ -493,28 +537,21 @@
             } catch (err) { showNotification("Excel oluşturulamadı.", "error"); }
         }
 
-        async function takimiSil(teamId, teamName, logoUrl, captainId) {
-            const reason = prompt(`DİKKAT: ${teamName} takımını kalıcı olarak silmek üzeresiniz. Sebep yazın:`);
+        async function takimiSil(appId, teamName, logoUrl, captainId) {
+            const reason = prompt(`DİKKAT: ${teamName} takımının BAŞVURUSUNU kalıcı olarak silmek üzeresiniz. Sebep yazın:`);
             if (reason === null) return;
             if (reason.trim() === "") return showNotification("Sebep boş bırakılamaz.", "error");
             
             try {
-                if (logoUrl && logoUrl.includes('/storage/v1/object/public/')) {
-                    try {
-                        const parts = logoUrl.split('/storage/v1/object/public/')[1].split('/');
-                        const bucketName = parts[0]; const filePath = parts.slice(1).join('/');
-                        if (bucketName && filePath) await window.supabaseClient.storage.from(bucketName).remove([filePath]);
-                    } catch (e) {}
-                }
-
                 if (captainId) {
-                    await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: captainId, baslik: "Takımınız Silindi!", mesaj: `Sebep: ${reason}`, tip: 'red' }]);
+                    await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: captainId, baslik: "Başvurunuz Silindi!", mesaj: `Sebep: ${reason}`, tip: 'red' }]);
                 }
 
-                const { error: teamError } = await window.supabaseClient.from('tournament_applications').delete().eq('id', teamId);
+                // Sadece başvuruyu (application) siliyoruz, takım kadrosu (teams tablosu) durmaya devam ediyor ki yeniden başvurabilsinler.
+                const { error: teamError } = await window.supabaseClient.from('tournament_applications').delete().eq('id', appId);
                 if (teamError) throw teamError;
 
-                showNotification(`${teamName} başarıyla silindi.`, "success");
+                showNotification(`${teamName} başvurusu başarıyla silindi.`, "success");
                 closeModal(); loadApprovedTeams(); loadPendingTeams(); loadSidebarData();
             } catch (err) { showNotification("Silme işlemi sırasında hata oluştu.", "error"); }
         }
@@ -524,11 +561,9 @@
             document.getElementById('modalTeamName').innerText = team.team_name;
             document.getElementById('modalTeamTag').innerText = `[${team.team_tag}]`;
             
-            const captData = (team.members || []).find(m => m.user_id === team.captain_id || m.id === team.captain_id);
-            const resolvedCaptainId = captData ? (captData.user_id || team.captain_id) : team.captain_id;
-            
+            const captData = (team.members || []).find(m => m.user_id === team.captain_id);
             document.getElementById('modalCaptainName').innerText = captData ? captData.username : 'Bilinmiyor';
-            document.getElementById('modalCaptainPhone').innerText = team.captain_phone || 'Belirtilmemiş';
+            document.getElementById('modalCaptainPhone').innerText = 'Profilde Belirtilmemiş'; // Eğer phone eklersen burayı güncellersin
 
             const rl = document.getElementById('modalRosterList'); rl.innerHTML = '';
             (team.members || []).forEach(m => {
@@ -537,7 +572,7 @@
             });
 
             const deleteBtn = document.getElementById('modalDeleteBtn');
-            deleteBtn.onclick = () => takimiSil(team.id, team.team_name, team.logo_url, resolvedCaptainId);
+            deleteBtn.onclick = () => takimiSil(team.id, team.team_name, team.logo_url, team.captain_id);
             document.getElementById('teamModal').classList.add('active');
         }
         
@@ -546,7 +581,7 @@
 
 
         /* =========================================================================
-           YENİ ZARF VE FİKSTÜR SİSTEMİ SCRİPTLERİ (SENİN İSTEDİĞİN MANTIK)
+           YENİ ZARF VE FİKSTÜR SİSTEMİ SCRİPTLERİ
            ========================================================================= */
 
         function switchSidebarTab(mode) {
@@ -563,11 +598,11 @@
             listContainer.innerHTML = '<div style="text-align:center; color:var(--gri-yazi); padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>';
 
             try {
-                const { data: teams } = await window.supabaseClient.from('tournament_applications').select('id, team_name');
-                if (teams) teams.forEach(t => globalTeamMap[t.id] = t.team_name);
+                // Artık isimleri 'teams' tablosundan alıyoruz
+                const { data: teams } = await window.supabaseClient.from('teams').select('id, name');
+                if (teams) teams.forEach(t => globalTeamMap[t.id] = t.name);
 
                 if (currentMode === 'zarflar') {
-                    // Ajanlardan (Agent) gelen zarflar (bekleyen_zarflar tablosu)
                     const { data: zarflar, error } = await window.supabaseClient.from('bekleyen_zarflar').select('*').eq('durum', 'pending').order('created_at', { ascending: false });
                     
                     listContainer.innerHTML = '';
@@ -591,7 +626,6 @@
                         `;
                     });
                 } else {
-                    // Fikstürdeki kayıtlı maçları çek
                     const { data: matches, error } = await window.supabaseClient.from('bracket_matches').select('id, round_name, round_order, match_maps(id, map_order, map_name, score_a, score_b)').order('created_at', { ascending: false }).limit(30);
                     
                     listContainer.innerHTML = '';
@@ -617,7 +651,6 @@
             }
         }
 
-        // DROPDOWN MANTIĞI: (Senin istediğin: Son 64 -> 1. Maç -> 1. Harita vs.)
         function updateDynamicSelectors() {
             const stage = document.getElementById('stageSelect').value;
             const matchOrder = document.getElementById('matchOrderSelect');
@@ -634,9 +667,9 @@
             for(let i=1; i<=maxMatch; i++) matchOrder.innerHTML += `<option value="${i}">${i}. MAÇ</option>`;
 
             mapOrder.innerHTML = '';
-            let maxMap = 1; // BO1
-            if (stage.includes('SON 16') || stage.includes('ÇEYREK') || stage.includes('YARI')) maxMap = 3; // BO3
-            if (stage.includes('FİNAL')) maxMap = 5; // BO5
+            let maxMap = 1; 
+            if (stage.includes('SON 16') || stage.includes('ÇEYREK') || stage.includes('YARI')) maxMap = 3; 
+            if (stage.includes('FİNAL')) maxMap = 5; 
 
             for(let i=1; i<=maxMap; i++) mapOrder.innerHTML += `<option value="${i}">${i}. HARİTA</option>`;
         }
@@ -663,8 +696,6 @@
                 
                 syncTeamName('A', tA); syncTeamName('B', tB);
 
-                // Ajan sistemi tam kurulduğunda, bu mData içinde oyuncu kda verileri de olacak. 
-                // Şimdilik boş tablo basıp profilleri çekiyoruz:
                 generateEmptyRows('teamAPlayersInputs');
                 generateEmptyRows('teamBPlayersInputs');
                 
@@ -702,7 +733,6 @@
 
                 syncTeamName('A', nameA); syncTeamName('B', nameB);
 
-                // Seçicileri var olan maça göre ayarla
                 const stageSelect = document.getElementById('stageSelect');
                 for (let i = 0; i < stageSelect.options.length; i++) {
                     if (stageSelect.options[i].value.includes(match.round_name)) { stageSelect.selectedIndex = i; break; }
@@ -711,13 +741,17 @@
                 document.getElementById('matchOrderSelect').value = match.round_order;
                 document.getElementById('mapOrderSelect').value = mapData.map_order;
 
-                // Oyuncuları çek
                 const { data: stats } = await window.supabaseClient.from('match_player_stats').select('*').eq('map_id', mapId);
                 const teamAStats = stats ? stats.filter(s => s.team_id === teamAId_memory) : [];
                 const teamBStats = stats ? stats.filter(s => s.team_id === teamBId_memory) : [];
 
                 renderPlayerRows('teamAPlayersInputs', teamAStats);
                 renderPlayerRows('teamBPlayersInputs', teamBStats);
+
+                // Tournament dropdown'u da eşitle
+                if (match.tournament_id) {
+                    document.getElementById('tourneySelect').value = match.tournament_id;
+                }
 
             } catch(e) {
                 console.error(e);
@@ -803,16 +837,18 @@
             
             const containerId = teamStr === 'A' ? 'teamAPlayersInputs' : 'teamBPlayersInputs';
             const selects = document.getElementById(containerId).querySelectorAll('.user-matcher-select');
-            if(selects.length === 0) return; // Zaten dolu (hidden id) varsa arama
+            if(selects.length === 0) return; 
             
             try {
-                const { data: teamData } = await window.supabaseClient.from('tournament_applications').select('id').ilike('team_name', `%${teamName.trim()}%`).single();
+                // Artık teams tablosunda arıyoruz
+                const { data: teamData } = await window.supabaseClient.from('teams').select('id').ilike('name', `%${teamName.trim()}%`).single();
                 if(!teamData) throw new Error("Bulunamadı");
                 
                 if(teamStr === 'A') teamAId_memory = teamData.id;
                 else teamBId_memory = teamData.id;
 
-                const { data: players } = await window.supabaseClient.from('application_members').select(`user_id, profiles (username, ign)`).eq('application_id', teamData.id).eq('status', 'accepted');
+                // Üyeleri team_members tablosundan çekiyoruz
+                const { data: players } = await window.supabaseClient.from('team_members').select(`user_id, profiles (username, ign)`).eq('team_id', teamData.id).eq('status', 'accepted');
                 
                 let optionsHtml = '<option value="">-- Manuel Seç --</option>';
                 if(players) {
@@ -866,8 +902,12 @@
         async function saveToBracket() {
             if(!activeRecordId) return;
 
-            const tName = document.getElementById('tourneySelect').value;
-            // Select'ten "SON 16 (BO3)" gibi yazıları alıp sadece "SON 16" kısmını ayıralım
+            const tourneyId = document.getElementById('tourneySelect').value;
+            if(!tourneyId) {
+                showNotification("Lütfen bir turnuva seçin.", "error");
+                return;
+            }
+
             const sNameRaw = document.getElementById('stageSelect').value;
             const sName = sNameRaw.split(' (')[0]; 
             const matchO = document.getElementById('matchOrderSelect').value;
@@ -888,9 +928,9 @@
 
             try {
                 if(currentMode === 'zarflar') {
-                    // YENİ ZARFI İĞNELE
+                    // YENİ ZARFI İĞNELE (Artık tournament_id ile kaydediyoruz)
                     const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
-                        .select('id').eq('tournament_name', tName).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
+                        .select('id').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
                     
                     let matchId;
                     if(existingMatch) {
@@ -898,7 +938,7 @@
                         await window.supabaseClient.from('bracket_matches').update({ team_a_id: teamAId_memory, team_b_id: teamBId_memory }).eq('id', matchId);
                     } else {
                         const { data: newMatch } = await window.supabaseClient.from('bracket_matches').insert([{
-                            tournament_name: tName, round_name: sName, round_order: matchO, team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live'
+                            tournament_id: tourneyId, round_name: sName, round_order: matchO, team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live'
                         }]).select().single();
                         matchId = newMatch.id;
                     }
