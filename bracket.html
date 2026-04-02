@@ -209,7 +209,7 @@
     <div id="header-alani"></div>
 
     <div class="page-header">
-        <h1 class="page-title">OBB KIŞ TURNUVASI <span>FİKSTÜRÜ</span></h1>
+        <h1 class="page-title">OBB 1. TOPLULUK TURNUVASI <span>FİKSTÜRÜ</span></h1>
         <p class="page-subtitle">Toplam Ödül Havuzu: 10.000 TL | 64 Takım</p>
         
         <div class="stage-tabs">
@@ -279,8 +279,8 @@
 
         const TOURNAMENT_STRUCTURE = {
             group: [
-                { id: 'R1', title: 'SON 64 EŞLEŞMELERİ (BO1)', count: 32, format: 'BO1' },
-                { id: 'R2', title: 'SON 32 EŞLEŞMELERİ (BO1)', count: 16, format: 'BO1' }
+                { id: 'SON 64', title: 'SON 64 EŞLEŞMELERİ (BO1)', count: 32, format: 'BO1' },
+                { id: 'SON 32', title: 'SON 32 EŞLEŞMELERİ (BO1)', count: 16, format: 'BO1' }
             ],
             playoff: [
                 { id: 'SON 16', count: 8, format: 'BO3', dbName: 'SON 16' },
@@ -349,22 +349,42 @@
 
         async function fetchAndRenderBracket() {
             try {
-                const { data: teamsData, error: teamsErr } = await window.supabaseClient.from('tournament_applications').select('id, team_name, logo_url');
+                // 1. Önce aktif turnuvayı (upcoming) veya en son turnuvayı bul
+                const { data: tourney } = await window.supabaseClient
+                    .from('tournaments')
+                    .select('id')
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (!tourney) {
+                    console.warn("Aktif turnuva bulunamadı.");
+                    return;
+                }
+
+                // 2. Takım isimlerini ve logolarını YENİ TEAMS tablosundan çek (Sadece id, name ve logo yeterli)
+                const { data: teamsData, error: teamsErr } = await window.supabaseClient.from('teams').select('id, name, logo_url');
                 if (teamsErr) throw teamsErr;
                 
                 const teamMap = {};
                 if (teamsData) {
                     teamsData.forEach(t => {
                         teamMap[t.id] = {
-                            name: t.team_name,
+                            name: t.name,
                             logo: t.logo_url || 'img/unknown.webp'
                         };
                     });
                 }
 
-                const { data: matchesData, error: matchesErr } = await window.supabaseClient.from('bracket_matches').select('*').order('round_order', { ascending: true });
+                // 3. SADECE bu turnuvaya ait maçları çek
+                const { data: matchesData, error: matchesErr } = await window.supabaseClient
+                    .from('bracket_matches')
+                    .select('*')
+                    .eq('tournament_id', tourney.id)
+                    .order('round_order', { ascending: true });
                 if (matchesErr) throw matchesErr;
 
+                // 4. Haritaları çek
                 const { data: mapsData, error: mapsErr } = await window.supabaseClient.from('match_maps').select('match_id, score_a, score_b');
                 if (mapsErr) throw mapsErr;
 
@@ -398,11 +418,8 @@
                                 else if (map.score_b > map.score_a) sB++;
                             });
 
-                            // --- YENİ EKLENEN GÜVENLİK YAMASI ---
-                            // Test aşamasında aynı match_id'ye fazla veri gelirse serinin maks skorunu aşmasını engeller.
                             if (sA > winsNeeded) sA = winsNeeded;
                             if (sB > winsNeeded) sB = winsNeeded;
-                            // ------------------------------------
 
                             if (sA >= winsNeeded) { calcStatus = 'finished'; calcWinner = m.team_a_id; }
                             else if (sB >= winsNeeded) { calcStatus = 'finished'; calcWinner = m.team_b_id; }
