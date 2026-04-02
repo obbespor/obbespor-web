@@ -197,9 +197,9 @@
     <script src="js/bildirimler.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
-
     <script>
-        let currentUser = null, currentTeamId = null, draftCreatedAt = null, saveTimeout = null, currentStatus = null;
+
+let currentUser = null, currentTeamId = null, draftCreatedAt = null, saveTimeout = null, currentStatus = null;
         let currentConfirmCallback = null;
         let activeTournamentId = null; 
 
@@ -257,7 +257,7 @@
                 const username = profileRes.data?.username || "KAPTAN";
                 const memberships = membershipsRes.data || [];
                 
-                // Aktif Turnuva ID'sini sakla (Başvuru atarken lazım olacak)
+                // Aktif Turnuva ID'sini sakla
                 if (tournamentRes.data) {
                     activeTournamentId = tournamentRes.data.id;
                 }
@@ -290,7 +290,6 @@
             }
             rosterTitleElement.innerHTML = `<i class="fas fa-users"></i> ${displayName}`;
 
-            // Takımın bu turnuva için bir başvurusu var mı kontrol et
             let appStatus = 'none';
             if (activeTournamentId) {
                 const { data: appData } = await window.supabaseClient.from('tournament_applications')
@@ -355,7 +354,6 @@
 
             rosterList.innerHTML = `<div style="text-align:center; padding: 30px;"><i class="fas fa-spinner fa-spin fa-2x" style="color:var(--neon-mor);"></i></div>`;
 
-            // Yeni mimariye göre kadroyu 'team_members' tablosundan çekiyoruz
             const { data: members } = await window.supabaseClient.from('team_members')
                 .select('*, profiles(username)')
                 .eq('team_id', teamId)
@@ -515,7 +513,6 @@
         }
 
         async function loadOrCreateDraft(username, memberships) {
-            // Yeni mimaride üyelikleri takımlara göre filtreliyoruz
             const activeMemberships = memberships.filter(m => m.status === 'accepted' || m.status === 'pending');
 
             let targetTeam = null;
@@ -523,14 +520,12 @@
                 targetTeam = activeMemberships[0].teams; 
             }
 
-            // KULLANICI BİR TAKIMDAYSAN (VEYA BEKLEYEN DAVETİ VARSA)
             if (targetTeam) {
                 currentTeamId = targetTeam.id;
                 draftCreatedAt = new Date(targetTeam.created_at).getTime();
                 
                 const isCaptain = targetTeam.captain_id === currentUser.id;
 
-                // Turnuva başvuru durumu kontrolü
                 let appStatus = 'none';
                 if (activeTournamentId) {
                     const { data: appData } = await window.supabaseClient.from('tournament_applications')
@@ -542,7 +537,6 @@
                 }
 
                 if (isCaptain && appStatus === 'none') {
-                    // Takım kurulmuş ama turnuvaya BAŞVURULMAMIŞ (Taslak modu)
                     document.getElementById('teamName').value = targetTeam.name || '';
                     document.getElementById('teamTag').value = targetTeam.tag || '';
                     document.getElementById('draftInfoBox').style.display = 'block';
@@ -552,13 +546,11 @@
                     loadDraftMembers(); 
                     startCountdown();
                 } else {
-                    // Başvuru yapılmış (Pending, Approved, Rejected) VEYA Kaptan değil (Sadece izleyici)
                     showRosterScreen(currentTeamId, isCaptain, targetTeam.captain_id, targetTeam.name, targetTeam.tag);
                 }
                 return; 
             }
 
-            // KULLANICI HİÇBİR TAKIMDA DEĞİL -> YENİ TAKIM OLUŞTUR (Taslak)
             const { data: newTeam } = await window.supabaseClient.from('teams').insert({
                 captain_id: currentUser.id, name: `Taslak Takım ${Math.floor(Math.random() * 1000)}`, tag: 'DRFT'
             }).select().single();
@@ -575,7 +567,6 @@
 
                 startCountdown();
 
-                // Kurucuyu takıma ekle
                 await window.supabaseClient.from('team_members').insert({
                     team_id: currentTeamId, user_id: currentUser.id, role: 'main', status: 'accepted'
                 });
@@ -601,7 +592,6 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lütfen Bekleyin...';
             btn.disabled = true;
 
-            // Turnuva başvurusunu silerek takımı "taslak" moduna (başvurusuz) geri alıyoruz
             if (activeTournamentId && currentTeamId) {
                 const { error } = await window.supabaseClient.from('tournament_applications')
                     .delete()
@@ -664,7 +654,8 @@
                 updateFormStatus();
             }
         }
-function attachSearchEvents() {
+
+        function attachSearchEvents() {
             document.querySelectorAll('.player-search').forEach(input => {
                 
                 input.addEventListener('blur', function() {
@@ -707,12 +698,9 @@ function attachSearchEvents() {
                     const busyUserIds = [];
 
                     if (userMemberships && userMemberships.length > 0) {
-                        // HATA ÇÖZÜMÜ: null veya geçersiz takım ID'lerini filtreliyoruz
                         const teamIdsToCheck = [...new Set(userMemberships.map(m => m.team_id))].filter(id => id != null);
-                        
                         let appliedTeamIds = [];
                         
-                        // HATA ÇÖZÜMÜ: Eğer kontrol edilecek takım ID'si yoksa (boş diziyse) veritabanına boşuna sorgu atıp 400 hatası almıyoruz!
                         if (teamIdsToCheck.length > 0) {
                             const { data: apps } = await window.supabaseClient.from('tournament_applications')
                                 .select('team_id')
@@ -733,55 +721,6 @@ function attachSearchEvents() {
                         });
                     }
                     // --- KONTROL BİTTİ ---
-
-                    const filteredPlayers = profiles.filter(u => 
-                        !selectedIds.includes(u.id) && 
-                        !selectedUsernames.includes(u.username.toLowerCase()) &&
-                        !busyUserIds.includes(u.id)
-                    ).slice(0, 5);
-
-                    filteredPlayers.forEach(u => {
-                        const div = document.createElement('div');
-                        div.innerHTML = `<i class="fas fa-user"></i> ${u.username}`;
-                        div.onclick = async () => {
-                            input.setAttribute('data-user-id', u.id);
-                            input.value = u.username;
-                            input.readOnly = true;
-                            list.innerHTML = '';
-                            
-                            const tick = document.getElementById(input.id + '-tick');
-                            tick.style.display = 'block';
-                            tick.className = 'fas fa-spinner fa-spin status-tick grey';
-
-                            const role = input.id.startsWith('main') ? 'main' : 'sub';
-                            
-                            const { data: newMember, error } = await window.supabaseClient.from('team_members').insert({
-                                team_id: currentTeamId,
-                                user_id: u.id, role: role, status: 'pending'
-                            }).select().single();
-
-                            if (error) {
-                                input.value = '';
-                                input.readOnly = false;
-                                input.removeAttribute('data-user-id');
-                                tick.style.display = 'none';
-                                if(typeof showNotification === 'function') showNotification("Oyuncu eklenirken bir sorun oluştu.", "error");
-                                return;
-                            }
-
-                            if (newMember) {
-                                input.setAttribute('data-member-id', newMember.id);
-                                input.setAttribute('data-status', 'pending');
-                                tick.className = 'fas fa-check-circle status-tick grey';
-                                document.getElementById(input.id + '-remove').style.display = 'block';
-                                updateFormStatus();
-                            }
-                        };
-                        list.appendChild(div);
-                    });
-                });
-            });
-        }
 
                     const filteredPlayers = profiles.filter(u => 
                         !selectedIds.includes(u.id) && 
@@ -873,13 +812,11 @@ function attachSearchEvents() {
             }
         }
 
-        // DİĞER SEKMEDE YAPILAN DEĞİŞİKLİĞİ (STORAGE EVENT) DİNLEYEN KISIM
         window.addEventListener('storage', function(e) {
             if (e.key === 'teamInviteSignal') {
                 const data = JSON.parse(e.newValue);
                 const allInputs = Array.from(document.querySelectorAll('input[id^="main_"], input[id^="sub_"]'));
                 
-                // Mimarimiz değiştiği için DOM'daki member-id eşleşmesine güveniyoruz
                 const targetInput = allInputs.find(input => input.getAttribute('data-member-id') === data.id);
 
                 if (targetInput) {
@@ -889,7 +826,6 @@ function attachSearchEvents() {
                         if(typeof showNotification === 'function') showNotification(`${targetInput.value} daveti kabul etti!`, "success");
                     } else if (data.status === 'rejected') {
                         if(typeof showNotification === 'function') showNotification(`${targetInput.value} daveti reddetti. Slot temizlendi.`, "error");
-                        // Davet reddedildiği için arayüzden o slotu temizliyoruz
                         removePlayer(targetInput.id);
                     }
                     updateFormStatus(); 
@@ -897,11 +833,9 @@ function attachSearchEvents() {
             }
         });
 
-        // REALTIME KANALI: VERİTABANINDAKİ CANLI DEĞİŞİKLİĞİ DİNLEYEN KISIM
         function subscribeToDraftUpdates() {
             if(!currentTeamId) return;
             window.supabaseClient.channel('draft-updates')
-                // team_members tablosunu ve sadece bu takımın ID'sini dinle
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members', filter: `team_id=eq.${currentTeamId}` }, payload => {
                     
                     if (payload.eventType === 'UPDATE') {
@@ -914,8 +848,7 @@ function attachSearchEvents() {
                         }
                     } 
                     else if (payload.eventType === 'DELETE') {
-                        // Eğer kayıt silindiyse (Reddedildi veya admin sildi), arayüzden o kişiyi kaldır
-                        const memberId = payload.old.id; // Silinen kaydın ID'si
+                        const memberId = payload.old.id; 
                         const input = document.querySelector(`[data-member-id="${memberId}"]`);
                         
                         if(input) {
@@ -1069,6 +1002,6 @@ function attachSearchEvents() {
         }
 
         document.addEventListener('DOMContentLoaded', initPageData);
-    </script>
+                </script>
 </body>
 </html>
