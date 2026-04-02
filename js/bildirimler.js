@@ -169,11 +169,11 @@ window.clearNotifications = async function(event) {
     } catch (err) { console.error("Temizleme hatası:", err); }
 };
 
-// --- GLOBAL DAVET SİSTEMİ ---
+// --- GLOBAL DAVET SİSTEMİ (YENİ MİMARİYE UYARLANDI) ---
 window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = []) {
     const { data: pendingInvites } = await window.supabaseClient
-        .from('application_members')
-        .select('id, created_at, tournament_applications(team_name)')
+        .from('team_members')
+        .select('id, created_at, teams(name)')
         .eq('user_id', userId)
         .eq('status', 'pending');
 
@@ -182,7 +182,7 @@ window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = 
 
     if (pendingInvites && pendingInvites.length > 0) {
         pendingInvites.forEach(invite => {
-            const teamName = invite.tournament_applications?.team_name || "Bir takım";
+            const teamName = invite.teams?.name || "Bir takım";
             
             if (!alertedInvites.includes(invite.id)) {
                 showNotification(`🔔 ${teamName} takımından davet aldın!`, "info");
@@ -192,7 +192,7 @@ window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = 
 
             mevcutHarmanlanmisList.push({
                 id: invite.id,
-                tablo: 'application_members',
+                tablo: 'team_members',
                 tip: 'davet',
                 title: 'Yeni Takım Daveti!',
                 text: `${teamName} seni takımına davet ediyor.`,
@@ -212,11 +212,11 @@ window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = 
     renderNotifications();
 
     window.supabaseClient.channel('global-invite-listener')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'application_members', filter: `user_id=eq.${userId}` }, 
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'team_members', filter: `user_id=eq.${userId}` }, 
         async (payload) => {
-            const appId = payload.new.application_id;
-            const { data: teamData } = await window.supabaseClient.from('tournament_applications').select('team_name').eq('id', appId).single();
-            const teamName = teamData ? teamData.team_name : "Bir takım";
+            const tId = payload.new.team_id;
+            const { data: teamData } = await window.supabaseClient.from('teams').select('name').eq('id', tId).single();
+            const teamName = teamData ? teamData.name : "Bir takım";
             
             if (typeof showNotification === "function") {
                 showNotification(`🔔 YENİ DAVET: ${teamName} seni takımına çağırıyor! Hemen profiline göz at.`, "success");
@@ -227,7 +227,7 @@ window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = 
             sessionStorage.setItem('alertedInvites', JSON.stringify(currentAlerts));
             
             window.myNotifications.unshift({ 
-                id: payload.new.id, tablo: 'application_members', tip: 'davet', 
+                id: payload.new.id, tablo: 'team_members', tip: 'davet', 
                 icon: 'fa-envelope-open-text', color: '#f39c12', 
                 title: 'Yeni Davet!', text: `${teamName} seni çağırıyor.`,
                 created_at: payload.new.created_at || new Date().toISOString()
@@ -448,4 +448,3 @@ window.addEventListener('DOMContentLoaded', () => {
     // SAYFA YÜKLENDİĞİNDE ÇEREZ KONTROLÜNÜ BAŞLAT
     initCookieConsent();
 });
-
