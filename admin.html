@@ -24,9 +24,7 @@
         .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; color: white;}
         .section-title span { color: var(--neon-mor); }
 
-        /* =========================================
-           ESKİ ONAY SİSTEMİ CSS'LERİ (DOKUNULMADI)
-           ========================================= */
+        /* --- ONAY SİSTEMİ CSS'LERİ --- */
         .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; }
         .team-card { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .team-card:hover { border-color: var(--neon-mor); transform: translateY(-5px); box-shadow: 0 15px 40px rgba(96, 29, 194, 0.2); }
@@ -74,12 +72,9 @@
         .btn-delete-team { background: rgba(255, 75, 75, 0.05); border: 1px dashed var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px; }
         .btn-delete-team:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 0 15px rgba(255, 75, 75, 0.4); border-style: solid; }
 
-        /* =========================================
-           YENİ ZARF & FİKSTÜR SİSTEMİ CSS'LERİ
-           ========================================= */
+        /* --- ZARF & FİKSTÜR SİSTEMİ CSS'LERİ --- */
         .dashboard-grid { display: grid; grid-template-columns: 350px 1fr; gap: 30px; align-items: start; }
         
-        /* Sol Liste */
         .sidebar-panel { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; height: 85vh; }
         .sidebar-tabs { display: flex; border-bottom: 1px solid #222; }
         .sidebar-tab { flex: 1; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; background: #050505; color: var(--gri-yazi); transition: 0.3s; font-size: 13px; }
@@ -93,7 +88,6 @@
         .list-item-title { font-size: 14px; font-weight: bold; color: white; margin-bottom: 5px; }
         .list-item-desc { font-size: 12px; color: var(--gri-yazi); }
 
-        /* Sağ Editör */
         .editor-panel { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; animation: fadeIn 0.4s ease; }
         
         .placement-map { background: rgba(96, 29, 194, 0.05); border: 1px dashed var(--neon-mor); padding: 20px; border-radius: 12px; margin-bottom: 30px; }
@@ -151,9 +145,7 @@
                 <li><a id="tab-onay" class="active-admin-tab" onclick="switchTab('onay')">ONAY</a></li>
                 <li><a id="tab-takimlar" onclick="switchTab('takimlar')">ONAYLI</a></li>
                 <li><a id="tab-fikstur" onclick="switchTab('fikstur')">ZARFLAR / FİKSTÜR<i class="fas fa-sitemap" style="font-size: 10px; margin-left: 5px;"></i></a></li>
-                
-                <li><a href="admin-bracket.html">YENİ MAÇ GİR</a></li>
-                <li><a href="admin-match-edit.html">MAÇ YÖNETİMİ<i class="fas fa-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <li><a href="mac-yonetim.html">MAÇ YÖNETİMİ<i class="fas fa-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 
                 <li class="nav-bell desktop-only">
                     <a href="#" onclick="toggleNotifPanel('desktopPanel', event)">
@@ -398,7 +390,6 @@
 
         // --- YENİ İLİŞKİSEL MİMARİ İLE TAKIM ÇEKME FONKSİYONLARI ---
         async function fetchTeamsWithMembers(statusFilter) {
-            // Yeni yapıda: applications tablosundan takımı, oradan da üyeleri çekiyoruz
             const { data: apps, error } = await window.supabaseClient
                 .from('tournament_applications')
                 .select(`
@@ -413,11 +404,10 @@
             
             if (error || !apps) return [];
 
-            // Eski arayüzün (HTML/CSS) bozulmaması için çektiğimiz veriyi eski JSON formatına çeviriyoruz
             return apps.map(app => {
                 const t = app.teams;
                 return {
-                    id: app.id, // Bu artık application_id (Onaylamak veya silmek için gerekli)
+                    id: app.id, 
                     team_id: t.id,
                     team_name: t.name,
                     team_tag: t.tag,
@@ -486,7 +476,6 @@
         }
 
         async function updateTeamStatus(appId, status, userId, reason = "") {
-            // Artık tournament_applications tablosundaki statüyü güncelliyoruz
             const { error } = await window.supabaseClient.from('tournament_applications').update({ status }).eq('id', appId);
             if (!error) {
                 if (userId) {
@@ -550,7 +539,6 @@
                     await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: captainId, baslik: "Başvurunuz Silindi!", mesaj: `Sebep: ${reason}`, tip: 'red' }]);
                 }
 
-                // Sadece başvuruyu (application) siliyoruz, takım kadrosu (teams tablosu) durmaya devam ediyor ki yeniden başvurabilsinler.
                 const { error: teamError } = await window.supabaseClient.from('tournament_applications').delete().eq('id', appId);
                 if (teamError) throw teamError;
 
@@ -566,7 +554,7 @@
             
             const captData = (team.members || []).find(m => m.user_id === team.captain_id);
             document.getElementById('modalCaptainName').innerText = captData ? captData.username : 'Bilinmiyor';
-            document.getElementById('modalCaptainPhone').innerText = 'Profilde Belirtilmemiş'; // Eğer phone eklersen burayı güncellersin
+            document.getElementById('modalCaptainPhone').innerText = 'Profilde Belirtilmemiş'; 
 
             const rl = document.getElementById('modalRosterList'); rl.innerHTML = '';
             (team.members || []).forEach(m => {
@@ -601,7 +589,6 @@
             listContainer.innerHTML = '<div style="text-align:center; color:var(--gri-yazi); padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>';
 
             try {
-                // Artık isimleri 'teams' tablosundan alıyoruz
                 const { data: teams } = await window.supabaseClient.from('teams').select('id, name');
                 if (teams) teams.forEach(t => globalTeamMap[t.id] = t.name);
 
@@ -843,14 +830,12 @@
             if(selects.length === 0) return; 
             
             try {
-                // Artık teams tablosunda arıyoruz
                 const { data: teamData } = await window.supabaseClient.from('teams').select('id').ilike('name', `%${teamName.trim()}%`).single();
                 if(!teamData) throw new Error("Bulunamadı");
                 
                 if(teamStr === 'A') teamAId_memory = teamData.id;
                 else teamBId_memory = teamData.id;
 
-                // Üyeleri team_members tablosundan çekiyoruz
                 const { data: players } = await window.supabaseClient.from('team_members').select(`user_id, profiles (username, ign)`).eq('team_id', teamData.id).eq('status', 'accepted');
                 
                 let optionsHtml = '<option value="">-- Manuel Seç --</option>';
@@ -931,7 +916,7 @@
 
             try {
                 if(currentMode === 'zarflar') {
-                    // YENİ ZARFI İĞNELE (Artık tournament_id ile kaydediyoruz)
+                    // YENİ ZARFI İĞNELE 
                     const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
                         .select('id').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
                     
