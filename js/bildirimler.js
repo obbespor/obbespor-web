@@ -170,6 +170,8 @@ window.clearNotifications = async function(event) {
 };
 
 // --- GLOBAL DAVET SİSTEMİ (YENİ MİMARİYE UYARLANDI) ---
+
+// --- GLOBAL DAVET SİSTEMİ (YENİ MİMARİYE UYARLANDI) ---
 window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = []) {
     const { data: pendingInvites } = await window.supabaseClient
         .from('team_members')
@@ -204,6 +206,43 @@ window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = 
     }
 
     mevcutHarmanlanmisList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    window.myNotifications = mevcutHarmanlanmisList.map(item => {
+        const styleObj = getIconForType(item.tip);
+        return { ...item, icon: styleObj.icon, color: styleObj.color };
+    });
+    
+    renderNotifications();
+
+    // HATA ÇÖZÜMÜ: Eğer kanal zaten varsa önce onu kapatıyoruz ki üst üste binmesin.
+    if (window.globalInviteChannel) {
+        window.supabaseClient.removeChannel(window.globalInviteChannel);
+    }
+
+    window.globalInviteChannel = window.supabaseClient.channel('global-invite-listener-' + userId);
+    window.globalInviteChannel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'team_members', filter: `user_id=eq.${userId}` }, 
+        async (payload) => {
+            const tId = payload.new.team_id;
+            const { data: teamData } = await window.supabaseClient.from('teams').select('name').eq('id', tId).single();
+            const teamName = teamData ? teamData.name : "Bir takım";
+            
+            if (typeof showNotification === "function") {
+                showNotification(`🔔 YENİ DAVET: ${teamName} seni takımına çağırıyor! Hemen profiline göz at.`, "success");
+            }
+
+            let currentAlerts = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
+            currentAlerts.push(payload.new.id);
+            sessionStorage.setItem('alertedInvites', JSON.stringify(currentAlerts));
+            
+            window.myNotifications.unshift({ 
+                id: payload.new.id, tablo: 'team_members', tip: 'davet', 
+                icon: 'fa-envelope-open-text', color: '#f39c12', 
+                title: 'Yeni Davet!', text: `${teamName} seni çağırıyor.`,
+                created_at: payload.new.created_at || new Date().toISOString()
+            });
+            window.myNotifications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            window.renderNotifications();
+        }).subscribe();
+}
     window.myNotifications = mevcutHarmanlanmisList.map(item => {
         const styleObj = getIconForType(item.tip);
         return { ...item, icon: styleObj.icon, color: styleObj.color };
