@@ -301,7 +301,7 @@
     <script src="js/config.js"></script>
     <script src="js/bildirimler.js"></script>
     <script src="js/auth.js"></script>
-<script>
+    <script>
         let globalTeamMap = {}; 
         let teamAId_memory = null;
         let teamBId_memory = null;
@@ -349,6 +349,7 @@
                 
                 await loadTournamentsToSelect();
 
+                // Yeni ilişkisel yapıya uygun fonksiyonlar
                 loadPendingTeams();
                 loadApprovedTeams();
                 
@@ -387,59 +388,57 @@
             if(tabName === 'fikstur') updateDynamicSelectors();
         }
 
-        // --- YENİ İLİŞKİSEL MİMARİ VE GİZLİ KASA İLE TAKIM ÇEKME ---
+        // --- YENİ İLİŞKİSEL MİMARİ İLE TAKIM ÇEKME FONKSİYONLARI ---
+// --- YENİ İLİŞKİSEL MİMARİ İLE TAKIM ÇEKME FONKSİYONLARI ---
+      // --- YENİ İLİŞKİSEL MİMARİ İLE TAKIM ÇEKME FONKSİYONLARI ---
         async function fetchTeamsWithMembers(statusFilter) {
-            try {
-                const { data: apps, error } = await window.supabaseClient
-                    .from('tournament_applications')
-                    .select(`
-                        id,
-                        status,
-                        teams (
-                            id, name, tag, logo_url, captain_id,
-                            team_members (
-                                id, user_id, role, status, 
-                                profiles (
-                                    username, ign,
-                                    user_contacts (phone, email)
-                                )
+            const { data: apps, error } = await window.supabaseClient
+                .from('tournament_applications')
+                .select(`
+                    id,
+                    status,
+                    teams (
+                        id, name, tag, logo_url, captain_id,
+                        team_members (
+                            id, user_id, role, status, 
+                            profiles (
+                                username, ign,
+                                user_contacts (phone, email)
                             )
                         )
-                    `)
-                    .eq('status', statusFilter);
-                
-                if (error || !apps) return [];
+                    )
+                `)
+                .eq('status', statusFilter);
+            
+            if (error || !apps) return [];
 
-                return apps.filter(app => app.teams).map(app => {
-                    const t = app.teams;
-                    return {
-                        id: app.id, 
-                        team_id: t.id,
-                        team_name: t.name,
-                        team_tag: t.tag,
-                        logo_url: t.logo_url,
-                        captain_id: t.captain_id,
-                        members: (t.team_members || []).map(tm => {
-                            let contactData = tm.profiles?.user_contacts;
-                            if (Array.isArray(contactData)) contactData = contactData[0];
+            return apps.filter(app => app.teams).map(app => {
+                const t = app.teams;
+                return {
+                    id: app.id, 
+                    team_id: t.id,
+                    team_name: t.name,
+                    team_tag: t.tag,
+                    logo_url: t.logo_url,
+                    captain_id: t.captain_id,
+                    members: (t.team_members || []).map(tm => {
+                        // Kasa verilerini güvenli bir şekilde objeden veya diziden çıkart
+                        let contactData = tm.profiles?.user_contacts;
+                        if (Array.isArray(contactData)) contactData = contactData[0];
 
-                            return {
-                                id: tm.id,
-                                user_id: tm.user_id,
-                                role: tm.role,
-                                status: tm.status,
-                                username: tm.profiles?.username || 'Bilinmiyor',
-                                ign: tm.profiles?.ign || '',
-                                phone: contactData?.phone || 'Belirtilmemiş',
-                                email: contactData?.email || 'Belirtilmemiş'
-                            };
-                        })
-                    };
-                });
-            } catch (err) {
-                console.error("Veri çekme hatası:", err);
-                return [];
-            }
+                        return {
+                            id: tm.id,
+                            user_id: tm.user_id,
+                            role: tm.role,
+                            status: tm.status,
+                            username: tm.profiles?.username || 'Bilinmiyor',
+                            ign: tm.profiles?.ign || '',
+                            phone: contactData?.phone || 'Belirtilmemiş',
+                            email: contactData?.email || 'Belirtilmemiş'
+                        };
+                    })
+                };
+            });
         }
 
         async function loadPendingTeams() {
@@ -492,18 +491,27 @@
             if (reason) updateTeamStatus(appId, 'rejected', userId, reason);
         }
 
-        async function updateTeamStatus(appId, status, userId, reason = "") {
+async function updateTeamStatus(appId, status, userId, reason = "") {
+            // 1. Veritabanında güncelleme yap
             const { error } = await window.supabaseClient.from('tournament_applications').update({ status }).eq('id', appId);
+            
             if (!error) {
+                // 2. Kullanıcıya bildirim gönder
                 if (userId) {
                     const baslik = status === 'approved' ? "Başvurunuz Onaylandı! 🎉" : "Başvurunuz Reddedildi";
                     const mesaj = status === 'approved' ? "Tebrikler, takım başvurunuz onaylandı!" : `Maalesef takım başvurunuz reddedildi. Sebep: ${reason}`;
                     await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: userId, baslik, mesaj, tip: status === 'approved' ? 'onay' : 'red' }]);
                 }
+                
                 showNotification("Takım başarıyla güncellendi.", "success");
+                
+                // 3. KESİN ÇÖZÜM: Ekranın tazelenmesi için fonksiyonları sırayla bekleterek çağır
                 await loadPendingTeams(); 
                 await loadApprovedTeams();
-            } else showNotification("Hata oluştu: " + error.message, "error");
+                
+            } else {
+                showNotification("Hata oluştu: " + error.message, "error");
+            }
         }
 
         async function excelAktar() {
@@ -524,11 +532,8 @@
                         else if (member.role === 'sub') subPlayers.push({ user: member.username, ign: member.ign });
                     });
 
-                    const captData = team.members.find(m => m.user_id === team.captain_id);
-
                     return {
                         "Sıra": index + 1, "Takım Adı": team.team_name, "Kısaltma": team.team_tag,
-                        "Kaptan İletişim": captData?.phone || "-", "Kaptan E-Posta": captData?.email || "-",
                         "1. Oyuncu (Kaptan)": mainPlayers[0]?.user || "-", "1. Oyuncu IGN": mainPlayers[0]?.ign || "",
                         "2. Oyuncu": mainPlayers[1]?.user || "-", "2. Oyuncu IGN": mainPlayers[1]?.ign || "",
                         "3. Oyuncu": mainPlayers[2]?.user || "-", "3. Oyuncu IGN": mainPlayers[2]?.ign || "",
@@ -575,8 +580,7 @@
             
             const captData = (team.members || []).find(m => m.user_id === team.captain_id);
             document.getElementById('modalCaptainName').innerText = captData ? captData.username : 'Bilinmiyor';
-            document.getElementById('modalCaptainPhone').innerText = captData ? captData.phone : 'Belirtilmemiş'; 
-            document.getElementById('modalCaptainEmail').innerText = captData ? captData.email : 'Belirtilmemiş'; 
+            document.getElementById('modalCaptainPhone').innerText = 'Profilde Belirtilmemiş'; 
 
             const rl = document.getElementById('modalRosterList'); rl.innerHTML = '';
             (team.members || []).forEach(m => {
@@ -591,6 +595,7 @@
         
         function closeModal() { document.getElementById('teamModal').classList.remove('active'); }
         window.addEventListener('click', function(e) { if (e.target === document.getElementById('teamModal')) closeModal(); });
+
 
         /* =========================================================================
            YENİ ZARF VE FİKSTÜR SİSTEMİ SCRİPTLERİ
@@ -759,6 +764,7 @@
                 renderPlayerRows('teamAPlayersInputs', teamAStats);
                 renderPlayerRows('teamBPlayersInputs', teamBStats);
 
+                // Tournament dropdown'u da eşitle
                 if (match.tournament_id) {
                     document.getElementById('tourneySelect').value = match.tournament_id;
                 }
@@ -768,6 +774,7 @@
             }
         }
 
+        // --- FORM İŞLEMLERİ (Arayüz) ---
         function syncTeamName(team, name) {
             const header = document.getElementById(team === 'A' ? 'headerTeamA' : 'headerTeamB');
             const color = team === 'A' ? '#00d2ff' : '#ff4b4b';
@@ -871,6 +878,7 @@
             }
         }
 
+        // --- VERİTABANINA YAZMA (İĞNELEME / GÜNCELLEME) ---
         const collectDataAndUpdateIGN = async (containerId, teamId, mapDataId) => {
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             const stats = [];
@@ -934,6 +942,7 @@
 
             try {
                 if(currentMode === 'zarflar') {
+                    // YENİ ZARFI İĞNELE 
                     const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
                         .select('id').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
                     
@@ -966,6 +975,7 @@
                     setTimeout(() => switchSidebarTab('zarflar'), 1000);
 
                 } else {
+                    // MEVCUT HARİTAYI GÜNCELLE
                     const mapId = activeRecordId.mapId;
                     await window.supabaseClient.from('match_maps').update({ map_name: mapName, score_a: scoreA, score_b: scoreB }).eq('id', mapId);
 
