@@ -977,17 +977,21 @@
             } else { icon.src = "https://via.placeholder.com/30?text=?"; }
         }
 
-        async function fetchProfilesIfMissing(teamStr) {
+       async function fetchProfilesIfMissing(teamStr) {
             const teamName = document.getElementById(teamStr === 'A' ? 'teamAName' : 'teamBName').value;
-            if(!teamName || teamName.length < 2) return;
-            
             const containerId = teamStr === 'A' ? 'teamAPlayersInputs' : 'teamBPlayersInputs';
             const selects = document.getElementById(containerId).querySelectorAll('.user-matcher-select');
+            
+            // ÇÖZÜM 1: Eski aramadan kalan takım ID'sini sıfırlıyoruz (Hayalet ID kalmasın)
+            if(teamStr === 'A') teamAId_memory = null;
+            else teamBId_memory = null;
+
+            if(!teamName || teamName.length < 2) return;
             if(selects.length === 0) return; 
             
             try {
                 const { data: teamData } = await window.supabaseClient.from('teams').select('id').ilike('name', `%${teamName.trim()}%`).single();
-                if(!teamData) throw new Error("Bulunamadı");
+                if(!teamData) throw new Error("Kayıtlı takım bulunamadı");
                 
                 if(teamStr === 'A') teamAId_memory = teamData.id;
                 else teamBId_memory = teamData.id;
@@ -1002,7 +1006,6 @@
                     });
                 }
                 
-                // YAPAY ZEKA OTOMATİK EŞLEŞTİRME SİSTEMİ
                 selects.forEach((sel) => { 
                     sel.innerHTML = optionsHtml; 
                     const row = sel.closest('.player-stat-row');
@@ -1011,53 +1014,19 @@
                     if (currentIgn) {
                         for (let opt of sel.options) {
                             if (opt.getAttribute('data-ign') && opt.getAttribute('data-ign').toLowerCase() === currentIgn) {
-                                opt.selected = true; // Yapay zeka İGN'yi doğru okuduysa profili otomatik seç!
+                                opt.selected = true; 
                                 break;
                             }
                         }
                     }
                 });
             } catch (e) {
-                selects.forEach(sel => { sel.innerHTML = '<option value="">Bulunamadı</option>'; });
+                // ÇÖZÜM 2: Takım yoksa dropdown'ları temizle ve uyarı yaz
+                selects.forEach(sel => { sel.innerHTML = '<option value="">-- Sistemde Yok --</option>'; });
             }
         }
 
-        // --- VERİTABANINA YAZMA VE İGN GÜNCELLEME ---
-        const collectDataAndUpdateIGN = async (containerId, teamId, mapDataId) => {
-            const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
-            const stats = [];
-            // i=1 header satırını atlamak için
-            for(let i=1; i<rows.length; i++) {
-                const row = rows[i];
-                const hiddenInput = row.querySelector('.hidden-user-id');
-                const select = row.querySelector('.user-matcher-select');
-                
-                const userId = (hiddenInput && hiddenInput.value) ? hiddenInput.value : (select ? select.value : null);
-                const inGameName = row.querySelector('.ign-input').value || 'Bilinmiyor';
-
-                // Eğer admin yeni bir profil eşleştirmişse, o profildeki İGN'yi de güncelleyelim
-                if (select && userId && inGameName && inGameName !== 'Bilinmiyor') {
-                    const selectedOption = select.options[select.selectedIndex];
-                    const existingIgn = selectedOption.getAttribute('data-ign');
-                    if (!existingIgn || existingIgn.trim() === '') {
-                        await window.supabaseClient.from('profiles').update({ ign: inGameName }).eq('id', userId);
-                        selectedOption.setAttribute('data-ign', inGameName); 
-                    }
-                }
-
-                stats.push({
-                    map_id: mapDataId, team_id: teamId, user_id: userId, in_game_name: inGameName,
-                    agent_name: row.querySelector('.agent-name-input').value || 'unknown',
-                    kills: parseInt(row.querySelector('.k-input').value) || 0,
-                    deaths: parseInt(row.querySelector('.d-input').value) || 0,
-                    assists: parseInt(row.querySelector('.a-input').value) || 0,
-                    acs: parseInt(row.querySelector('.acs-input').value) || 0
-                });
-            }
-            return stats;
-        };
-
-async function saveToBracket() {
+        async function saveToBracket() {
             if(!activeRecordId) return;
 
             const tourneyId = document.getElementById('tourneySelect').value;
@@ -1073,13 +1042,14 @@ async function saveToBracket() {
             const scoreB = document.getElementById('scoreB').value;
             const mapName = document.getElementById('mapNameInput').value;
 
-            // Fikstür formatını başlıktan otomatik çekiyoruz (Veritabanında zorunlu alan olabilir)
             let formatStr = 'BO1';
             if (sNameRaw.includes('BO3')) formatStr = 'BO3';
             if (sNameRaw.includes('BO5')) formatStr = 'BO5';
 
+            // ÇÖZÜM 3: Takım veritabanında yoksa Supabase'e gitmeden önce işlemi durdur ve admini uyar
             if(!teamAId_memory || !teamBId_memory) {
-                return showNotification("Takım ID'leri bulunamadı. Lütfen takım eşleştirmelerini kontrol et.", "error");
+                const errTeam = !teamAId_memory ? document.getElementById('teamAName').value : document.getElementById('teamBName').value;
+                return showNotification(`HATA: "${errTeam}" isimli takım onaylı listede bulunamadı! Lütfen kayıtlı bir takım adı girin.`, "error");
             }
 
             const btn = document.getElementById('btnSaveToBracket');
@@ -1089,20 +1059,17 @@ async function saveToBracket() {
 
             try {
                 if(currentMode === 'zarflar') {
-                    // 1. Bu tura ait maç zaten var mı kontrol et
                     const { data: existingMatch, error: existErr } = await window.supabaseClient.from('bracket_matches')
                         .select('id').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
                     
                     let matchId;
                     if(existingMatch) {
                         matchId = existingMatch.id;
-                        // Maç varsa sadece takımları güncelle
                         const { error: updateErr } = await window.supabaseClient.from('bracket_matches')
                             .update({ team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live' })
                             .eq('id', matchId);
                         if (updateErr) throw new Error("Maç güncellenemedi: " + updateErr.message);
                     } else {
-                        // Yeni Maç Oluştur
                         const { data: newMatch, error: insertMatchErr } = await window.supabaseClient.from('bracket_matches').insert([{
                             tournament_id: tourneyId, 
                             round_name: sName, 
@@ -1113,36 +1080,31 @@ async function saveToBracket() {
                             match_format: formatStr
                         }]).select().single();
                         
-                        // BURASI KRİTİK: Eğer Supabase reddettiyse, Javascript çökmesin diye hatayı yakalayıp ekrana yansıtıyoruz
-                        if (insertMatchErr || !newMatch) throw new Error("Fikstür Maçı oluşturulamadı: " + (insertMatchErr?.message || "Bilinmeyen DB Hatası"));
+                        if (insertMatchErr || !newMatch) throw new Error("Fikstür Maçı oluşturulamadı: " + (insertMatchErr?.message || ""));
                         matchId = newMatch.id;
                     }
 
-                    // 2. Haritayı Ekle
                     const { data: mapData, error: mapErr } = await window.supabaseClient.from('match_maps').insert([{
                         match_id: matchId, map_order: mapO, map_name: mapName, score_a: scoreA, score_b: scoreB
                     }]).select().single();
 
-                    if (mapErr || !mapData) throw new Error("Harita kaydedilemedi (Aynı sırada harita zaten olabilir): " + (mapErr?.message || ""));
+                    if (mapErr || !mapData) throw new Error("Harita kaydedilemedi: " + (mapErr?.message || ""));
 
-                    // 3. Oyuncu İstatistiklerini Ekle
                     const insertData = [
                         ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, mapData.id)), 
                         ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, mapData.id))
                     ];
                     if(insertData.length > 0) {
                         const { error: statsErr } = await window.supabaseClient.from('match_player_stats').insert(insertData);
-                        if (statsErr) throw new Error("Oyuncu istatistikleri reddedildi: " + statsErr.message);
+                        if (statsErr) throw new Error("İstatistikler reddedildi: " + statsErr.message);
                     }
 
-                    // 4. Zarfı "İşlendi" olarak işaretle
                     await window.supabaseClient.from('bekleyen_zarflar').update({ durum: 'processed' }).eq('id', activeRecordId);
                     
                     showNotification("Başarıyla Fikstüre İğnelendi!", "success");
                     setTimeout(() => switchSidebarTab('zarflar'), 1500);
 
                 } else {
-                    // Mevcut Haritayı Düzenleme Modu
                     const mapId = activeRecordId.mapId;
                     const { error: mapUpdateErr } = await window.supabaseClient.from('match_maps')
                         .update({ map_name: mapName, score_a: scoreA, score_b: scoreB }).eq('id', mapId);
