@@ -148,7 +148,7 @@
                 <li><a id="tab-takimlar" onclick="switchTab('takimlar')">ONAYLI</a></li>
                 <li><a id="tab-fikstur" onclick="switchTab('fikstur')">BRACKET<i class="fas fa-sitemap" style="font-size: 10px; margin-left: 5px;"></i></a></li>
                 <li><a href="mac-yonetim.html">DÜZENLE<i class="fas fa-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
-              <li><a href="zarf.html">ZARF<i class="fas fa-paper-plane" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <li><a href="zarf.html">ZARF<i class="fas fa-paper-plane" style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 
                 <li class="nav-bell desktop-only">
                     <a href="#" onclick="toggleNotifPanel('desktopPanel', event)">
@@ -275,6 +275,7 @@
                         <input type="number" id="scoreB" class="big-score-input" value="0" min="0">
                     </div>
                 </div>
+                
                 <div style="text-align: center; margin-bottom: 20px;">
                     <button id="btnAiScan" onclick="scanImageWithAI()" style="background: linear-gradient(45deg, #601dc2, #9d4edd); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: none;">
                         <i class="fas fa-robot"></i> Görseli Yapay Zeka İle Oku
@@ -344,7 +345,8 @@
             if (typeof initNotifications === "function") initNotifications();
             checkAdminAccess();
         }
-// Geçerli zarfın resim URL'sini tutacağımız değişken
+        
+        // Geçerli zarfın resim URL'sini tutacağımız değişken
         let currentProofImageUrl = ""; 
 
         async function scanImageWithAI() {
@@ -359,16 +361,25 @@
                 // API Anahtarın
                 const API_KEY = "AIzaSyBttg8wt3DEKD9BUupTwli24hFiHBbIyZI"; 
                 
-                // 1. Resmi Supabase'den çekip Gemini'nin anlayacağı "Base64" koduna çeviriyoruz
+                // 1. Resmi Supabase'den çek
                 const imageRes = await fetch(currentProofImageUrl);
+                if (!imageRes.ok) throw new Error("Resim Supabase sunucusundan çekilemedi.");
                 const imageBlob = await imageRes.blob();
+                
+                // 2. MIME tipini garantiye al (Gemini sadece image/jpeg, png, webp kabul eder)
+                let mimeType = imageBlob.type;
+                if (!mimeType || !mimeType.startsWith('image/')) {
+                    mimeType = 'image/jpeg'; // Varsayılan olarak JPEG kabul et
+                }
+
+                // 3. Resmi Base64'e Çevir
                 const base64Data = await new Promise((resolve) => {
                     const reader = new FileReader();
                     reader.onloadend = () => resolve(reader.result.split(',')[1]);
                     reader.readAsDataURL(imageBlob);
                 });
 
-                // 2. Yapay Zekaya Talimatımız (Prompt)
+                // 4. Yapay Zekaya Talimatımız (Prompt)
                 const promptText = `
                     Bu bir Valorant maç sonu ekranıdır. Resimdeki tabloyu analiz et. 
                     Oyuncuları üstteki 5 kişi (Takım A) ve alttaki 5 kişi (Takım B) olarak ikiye ayır.
@@ -380,15 +391,15 @@
                     }
                 `;
 
-                // 3. API'ye Base64 formatında resmi gönderiyoruz
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                // 5. API'ye Base64 formatında resmi gönderiyoruz (gemini-1.5-flash-latest modeli ile)
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{
                             parts: [
                                 { text: promptText },
-                                { inlineData: { mimeType: imageBlob.type, data: base64Data } } 
+                                { inlineData: { mimeType: mimeType, data: base64Data } } 
                             ]
                         }]
                     })
@@ -396,18 +407,23 @@
 
                 if (!response.ok) {
                     const errData = await response.json();
-                    console.error("API Hatası:", errData);
-                    throw new Error("Yapay Zeka API'sine ulaşılamadı.");
+                    console.error("API Hatası Detayı:", errData);
+                    alert("Google API Hatası: \n" + (errData.error?.message || "Bilinmeyen hata"));
+                    throw new Error("Yapay Zeka API reddetti.");
                 }
 
                 const data = await response.json();
                 
-                // 4. Gelen cevabı (JSON) temizleyip JS objesine çeviriyoruz
+                if (!data.candidates || data.candidates.length === 0) {
+                    throw new Error("Yapay zeka geçerli bir yanıt üretemedi.");
+                }
+
+                // 6. Gelen cevabı (JSON) temizleyip JS objesine çeviriyoruz
                 let aiText = data.candidates[0].content.parts[0].text;
                 aiText = aiText.replace(/```json/g, '').replace(/```/g, '').trim();
                 const extractedData = JSON.parse(aiText);
 
-                // 5. Forma verileri fırlatıyoruz!
+                // 7. Forma verileri fırlatıyoruz!
                 if(extractedData.playersA) fillOCRData('teamAPlayersInputs', extractedData.playersA);
                 if(extractedData.playersB) fillOCRData('teamBPlayersInputs', extractedData.playersB);
 
@@ -419,12 +435,13 @@
 
             } catch (err) {
                 console.error("Yapay Zeka Çöktü:", err);
-                showNotification("API Hatası. Lütfen F12 (Console) ekranını kontrol edin.", "error");
+                showNotification("Okuma Başarısız. Hata: " + err.message, "error");
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
         }
+        
         async function checkAdminAccess() {
             try {
                 if (!window.supabaseClient) throw new Error("Supabase bağlantısı yok.");
@@ -907,7 +924,7 @@
                 container.innerHTML += `
                     <div class="player-stat-row">
                         <div class="agent-input-group">
-                            <img src="img/agents/unknown.png" class="agent-icon" id="${containerId}_icon_${i}">
+                            <img src="img/agents/unknown.png" class="agent-icon" onerror="this.src='https://via.placeholder.com/30?text=?'; this.onerror=null;" id="${containerId}_icon_${i}">
                             <input type="text" class="agent-name-input" placeholder="Ajan" onkeyup="updateAgentIcon(this, '${containerId}_icon_${i}')">
                         </div>
                         <input type="text" class="ign-input" placeholder="IGN">
@@ -939,7 +956,7 @@
                 container.innerHTML += `
                     <div class="player-stat-row">
                         <div class="agent-input-group">
-                            <img src="img/imgagents/${fAgent}.webp" class="agent-icon" onerror="this.src='img/imgagents/unknown.png'" id="${containerId}_icon_${i}">
+                            <img src="img/imgagents/${fAgent}.webp" class="agent-icon" onerror="this.src='https://via.placeholder.com/30?text=?'; this.onerror=null;" id="${containerId}_icon_${i}">
                             <input type="text" class="agent-name-input" placeholder="Ajan" value="${agent}" onkeyup="updateAgentIcon(this, '${containerId}_icon_${i}')">
                         </div>
                         <input type="text" class="ign-input" placeholder="IGN" value="${ign}">
@@ -957,7 +974,7 @@
                 let formatted = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
                 if (formatted === 'Kayo' || formatted === 'KAYO') formatted = 'Kayo'; 
                 icon.src = `img/imgagents/${formatted}.webp`;
-            } else { icon.src = "img/imgagents/unknown.png"; }
+            } else { icon.src = "https://via.placeholder.com/30?text=?"; }
         }
 
         async function fetchProfilesIfMissing(teamStr) {
