@@ -1057,13 +1057,12 @@
             return stats;
         };
 
-        async function saveToBracket() {
+async function saveToBracket() {
             if(!activeRecordId) return;
 
             const tourneyId = document.getElementById('tourneySelect').value;
             if(!tourneyId) {
-                showNotification("Lütfen bir turnuva seçin.", "error");
-                return;
+                return showNotification("Lütfen bir turnuva seçin.", "error");
             }
 
             const sNameRaw = document.getElementById('stageSelect').value;
@@ -1074,9 +1073,13 @@
             const scoreB = document.getElementById('scoreB').value;
             const mapName = document.getElementById('mapNameInput').value;
 
+            // Fikstür formatını başlıktan otomatik çekiyoruz (Veritabanında zorunlu alan olabilir)
+            let formatStr = 'BO1';
+            if (sNameRaw.includes('BO3')) formatStr = 'BO3';
+            if (sNameRaw.includes('BO5')) formatStr = 'BO5';
+
             if(!teamAId_memory || !teamBId_memory) {
-                showNotification("Takım ID'leri bulunamadı. Lütfen takım isimlerini kontrol et.", "error");
-                return;
+                return showNotification("Takım ID'leri bulunamadı. Lütfen takım eşleştirmelerini kontrol et.", "error");
             }
 
             const btn = document.getElementById('btnSaveToBracket');
@@ -1086,54 +1089,83 @@
 
             try {
                 if(currentMode === 'zarflar') {
-                    const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
+                    // 1. Bu tura ait maç zaten var mı kontrol et
+                    const { data: existingMatch, error: existErr } = await window.supabaseClient.from('bracket_matches')
                         .select('id').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
                     
                     let matchId;
                     if(existingMatch) {
                         matchId = existingMatch.id;
-                        await window.supabaseClient.from('bracket_matches').update({ team_a_id: teamAId_memory, team_b_id: teamBId_memory }).eq('id', matchId);
+                        // Maç varsa sadece takımları güncelle
+                        const { error: updateErr } = await window.supabaseClient.from('bracket_matches')
+                            .update({ team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live' })
+                            .eq('id', matchId);
+                        if (updateErr) throw new Error("Maç güncellenemedi: " + updateErr.message);
                     } else {
-                        const { data: newMatch } = await window.supabaseClient.from('bracket_matches').insert([{
-                            tournament_id: tourneyId, round_name: sName, round_order: matchO, team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live'
+                        // Yeni Maç Oluştur
+                        const { data: newMatch, error: insertMatchErr } = await window.supabaseClient.from('bracket_matches').insert([{
+                            tournament_id: tourneyId, 
+                            round_name: sName, 
+                            round_order: matchO, 
+                            team_a_id: teamAId_memory, 
+                            team_b_id: teamBId_memory, 
+                            status: 'live',
+                            match_format: formatStr
                         }]).select().single();
+                        
+                        // BURASI KRİTİK: Eğer Supabase reddettiyse, Javascript çökmesin diye hatayı yakalayıp ekrana yansıtıyoruz
+                        if (insertMatchErr || !newMatch) throw new Error("Fikstür Maçı oluşturulamadı: " + (insertMatchErr?.message || "Bilinmeyen DB Hatası"));
                         matchId = newMatch.id;
                     }
 
+                    // 2. Haritayı Ekle
                     const { data: mapData, error: mapErr } = await window.supabaseClient.from('match_maps').insert([{
                         match_id: matchId, map_order: mapO, map_name: mapName, score_a: scoreA, score_b: scoreB
                     }]).select().single();
 
-                    if(mapErr) throw new Error("Aynı sıradaki harita (Örn: 1. Harita) zaten dolu olabilir!");
+                    if (mapErr || !mapData) throw new Error("Harita kaydedilemedi (Aynı sırada harita zaten olabilir): " + (mapErr?.message || ""));
 
+                    // 3. Oyuncu İstatistiklerini Ekle
                     const insertData = [
                         ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, mapData.id)), 
                         ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, mapData.id))
                     ];
-                    if(insertData.length > 0) await window.supabaseClient.from('match_player_stats').insert(insertData);
+                    if(insertData.length > 0) {
+                        const { error: statsErr } = await window.supabaseClient.from('match_player_stats').insert(insertData);
+                        if (statsErr) throw new Error("Oyuncu istatistikleri reddedildi: " + statsErr.message);
+                    }
 
+                    // 4. Zarfı "İşlendi" olarak işaretle
                     await window.supabaseClient.from('bekleyen_zarflar').update({ durum: 'processed' }).eq('id', activeRecordId);
                     
                     showNotification("Başarıyla Fikstüre İğnelendi!", "success");
-                    setTimeout(() => switchSidebarTab('zarflar'), 1000);
+                    setTimeout(() => switchSidebarTab('zarflar'), 1500);
 
                 } else {
+                    // Mevcut Haritayı Düzenleme Modu
                     const mapId = activeRecordId.mapId;
-                    await window.supabaseClient.from('match_maps').update({ map_name: mapName, score_a: scoreA, score_b: scoreB }).eq('id', mapId);
+                    const { error: mapUpdateErr } = await window.supabaseClient.from('match_maps')
+                        .update({ map_name: mapName, score_a: scoreA, score_b: scoreB }).eq('id', mapId);
+                    
+                    if (mapUpdateErr) throw new Error("Harita güncellenemedi: " + mapUpdateErr.message);
 
                     await window.supabaseClient.from('match_player_stats').delete().eq('map_id', mapId);
+                    
                     const insertData = [
                         ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, mapId)), 
                         ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, mapId))
                     ];
-                    if(insertData.length > 0) await window.supabaseClient.from('match_player_stats').insert(insertData);
+                    if(insertData.length > 0) {
+                        const { error: statsErr } = await window.supabaseClient.from('match_player_stats').insert(insertData);
+                        if (statsErr) throw new Error("İstatistikler güncellenemedi: " + statsErr.message);
+                    }
 
                     showNotification("Harita başarıyla güncellendi.", "success");
-                    setTimeout(() => switchSidebarTab('fikstur'), 1000);
+                    setTimeout(() => switchSidebarTab('fikstur'), 1500);
                 }
             } catch(e) {
-                console.error(e);
-                showNotification("Hata: " + e.message, "error");
+                console.error("Kayıt Hatası Detayı:", e);
+                showNotification("HATA: " + e.message, "error");
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
