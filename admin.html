@@ -276,10 +276,10 @@
                     </div>
                 </div>
                 <div style="text-align: center; margin-bottom: 20px;">
-    <button id="btnAiScan" onclick="scanImageWithAI()" style="background: linear-gradient(45deg, #601dc2, #9d4edd); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: none;">
-        <i class="fas fa-robot"></i> Görseli Yapay Zeka İle Oku
-    </button>
-</div>
+                    <button id="btnAiScan" onclick="scanImageWithAI()" style="background: linear-gradient(45deg, #601dc2, #9d4edd); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: none;">
+                        <i class="fas fa-robot"></i> Görseli Yapay Zeka İle Oku
+                    </button>
+                </div>
 
                 <div class="stats-grid-container" style="overflow-x: auto;">
                     <div class="team-stats-box">
@@ -346,11 +346,6 @@
         }
 // Geçerli zarfın resim URL'sini tutacağımız değişken
         let currentProofImageUrl = ""; 
-
-        // openEnvelope fonksiyonunu bu URL'i alacak şekilde güncelliyoruz:
-        // openEnvelope fonksiyonunun içindeki try bloğuna şunu ekle:
-        // currentProofImageUrl = mData.proofImage;
-        // document.getElementById('btnAiScan').style.display = currentProofImageUrl ? 'inline-block' : 'none';
 
         async function scanImageWithAI() {
             if (!currentProofImageUrl) return showNotification("Taranacak görsel bulunamadı!", "error");
@@ -816,6 +811,10 @@
                 // Profilleri çek ve eğer Yapay Zeka doğru İGN okuduysa dropdown'ı otomatik eşleştir
                 await fetchProfilesIfMissing('A');
                 await fetchProfilesIfMissing('B');
+                
+                // BUTONU GÖSTER VE RESİM URL'SİNİ KAYDET
+                currentProofImageUrl = mData.proofImage || "";
+                document.getElementById('btnAiScan').style.display = currentProofImageUrl ? 'inline-block' : 'none';
 
             } catch(e) {
                 console.error(e);
@@ -827,6 +826,9 @@
             document.getElementById('editorPanel').style.display = 'block';
             document.getElementById('btnSaveToBracket').innerHTML = '<i class="fas fa-sync-alt"></i> HARİTAYI GÜNCELLE';
             document.getElementById('btnDeleteOrReject').innerHTML = '<i class="fas fa-trash"></i> BU HARİTAYI SİL';
+            
+            // Fikstürden açılan maçta AI tarama butonunu gizle
+            document.getElementById('btnAiScan').style.display = 'none';
 
             try {
                 const { data: match } = await window.supabaseClient.from('bracket_matches').select('*').eq('id', matchId).single();
