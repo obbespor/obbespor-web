@@ -349,7 +349,7 @@
         // Geçerli zarfın resim URL'sini tutacağımız değişken
         let currentProofImageUrl = ""; 
 
-        async function scanImageWithAI() {
+       async function scanImageWithAI() {
             if (!currentProofImageUrl) return showNotification("Taranacak görsel bulunamadı!", "error");
 
             const btn = document.getElementById('btnAiScan');
@@ -366,7 +366,7 @@
                 if (!imageRes.ok) throw new Error("Resim Supabase sunucusundan çekilemedi.");
                 const imageBlob = await imageRes.blob();
                 
-                // 2. MIME tipini garantiye al (Gemini sadece image/jpeg, png, webp kabul eder)
+                // 2. MIME tipini garantiye al
                 let mimeType = imageBlob.type;
                 if (!mimeType || !mimeType.startsWith('image/')) {
                     mimeType = 'image/jpeg'; // Varsayılan olarak JPEG kabul et
@@ -391,8 +391,8 @@
                     }
                 `;
 
-                // 5. API'ye Base64 formatında resmi gönderiyoruz (gemini-1.5-flash-latest modeli ile)
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`, {
+                // 5. API'ye Base64 formatında resmi gönderiyoruz (DÜZELTİLDİ: -latest tagı silindi)
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
