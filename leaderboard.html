@@ -36,7 +36,6 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        /* KESİN ÇÖZÜM: Tüm sayfanın yatayda patlamasını engeller */
         html, body { background-color: #050505; color: white; overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; }
 
         /* --- SAYFA BAŞLIĞI VE TASARIMI --- */
@@ -81,8 +80,8 @@
         .stat-label-small { font-size: 11px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; }
 
         /* --- LİSTE TASARIMI (4. Sıra ve Sonrası) --- */
-        .table-wrapper { width: 100%; overflow-x: auto; background: #0a0a0a; border: 1px solid #222; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); -webkit-overflow-scrolling: touch; animation: fadeIn 0.5s ease; }
-        .leaderboard-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; min-width: 700px; }
+        .table-wrapper { width: 100%; background: #0a0a0a; border: 1px solid #222; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); animation: fadeIn 0.5s ease; overflow: hidden; }
+        .leaderboard-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; }
         
         .leaderboard-table th { padding: 20px 15px; background: #111; color: var(--gri-yazi); font-weight: 900; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; border-bottom: 2px solid #333; white-space: nowrap; }
         .leaderboard-table td { padding: 15px; border-bottom: 1px solid #1a1a1a; color: white; font-weight: 500; vertical-align: middle; transition: 0.2s; }
@@ -107,7 +106,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ==================================================
-             MOBİL UYUMLULUK (PODİUM VE TABLO İÇİN)
+             MOBİL UYUMLULUK (Ekrana Tam Sığdırma)
         ================================================== */
         @media (max-width: 900px) {
             .page-header { padding: 130px 15px 30px; }
@@ -120,7 +119,6 @@
             .podium-card { width: 100%; max-width: 320px; height: auto !important; transform: none !important; }
             .podium-card:hover { transform: translateY(-5px) !important; }
             
-            /* Mobilde sıralama 1, 2, 3 şeklinde olsun */
             .podium-1 { order: 1; }
             .podium-2 { order: 2; }
             .podium-3 { order: 3; }
@@ -128,15 +126,35 @@
             .podium-1 .player-avatar { width: 90px; height: 90px; }
             .podium-1 .stat-highlight { font-size: 32px; }
 
-            /* Tablo Mobil İyileştirmeleri */
-            .leaderboard-table { min-width: 550px; } /* Yana kaydırmayı çok abartmamak için küçülttük */
-            .leaderboard-table th, .leaderboard-table td { padding: 12px 8px; font-size: 13px; }
-            .list-avatar { width: 35px; height: 35px; }
-            .list-ign { font-size: 13px; }
-            .primary-stat { font-size: 16px; }
+            /* Tablo Mobil İyileştirmeleri (Kaydırmayı Kapatıp Ekrana Sığdırma) */
+            .table-wrapper { border-radius: 12px; }
+            .leaderboard-table { width: 100%; table-layout: auto; } 
             
-            /* K/D/A sütununu mobilde gizle ki ekran çok daralmasın */
-            .hide-mobile { display: none; }
+            /* Mobilde iç boşlukları (padding) daraltıyoruz */
+            .leaderboard-table th, .leaderboard-table td { padding: 12px 5px; font-size: 12px; letter-spacing: 0; }
+            .leaderboard-table th:first-child, .leaderboard-table td:first-child { padding-left: 10px; }
+            .leaderboard-table th:last-child, .leaderboard-table td:last-child { padding-right: 10px; }
+            
+            .list-rank-cell { font-size: 14px; width: 30px; }
+            .player-cell { gap: 8px; }
+            .list-avatar { width: 32px; height: 32px; border-width: 1px; }
+            
+            /* İsimler çok uzunsa alt satıra geçmesin, ... ile kesilsin */
+            .list-ign { font-size: 12px; max-width: 75px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+            .list-name { font-size: 10px; max-width: 75px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            
+            .primary-stat { font-size: 14px; }
+            .good-stat { font-size: 12px; }
+            
+            /* K/D/A ve MAÇ sütununu mobilde tamamen gizle ki ana sayılar rahat sığsın */
+            .hide-mobile { display: none !important; }
+        }
+
+        /* Daha da dar ekranlar (iPhone SE vb.) için ekstra sıkıştırma */
+        @media (max-width: 380px) {
+            .leaderboard-table th, .leaderboard-table td { padding: 10px 3px; font-size: 11px; }
+            .list-ign, .list-name { max-width: 60px; }
+            .list-avatar { width: 28px; height: 28px; }
         }
     </style>
 </head>
@@ -175,7 +193,7 @@
                     <tr>
                         <th class="list-rank-cell">#</th>
                         <th style="text-align: left;">E-SPORCU</th>
-                        <th>MAÇ</th>
+                        <th class="hide-mobile">MAÇ</th>
                         <th id="th-acs" style="color:var(--neon-mor);">ACS</th>
                         <th id="th-kd">K/D</th>
                         <th id="th-kpr">KPR</th>
@@ -206,7 +224,6 @@
             } catch(e) { console.error("Komponent yüklenemedi", e); }
         }
 
-        // Seçilen sıralama ölçütüne göre başlık metnini döndürür (Podyumda göstermek için)
         function getMetricLabel(sortBy) {
             if(sortBy === 'avg_acs') return 'ORT. ACS';
             if(sortBy === 'kd_ratio') return 'K/D ORANI';
@@ -215,7 +232,6 @@
             return 'SKOR';
         }
 
-        // Tablo başlık renklerini aktif filtreye göre günceller
         function updateTableHeaders(sortBy) {
             const headers = ['th-acs', 'th-kd', 'th-kpr'];
             headers.forEach(id => {
@@ -237,12 +253,11 @@
             document.getElementById('tableBodyArea').innerHTML = '<tr><td colspan="7" style="padding:40px;"><i class="fas fa-spinner fa-spin fa-2x" style="color:var(--neon-mor);"></i><br><br>Veriler yükleniyor...</td></tr>';
 
             try {
-                // Supabase View tablosundan verileri çekip sıralıyoruz
                 const { data: players, error } = await window.supabaseClient
                     .from('vw_leaderboard_stats')
                     .select('*')
                     .order(sortBy, { ascending: false })
-                    .limit(50); // Şimdilik Top 50'yi listeliyoruz
+                    .limit(50); 
 
                 if (error) throw error;
 
@@ -267,7 +282,6 @@
             const podiumArea = document.getElementById('podiumArea');
             let html = '';
 
-            // Masaüstünde 2. - 1. - 3. dizilimi için index ayarı (CSS mobilde flex-order ile 1-2-3 yapacak)
             const positions = [
                 { rank: 2, data: topPlayers[1], class: 'podium-2' },
                 { rank: 1, data: topPlayers[0], class: 'podium-1' },
@@ -307,7 +321,7 @@
             }
 
             listPlayers.forEach((p, index) => {
-                const rank = index + 4; // 3 kişi podyumda
+                const rank = index + 4; 
                 const avatar = p.avatar_url || 'img/default-avatar.png';
                 const ign = p.ign || p.username;
 
@@ -318,12 +332,12 @@
                             <div class="player-cell">
                                 <img src="${avatar}" class="list-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${ign}&background=111&color=fff&size=100&bold=true'">
                                 <div>
-                                    <div class="list-ign">${ign}</div>
+                                    <div class="list-ign" title="${ign}">${ign}</div>
                                     <div class="list-name">@${p.username}</div>
                                 </div>
                             </div>
                         </td>
-                        <td>${p.maps_played}</td>
+                        <td class="hide-mobile">${p.maps_played}</td>
                         <td class="${sortBy === 'avg_acs' ? 'primary-stat' : 'good-stat'}">${p.avg_acs}</td>
                         <td class="${sortBy === 'kd_ratio' ? 'primary-stat' : 'good-stat'}">${p.kd_ratio}</td>
                         <td class="${sortBy === 'kpr' ? 'primary-stat' : 'good-stat'}">${p.kpr}</td>
