@@ -3,29 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OBB 1. TOPLULUK TURNUVASI Fikstürü | OBB E-SPORTS</title>
+    <title>Liderlik Tablosu | OBB E-SPORTS</title>
     
-    <meta name="description" content="Ordu'dan yükselen e-spor topluluğu OBB E-SPORTS'a katıl! Rekabete ortak ol, takımını kur, turnuvalarda yeteneğini göster ve zafere ulaş.">
-    <meta name="keywords" content="e-spor, ordu e-spor, obb esports, valorant turnuvası, cs2 turnuvası, takım bul, e-spor kayıt, obb">
-    <meta name="author" content="OBB E-SPORTS">
+    <meta name="description" content="OBB E-Sports turnuvalarının en iyi oyuncuları! En yüksek ACS, K/D ve KPR istatistiklerine sahip e-sporcuları inceleyin.">
     <meta name="theme-color" content="#601dc2"> 
     
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="OBB E-SPORTS">
-    <meta property="og:title" content="OBB 1. TOPLULUK TURNUVASI Fikstürü | OBB E-SPORTS">
-    <meta property="og:description" content="Ordu'dan yükselen e-spor topluluğu OBB E-SPORTS'a katıl! Turnuvalarda rekabet et ve zafere ulaş.">
-    <meta property="og:url" content="https://obbesports.com">
-    <meta property="og:image" content="https://obbesports.com/img/obblogo.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="OBB 1. TOPLULUK TURNUVASI Fikstürü | OBB E-SPORTS">
-    <meta name="twitter:description" content="Ordu'dan yükselen e-spor topluluğu OBB E-SPORTS'a katıl! Turnuvalarda rekabet et ve zafere ulaş.">
-    <meta name="twitter:image" content="https://obbesports.com/img/obblogo.png">
-
     <link rel="icon" type="image/png" href="img/obblogo.png">
-    <link rel="apple-touch-icon" href="img/obblogo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -36,222 +19,125 @@
     <style>
         body { background-color: #050505; color: white; overflow-x: hidden; }
         
-        /* --- SAYFA BAŞLIĞI VE SEKMELER --- */
-        .page-header { text-align: center; padding: 40px 20px 20px; background: radial-gradient(circle at top, #110522 0%, #050505 100%); border-bottom: 1px solid #222; }
-        .page-title { font-size: 36px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; }
+        .page-header { text-align: center; padding: 60px 20px 40px; background: radial-gradient(circle at top, #1a0a2e 0%, #050505 100%); border-bottom: 1px solid #222; }
+        .page-title { font-size: 38px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px; }
         .page-title span { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
-        .page-subtitle { color: var(--gri-yazi); font-size: 14px; font-weight: 500; margin-bottom: 30px; }
+        .page-subtitle { color: var(--gri-yazi); font-size: 15px; font-weight: 500; margin-bottom: 30px; }
 
-        .stage-tabs { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
-        .stage-btn { background: #111; border: 1px solid #333; color: var(--gri-yazi); padding: 12px 30px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; font-family: 'Poppins', sans-serif; letter-spacing: 1px; }
-        .stage-btn.active, .stage-btn:hover { background: var(--neon-mor); color: white; border-color: var(--neon-mor); box-shadow: 0 0 20px rgba(96, 29, 194, 0.4); transform: translateY(-2px); }
+        .filter-container { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; }
+        .filter-label { font-size: 13px; font-weight: bold; color: var(--gri-yazi); text-transform: uppercase; }
+        .sort-select { background: #111; border: 1px solid var(--neon-mor); color: white; padding: 12px 25px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; outline: none; font-family: 'Poppins', sans-serif; box-shadow: 0 0 15px rgba(96, 29, 194, 0.2); }
+        .sort-select:focus { border-color: white; }
 
-        /* --- AŞAMA İÇERİK ALANLARI --- */
-        .stage-content { display: none; padding: 40px 5%; animation: fadeIn 0.4s ease; min-height: 60vh; }
-        .stage-content.active { display: block; }
+        .leaderboard-container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; min-height: 60vh; }
 
-        /* --- 1. AŞAMA: LİSTE (GRUP) GÖRÜNÜMÜ STİLLERİ --- */
-        .round-list-wrapper { margin-bottom: 50px; }
-        .round-list-title { display: flex; align-items: center; gap: 15px; font-size: 20px; font-weight: 900; color: white; margin-bottom: 25px; border-bottom: 2px solid #222; padding-bottom: 10px; }
-        .round-list-title span { background: var(--neon-mor); padding: 2px 10px; border-radius: 5px; font-size: 14px; }
+        /* --- İLK 3 PODYUM TASARIMI --- */
+        .podium-wrapper { display: flex; justify-content: center; align-items: flex-end; gap: 20px; margin-bottom: 80px; margin-top: 40px; }
+        .podium-card { background: #0a0a0a; border: 1px solid #333; border-radius: 16px; padding: 30px 20px; text-align: center; width: 240px; position: relative; transition: 0.3s; display: flex; flex-direction: column; align-items: center; }
         
-        .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .podium-1 { border-color: gold; box-shadow: 0 0 30px rgba(255, 215, 0, 0.15); transform: scale(1.15); z-index: 3; background: linear-gradient(180deg, rgba(255,215,0,0.05) 0%, rgba(10,10,10,1) 100%); }
+        .podium-2 { border-color: silver; box-shadow: 0 0 20px rgba(192, 192, 192, 0.1); z-index: 2; height: 95%; }
+        .podium-3 { border-color: #cd7f32; box-shadow: 0 0 20px rgba(205, 127, 50, 0.1); z-index: 1; height: 90%; }
 
-        /* ==========================================================
-           2. AŞAMA: LINEER AĞAÇ (SOLDAN SAĞA) - KUSURSUZ MATEMATİK
-           ========================================================== */
-        .bracket-scroll-area { width: 100%; overflow-x: auto; padding-top: 60px; padding-bottom: 60px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; }
+        .rank-badge { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: 900; color: black; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
+        .podium-1 .rank-badge { background: gold; }
+        .podium-2 .rank-badge { background: silver; }
+        .podium-3 .rank-badge { background: #cd7f32; }
+
+        .player-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 3px solid #333; background: #111; }
+        .podium-1 .player-avatar { border-color: gold; width: 110px; height: 110px; }
+        .podium-2 .player-avatar { border-color: silver; }
+        .podium-3 .player-avatar { border-color: #cd7f32; }
+
+        .player-ign { font-size: 22px; font-weight: 900; color: white; margin-bottom: 5px; text-transform: uppercase; word-break: break-all; }
+        .player-name { font-size: 12px; color: var(--gri-yazi); margin-bottom: 15px; }
         
-        .bracket-container { display: flex; align-items: stretch; justify-content: flex-start; min-width: max-content; min-height: 750px; padding-left: 20px; }
+        .stat-highlight { font-size: 28px; font-weight: 900; color: var(--neon-mor); line-height: 1; margin-bottom: 5px; }
+        .podium-1 .stat-highlight { color: gold; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
         
-        .bracket-column { display: flex; flex-direction: column; width: 280px; position: relative; }
+        .stat-label-small { font-size: 11px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- LİSTE TASARIMI (4. Sıra ve Sonrası) --- */
+        .table-wrapper { width: 100%; overflow-x: auto; background: #0a0a0a; border: 1px solid #222; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .leaderboard-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; min-width: 700px; }
         
-        .round-header { position: absolute; top: -50px; left: 10px; right: 10px; text-align: center; color: var(--neon-mor); font-weight: 900; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; border-bottom: 2px solid #222; padding-bottom: 10px; z-index: 10; }
-
-        .match-wrapper { 
-            flex: 1 1 0%; 
-            display: flex; flex-direction: column; justify-content: center; 
-            position: relative; padding: 0 30px; margin: 0; 
-        }
-
-        /* --- ORTAK MAÇ KARTI TASARIMI --- */
-        .match-card { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; position: relative; z-index: 5; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); margin: 0; }
-        .match-card:hover { border-color: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(96, 29, 194, 0.3); z-index: 10; }
+        .leaderboard-table th { padding: 20px 15px; background: #111; color: var(--gri-yazi); font-weight: 900; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; border-bottom: 2px solid #333; }
+        .leaderboard-table td { padding: 15px; border-bottom: 1px solid #1a1a1a; color: white; font-weight: 500; vertical-align: middle; }
         
-        .match-info-bar { background: #111; padding: 6px 12px; font-size: 11px; color: var(--gri-yazi); font-weight: bold; display: flex; justify-content: space-between; border-bottom: 1px solid #222; border-radius: 7px 7px 0 0; }
-        .team { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #1a1a1a; }
-        .team:last-child { border-bottom: none; border-radius: 0 0 7px 7px; }
+        .leaderboard-table tr:hover td { background: rgba(96, 29, 194, 0.05); }
+        .leaderboard-table tr:last-child td { border-bottom: none; }
+
+        .rank-cell { font-size: 18px; font-weight: 900; color: #555; width: 60px; }
         
-        .team-info { display: flex; align-items: center; gap: 10px; }
-        .team-logo { width: 20px; height: 20px; object-fit: contain; background: #000; border-radius: 4px; }
-        .team-name { font-size: 13px; font-weight: 700; color: white; }
-        .score { font-size: 16px; font-weight: 900; color: white; }
+        .player-cell { display: flex; align-items: center; gap: 15px; text-align: left; }
+        .list-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #333; background: #111; }
+        .list-ign { font-size: 15px; font-weight: bold; color: white; }
+        .list-name { font-size: 11px; color: var(--gri-yazi); }
+
+        .primary-stat { font-size: 18px; font-weight: 900; color: var(--neon-mor); }
+        .good-stat { color: #00d2ff; font-weight: bold; }
         
-        .team.winner { background: rgba(96, 29, 194, 0.1); border-left: 3px solid var(--neon-mor); }
-        .team.winner .team-name, .team.winner .score { color: var(--neon-mor); text-shadow: 0 0 10px rgba(96, 29, 194, 0.4); }
-        .team.loser { opacity: 0.5; }
-
-        .match-card.empty-slot { border: 1px dashed #333; cursor: default; }
-        .match-card.empty-slot:hover { border-color: #555; transform: none; box-shadow: none; }
-        .match-card.empty-slot .team-name { color: #555; font-style: italic; }
-        .match-card.empty-slot .score { color: #333; }
-
-        .final-match { border-color: gold; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
-        .final-match .team.winner { background: rgba(255, 215, 0, 0.1); border-left-color: gold; }
-        .final-match .team.winner .team-name, .final-match .team.winner .score { color: gold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-
-        /* YENİ: PLANLANMIŞ MAÇ (TARİHLİ) ÖZEL GÖRÜNÜMÜ */
-        .match-card.scheduled-slot { cursor: default; border-color: #1a1a1a; }
-        .match-card.scheduled-slot:hover { border-color: #00d2ff; transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 210, 255, 0.15); }
-        .match-card.scheduled-slot .team-name { color: #ccc; }
-
-        /* ==========================================================
-           ÇİZGİLER (1 Piksel Bile Şaşmaz)
-           ========================================================== */
-        
-        .bracket-column:not(:last-child) .match-card::after { 
-            content: ''; position: absolute; top: 50%; right: -30px; width: 30px; 
-            border-top: 2px solid #444; z-index: 1; 
-        }
-        
-        .bracket-column:not(:first-child) .match-card::before { 
-            content: ''; position: absolute; top: 50%; left: -30px; width: 30px; 
-            border-top: 2px solid #444; z-index: 1; 
-        }
-
-        .bracket-column:not(:first-child) .match-wrapper::before { 
-            content: ''; position: absolute; left: 0; 
-            top: 25%; bottom: 25%; 
-            border-left: 2px solid #444; z-index: 0; 
-        }
-
-        /* Pulse Animasyonu (Canlı Maç İçin) */
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        /* --- DETAY MODALI VE HARİTA SEKMELER --- */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(8px); padding: 20px; }
-        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
-        .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
-        
-        .modal-content::-webkit-scrollbar { width: 8px; }
-        .modal-content::-webkit-scrollbar-track { background: #111; border-radius: 0 15px 15px 0; }
-        .modal-content::-webkit-scrollbar-thumb { background: var(--neon-mor); border-radius: 8px; }
-
-        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 28px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; z-index: 10; }
-        .close-btn:hover { color: var(--kirmizi-iptal); }
-
-        .modal-header { padding: 40px 20px; background: radial-gradient(circle at center, #1a0a2e 0%, #0a0a0a 100%); text-align: center; border-bottom: 1px solid #222; }
-        .scoreboard { display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 15px;}
-        .modal-team { display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1; }
-        .modal-team img { width: 60px; height: 60px; object-fit: contain; border-radius: 8px; }
-        .modal-team-name { font-size: 20px; font-weight: 900; color: white; text-transform: uppercase; text-align: center; }
-        .modal-score { font-size: 48px; font-weight: 900; color: white; }
-        .modal-score.winner { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
-        .modal-vs { font-size: 16px; color: #555; font-weight: bold; }
-
-        .map-tabs-container { display: flex; justify-content: center; gap: 10px; margin: 20px 20px 0; flex-wrap: wrap; }
-        .map-tab-btn { background: #111; border: 1px solid #333; color: var(--gri-yazi); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 900; transition: 0.3s; font-family: 'Poppins', sans-serif; letter-spacing: 1px; }
-        .map-tab-btn:hover { background: #222; color: white; }
-        .map-tab-btn.active { background: var(--neon-mor); color: white; border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); }
-
-        .map-stats-block { margin: 20px; background: #111; border-radius: 12px; border: 1px solid #222; overflow: hidden; animation: fadeIn 0.4s ease; }
-        .map-name-header { background: var(--neon-mor); color: white; padding: 12px; margin: 0; font-size: 15px; font-weight: 900; text-align: center; letter-spacing: 1px; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 15px; }
-        .map-score-display { background: rgba(0,0,0,0.3); padding: 3px 12px; border-radius: 20px; font-size: 18px; color: gold; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
-        
-        .stats-tables-container { display: flex; flex-direction: column; gap: 0; }
-        .table-half { width: 100%; border-bottom: 1px solid #222; }
-        .table-half:last-child { border-bottom: none; }
-        
-        .team-header-bar { padding: 8px 15px; font-size: 13px; font-weight: 900; color: white; text-align: center; }
-        .team-a-bar { background: rgba(0, 210, 255, 0.1); border-bottom: 2px solid #00d2ff; color: #00d2ff; }
-        .team-b-bar { background: rgba(255, 75, 75, 0.1); border-bottom: 2px solid #ff4b4b; color: #ff4b4b; }
-
-        .stats-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
-        .stats-table th { color: var(--gri-yazi); padding: 10px; border-bottom: 1px solid #333; font-size: 11px; text-transform: uppercase; }
-        .stats-table td { padding: 10px; border-bottom: 1px solid #222; color: white; vertical-align: middle; }
-        .stats-table tr:hover td { background: #1a1a1a; }
-        .stats-table tr:last-child td { border-bottom: none; }
-        
-        .stat-ign-cell { text-align: left; font-weight: bold; }
-        .stat-agent-img { width: 35px; height: 35px; border-radius: 4px; object-fit: cover; border: 1px solid #444; }
-
         #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050505; display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-
-        @media (min-width: 768px) {
-            .stats-tables-container { flex-direction: row; }
-            .table-half { width: 50%; border-bottom: none; border-right: 1px solid #222; }
-            .table-half:last-child { border-right: none; }
-        }
-
-        @media (max-width: 768px) {
-            .page-title { font-size: 24px; }
-            .stage-tabs { flex-direction: column; padding: 0 20px; }
-            .match-grid { grid-template-columns: 1fr; }
-            .scoreboard { gap: 10px; }
-            .modal-team img { width: 40px; height: 40px; }
-            .modal-team-name { font-size: 14px; }
-            .modal-score { font-size: 32px; }
-            .stat-agent-img { width: 25px; height: 25px; }
-            .stats-table td { padding: 6px; font-size: 11px; }
-            .map-tab-btn { padding: 8px 12px; font-size: 11px; flex: 1 1 40%; text-align: center; }
+        @media (max-width: 900px) {
+            .podium-wrapper { align-items: center; flex-direction: column; gap: 40px; margin-top: 60px; }
+            .podium-card { width: 100%; max-width: 320px; height: auto !important; transform: none !important; }
+            /* Mobilde sıralama 1, 2, 3 şeklinde olsun */
+            .podium-1 { order: 1; }
+            .podium-2 { order: 2; }
+            .podium-3 { order: 3; }
+            .page-title { font-size: 28px; }
         }
     </style>
 </head>
 <body>
 
     <div id="loadingScreen">
-        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
-        <h2>Fikstür Verileri Çekiliyor...</h2>
+        <i class="fas fa-trophy fa-spin fa-3x" style="margin-bottom: 20px;"></i>
+        <h2>İstatistikler Hesaplanıyor...</h2>
     </div>
 
     <div id="header-alani"></div>
 
     <div class="page-header">
-        <h1 class="page-title">OBB 1. TOPLULUK TURNUVASI <span>FİKSTÜRÜ</span></h1>
-        <p class="page-subtitle">Toplam Ödül Havuzu: 10.000 TL | 64 Takım</p>
+        <h1 class="page-title">OBB E-SPORTS <span>LİDERLİK TABLOSU</span></h1>
+        <p class="page-subtitle">Turnuvanın en tehlikeli, en iyi oyuncuları.</p>
         
-        <div class="stage-tabs">
-            <button class="stage-btn active" onclick="switchStage('groupStage', this)"><i class="fas fa-list-ul"></i> GRUP AŞAMASI (R1 & R2)</button>
-            <button class="stage-btn" onclick="switchStage('playoffStage', this)"><i class="fas fa-sitemap"></i> PLAYOFF AĞACI (Son 16)</button>
+        <div class="filter-container">
+            <span class="filter-label">Sıralama Ölçütü:</span>
+            <select id="sortSelect" class="sort-select" onchange="fetchLeaderboard()">
+                <option value="avg_acs">🔥 Ortalama ACS (Çatışma Skoru)</option>
+                <option value="kd_ratio">🎯 K/D Oranı (Kill/Death)</option>
+                <option value="kpr">⚡ KPR (Raunt Başına Kill)</option>
+                <option value="total_kills">💀 Toplam Kill</option>
+            </select>
         </div>
     </div>
 
-    <div id="groupStage" class="stage-content active"></div>
-
-    <div id="playoffStage" class="stage-content">
-        <div class="bracket-scroll-area">
-            <div class="bracket-container" id="bracketContainer">
-                </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="matchModal" onclick="this.classList.remove('active')">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <span class="close-btn" onclick="document.getElementById('matchModal').classList.remove('active')">&times;</span>
-            <div class="modal-header">
-                <span style="font-size: 12px; font-weight: 900; color: var(--gri-yazi); letter-spacing: 2px;">SERİ SKORU</span>
-                <div class="scoreboard">
-                    <div class="modal-team">
-                        <img src="img/unknown.webp" id="mLogoA" alt="Takım A" onerror="this.src='img/unknown.webp'">
-                        <span class="modal-team-name" id="mTeamA">TAKIM A</span>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        <span class="modal-score" id="mScoreA">0</span>
-                        <span class="modal-vs">-</span>
-                        <span class="modal-score" id="mScoreB">0</span>
-                    </div>
-                    <div class="modal-team">
-                        <img src="img/unknown.webp" id="mLogoB" alt="Takım B" onerror="this.src='img/unknown.webp'">
-                        <span class="modal-team-name" id="mTeamB">TAKIM B</span>
-                    </div>
-                </div>
+    <main class="leaderboard-container">
+        
+        <div class="podium-wrapper" id="podiumArea">
             </div>
-            
-            <div id="modalDetailsContent"></div>
+
+        <div class="table-wrapper">
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th class="rank-cell">#</th>
+                        <th style="text-align: left;">E-SPORCU</th>
+                        <th>MAÇ</th>
+                        <th style="color:var(--neon-mor);">ACS</th>
+                        <th>K/D</th>
+                        <th>KPR</th>
+                        <th>K / D / A</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBodyArea">
+                    </tbody>
+            </table>
         </div>
-    </div>
+
+    </main>
 
     <div id="footer-alani"></div>
 
@@ -270,365 +156,125 @@
             } catch(e) { console.error("Komponent yüklenemedi", e); }
         }
 
-        function switchStage(tabId, btnElement) {
-            document.querySelectorAll('.stage-btn').forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
-            document.querySelectorAll('.stage-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+        // Seçilen sıralama ölçütüne göre başlık metnini döndürür (Podyumda göstermek için)
+        function getMetricLabel(sortBy) {
+            if(sortBy === 'avg_acs') return 'ORT. ACS';
+            if(sortBy === 'kd_ratio') return 'K/D ORANI';
+            if(sortBy === 'kpr') return 'KPR';
+            if(sortBy === 'total_kills') return 'TOPLAM KILL';
+            return 'SKOR';
         }
 
-        const TOURNAMENT_STRUCTURE = {
-            group: [
-                { id: 'SON 64', title: 'SON 64 EŞLEŞMELERİ (BO1)', count: 32, format: 'BO1' },
-                { id: 'SON 32', title: 'SON 32 EŞLEŞMELERİ (BO1)', count: 16, format: 'BO1' }
-            ],
-            playoff: [
-                { id: 'SON 16', count: 8, format: 'BO3', dbName: 'SON 16' },
-                { id: 'ÇEYREK FİNAL', count: 4, format: 'BO3', dbName: 'ÇEYREK FİNAL' },
-                { id: 'YARI FİNAL', count: 2, format: 'BO3', dbName: 'YARI FİNAL' },
-                { id: 'FİNAL', count: 1, format: 'BO5', dbName: 'FİNAL' }
-            ]
-        };
-
-        function createMatchCardHTML(matchData, format, isFinal = false) {
-            if (!matchData || matchData.isDummy) {
-                return `
-                    <div class="match-card empty-slot ${isFinal ? 'final-match' : ''}">
-                        <div class="match-info-bar"><span>${format}</span><span style="color:#555;">EŞLEŞME BEKLENİYOR</span></div>
-                        <div class="team"><div class="team-info"><img src="img/unknown.webp" class="team-logo"><span class="team-name">Belirlenmedi</span></div><span class="score">-</span></div>
-                        <div class="team"><div class="team-info"><img src="img/unknown.webp" class="team-logo"><span class="team-name">Belirlenmedi</span></div><span class="score">-</span></div>
-                    </div>
-                `;
-            }
-
-            const tA = matchData.teamA || 'Bilinmeyen Takım';
-            const tB = matchData.teamB || 'Bilinmeyen Takım';
+        async function fetchLeaderboard() {
+            const sortBy = document.getElementById('sortSelect').value;
+            const metricLabel = getMetricLabel(sortBy);
             
-            const sA = matchData.scoreA !== null ? matchData.scoreA : '-';
-            const sB = matchData.scoreB !== null ? matchData.scoreB : '-';
-            
-            const logoA = matchData.logoA || 'img/unknown.webp';
-            const logoB = matchData.logoB || 'img/unknown.webp';
+            document.getElementById('podiumArea').innerHTML = '';
+            document.getElementById('tableBodyArea').innerHTML = '<tr><td colspan="7" style="padding:40px;"><i class="fas fa-spinner fa-spin"></i> Veriler yükleniyor...</td></tr>';
 
-            let classA = '', classB = '';
-            let statusText = 'BEKLİYOR';
-            let scheduledClass = ''; 
-
-            if (matchData.status === 'finished') {
-                classA = matchData.winnerId === matchData.teamAId ? 'winner' : 'loser';
-                classB = matchData.winnerId === matchData.teamBId ? 'winner' : 'loser';
-                if(!matchData.winnerId) { 
-                    if (sA > sB) { classA = 'winner'; classB = 'loser'; }
-                    else if (sB > sA) { classB = 'winner'; classA = 'loser'; }
-                }
-                statusText = '<span style="color:var(--neon-mor);">TAMAMLANDI</span>';
-            } else if (matchData.status === 'live') {
-                statusText = '<span style="color:var(--kirmizi-iptal); animation: pulse 1.5s infinite;">CANLI</span>';
-            } else if (matchData.matchDate) {
-                statusText = `<span style="color:#00d2ff;"><i class="far fa-calendar-alt"></i> ${matchData.matchDate}</span>`;
-                scheduledClass = 'scheduled-slot';
-            }
-
-            const finalClass = isFinal ? 'final-match' : '';
-            const safeTA = tA.replace(/'/g, ""); const safeTB = tB.replace(/'/g, "");
-
-            return `
-                <div class="match-card ${finalClass} ${scheduledClass}" onclick="openModal('${matchData.id}', '${matchData.teamAId}', '${matchData.teamBId}', '${safeTA}', '${safeTB}', '${sA}', '${sB}', '${matchData.status}', '${logoA}', '${logoB}')">
-                    <div class="match-info-bar"><span>${format}</span>${statusText}</div>
-                    <div class="team ${classA}">
-                        <div class="team-info"><img src="${logoA}" onerror="this.src='img/unknown.webp'" class="team-logo"><span class="team-name">${tA}</span></div>
-                        <span class="score">${sA}</span>
-                    </div>
-                    <div class="team ${classB}">
-                        <div class="team-info"><img src="${logoB}" onerror="this.src='img/unknown.webp'" class="team-logo"><span class="team-name">${tB}</span></div>
-                        <span class="score">${sB}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        async function fetchAndRenderBracket() {
             try {
-                // 1. Önce aktif turnuvayı (upcoming) veya en son turnuvayı bul
-                const { data: tourney } = await window.supabaseClient
-                    .from('tournaments')
-                    .select('id')
-                    .order('created_at', { ascending: false })
-                    .limit(1)
-                    .single();
+                // View tablosundan verileri çekip sıralıyoruz
+                const { data: players, error } = await window.supabaseClient
+                    .from('vw_leaderboard_stats')
+                    .select('*')
+                    .order(sortBy, { ascending: false })
+                    .limit(50); // Şimdilik Top 50'yi listeliyoruz
 
-                if (!tourney) {
-                    console.warn("Aktif turnuva bulunamadı.");
+                if (error) throw error;
+
+                if (!players || players.length === 0) {
+                    document.getElementById('podiumArea').innerHTML = '<p style="color:#555;">Henüz istatistik bulunmuyor.</p>';
+                    document.getElementById('tableBodyArea').innerHTML = '';
                     return;
                 }
 
-                // 2. Takım isimlerini ve logolarını YENİ TEAMS tablosundan çek (Sadece id, name ve logo yeterli)
-                const { data: teamsData, error: teamsErr } = await window.supabaseClient.from('teams').select('id, name, logo_url');
-                if (teamsErr) throw teamsErr;
-                
-                const teamMap = {};
-                if (teamsData) {
-                    teamsData.forEach(t => {
-                        teamMap[t.id] = {
-                            name: t.name,
-                            logo: t.logo_url || 'img/unknown.webp'
-                        };
-                    });
-                }
-
-                // 3. SADECE bu turnuvaya ait maçları çek
-                const { data: matchesData, error: matchesErr } = await window.supabaseClient
-                    .from('bracket_matches')
-                    .select('*')
-                    .eq('tournament_id', tourney.id)
-                    .order('round_order', { ascending: true });
-                if (matchesErr) throw matchesErr;
-
-                // 4. Haritaları çek
-                const { data: mapsData, error: mapsErr } = await window.supabaseClient.from('match_maps').select('match_id, score_a, score_b');
-                if (mapsErr) throw mapsErr;
-
-                const mapsByMatch = {};
-                if (mapsData) {
-                    mapsData.forEach(m => {
-                        if (!mapsByMatch[m.match_id]) mapsByMatch[m.match_id] = [];
-                        mapsByMatch[m.match_id].push(m);
-                    });
-                }
-
-                const roundsData = {};
-                if (matchesData) {
-                    matchesData.forEach(m => {
-                        if (!roundsData[m.round_name]) roundsData[m.round_name] = [];
-                        
-                        let sA = 0;
-                        let sB = 0;
-                        let calcStatus = 'pending';
-                        let calcWinner = null;
-                        
-                        let winsNeeded = 1; 
-                        if (["SON 16", "ÇEYREK FİNAL", "YARI FİNAL"].includes(m.round_name)) winsNeeded = 2; // BO3
-                        if (m.round_name === "FİNAL") winsNeeded = 3; // BO5
-
-                        const matchMaps = mapsByMatch[m.id] || [];
-                        
-                        if (matchMaps.length > 0) {
-                            matchMaps.forEach(map => {
-                                if (map.score_a > map.score_b) sA++;
-                                else if (map.score_b > map.score_a) sB++;
-                            });
-
-                            if (sA > winsNeeded) sA = winsNeeded;
-                            if (sB > winsNeeded) sB = winsNeeded;
-
-                            if (sA >= winsNeeded) { calcStatus = 'finished'; calcWinner = m.team_a_id; }
-                            else if (sB >= winsNeeded) { calcStatus = 'finished'; calcWinner = m.team_b_id; }
-                            else { calcStatus = 'live'; } 
-                        } else {
-                            sA = '-';
-                            sB = '-';
-                            calcStatus = 'pending'; 
-                        }
-
-                        roundsData[m.round_name].push({
-                            id: m.id,
-                            teamAId: m.team_a_id,
-                            teamBId: m.team_b_id,
-                            teamA: teamMap[m.team_a_id]?.name || 'Belirlenmedi',
-                            teamB: teamMap[m.team_b_id]?.name || 'Belirlenmedi',
-                            logoA: teamMap[m.team_a_id]?.logo || 'img/unknown.webp',
-                            logoB: teamMap[m.team_b_id]?.logo || 'img/unknown.webp',
-                            scoreA: sA, 
-                            scoreB: sB, 
-                            status: calcStatus, 
-                            winnerId: calcWinner,
-                            format: m.match_format,
-                            matchDate: m.match_date || null
-                        });
-                    });
-                }
-
-                // --- GRUP AŞAMASI RENDER ---
-                const groupStageDiv = document.getElementById('groupStage');
-                let groupHtml = '';
-                TOURNAMENT_STRUCTURE.group.forEach(round => {
-                    groupHtml += `<div class="round-list-wrapper"><h3 class="round-list-title"><span>${round.id}</span> ${round.title}</h3><div class="match-grid">`;
-                    const dbMatches = roundsData[round.id] || [];
-                    for (let i = 0; i < round.count; i++) {
-                        if (dbMatches[i]) groupHtml += createMatchCardHTML(dbMatches[i], round.format);
-                        else groupHtml += createMatchCardHTML({ isDummy: true }, round.format);
-                    }
-                    groupHtml += `</div></div>`;
-                });
-                groupStageDiv.innerHTML = groupHtml;
-
-                // --- PLAYOFF AĞACI RENDER ---
-                const playoffDiv = document.getElementById('bracketContainer');
-                let playoffHtml = '';
-                
-                TOURNAMENT_STRUCTURE.playoff.forEach((round, roundIndex) => {
-                    const isFinal = roundIndex === TOURNAMENT_STRUCTURE.playoff.length - 1;
-                    const finalColClass = isFinal ? 'col-final' : '';
-                    
-                    playoffHtml += `<div class="bracket-column ${finalColClass}"><div class="round-header" ${isFinal?'style="color:gold; border-bottom-color:gold;"':''}>${round.id}</div>`;
-                    
-                    const dbMatches = roundsData[round.dbName] || [];
-                    
-                    for (let i = 0; i < round.count; i++) {
-                        playoffHtml += `<div class="match-wrapper">`;
-                        if (dbMatches[i]) {
-                            playoffHtml += createMatchCardHTML(dbMatches[i], round.format, isFinal);
-                        } else {
-                            playoffHtml += createMatchCardHTML({ isDummy: true }, round.format, isFinal);
-                        }
-                        playoffHtml += `</div>`;
-                    }
-                    playoffHtml += `</div>`; 
-                });
-                
-                playoffDiv.innerHTML = playoffHtml;
+                renderPodium(players.slice(0, 3), sortBy, metricLabel);
+                renderTable(players.slice(3), sortBy);
 
             } catch (err) {
-                console.error("Fikstür yüklenirken hata oluştu:", err);
+                console.error("Liderlik tablosu çekilemedi:", err);
+                document.getElementById('tableBodyArea').innerHTML = '<tr><td colspan="7" style="color:red;">Veriler yüklenirken hata oluştu.</td></tr>';
             } finally {
                 document.getElementById('loadingScreen').style.display = 'none';
             }
         }
 
-        window.currentModalData = null;
+        function renderPodium(topPlayers, sortBy, metricLabel) {
+            const podiumArea = document.getElementById('podiumArea');
+            let html = '';
 
-        async function openModal(matchId, teamAId, teamBId, tA, tB, sA, sB, status, logoA, logoB) {
-            if(status === 'undefined' || status === 'pending' || sA === '-') return; 
-            
-            document.getElementById('mTeamA').innerText = tA;
-            document.getElementById('mTeamB').innerText = tB;
-            
-            const scoreAEl = document.getElementById('mScoreA');
-            const scoreBEl = document.getElementById('mScoreB');
-            scoreAEl.innerText = sA;
-            scoreBEl.innerText = sB;
-            
-            scoreAEl.className = parseInt(sA) > parseInt(sB) ? 'modal-score winner' : 'modal-score';
-            scoreBEl.className = parseInt(sB) > parseInt(sA) ? 'modal-score winner' : 'modal-score';
+            // Tasarımda 2. - 1. - 3. şeklinde dizilmeleri için index düzenlemesi
+            const positions = [
+                { rank: 2, data: topPlayers[1], class: 'podium-2' },
+                { rank: 1, data: topPlayers[0], class: 'podium-1' },
+                { rank: 3, data: topPlayers[2], class: 'podium-3' }
+            ];
 
-            const logoAEl = document.getElementById('mLogoA');
-            const logoBEl = document.getElementById('mLogoB');
-            logoAEl.src = logoA;
-            logoBEl.src = logoB;
-
-            document.getElementById('matchModal').classList.add('active');
-            document.body.style.overflow = 'hidden'; 
-
-            const detailsBox = document.getElementById('modalDetailsContent');
-            detailsBox.innerHTML = `
-                <div style="padding: 60px; text-align: center;">
-                    <i class="fas fa-circle-notch fa-spin fa-3x" style="color:var(--neon-mor); margin-bottom: 20px;"></i>
-                    <p style="color: var(--gri-yazi); font-weight: bold;">İstatistikler Yükleniyor...</p>
-                </div>`;
-
-            try {
-                const { data: maps, error: mapsErr } = await window.supabaseClient.from('match_maps').select('*').eq('match_id', matchId).order('map_order', { ascending: true });
-                if (mapsErr) throw mapsErr;
-
-                if (!maps || maps.length === 0) {
-                    detailsBox.innerHTML = '<p style="padding:40px; text-align:center; color:#555;">Bu maça ait harita istatistiği girilmemiş.</p>';
-                    return;
-                }
-
-                const mapIds = maps.map(m => m.id);
-                const { data: stats, error: statsErr } = await window.supabaseClient.from('match_player_stats').select('*').in('map_id', mapIds);
-                if (statsErr) throw statsErr;
-
-                window.currentModalData = { maps, stats, teamAId, teamBId, tA, tB };
-
-                let tabsHtml = '';
-                if (maps.length > 1) {
-                    tabsHtml += `<div class="map-tabs-container">`;
-                    maps.forEach((m, index) => {
-                        const orderText = m.map_order ? `${m.map_order}. HARİTA` : `HARİTA ${index + 1}`;
-                        tabsHtml += `<button class="map-tab-btn ${index === 0 ? 'active' : ''}" onclick="renderMapStatsUI('${m.id}', this)">${orderText}: ${m.map_name.toUpperCase()}</button>`;
-                    });
-                    tabsHtml += `</div>`;
-                }
+            positions.forEach(pos => {
+                if (!pos.data) return; // 3 kişi bile yoksa hata vermesin
                 
-                tabsHtml += `<div id="mapStatsArea"></div>`;
-                detailsBox.innerHTML = tabsHtml;
+                const p = pos.data;
+                const avatar = p.avatar_url || 'img/default-avatar.png'; // Profil resmi yoksa default
+                const ign = p.ign || p.username; // Oyun içi nick yoksa normal ismini yaz
+                const scoreValue = p[sortBy]; // Seçilen filtreye göre değeri al
 
-                renderMapStatsUI(maps[0].id, document.querySelector('.map-tab-btn'));
+                html += `
+                    <div class="podium-card ${pos.class}">
+                        <div class="rank-badge">${pos.rank}</div>
+                        <img src="${avatar}" class="player-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${ign}&background=random'">
+                        <div class="player-ign">${ign}</div>
+                        <div class="player-name">@${p.username}</div>
+                        <div class="stat-highlight">${scoreValue}</div>
+                        <div class="stat-label-small">${metricLabel}</div>
+                    </div>
+                `;
+            });
 
-            } catch (err) {
-                console.error("Hata:", err);
-                detailsBox.innerHTML = '<p style="padding:40px; text-align:center; color:red;">Veri çekilemedi.</p>';
-            }
+            podiumArea.innerHTML = html;
         }
 
-        window.renderMapStatsUI = function(mapId, btnElement) {
-            if (btnElement) {
-                document.querySelectorAll('.map-tab-btn').forEach(btn => btn.classList.remove('active'));
-                btnElement.classList.add('active');
+        function renderTable(listPlayers, sortBy) {
+            const tableArea = document.getElementById('tableBodyArea');
+            let html = '';
+
+            if(listPlayers.length === 0) {
+                tableArea.innerHTML = '<tr><td colspan="7" style="color:#555; padding: 30px;">Başka oyuncu bulunmuyor.</td></tr>';
+                return;
             }
 
-            const data = window.currentModalData;
-            const map = data.maps.find(m => m.id === mapId);
-            const mapStats = data.stats.filter(s => s.map_id === mapId);
+            listPlayers.forEach((p, index) => {
+                const rank = index + 4; // 3 kişi podyumda olduğu için 4'ten başlar
+                const avatar = p.avatar_url || 'img/default-avatar.png';
+                const ign = p.ign || p.username;
 
-            const teamAStats = mapStats.filter(s => s.team_id === data.teamAId).sort((a,b) => b.kills - a.kills);
-            const teamBStats = mapStats.filter(s => s.team_id === data.teamBId).sort((a,b) => b.kills - a.kills);
+                html += `
+                    <tr>
+                        <td class="rank-cell">${rank}</td>
+                        <td>
+                            <div class="player-cell">
+                                <img src="${avatar}" class="list-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${ign}&background=random'">
+                                <div>
+                                    <div class="list-ign">${ign}</div>
+                                    <div class="list-name">@${p.username}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${p.maps_played}</td>
+                        <td class="${sortBy === 'avg_acs' ? 'primary-stat' : 'good-stat'}">${p.avg_acs}</td>
+                        <td class="${sortBy === 'kd_ratio' ? 'primary-stat' : 'good-stat'}">${p.kd_ratio}</td>
+                        <td class="${sortBy === 'kpr' ? 'primary-stat' : 'good-stat'}">${p.kpr}</td>
+                        <td style="color:#aaa;">${p.total_kills} / ${p.total_deaths} / ${p.total_assists}</td>
+                    </tr>
+                `;
+            });
 
-            const renderRow = (stat) => {
-                const rawAgentName = stat.agent_name || "unknown"; 
-                let cleanName = rawAgentName.replace(/[^a-zA-Z0-9]/g, ''); 
-                let formattedAgentName = cleanName ? (cleanName.charAt(0).toUpperCase() + cleanName.slice(1).toLowerCase()) : 'unknown';
-                
-                return `
-                <tr>
-                    <td><img src="img/imgagents/${formattedAgentName}.webp" class="stat-agent-img" title="${rawAgentName.toUpperCase()}" alt="${rawAgentName}" onerror="this.src='img/imgagents/unknown.png'"></td>
-                    <td class="stat-ign-cell">${stat.in_game_name || "-"}</td>
-                    <td style="font-weight:900; color:#00d2ff;">${stat.kills !== null ? stat.kills : 0}</td>
-                    <td style="font-weight:900; color:#ff4b4b;">${stat.deaths !== null ? stat.deaths : 0}</td>
-                    <td style="font-weight:900; color:#888;">${stat.assists !== null ? stat.assists : 0}</td>
-                </tr>`;
-            };
-
-            const mapOrderText = map.map_order ? `${map.map_order}. HARİTA:` : `HARİTA:`;
-
-            document.getElementById('mapStatsArea').innerHTML = `
-                <div class="map-stats-block">
-                    <div class="map-name-header">
-                        <span>${mapOrderText} ${map.map_name.toUpperCase()}</span>
-                        <span class="map-score-display">${map.score_a} - ${map.score_b}</span>
-                    </div>
-                    <div class="stats-tables-container">
-                        <div class="table-half">
-                            <div class="team-header-bar team-a-bar">${data.tA}</div>
-                            <table class="stats-table">
-                                <thead><tr><th>AJAN</th><th class="stat-ign-cell">OYUNCU</th><th>K</th><th>D</th><th>A</th></tr></thead>
-                                <tbody>${teamAStats.map(renderRow).join('')}</tbody>
-                            </table>
-                        </div>
-                        <div class="table-half">
-                            <div class="team-header-bar team-b-bar">${data.tB}</div>
-                            <table class="stats-table">
-                                <thead><tr><th>AJAN</th><th class="stat-ign-cell">OYUNCU</th><th>K</th><th>D</th><th>A</th></tr></thead>
-                                <tbody>${teamBStats.map(renderRow).join('')}</tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>`;
-        };
-
-        document.querySelector('.close-btn').addEventListener('click', () => { document.body.style.overflow = 'auto'; });
-        document.getElementById('matchModal').addEventListener('click', (e) => { 
-            if(e.target === document.getElementById('matchModal')) {
-                document.getElementById('matchModal').classList.remove('active');
-                document.body.style.overflow = 'auto'; 
-            }
-        });
+            tableArea.innerHTML = html;
+        }
 
         window.addEventListener('DOMContentLoaded', async () => {
             await loadComponents();
             if (typeof checkUserStatus === 'function') { checkUserStatus(); }
-            fetchAndRenderBracket();
+            fetchLeaderboard();
         });
     </script>
 </body>
