@@ -684,11 +684,18 @@ let currentUser = null, currentTeamId = null, draftCreatedAt = null, saveTimeout
                     const selectedUsernames = Array.from(document.querySelectorAll('input[id^="main_"], input[id^="sub_"]'))
                                              .map(el => el.value.trim().toLowerCase())
                                              .filter(name => name !== "");
-
-                    const { data: profiles } = await window.supabaseClient.from('profiles')
-                                                    .select('username, id')
-                                                    .ilike('username', `%${query}%`)
-                                                    .limit(15); 
+let profiles = null;
+                    try {
+                        const { data, error } = await window.supabaseClient.from('profiles')
+                                                        .select('username, id')
+                                                        .ilike('username', `%${query}%`)
+                                                        .limit(15);
+                        if (error) throw error;
+                        profiles = data;
+                    } catch (err) {
+                        console.error("Kullanıcı arama sırasında hata oluştu.");
+                        return; // Hata varsa aramayı sessizce durdur, çökme yaratma.
+                    }
                     
                     if (!profiles || profiles.length === 0) return;
 
@@ -776,25 +783,34 @@ let currentUser = null, currentTeamId = null, draftCreatedAt = null, saveTimeout
             });
         }
 
-        async function removePlayer(inputId) {
+async function removePlayer(inputId) {
             const input = document.getElementById(inputId);
             const memberId = input.getAttribute('data-member-id');
-            if (memberId) {
-                await window.supabaseClient.from('team_members').delete().eq('id', memberId);
-            }
-            input.value = '';
-            input.readOnly = false;
-            input.removeAttribute('data-user-id');
-            input.removeAttribute('data-member-id');
-            input.removeAttribute('data-status');
             
-            const tick = document.getElementById(inputId + '-tick');
-            tick.className = 'fas fa-check-circle status-tick';
-            tick.style.display = 'none';
-            document.getElementById(inputId + '-remove').style.display = 'none';
-            updateFormStatus();
+            try {
+                if (memberId) {
+                    const { error } = await window.supabaseClient.from('team_members').delete().eq('id', memberId);
+                    if (error) throw error;
+                }
+                
+                input.value = '';
+                input.readOnly = false;
+                input.removeAttribute('data-user-id');
+                input.removeAttribute('data-member-id');
+                input.removeAttribute('data-status');
+                
+                const tick = document.getElementById(inputId + '-tick');
+                tick.className = 'fas fa-check-circle status-tick';
+                tick.style.display = 'none';
+                document.getElementById(inputId + '-remove').style.display = 'none';
+                updateFormStatus();
+            } catch (err) {
+                console.error("Oyuncu silinirken hata oluştu.");
+                if(typeof showNotification === 'function') {
+                    showNotification("Oyuncu silinemedi, lütfen sayfayı yenileyip tekrar deneyin.", "error");
+                }
+            }
         }
-
         function updateFormStatus() {
             const mainInputs = Array.from(document.querySelectorAll('[id^="main_"]')).filter(i => i.getAttribute('data-user-id'));
             const subInputs = Array.from(document.querySelectorAll('[id^="sub_"]')).filter(i => i.getAttribute('data-user-id'));
@@ -873,17 +889,24 @@ let currentUser = null, currentTeamId = null, draftCreatedAt = null, saveTimeout
                 }).subscribe();
         }
 
-        function setupAutoSave() {
+function setupAutoSave() {
             const saveInputs = ['teamName', 'teamTag'];
             saveInputs.forEach(id => {
                 document.getElementById(id).addEventListener('input', () => {
                     clearTimeout(saveTimeout);
                     saveTimeout = setTimeout(async () => {
                         if (currentTeamId) {
-                            await window.supabaseClient.from('teams').update({
-                                name: document.getElementById('teamName').value,
-                                tag: document.getElementById('teamTag').value
-                            }).eq('id', currentTeamId);
+                            try {
+                                const { error } = await window.supabaseClient.from('teams').update({
+                                    name: document.getElementById('teamName').value,
+                                    tag: document.getElementById('teamTag').value
+                                }).eq('id', currentTeamId);
+                                
+                                if (error) throw error;
+                            } catch (err) {
+                                console.error("Otomatik kaydetme başarısız oldu.");
+                                // Arka planda çalıştığı için kullanıcıya bildirim göstermiyoruz, sadece konsol çökmesini engelliyoruz.
+                            }
                         }
                     }, 1000);
                 });
