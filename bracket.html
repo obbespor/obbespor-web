@@ -361,16 +361,19 @@
 
         async function fetchAndRenderBracket() {
             try {
-                // 1. Önce aktif turnuvayı (upcoming) veya en son turnuvayı bul
-                const { data: tourney } = await window.supabaseClient
+// 1. Önce aktif turnuvayı (upcoming) veya en son turnuvayı bul
+                const { data: tourney, error: tourneyErr } = await window.supabaseClient
                     .from('tournaments')
                     .select('id')
                     .order('created_at', { ascending: false })
                     .limit(1)
-                    .single();
+                    .maybeSingle(); // .single() yerine .maybeSingle() kullandık
 
+                if (tourneyErr) throw tourneyErr; // Hatayı yakalayıp en alttaki catch bloğuna gönderiyoruz
+                
                 if (!tourney) {
                     console.warn("Aktif turnuva bulunamadı.");
+                    document.getElementById('groupStage').innerHTML = '<p style="text-align:center; padding: 50px; color: var(--gri-yazi);">Şu an fikstürü çizilmiş aktif bir turnuva bulunmuyor.</p>';
                     return;
                 }
 
