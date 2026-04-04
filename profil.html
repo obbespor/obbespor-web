@@ -1055,14 +1055,17 @@ if (acceptedMemberships.length > 0) {
             }
         }
 
-        async function openIgnEditModal() {
+      async function openIgnEditModal() {
             try {
                 const { data, error } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).single();
                 
                 if (data && data.ign_updated_at) {
+                    // Tarih farkını hesaplıyoruz
                     const diffDays = Math.ceil(Math.abs(new Date() - new Date(data.ign_updated_at)) / (1000 * 60 * 60 * 24));
-                    if (diffDays < 30) {
-                        return showNotification(`Oyun İçi Nickinizi ayda sadece 1 kez değiştirebilirsiniz. Kalan süre: ${30 - diffDays} gün.`, "error");
+                    
+                    // EĞER 15 GÜNDEN AZ OLMUŞSA UYARI VER
+                    if (diffDays < 15) { 
+                        return showNotification(`Oyun İçi Nickinizi 15 günde sadece 1 kez değiştirebilirsiniz. Kalan süre: ${15 - diffDays} gün.`, "error");
                     }
                 }
                 const currentIgn = data?.ign && data.ign !== "Belirlenmedi" ? data.ign : "";
@@ -1071,6 +1074,7 @@ if (acceptedMemberships.length > 0) {
             } catch(e) {
                 showNotification("Veritabanı bağlantı hatası.", "error");
             }
+        }
         }
 
         async function confirmIgnUpdate() {
