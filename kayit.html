@@ -517,50 +517,62 @@
                     showNotification("OBB E-SPORTS platformuna kayıt olabilmek için en az 15 yaşında olmalısınız.", "error");
                     submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return; 
                 }
-
-                // 4. KULLANICI ADI MÜKERRERLİK KONTROLÜ
-                const { data: existingUsers } = await window.supabaseClient.from('profiles').select('username').ilike('username', usernameInput).limit(1);
-                if (existingUsers && existingUsers.length > 0) {
-                    showNotification("Bu kullanıcı adı zaten alınmış!", "error"); submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; return;
-                }
-
-                // 5. SUPABASE KAYIT İŞLEMİ (Burada options payload'ına DİKKAT! Sadece username ve phone var)
-                // Yaş veya doğum tarihi (dobVal, age) değişkenleri Supabase'e GÖNDERİLMEZ.
-                const { data, error } = await window.supabaseClient.auth.signUp({
-                    email: email, 
-                    password: password, 
-                    options: { 
-                        data: { 
-                            username: usernameInput, 
-                            phone: document.getElementById('phone').value 
-                        } 
+// --- GÜVENLİ VERİTABANI İŞLEMLERİ (KAYIT) ---
+                try {
+                    // 4. KULLANICI ADI MÜKERRERLİK KONTROLÜ
+                    const { data: existingUsers, error: dbError } = await window.supabaseClient.from('profiles').select('username').ilike('username', usernameInput).limit(1);
+                    
+                    if (dbError) throw dbError;
+                    
+                    if (existingUsers && existingUsers.length > 0) {
+                        showNotification("Bu kullanıcı adı zaten alınmış!", "error"); 
+                        submitBtn.disabled = false; submitBtn.innerText = "HESABI OLUŞTUR"; 
+                        return;
                     }
-                });
 
-                if (error) {
-                    showNotification("Hata: " + error.message, "error");
-                } else { 
+                    // 5. SUPABASE KAYIT İŞLEMİ
+                    const { data, error } = await window.supabaseClient.auth.signUp({
+                        email: email, 
+                        password: password, 
+                        options: { 
+                            data: { 
+                                username: usernameInput, 
+                                phone: document.getElementById('phone').value 
+                            } 
+                        }
+                    });
+
+                    if (error) throw error;
+                    
                     // BAŞARILI KAYIT SONRASI ÖNBELLEĞE KAYDET
                     localStorage.setItem('obb_has_registered', 'true');
-                    
                     showNotification("Kayıt başarılı! Lütfen e-postanıza (Gereksiz/Spam kutusu dahil) gelen linke tıklayarak hesabınızı doğrulayın.", "success"); 
                     setTimeout(() => toggleAuth(false), 2500); 
+
+                } catch (err) {
+                    console.error("Kayıt işlemi sırasında bir sorun oluştu.");
+                    const guvenliMesaj = typeof cevirSupabaseHatasi === 'function' ? cevirSupabaseHatasi(err.message) : "Kayıt işlemi şu an gerçekleştirilemiyor.";
+                    showNotification(guvenliMesaj, "error");
                 }
 
             } else {
-                // GİRİŞ YAPMA İŞLEMİ
-                const { error } = await window.supabaseClient.auth.signInWithPassword({ email: email, password: password });
-                
-                if (error) {
-                    if (error.message === "Email not confirmed") {
+                // --- GÜVENLİ GİRİŞ YAPMA İŞLEMİ ---
+                try {
+                    const { error } = await window.supabaseClient.auth.signInWithPassword({ email: email, password: password });
+                    
+                    if (error) throw error;
+                    
+                    localStorage.setItem('obb_has_registered', 'true');
+                    showNotification("Giriş yapıldı!", "success"); 
+                    setTimeout(() => window.location.href = "index.html", 1000); 
+
+                } catch (err) {
+                    console.error("Giriş denemesi başarısız.");
+                    if (err.message === "Email not confirmed") {
                         showNotification("Giriş başarısız! Lütfen önce e-postanıza gelen doğrulama linkine tıklayın.", "error");
                     } else {
                         showNotification("Giriş başarısız. Lütfen bilgilerinizi kontrol edin.", "error");
                     }
-                } else { 
-                    localStorage.setItem('obb_has_registered', 'true');
-                    showNotification("Giriş yapıldı!", "success"); 
-                    setTimeout(() => window.location.href = "index.html", 1000); 
                 }
             }
             
