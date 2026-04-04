@@ -587,25 +587,30 @@ let currentUser = null, currentTeamId = null, draftCreatedAt = null, saveTimeout
             }
         }
 
-        async function executeEditMode() {
+       async function executeEditMode() {
             const btn = document.getElementById('editDraftBtn');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lütfen Bekleyin...';
             btn.disabled = true;
 
-            if (activeTournamentId && currentTeamId) {
-                const { error } = await window.supabaseClient.from('tournament_applications')
-                    .delete()
-                    .eq('team_id', currentTeamId)
-                    .eq('tournament_id', activeTournamentId);
-                
-                if (error) {
-                    if(typeof showNotification === 'function') showNotification("Hata oluştu: " + error.message, "error");
-                    btn.innerHTML = '<i class="fas fa-edit"></i> Takımı Düzenle';
-                    btn.disabled = false;
-                    return;
+            try {
+                if (activeTournamentId && currentTeamId) {
+                    const { error } = await window.supabaseClient.from('tournament_applications')
+                        .delete()
+                        .eq('team_id', currentTeamId)
+                        .eq('tournament_id', activeTournamentId);
+                    
+                    if (error) throw error;
                 }
+                location.reload();
+            } catch (err) {
+                console.error("Düzenleme moduna geçilirken hata oluştu.");
+                if(typeof showNotification === 'function') {
+                    const guvenliMesaj = typeof cevirSupabaseHatasi === 'function' ? cevirSupabaseHatasi(err.message) : "İşlem şu an gerçekleştirilemiyor.";
+                    showNotification("Hata: " + guvenliMesaj, "error");
+                }
+                btn.innerHTML = '<i class="fas fa-edit"></i> Takımı Düzenle';
+                btn.disabled = false;
             }
-            location.reload();
         }
 
         function fillCaptainSlot(username) {
@@ -982,8 +987,13 @@ let currentUser = null, currentTeamId = null, draftCreatedAt = null, saveTimeout
                 if(typeof showNotification === 'function') showNotification("Takım başvurunuz turnuva yöneticilerine iletildi.", "success");
                 location.reload();
                 
-            } catch (err) {
-                if(typeof showNotification === 'function') showNotification("Kayıt sırasında hata: " + err.message, "error");
+         } catch (err) {
+                console.error("Takım başvurusu sırasında kritik hata.");
+                if(typeof showNotification === 'function') {
+                    // Ham err.message yerine çevirmeni kullanıyoruz
+                    const guvenliMesaj = typeof cevirSupabaseHatasi === 'function' ? cevirSupabaseHatasi(err.message) : "Sunucu ile iletişim kurulamadı.";
+                    showNotification("İşlem Başarısız: " + guvenliMesaj, "error");
+                }
                 submitBtn.disabled = false;
                 submitBtn.innerText = "BAŞVURUYU TAMAMLA VE GÖNDER";
             }
