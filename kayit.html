@@ -422,6 +422,7 @@
         }
 
         // --- ŞİFRE SIFIRLAMA İSTEĞİ GÖNDERME ---
+        // --- GÜVENLİ ŞİFRE SIFIRLAMA İSTEĞİ GÖNDERME ---
         async function sifremiUnuttum() {
             const emailInput = document.getElementById('email').value.trim();
             if (!emailInput) {
@@ -435,21 +436,25 @@
             btn.innerText = "LÜTFEN BEKLEYİN...";
             btn.disabled = true;
 
-            const { error } = await window.supabaseClient.auth.resetPasswordForEmail(
-                emailInput, 
-                { redirectTo: 'https://www.obbesports.com/sifre-yenile.html' }
-            );
+            try {
+                const { error } = await window.supabaseClient.auth.resetPasswordForEmail(
+                    emailInput, 
+                    { redirectTo: 'https://www.obbesports.com/sifre-yenile.html' }
+                );
 
-            if (error) {
-                showNotification("Hata: " + error.message, "error");
-            } else {
+                if (error) throw error; // Hatayı catch bloğuna fırlat
+                
                 showNotification("Şifre sıfırlama bağlantısı e-postanıza gönderildi!", "success");
+            } catch (err) {
+                // Ham hatayı gizleyip güvenli bir şekilde ekrana basıyoruz
+                console.error("Şifre sıfırlama işlemi başarısız.");
+                const guvenliMesaj = typeof cevirSupabaseHatasi === 'function' ? cevirSupabaseHatasi(err.message) : "İşlem şu an gerçekleştirilemiyor.";
+                showNotification(guvenliMesaj, "error");
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
-
-            btn.innerText = originalText;
-            btn.disabled = false;
         }
-
         // --- FORM GÖNDERME (KAYIT & GİRİŞ) ---
         document.getElementById('authForm').addEventListener('submit', async (e) => {
             e.preventDefault();
