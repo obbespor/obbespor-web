@@ -60,6 +60,8 @@
         .ign-actions .fa-pencil-alt:hover { color: white; transform: scale(1.2); }
         .ign-actions .fa-info-circle { color: var(--gri-yazi); }
         .ign-actions .fa-info-circle:hover { color: #00d2ff; transform: scale(1.2); }
+        .username-edit-icon { color: var(--neon-mor); cursor: pointer; transition: 0.3s; font-size: 16px; margin-left: 10px; vertical-align: middle; }
+        .username-edit-icon:hover { color: white; transform: scale(1.2); }
 
         .bio-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; }
         .edit-bio-icon { color: var(--neon-mor); cursor: pointer; transition: 0.3s; }
@@ -182,6 +184,7 @@
             .notif-actions { width: 100%; display: flex; gap: 10px; }
             .notif-actions button { flex: 1; justify-content: center; padding: 10px; font-size: 13px; }
         }
+        
     </style>
 </head>
 <body>
@@ -202,7 +205,10 @@
 
             <div class="rank-badge" id="userRank">YÜKLENİYOR...</div>
             
-            <h1 id="profileNameDisplay" style="font-size: 28px; font-weight: 900; margin-bottom: 5px; text-transform: none;">YÜKLENİYOR...</h1>
+           <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 5px; text-transform: none;">
+    <span id="profileNameDisplay">YÜKLENİYOR...</span>
+    <i class="fas fa-pencil-alt username-edit-icon" onclick="openUsernameEditModal()" title="Kullanıcı Adını Değiştir"></i>
+</h1>
             
             <div>
                 <div class="ign-container">
@@ -245,6 +251,20 @@
             
             <div class="settings-grid">
                 <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="settings-box">
+                        <h4><i class="fas fa-lock"></i> Gizli İletişim Bilgilerim</h4>
+                        <p style="font-size: 11px; color: var(--gri-yazi); margin-bottom: 15px;">Güvenliğiniz için bilgileriniz maskelenmiştir.</p>
+                        
+                        <div class="input-group">
+                            <label>E-Posta Adresi</label>
+                            <div style="background: #000; padding: 12px; border: 1px solid #333; border-radius: 8px; color: #00d2ff; font-weight: bold; letter-spacing: 1px; font-size: 13px;" id="maskedEmailDisplay">Yükleniyor...</div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Kayıtlı Telefon</label>
+                            <div style="background: #000; padding: 12px; border: 1px solid #333; border-radius: 8px; color: #00d2ff; font-weight: bold; letter-spacing: 1px; font-size: 13px;" id="maskedPhoneDisplay">Belirtilmemiş</div>
+                        </div>
+                    </div>
                     
                     <div class="settings-box">
                         <h4>Şifre Değiştir</h4>
@@ -348,13 +368,29 @@
         </div>
     </div>
 
+   <div id="usernameEditModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeCustomModal('usernameEditModal')">&times;</span>
+            <div class="modal-title">Kullanıcı Adını Değiştir</div>
+            <p class="modal-desc">Sitede görünecek kullanıcı adınızı değiştirin.</p>
+            <div class="warning-box">
+                <i class="fas fa-exclamation-triangle"></i> DİKKAT: Kullanıcı adınızı <b>30 günde yalnızca 1 kez</b> değiştirebilirsiniz. Benzersiz olmalıdır.
+            </div>
+            <div class="input-group">
+                <label>Yeni Kullanıcı Adı (Max 20 Karakter)</label>
+                <input type="text" id="usernameInputContent" placeholder="Yeni adınızı girin" maxlength="20">
+            </div>
+            <button class="btn-primary" onclick="confirmUsernameUpdate()">Kabul Ediyorum ve Kaydet</button>
+        </div>
+    </div>
+
     <div id="ignEditModal" class="modal">
         <div class="modal-content">
             <span class="modal-close" onclick="closeCustomModal('ignEditModal')">&times;</span>
             <div class="modal-title">Oyun İçi Nick Belirle</div>
             <p class="modal-desc">Liderlik tablosu ve turnuvalar için oyundaki asıl nickinizi (Etiketi ile birlikte) girin.</p>
             <div class="warning-box">
-                <i class="fas fa-exclamation-triangle"></i> DİKKAT: Oyun İçi Nickinizi <b>ayda yalnızca 1 kez</b> değiştirebileceksiniz. Emin misiniz?
+                <i class="fas fa-exclamation-triangle"></i> DİKKAT: Oyun İçi Nickinizi <b>15 günde yalnızca 1 kez</b> değiştirebileceksiniz. Emin misiniz?
             </div>
             <div class="input-group">
                 <label>Yeni IGN (Örn: PaTRooN#TR1)</label>
@@ -544,6 +580,23 @@
             localStorage.removeItem('obb_cookie_consent');
             location.reload();
         }
+        function maskEmail(email) {
+            if (!email) return "Belirtilmemiş";
+            const parts = email.split('@');
+            if (parts.length !== 2) return email;
+            const name = parts[0];
+            const domain = parts[1];
+            const maskedName = name.length > 2 ? name.substring(0, 2) + "***" + name.slice(-1) : name + "***";
+            const maskedDomain = domain.charAt(0) + "***." + domain.split('.').pop();
+            return `${maskedName}@${maskedDomain}`;
+        }
+
+        function maskPhone(phone) {
+            if (!phone || phone.length < 10) return "Belirtilmemiş";
+            // Son 2 hane hariç arayı yıldızla (Örn: +90 5** *** ** 67)
+            const cleaned = phone.replace(/\s+/g, '');
+            return cleaned.substring(0, 5) + " *** ** " + cleaned.slice(-2);
+        }
 
         function openDocModal(docType) {
             document.getElementById('docModalTitle').innerText = documentContents[docType].title;
@@ -575,6 +628,14 @@
             }
             
             currentUser = user;
+            // Email'i maskele ve yazdır
+            document.getElementById('maskedEmailDisplay').innerText = maskEmail(currentUser.email);
+
+            // Telefon numarasını 'user_contacts' tablosundan çek (Eğer varsa)
+            const { data: contactData } = await window.supabaseClient.from('user_contacts').select('phone').eq('user_id', currentUser.id).single();
+            if (contactData && contactData.phone) {
+                document.getElementById('maskedPhoneDisplay').innerText = maskPhone(contactData.phone);
+            }
 
             const { data, error } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).single();
             
@@ -613,6 +674,80 @@
             ]);
             
             subscribeToInvites();
+        }
+        // KULLANICI ADI (USERNAME) GÜNCELLEME FONKSİYONLARI (30 GÜN)
+        async function openUsernameEditModal() {
+            try {
+                const { data, error } = await window.supabaseClient.from('profiles').select('username, username_updated_at').eq('id', currentUser.id).single();
+                
+                if (data && data.username_updated_at) {
+                    const diffDays = Math.ceil(Math.abs(new Date() - new Date(data.username_updated_at)) / (1000 * 60 * 60 * 24));
+                    if (diffDays < 30) {
+                        return showNotification(`Kullanıcı adınızı 30 günde sadece 1 kez değiştirebilirsiniz. Kalan süre: ${30 - diffDays} gün.`, "error");
+                    }
+                }
+                document.getElementById('usernameInputContent').value = data?.username || "";
+                openCustomModal('usernameEditModal');
+            } catch(e) {
+                showNotification("Veritabanı bağlantı hatası.", "error");
+            }
+        }
+
+        async function confirmUsernameUpdate() {
+            const newUsername = document.getElementById('usernameInputContent').value;
+            if (newUsername !== null) {
+                const trimmedUsername = newUsername.trim();
+                
+                if (trimmedUsername === "") return showNotification("Kullanıcı adı boş bırakılamaz.", "error");
+                if (trimmedUsername.length < 3) return showNotification("Kullanıcı adı en az 3 karakter olmalıdır.", "error");
+                if (trimmedUsername.length > 20) return showNotification("Kullanıcı adı en fazla 20 karakter olabilir.", "error");
+                if (!/^[a-zA-Z0-9_]+$/.test(trimmedUsername)) return showNotification("Sadece harf, rakam ve alt çizgi (_) kullanabilirsiniz.", "error");
+
+                // Benzersizlik kontrolü
+                const { data: existingUser } = await window.supabaseClient.from('profiles')
+                    .select('username').ilike('username', trimmedUsername).neq('id', currentUser.id).limit(1);
+
+                if (existingUser && existingUser.length > 0) return showNotification("Bu kullanıcı adı zaten alınmış!", "error");
+
+                document.getElementById('profileNameDisplay').innerText = trimmedUsername;
+                closeCustomModal('usernameEditModal');
+
+                const { error: updateErr } = await window.supabaseClient.from('profiles')
+                    .update({ username: trimmedUsername, username_updated_at: new Date().toISOString() }).eq('id', currentUser.id);
+
+                if (updateErr) {
+                    console.error("Supabase Username Hatası:", updateErr);
+                    showNotification("Kaydedilemedi!", "error");
+                } else {
+                    showNotification("Kullanıcı adı başarıyla güncellendi!", "success");
+                    const cacheKey = 'obb_profile_cache';
+                    const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                    cachedProfile.username = trimmedUsername;
+                    localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+                    
+                    // Header'ı da tetikleyerek isim değişikliğini oraya da yansıtalım (Opsiyonel)
+                    if (typeof updateHeaderProfileUI === 'function') updateHeaderProfileUI(cachedProfile);
+                }
+            }
+        }
+
+        // MEVCUT IGN GÜNCELLEME KODUNU (15 GÜN) İLE DEĞİŞTİR:
+        async function openIgnEditModal() {
+            try {
+                const { data, error } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).single();
+                
+                if (data && data.ign_updated_at) {
+                    const diffDays = Math.ceil(Math.abs(new Date() - new Date(data.ign_updated_at)) / (1000 * 60 * 60 * 24));
+                    if (diffDays < 15) { // 30 YERİNE 15 YAPTIK
+                        return showNotification(`Oyun İçi Nickinizi 15 günde sadece 1 kez değiştirebilirsiniz. Kalan süre: ${15 - diffDays} gün.`, "error");
+                    }
+                }
+                const currentIgn = data?.ign && data.ign !== "Belirlenmedi" ? data.ign : "";
+                document.getElementById('ignInputContent').value = currentIgn;
+                openCustomModal('ignEditModal');
+            } catch(e) {
+                showNotification("Veritabanı bağlantı hatası.", "error");
+            }
         }
 
         async function loadUserStats(userIgn) {
