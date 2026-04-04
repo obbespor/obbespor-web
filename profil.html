@@ -619,10 +619,8 @@
             
             currentUser = user;
 
-            // Email'i maskele ve yazdır
             document.getElementById('maskedEmailDisplay').innerText = maskEmail(currentUser.email);
 
-            // Telefon numarasını 'user_contacts' tablosundan çek (Eğer varsa)
             const { data: contactData } = await window.supabaseClient.from('user_contacts').select('phone').eq('user_id', currentUser.id).single();
             if (contactData && contactData.phone) {
                 document.getElementById('maskedPhoneDisplay').innerText = maskPhone(contactData.phone);
@@ -667,7 +665,6 @@
             subscribeToInvites();
         } 
 
-        // KULLANICI ADI (USERNAME) GÜNCELLEME FONKSİYONLARI (30 GÜN)
         async function openUsernameEditModal() {
             try {
                 const { data, error } = await window.supabaseClient.from('profiles').select('username, username_updated_at').eq('id', currentUser.id).single();
@@ -717,13 +714,11 @@
                     cachedProfile.username = trimmedUsername;
                     localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
                     
-                    // Header'ı da tetikleyerek isim değişikliğini oraya da yansıtalım (Opsiyonel)
                     if (typeof updateHeaderProfileUI === 'function') updateHeaderProfileUI(cachedProfile);
                 }
             }
         }
 
-        // IGN GÜNCELLEME (15 GÜN)
         async function openIgnEditModal() {
             try {
                 const { data, error } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).single();
@@ -825,7 +820,6 @@
                     
                     totalMatches = uniqueMaps.size;
 
-                    // GERÇEK KAZANMA ORANI HESAPLAMASI
                     const mapIds = Array.from(uniqueMaps);
                     if (mapIds.length > 0) {
                         const { data: mapsData } = await window.supabaseClient.from('match_maps')
@@ -879,7 +873,6 @@
 
         async function loadInvitationsAndTeam() {
             try {
-                // 1. Kullanıcının üye olduğu tüm takımları ve davetleri çek
                 const { data: memberships, error } = await window.supabaseClient.from('team_members')
                     .select('id, team_id, status, role, teams(id, name, tag, captain_id)')
                     .eq('user_id', currentUser.id)
@@ -911,7 +904,6 @@
                     return;
                 }
 
-                // Üyelikleri ayır: Kabul edilenler ve Bekleyenler
                 const acceptedMemberships = memberships.filter(m => m.status === 'accepted');
                 const pendingInvites = memberships.filter(m => m.status === 'pending');
 
@@ -936,14 +928,13 @@
                         if (app) {
                             realTeamData = m.teams;
                             realAppStatus = app.status;
-                            break; // Gerçek bir başvuru bulduk, aramayı kes
+                            break; 
                         } else if (!draftTeamData) {
-                            draftTeamData = m.teams; // Bulduğumuz ilk başvurusuz takımı taslak olarak kenara koy
+                            draftTeamData = m.teams; 
                         }
                     }
                 }
 
-                // --- KURAL 1: GERÇEK TAKIM ÖNCELİĞİ ---
                 if (realTeamData) {
                     let teamStatusText = "Bilinmiyor";
                     let teamStatusColor = "#777";
@@ -975,7 +966,6 @@
                     return; 
                 }
 
-                // --- KURAL 2: DAVET ÖNCELİĞİ ---
                 if (pendingInvites.length > 0) {
                     title.innerHTML = `<i class="fas fa-users"></i> Takım Davetleri`;
                     badge.innerText = pendingInvites.length;
@@ -1008,7 +998,6 @@
                     return;
                 }
 
-                // --- KURAL 3: TASLAK TAKIM GÖSTERİMİ ---
                 if (draftTeamData) {
                     title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
                     list.innerHTML = `
@@ -1022,7 +1011,6 @@
                     return;
                 }
 
-                // --- KURAL 4: HİÇBİRİ YOKSA BOŞ EKRAN ---
                 showEmptyState();
 
             } catch (err) {
