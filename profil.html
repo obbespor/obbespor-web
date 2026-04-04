@@ -41,7 +41,6 @@
 
         .profile-card { background: var(--card-bg); border: 1px solid #222; border-top: none; border-radius: 0 0 20px 20px; padding: 0 40px 40px; position: relative; text-align: center; margin-bottom: 30px; border-top: 2px solid var(--neon-mor); border-top-left-radius: 20px; border-top-right-radius: 20px; }
         
-        /* PP'NİN ARKASINA VE KARTIN ÜSTÜNE MOR IŞIMA VE KAVİSLİ GEÇİŞ (Estetik için bırakıldı) */
         .profile-card::before { content: ''; position: absolute; top: -75px; left: 50%; transform: translateX(-50%); width: 170px; height: 170px; background: rgba(96, 29, 194, 0.1); border-radius: 50%; filter: blur(20px); z-index: -1; box-shadow: 0 0 30px var(--neon-mor); }
 
         .avatar-wrapper { position: relative; width: 150px; height: 150px; margin: -75px auto 20px; }
@@ -50,7 +49,6 @@
         
         .rank-badge { display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: 800; background: rgba(96, 29, 194, 0.2); border: 1px solid var(--neon-mor); color: var(--neon-mor); margin-bottom: 10px; transition: 0.3s; text-transform: uppercase; }
         
-        /* IGN BÖLÜMÜ */
         .ign-container { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; background: rgba(0,0,0,0.3); display: inline-flex; padding: 6px 15px; border-radius: 30px; border: 1px solid #333; }
         .ign-label { font-size: 11px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase; }
         .ign-value { font-size: 14px; font-weight: 900; color: #00d2ff; }
@@ -66,14 +64,12 @@
         .bio-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; }
         .edit-bio-icon { color: var(--neon-mor); cursor: pointer; transition: 0.3s; }
         
-        /* İSTATİSTİKLER (4 Sütun) */
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px; }
         .stat-item { background: #111; padding: 20px; border-radius: 15px; border-bottom: 2px solid #222; transition: 0.3s; }
         .stat-item:hover { border-color: var(--neon-mor); transform: translateY(-3px); }
         .stat-value { display: block; font-size: 24px; font-weight: 900; color: var(--neon-mor); }
         .stat-label { font-size: 12px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase;}
 
-        /* BİLDİRİM VE TAKIM BÖLÜMÜ */
         .notifications-section { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
         .notifications-header { display: flex; justify-content: space-between; border-bottom: 2px solid #222; padding-bottom: 15px; margin-bottom: 20px; }
         .badge { background: var(--neon-mor); color: white; padding: 2px 10px; border-radius: 50px; font-size: 12px; font-weight: bold; }
@@ -85,14 +81,12 @@
         .btn-accept:hover { background: rgba(0, 210, 255, 0.2); }
         .btn-reject:hover { background: rgba(255, 75, 75, 0.2); }
 
-        /* AKTİF TAKIM KARTI */
         .active-team-card { background: linear-gradient(135deg, rgba(96, 29, 194, 0.1) 0%, rgba(10, 10, 10, 0.9) 100%); border: 1px solid var(--neon-mor); border-radius: 15px; padding: 30px; text-align: center; box-shadow: 0 10px 30px rgba(96, 29, 194, 0.15); animation: fadeIn 0.5s ease; position: relative; overflow: hidden; }
         .active-team-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--neon-mor); }
         .active-team-card h3 { font-size: 24px; color: white; margin-bottom: 5px; font-weight: 900; text-transform: uppercase; }
         .active-team-card p { color: var(--gri-yazi); font-size: 14px; margin-bottom: 20px; }
         .active-team-card .team-tag-large { display: inline-block; background: var(--neon-mor); color: white; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
 
-        /* AYARLAR VE SÖZLEŞMELER BÖLÜMÜ */
         .settings-section { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
         .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .settings-box { background: #111; border: 1px solid #333; padding: 20px; border-radius: 15px; }
@@ -110,11 +104,9 @@
         .legal-status.approved { color: var(--yesil-guven); font-weight: bold; display: flex; align-items: center; gap: 5px; }
         .legal-status.approved i { font-size: 16px; }
         
-        /* TIKLANABİLİR SÖZLEŞME LİNKLERİ */
         .clickable-doc { color: var(--neon-mor); text-decoration: underline; cursor: pointer; transition: 0.3s; font-weight: bold; }
         .clickable-doc:hover { color: #fff; text-shadow: 0 0 10px var(--neon-mor); }
 
-        /* TİCARİ ONAY TOGGLE (SWITCH) */
         .switch-container { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; font-size: 13px; }
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -123,12 +115,10 @@
         input:checked + .slider { background-color: var(--mavi-onay); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* ÖZEL MODALLAR */
         .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
         .modal.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal-content { background: #0a0a0a; padding: 30px; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         
-        /* SÖZLEŞME ÖZEL MODAL STİLLERİ */
         .doc-modal-content { max-width: 700px; max-height: 80vh; display: flex; flex-direction: column; padding: 0; }
         .doc-modal-header { padding: 25px 25px 15px; border-bottom: 1px solid #222; }
         .doc-modal-body { padding: 25px; overflow-y: auto; font-size: 13px; color: #ddd; line-height: 1.6; }
@@ -206,9 +196,9 @@
             <div class="rank-badge" id="userRank">YÜKLENİYOR...</div>
             
            <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 5px; text-transform: none;">
-    <span id="profileNameDisplay">YÜKLENİYOR...</span>
-    <i class="fas fa-pencil-alt username-edit-icon" onclick="openUsernameEditModal()" title="Kullanıcı Adını Değiştir"></i>
-</h1>
+                <span id="profileNameDisplay">YÜKLENİYOR...</span>
+                <i class="fas fa-pencil-alt username-edit-icon" onclick="openUsernameEditModal()" title="Kullanıcı Adını Değiştir"></i>
+            </h1>
             
             <div>
                 <div class="ign-container">
@@ -433,6 +423,23 @@
         let currentUser = null;
         let pendingAction = null; 
 
+        function maskEmail(email) {
+            if (!email) return "Belirtilmemiş";
+            const parts = email.split('@');
+            if (parts.length !== 2) return email;
+            const name = parts[0];
+            const domain = parts[1];
+            const maskedName = name.length > 2 ? name.substring(0, 2) + "***" + name.slice(-1) : name + "***";
+            const maskedDomain = domain.charAt(0) + "***." + domain.split('.').pop();
+            return `${maskedName}@${maskedDomain}`;
+        }
+
+        function maskPhone(phone) {
+            if (!phone || phone.length < 10) return "Belirtilmemiş";
+            const cleaned = phone.replace(/\s+/g, '');
+            return cleaned.substring(0, 5) + " *** ** " + cleaned.slice(-2);
+        }
+
         const documentContents = {
             kvkk: {
                 title: "KİŞİSEL VERİLERİN İŞLENMESİNE İLİŞKİN AYDINLATMA METNİ",
@@ -459,7 +466,7 @@
                         <li>5651 sayılı İnternet Ortamında Yapılan Yayınların Düzenlenmesi Hakkında Kanun ve ilgili mevzuat kapsamında, 15 yaşından küçük bireylerin platforma kaydolmasının engellenmesi amacıyla zorunlu yaş doğrulama işlemlerinin gerçekleştirilmesi,</li>
                         <li>Turnuva ve etkinlik katılım ücretleri gibi finansal operasyonların yürütülmesi ve faturalandırma süreçlerinin tamamlanması,</li>
                         <li>Oyun ekosisteminin bütünlüğünü korumak adına, üçüncü parti oyunların kendi hile koruma sistemleri (Anti-Cheat) tarafından tespit edilen ihlallerin platforma yansıtılması ve platform içi siber zorbalığın önlenerek adil oyun (fair play) kurallarının tatbiki,</li>
-                        <li>E-spor liglerinin ve resmi turnuvalarının organizasyonu, adil eşleştirme (matchmaking) sistemlerinin çalıştırılması ve oyuncu sıralamalarının belirlenmesi,</li>
+                        <li>E-spor liglerinin ve resmi turnuvalarının organizasyonu, adil eşleştirme (matchmaking) systemsinin çalıştırılması ve oyuncu sıralamalarının belirlenmesi,</li>
                         <li>Kullanıcı uyuşmazlıklarının çözümü, teknik destek hizmetlerinin sunulması ve şikayetlerin yönetilmesi,</li>
                         <li>Yetkili kamu kurum ve kuruluşlarından (BTK, Savcılıklar, Mahkemeler) mevzuata uygun olarak gelecek resmi ve yasal bilgi taleplerinin karşılanması.</li>
                     </ul>
@@ -553,7 +560,7 @@
                     <p><strong>8.2. Platform Tarafından Haklı Nedenle Fesih:</strong> Platform, Kullanıcının işbu Sözleşmedeki temel yükümlülüklerden herhangi birini (özellikle Madde 2'deki Yaş Şartı, Madde 4'teki Hile Yasağı ve Madde 5'teki Toksik Davranış kurallarını) ihlal ettiğini tespit etmesi halinde, Kullanıcıya herhangi bir ön bildirimde bulunmaksızın Sözleşmeyi tek taraflı olarak derhal feshetme, hesabı kalıcı olarak kapatma (banlama) ve IP/Donanım erişimini bloklama hakkına münhasıran sahiptir.</p>
 
                     <h4>Madde 9. Uygulanacak Hukuk ve Uyuşmazlıkların Çözüm Yeri</h4>
-                    <p>İşbu Sözleşmenin kurulması, yorumlanması, ifası ve taraflar arasında doğabilecek sözleşme içi veya haksız fiil kaynaklı tüm uyuşmazlıklarda münhasıran Türkiye Cumhuriyeti kanunları uygulanacaktır. Uyuşmazlıkların çözümünde Ordu Mahkemeleri ve İcra Daireleri kesin yetkilidir. Tüketici hukuku kapsamına giren durumlarda, Kullanıcılar yasal parasal sınırlar dâhilinde yerleşim yerlerindeki Tüketici Hakem Heyetlerine başvurabilirler.</p>
+                    <p><strong>9.1. Uygulanacak Hukuk:</strong> İşbu Sözleşmenin kurulması, yorumlanması, ifası ve taraflar arasında doğabilecek sözleşme içi veya haksız fiil kaynaklı tüm uyuşmazlıklarda münhasıran Türkiye Cumhuriyeti kanunları uygulanacaktır. Uyuşmazlıkların çözümünde Ordu Mahkemeleri ve İcra Daireleri kesin yetkilidir. Tüketici hukuku kapsamına giren durumlarda, Kullanıcılar yasal parasal sınırlar dâhilinde yerleşim yerlerindeki Tüketici Hakem Heyetlerine başvurabilirler.</p>
 
                     <h4>Madde 10. Yürürlük ve Değişiklikler</h4>
                     <p>Platform, operasyonel gereklilikler veya yasal mevzuat değişiklikleri sebebiyle işbu Sözleşme şartlarında dilediği zaman tek taraflı değişiklik yapma hakkını saklı tutar. Yapılan değişiklikler, Platform üzerinden yayınlandığı tarihte yürürlüğe girer. Değişiklik sonrasında Hizmetleri kullanmaya devam etmek, güncel şartların Kullanıcı tarafından kabul edildiği anlamına gelir. İşbu Sözleşme, Kullanıcı tarafından kayıt sürecinde elektronik onay (tık) verilmesi anında yürürlüğe girmiştir.</p>
@@ -571,7 +578,7 @@
             setTimeout(() => { document.getElementById(id).style.display = "none"; }, 300);
         }
 
-        // --- YENİ ÇEREZ SIFIRLAMA FONKSİYONLARI ---
+        // --- ÇEREZ SIFIRLAMA FONKSİYONLARI ---
         function confirmCookieReset() {
             openCustomModal('cookieResetModal');
         }
@@ -579,23 +586,6 @@
         function executeCookieReset() {
             localStorage.removeItem('obb_cookie_consent');
             location.reload();
-        }
-        function maskEmail(email) {
-            if (!email) return "Belirtilmemiş";
-            const parts = email.split('@');
-            if (parts.length !== 2) return email;
-            const name = parts[0];
-            const domain = parts[1];
-            const maskedName = name.length > 2 ? name.substring(0, 2) + "***" + name.slice(-1) : name + "***";
-            const maskedDomain = domain.charAt(0) + "***." + domain.split('.').pop();
-            return `${maskedName}@${maskedDomain}`;
-        }
-
-        function maskPhone(phone) {
-            if (!phone || phone.length < 10) return "Belirtilmemiş";
-            // Son 2 hane hariç arayı yıldızla (Örn: +90 5** *** ** 67)
-            const cleaned = phone.replace(/\s+/g, '');
-            return cleaned.substring(0, 5) + " *** ** " + cleaned.slice(-2);
         }
 
         function openDocModal(docType) {
@@ -628,6 +618,7 @@
             }
             
             currentUser = user;
+
             // Email'i maskele ve yazdır
             document.getElementById('maskedEmailDisplay').innerText = maskEmail(currentUser.email);
 
@@ -674,7 +665,8 @@
             ]);
             
             subscribeToInvites();
-        }
+        } 
+
         // KULLANICI ADI (USERNAME) GÜNCELLEME FONKSİYONLARI (30 GÜN)
         async function openUsernameEditModal() {
             try {
@@ -731,14 +723,14 @@
             }
         }
 
-        // MEVCUT IGN GÜNCELLEME KODUNU (15 GÜN) İLE DEĞİŞTİR:
+        // IGN GÜNCELLEME (15 GÜN)
         async function openIgnEditModal() {
             try {
                 const { data, error } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).single();
                 
                 if (data && data.ign_updated_at) {
                     const diffDays = Math.ceil(Math.abs(new Date() - new Date(data.ign_updated_at)) / (1000 * 60 * 60 * 24));
-                    if (diffDays < 15) { // 30 YERİNE 15 YAPTIK
+                    if (diffDays < 15) { 
                         return showNotification(`Oyun İçi Nickinizi 15 günde sadece 1 kez değiştirebilirsiniz. Kalan süre: ${15 - diffDays} gün.`, "error");
                     }
                 }
@@ -748,7 +740,47 @@
             } catch(e) {
                 showNotification("Veritabanı bağlantı hatası.", "error");
             }
-        
+        }
+
+        async function confirmIgnUpdate() {
+            const newIgn = document.getElementById('ignInputContent').value;
+            if (newIgn !== null) {
+                const trimmedIgn = newIgn.trim();
+                
+                if (trimmedIgn === "") return showNotification("Oyun İçi Nick boş bırakılamaz.", "error");
+                if (!trimmedIgn.includes("#")) return showNotification("Oyun İçi Nick mutlaka '#' etiketi içermelidir!", "error");
+
+                const parts = trimmedIgn.split("#");
+                if (parts.length !== 2 || parts[0].length < 2 || parts[1].length < 2) return showNotification("Geçersiz format! (Örn: PATRON#1234)", "error");
+                if (trimmedIgn.length > 25) return showNotification("Oyun İçi Nick en fazla 25 karakter olabilir.", "error");
+
+                const { data: existingIgn } = await window.supabaseClient.from('profiles')
+                    .select('ign').ilike('ign', trimmedIgn).neq('id', currentUser.id).limit(1);
+
+                if (existingIgn && existingIgn.length > 0) return showNotification("Bu Oyun İçi Nick zaten kullanılıyor!", "error");
+
+                const ignDisplay = document.getElementById('userIgnDisplay');
+                ignDisplay.innerText = trimmedIgn;
+                ignDisplay.style.color = "#00d2ff";
+                closeCustomModal('ignEditModal');
+
+                const { error: updateErr } = await window.supabaseClient.from('profiles')
+                    .update({ ign: trimmedIgn, ign_updated_at: new Date().toISOString() }).eq('id', currentUser.id);
+
+                if (updateErr) {
+                    console.error("Supabase IGN Hatası:", updateErr);
+                    showNotification("Kaydedilemedi!", "error");
+                } else {
+                    showNotification("Oyun İçi Nick başarıyla güncellendi!", "success");
+                    const cacheKey = 'obb_profile_cache';
+                    const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                    cachedProfile.ign = trimmedIgn;
+                    localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+                    
+                    await loadUserStats(trimmedIgn);
+                }
+            }
+        }
 
         async function loadUserStats(userIgn) {
             try {
@@ -845,10 +877,7 @@
             } catch(e) { console.warn("İstatistik hatası:", e); }
         }
 
-        // ==========================================
-        // DÜZELTİLEN FONKSİYON (loadInvitationsAndTeam)
-        // ==========================================
-async function loadInvitationsAndTeam() {
+        async function loadInvitationsAndTeam() {
             try {
                 // 1. Kullanıcının üye olduğu tüm takımları ve davetleri çek
                 const { data: memberships, error } = await window.supabaseClient.from('team_members')
@@ -890,21 +919,18 @@ async function loadInvitationsAndTeam() {
                 let realAppStatus = null;
                 let draftTeamData = null;
 
-                // Kabul edilen takımları tarayıp "Gerçek" ve "Taslak" olarak sınıflandıralım
-// Kabul edilen takımları tarayıp "Gerçek" ve "Taslak" olarak sınıflandıralım
-if (acceptedMemberships.length > 0) {
-    // Null olan ID'leri filtreliyoruz ki Supabase 400 hatası atmasın
-    const teamIds = acceptedMemberships.map(m => m.team_id).filter(id => id != null);
-    
-    let apps = [];
-    if (teamIds.length > 0) {
-        const { data: fetchedApps } = await window.supabaseClient.from('tournament_applications')
-            .select('team_id, status')
-            .in('team_id', teamIds)
-            .order('created_at', { ascending: false });
-        if (fetchedApps) apps = fetchedApps;
-    }
+                if (acceptedMemberships.length > 0) {
+                    const teamIds = acceptedMemberships.map(m => m.team_id).filter(id => id != null);
                     
+                    let apps = [];
+                    if (teamIds.length > 0) {
+                        const { data: fetchedApps } = await window.supabaseClient.from('tournament_applications')
+                            .select('team_id, status')
+                            .in('team_id', teamIds)
+                            .order('created_at', { ascending: false });
+                        if (fetchedApps) apps = fetchedApps;
+                    }
+                                    
                     for (let m of acceptedMemberships) {
                         const app = apps?.find(a => a.team_id === m.team_id);
                         if (app) {
@@ -949,7 +975,7 @@ if (acceptedMemberships.length > 0) {
                     return; 
                 }
 
-                // --- KURAL 2: DAVET ÖNCELİĞİ (Gerçek takımı yoksa devreye girer) ---
+                // --- KURAL 2: DAVET ÖNCELİĞİ ---
                 if (pendingInvites.length > 0) {
                     title.innerHTML = `<i class="fas fa-users"></i> Takım Davetleri`;
                     badge.innerText = pendingInvites.length;
@@ -982,7 +1008,7 @@ if (acceptedMemberships.length > 0) {
                     return;
                 }
 
-                // --- KURAL 3: TASLAK TAKIM GÖSTERİMİ (Gerçek takımı yok, Daveti de yoksa) ---
+                // --- KURAL 3: TASLAK TAKIM GÖSTERİMİ ---
                 if (draftTeamData) {
                     title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
                     list.innerHTML = `
@@ -1004,7 +1030,8 @@ if (acceptedMemberships.length > 0) {
                 document.getElementById('notificationsList').innerHTML = `<div style="text-align:center; color:#ff4b4b; padding:20px;">Takım bilgileri alınırken bağlantı hatası oluştu.</div>`;
             }
         }
-       async function respondInvite(id, action) {
+
+        async function respondInvite(id, action) {
             if (action === 'accepted') {
                 const { error } = await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', id);
                 if (error) {
@@ -1055,70 +1082,6 @@ if (acceptedMemberships.length > 0) {
             }
         }
 
-      async function openIgnEditModal() {
-            try {
-                const { data, error } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).single();
-                
-                if (data && data.ign_updated_at) {
-                    // Tarih farkını hesaplıyoruz
-                    const diffDays = Math.ceil(Math.abs(new Date() - new Date(data.ign_updated_at)) / (1000 * 60 * 60 * 24));
-                    
-                    // EĞER 15 GÜNDEN AZ OLMUŞSA UYARI VER
-                    if (diffDays < 15) { 
-                        return showNotification(`Oyun İçi Nickinizi 15 günde sadece 1 kez değiştirebilirsiniz. Kalan süre: ${15 - diffDays} gün.`, "error");
-                    }
-                }
-                const currentIgn = data?.ign && data.ign !== "Belirlenmedi" ? data.ign : "";
-                document.getElementById('ignInputContent').value = currentIgn;
-                openCustomModal('ignEditModal');
-            } catch(e) {
-                showNotification("Veritabanı bağlantı hatası.", "error");
-            }
-        }
-        }
-
-        async function confirmIgnUpdate() {
-            const newIgn = document.getElementById('ignInputContent').value;
-            if (newIgn !== null) {
-                const trimmedIgn = newIgn.trim();
-                
-                if (trimmedIgn === "") return showNotification("Oyun İçi Nick boş bırakılamaz.", "error");
-                if (!trimmedIgn.includes("#")) return showNotification("Oyun İçi Nick mutlaka '#' etiketi içermelidir!", "error");
-
-                const parts = trimmedIgn.split("#");
-                if (parts.length !== 2 || parts[0].length < 2 || parts[1].length < 2) return showNotification("Geçersiz format! (Örn: PATRON#1234)", "error");
-                if (trimmedIgn.length > 25) return showNotification("Oyun İçi Nick en fazla 25 karakter olabilir.", "error");
-
-                const { data: existingIgn } = await window.supabaseClient.from('profiles')
-                    .select('ign').ilike('ign', trimmedIgn).neq('id', currentUser.id).limit(1);
-
-                if (existingIgn && existingIgn.length > 0) return showNotification("Bu Oyun İçi Nick zaten kullanılıyor!", "error");
-
-                const ignDisplay = document.getElementById('userIgnDisplay');
-                ignDisplay.innerText = trimmedIgn;
-                ignDisplay.style.color = "#00d2ff";
-                closeCustomModal('ignEditModal');
-
-                const { error: updateErr } = await window.supabaseClient.from('profiles')
-                    .update({ ign: trimmedIgn, ign_updated_at: new Date().toISOString() }).eq('id', currentUser.id);
-
-                if (updateErr) {
-                    console.error("Supabase IGN Hatası:", updateErr);
-                    showNotification("Kaydedilemedi!", "error");
-                } else {
-                    showNotification("Oyun İçi Nick başarıyla güncellendi!", "success");
-                    const cacheKey = 'obb_profile_cache';
-                    const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
-                    cachedProfile.ign = trimmedIgn;
-                    localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
-                    
-                    await loadUserStats(trimmedIgn);
-                }
-            }
-        }
-
-        // --- GÜNCELLENMİŞ GÜVENLİK MODALI VE ONAY İŞLEMLERİ ---
-
         function initiatePasswordUpdate() {
             const newPass = document.getElementById('newPassword').value;
             const confirmPass = document.getElementById('newPasswordConfirm').value;
@@ -1135,11 +1098,9 @@ if (acceptedMemberships.length > 0) {
             const currentPass = document.getElementById('modalCurrentPassword').value;
             if (!currentPass) return showNotification("Lütfen mevcut şifrenizi girin.", "error");
             
-            // Eğer giriş yöntemine bağlı olarak email çekilemezse uyar:
             const userEmail = currentUser.email || (currentUser.user_metadata && currentUser.user_metadata.email);
             if (!userEmail) return showNotification("Hesap emailiniz bulunamadı. Şifre doğrulama yapılamıyor.", "error");
 
-            // Doğrulama aşaması: Mevcut email ve şifreyle Supabase'e giriş denemesi yapılır.
             const { error: authError } = await window.supabaseClient.auth.signInWithPassword({
                 email: userEmail,
                 password: currentPass
@@ -1171,26 +1132,21 @@ if (acceptedMemberships.length > 0) {
             else showNotification(isChecked ? "Ticari iletişim izni onaylandı." : "Ticari iletişim izni iptal edildi.", "success");
         }
 
-        // --- YENİ EKLENEN OPTİMİZE AVATAR YÜKLEME KODU ---
         document.getElementById('avatarUpload').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // Yükleniyor hissi vermek için resmi hemen ekranda gösterelim
             document.getElementById('userAvatar').src = URL.createObjectURL(file);
 
-            // Resmi tarayıcı hafızasına alıyoruz
             const img = new Image();
             img.src = URL.createObjectURL(file);
 
             img.onload = async () => {
-                // Maksimum boyutlar (Profil resmi için 500x500 piksel fazlasıyla yeterli ve çok hafiftir)
                 const MAX_WIDTH = 500;
                 const MAX_HEIGHT = 500;
                 let width = img.width;
                 let height = img.height;
 
-                // En-boy oranını koruyarak yeniden boyutlandırma hesaplaması
                 if (width > height) {
                     if (width > MAX_WIDTH) {
                         height = Math.round(height * (MAX_WIDTH / width));
@@ -1203,26 +1159,21 @@ if (acceptedMemberships.length > 0) {
                     }
                 }
 
-                // Canvas oluşturup resmi yeni boyutlarıyla çizdiriyoruz
                 const canvas = document.createElement('canvas');
                 canvas.width = width;
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Resmi WebP formatında ve %80 kalite ile sıkıştırıyoruz (0.8)
                 canvas.toBlob(async (blob) => {
                     
-                    // Son güvenlik kontrolü
                     if (blob.size > 2 * 1024 * 1024) {
                         return showNotification("Dosya çok büyük. Lütfen başka bir resim deneyin.", "error");
                     }
 
-                    // Dosya adını standartlaştırıyoruz (Artık hepsi webp olacak)
                     const fileExt = 'webp';
                     const path = `${currentUser.id}/profil_resmi.${fileExt}`;
 
-                    // Çakışmaları önlemek için eski tüm formatları temizle
                     await window.supabaseClient.storage.from('avatars').remove([
                         `${currentUser.id}/profil_resmi.jpg`,
                         `${currentUser.id}/profil_resmi.jpeg`,
@@ -1231,7 +1182,6 @@ if (acceptedMemberships.length > 0) {
                         `${currentUser.id}/profil_resmi.gif`
                     ]);
 
-                    // Sıkıştırılmış blob verisini Supabase'e yükle
                     const { error } = await window.supabaseClient.storage.from('avatars').upload(path, blob, { 
                         upsert: true, 
                         cacheControl: '3600' 
@@ -1241,23 +1191,20 @@ if (acceptedMemberships.length > 0) {
                         const { data } = window.supabaseClient.storage.from('avatars').getPublicUrl(path);
                         const cleanUrl = data.publicUrl.split('?')[0];
                         
-                        // Veritabanını yeni URL ile güncelle
                         await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
                         showNotification("Profil resmi başarıyla optimize edildi ve güncellendi!", "success");
                         
-                        // Cache'i güncelle
                         const cacheKey = 'obb_profile_cache';
                         const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
                         cachedProfile.avatar_url = cleanUrl;
                         localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
 
-                        // Ekranda güncel (önbelleğe takılmayan) resmi göster
                         document.getElementById('userAvatar').src = cleanUrl + "?t=" + Date.now();
 
                     } else {
                         showNotification("Profil resmi yüklenirken hata oluştu: " + error.message, "error");
                     }
-                }, 'image/webp', 0.8); // 0.8 kalite, gözle görülür fark olmadan max sıkıştırma sağlar
+                }, 'image/webp', 0.8);
             };
         });
 
