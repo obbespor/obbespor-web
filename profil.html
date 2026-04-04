@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VH0LHNCS3"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-9VH0LHNCS3');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Profilim | OBB E-SPORTS</title>
@@ -41,7 +43,6 @@
 
         .profile-card { background: var(--card-bg); border: 1px solid #222; border-top: none; border-radius: 0 0 20px 20px; padding: 0 40px 40px; position: relative; text-align: center; margin-bottom: 30px; border-top: 2px solid var(--neon-mor); border-top-left-radius: 20px; border-top-right-radius: 20px; }
         
-        /* PP'NİN ARKASINA VE KARTIN ÜSTÜNE MOR IŞIMA VE KAVİSLİ GEÇİŞ (Estetik için bırakıldı) */
         .profile-card::before { content: ''; position: absolute; top: -75px; left: 50%; transform: translateX(-50%); width: 170px; height: 170px; background: rgba(96, 29, 194, 0.1); border-radius: 50%; filter: blur(20px); z-index: -1; box-shadow: 0 0 30px var(--neon-mor); }
 
         .avatar-wrapper { position: relative; width: 150px; height: 150px; margin: -75px auto 20px; }
@@ -50,7 +51,9 @@
         
         .rank-badge { display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: 800; background: rgba(96, 29, 194, 0.2); border: 1px solid var(--neon-mor); color: var(--neon-mor); margin-bottom: 10px; transition: 0.3s; text-transform: uppercase; }
         
-        /* IGN BÖLÜMÜ */
+        .username-edit-icon { color: var(--neon-mor); cursor: pointer; transition: 0.3s; font-size: 16px; margin-left: 10px; vertical-align: middle; }
+        .username-edit-icon:hover { color: white; transform: scale(1.2); }
+
         .ign-container { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; background: rgba(0,0,0,0.3); display: inline-flex; padding: 6px 15px; border-radius: 30px; border: 1px solid #333; }
         .ign-label { font-size: 11px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase; }
         .ign-value { font-size: 14px; font-weight: 900; color: #00d2ff; }
@@ -60,20 +63,16 @@
         .ign-actions .fa-pencil-alt:hover { color: white; transform: scale(1.2); }
         .ign-actions .fa-info-circle { color: var(--gri-yazi); }
         .ign-actions .fa-info-circle:hover { color: #00d2ff; transform: scale(1.2); }
-        .username-edit-icon { color: var(--neon-mor); cursor: pointer; transition: 0.3s; font-size: 16px; margin-left: 10px; vertical-align: middle; }
-        .username-edit-icon:hover { color: white; transform: scale(1.2); }
 
         .bio-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; }
         .edit-bio-icon { color: var(--neon-mor); cursor: pointer; transition: 0.3s; }
         
-        /* İSTATİSTİKLER (4 Sütun) */
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px; }
         .stat-item { background: #111; padding: 20px; border-radius: 15px; border-bottom: 2px solid #222; transition: 0.3s; }
         .stat-item:hover { border-color: var(--neon-mor); transform: translateY(-3px); }
         .stat-value { display: block; font-size: 24px; font-weight: 900; color: var(--neon-mor); }
         .stat-label { font-size: 12px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase;}
 
-        /* BİLDİRİM VE TAKIM BÖLÜMÜ */
         .notifications-section { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
         .notifications-header { display: flex; justify-content: space-between; border-bottom: 2px solid #222; padding-bottom: 15px; margin-bottom: 20px; }
         .badge { background: var(--neon-mor); color: white; padding: 2px 10px; border-radius: 50px; font-size: 12px; font-weight: bold; }
@@ -85,14 +84,12 @@
         .btn-accept:hover { background: rgba(0, 210, 255, 0.2); }
         .btn-reject:hover { background: rgba(255, 75, 75, 0.2); }
 
-        /* AKTİF TAKIM KARTI */
         .active-team-card { background: linear-gradient(135deg, rgba(96, 29, 194, 0.1) 0%, rgba(10, 10, 10, 0.9) 100%); border: 1px solid var(--neon-mor); border-radius: 15px; padding: 30px; text-align: center; box-shadow: 0 10px 30px rgba(96, 29, 194, 0.15); animation: fadeIn 0.5s ease; position: relative; overflow: hidden; }
         .active-team-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--neon-mor); }
         .active-team-card h3 { font-size: 24px; color: white; margin-bottom: 5px; font-weight: 900; text-transform: uppercase; }
         .active-team-card p { color: var(--gri-yazi); font-size: 14px; margin-bottom: 20px; }
         .active-team-card .team-tag-large { display: inline-block; background: var(--neon-mor); color: white; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
 
-        /* AYARLAR VE SÖZLEŞMELER BÖLÜMÜ */
         .settings-section { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
         .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .settings-box { background: #111; border: 1px solid #333; padding: 20px; border-radius: 15px; }
@@ -110,11 +107,9 @@
         .legal-status.approved { color: var(--yesil-guven); font-weight: bold; display: flex; align-items: center; gap: 5px; }
         .legal-status.approved i { font-size: 16px; }
         
-        /* TIKLANABİLİR SÖZLEŞME LİNKLERİ */
         .clickable-doc { color: var(--neon-mor); text-decoration: underline; cursor: pointer; transition: 0.3s; font-weight: bold; }
         .clickable-doc:hover { color: #fff; text-shadow: 0 0 10px var(--neon-mor); }
 
-        /* TİCARİ ONAY TOGGLE (SWITCH) */
         .switch-container { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; font-size: 13px; }
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -123,12 +118,10 @@
         input:checked + .slider { background-color: var(--mavi-onay); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* ÖZEL MODALLAR */
         .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
         .modal.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal-content { background: #0a0a0a; padding: 30px; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         
-        /* SÖZLEŞME ÖZEL MODAL STİLLERİ */
         .doc-modal-content { max-width: 700px; max-height: 80vh; display: flex; flex-direction: column; padding: 0; }
         .doc-modal-header { padding: 25px 25px 15px; border-bottom: 1px solid #222; }
         .doc-modal-body { padding: 25px; overflow-y: auto; font-size: 13px; color: #ddd; line-height: 1.6; }
@@ -158,7 +151,6 @@
             .profile-banner { height: 150px; border-radius: 15px 15px 0 0; }
             .profile-card { padding: 0 20px 25px; border-radius: 0 0 15px 15px; }
             
-            /* Mobil Uyumlu Kavisli Geçiş */
             .profile-card::before { top: -55px; width: 130px; height: 130px; }
 
             .avatar-wrapper { width: 110px; height: 110px; margin: -55px auto 15px; } 
@@ -171,7 +163,6 @@
             .bio-container { flex-direction: column; text-align: center; gap: 5px; margin-bottom: 20px; }
             .profile-bio { font-size: 13px; line-height: 1.4; }
             
-            /* Mobilde 4 kutunun daha şık durması için 2x2 ızgara */
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; } 
             .stat-item { padding: 10px 5px; border-radius: 10px; border-bottom-width: 1px; }
             .stat-value { font-size: 18px; }
@@ -184,7 +175,6 @@
             .notif-actions { width: 100%; display: flex; gap: 10px; }
             .notif-actions button { flex: 1; justify-content: center; padding: 10px; font-size: 13px; }
         }
-        
     </style>
 </head>
 <body>
@@ -205,10 +195,10 @@
 
             <div class="rank-badge" id="userRank">YÜKLENİYOR...</div>
             
-           <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 5px; text-transform: none;">
-    <span id="profileNameDisplay">YÜKLENİYOR...</span>
-    <i class="fas fa-pencil-alt username-edit-icon" onclick="openUsernameEditModal()" title="Kullanıcı Adını Değiştir"></i>
-</h1>
+            <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 5px; text-transform: none;">
+                <span id="profileNameDisplay">YÜKLENİYOR...</span>
+                <i class="fas fa-pencil-alt username-edit-icon" onclick="openUsernameEditModal()" title="Kullanıcı Adını Değiştir"></i>
+            </h1>
             
             <div>
                 <div class="ign-container">
@@ -251,6 +241,7 @@
             
             <div class="settings-grid">
                 <div style="display: flex; flex-direction: column; gap: 20px;">
+                    
                     <div class="settings-box">
                         <h4><i class="fas fa-lock"></i> Gizli İletişim Bilgilerim</h4>
                         <p style="font-size: 11px; color: var(--gri-yazi); margin-bottom: 15px;">Güvenliğiniz için bilgileriniz maskelenmiştir.</p>
@@ -265,7 +256,7 @@
                             <div style="background: #000; padding: 12px; border: 1px solid #333; border-radius: 8px; color: #00d2ff; font-weight: bold; letter-spacing: 1px; font-size: 13px;" id="maskedPhoneDisplay">Belirtilmemiş</div>
                         </div>
                     </div>
-                    
+
                     <div class="settings-box">
                         <h4>Şifre Değiştir</h4>
                         <div class="input-group">
@@ -281,7 +272,7 @@
 
                     <div class="settings-box">
                         <h4>İstek ve Şikayet Bildir</h4>
-                        <p style="font-size: 12px; color: var(--gri-yazi); margin-bottom: 15px; line-height: 1.5;">Görüş, öneri veya şikayetlerinizi doğrudan e-posta adresimize iletebilirsiniz. Aşağıdaki butona tıklayarak kendi mail uygulamanız üzerinden bize ulaşabilirsiniz.</p>
+                        <p style="font-size: 12px; color: var(--gri-yazi); margin-bottom: 15px; line-height: 1.5;">Görüş, öneri veya şikayetlerinizi doğrudan e-posta adresimize iletebilirsiniz.</p>
                         <a href="mailto:obbesports@gmail.com?subject=OBB E-SPORTS - İstek ve Şikayet Bildirimi" class="btn-primary" style="display: block; text-align: center; text-decoration: none;"><i class="fas fa-envelope"></i> E-Posta Gönder</a>
                     </div>
                 </div>
@@ -320,6 +311,22 @@
         </div>
     </main>
 
+    <div id="usernameEditModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeCustomModal('usernameEditModal')">&times;</span>
+            <div class="modal-title">Kullanıcı Adını Değiştir</div>
+            <p class="modal-desc">Sitede görünecek kullanıcı adınızı değiştirin.</p>
+            <div class="warning-box">
+                <i class="fas fa-exclamation-triangle"></i> DİKKAT: Kullanıcı adınızı <b>30 günde yalnızca 1 kez</b> değiştirebilirsiniz. Benzersiz olmalıdır.
+            </div>
+            <div class="input-group">
+                <label>Yeni Kullanıcı Adı (Max 20 Karakter)</label>
+                <input type="text" id="usernameInputContent" placeholder="Yeni adınızı girin" maxlength="20">
+            </div>
+            <button class="btn-primary" onclick="confirmUsernameUpdate()">Kabul Ediyorum ve Kaydet</button>
+        </div>
+    </div>
+
     <div id="passwordConfirmModal" class="modal">
         <div class="modal-content">
             <span class="modal-close" onclick="closeCustomModal('passwordConfirmModal')">&times;</span>
@@ -351,8 +358,7 @@
             <div class="doc-modal-header">
                 <h2 class="modal-title" id="docModalTitle">SÖZLEŞME BAŞLIĞI</h2>
             </div>
-            <div class="doc-modal-body" id="docModalBody">
-                </div>
+            <div class="doc-modal-body" id="docModalBody"></div>
         </div>
     </div>
 
@@ -365,22 +371,6 @@
                 <textarea id="bioInputContent" rows="3" maxlength="150" placeholder="Bir şeyler yaz..." style="width: 100%; padding: 12px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; font-family: 'Poppins', sans-serif; outline: none;"></textarea>
             </div>
             <button class="btn-primary" onclick="confirmBioUpdate()">Kaydet</button>
-        </div>
-    </div>
-
-   <div id="usernameEditModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeCustomModal('usernameEditModal')">&times;</span>
-            <div class="modal-title">Kullanıcı Adını Değiştir</div>
-            <p class="modal-desc">Sitede görünecek kullanıcı adınızı değiştirin.</p>
-            <div class="warning-box">
-                <i class="fas fa-exclamation-triangle"></i> DİKKAT: Kullanıcı adınızı <b>30 günde yalnızca 1 kez</b> değiştirebilirsiniz. Benzersiz olmalıdır.
-            </div>
-            <div class="input-group">
-                <label>Yeni Kullanıcı Adı (Max 20 Karakter)</label>
-                <input type="text" id="usernameInputContent" placeholder="Yeni adınızı girin" maxlength="20">
-            </div>
-            <button class="btn-primary" onclick="confirmUsernameUpdate()">Kabul Ediyorum ve Kaydet</button>
         </div>
     </div>
 
@@ -433,153 +423,7 @@
         let currentUser = null;
         let pendingAction = null; 
 
-        const documentContents = {
-            kvkk: {
-                title: "KİŞİSEL VERİLERİN İŞLENMESİNE İLİŞKİN AYDINLATMA METNİ",
-                body: `
-                    <h4>1. Veri Sorumlusunun Kimliği ve Temsilcisi</h4>
-                    <p>6698 sayılı Kişisel Verilerin Korunması Kanunu m. 10 ve ilgili Aydınlatma Rehberi uyarınca, OBB E-SPOR olarak, veri sorumlusu sıfatıyla, tarafınıza ait kişisel verilerin hukuka, dürüstlük kurallarına uygun, belirli, açık ve meşru amaçlarla bağlantılı, sınırlı ve ölçülü olarak işleneceğini beyan ederiz.</p>
-                    <p><strong>Merkez Adresi:</strong> Ordu Büyükşehir Belediyesi Şarkiye Mahallesi Yükçülük Sokak No:2 52100 Altınordu / ORDU<br>
-                    <strong>İletişim E-posta:</strong> obbesports@gmail.com</p>
-
-                    <h4>2. İşlenen Kişisel Veri Kategorileri</h4>
-                    <p>Platformumuz üzerinden üyelik oluşturmanız, e-spor turnuvalarına katılmanız ve topluluk içi iletişim araçlarını kullanmanız süreçlerinde aşağıdaki kişisel veri kategorileriniz tamamen veya kısmen otomatik yollarla işlenmektedir:</p>
-                    <ul>
-                        <li><strong>Kimlik ve İletişim Verileri:</strong> Ad, soyad, e-posta adresi, cep telefonu numarası ve Türkiye Cumhuriyeti kanunları kapsamındaki yasal yaş doğrulama yükümlülükleri gereği talep edilen yaş/doğum tarihi ve kimlik doğrulama statüsü bilgileri.</li>
-                        <li><strong>İşlem Güvenliği ve Cihaz Verileri:</strong> IP adresi, MAC adresi, donanım kimliği (Hardware ID / HWID), işletim sistemi mimarisi, log kayıtları, cihaz türü ve sunucu bağlantı zaman damgaları.</li>
-                        <li><strong>Müşteri İşlem ve Performans Verileri:</strong> Turnuva katılım bedellerine ilişkin finansal işlemler ve fatura bilgileri (Kredi kartı verileri Platformumuz sunucularında saklanmamakta, yalnızca PCI-DSS sertifikalı bağımsız ödeme kuruluşları üzerinden tokenize edilerek işlenmektedir).</li>
-                        <li><strong>Oyun İçi Davranış ve Telemetri Verileri:</strong> Üçüncü parti oyun geliştiricilerinin (Valorant, CS:GO, LoL vb.) sağladığı turnuva API'leri ve maç sonu istatistikleri üzerinden elde edilen oyun içi performans istatistikleri (galibiyet/mağlubiyet kayıtları, KDA vb.) ve platform içi yazılı/sesli İletişim kayıtları.</li>
-                        <li><strong>Görsel ve İşitsel Veriler:</strong> Fiziki veya çevrimiçi e-spor turnuvalarına katılımınız halinde; oyuncu avatar fotoğrafları, sesli komuta sohbet kayıtları, turnuva canlı yayınları sırasında elde edilen web kamerası görüntüleri ve müsabaka içi karakter hareketleri.</li>
-                    </ul>
-
-                    <h4>3. Kişisel Verilerin İşlenme Amaçları</h4>
-                    <p>Toplanan kişisel verileriniz, KVKK m. 4'te belirtilen genel ilkelere uygun olarak yalnızca aşağıda sayılan belirli ve meşru amaçlar dahilinde işlenmektedir:</p>
-                    <ul>
-                        <li>Kullanıcı hesaplarının oluşturulması, bireysel profillerin yönetilmesi ve platform içi iletişimin sağlanması,</li>
-                        <li>5651 sayılı İnternet Ortamında Yapılan Yayınların Düzenlenmesi Hakkında Kanun ve ilgili mevzuat kapsamında, 15 yaşından küçük bireylerin platforma kaydolmasının engellenmesi amacıyla zorunlu yaş doğrulama işlemlerinin gerçekleştirilmesi,</li>
-                        <li>Turnuva ve etkinlik katılım ücretleri gibi finansal operasyonların yürütülmesi ve faturalandırma süreçlerinin tamamlanması,</li>
-                        <li>Oyun ekosisteminin bütünlüğünü korumak adına, üçüncü parti oyunların kendi hile koruma sistemleri (Anti-Cheat) tarafından tespit edilen ihlallerin platforma yansıtılması ve platform içi siber zorbalığın önlenerek adil oyun (fair play) kurallarının tatbiki,</li>
-                        <li>E-spor liglerinin ve resmi turnuvalarının organizasyonu, adil eşleştirme (matchmaking) sistemlerinin çalıştırılması ve oyuncu sıralamalarının belirlenmesi,</li>
-                        <li>Kullanıcı uyuşmazlıklarının çözümü, teknik destek hizmetlerinin sunulması ve şikayetlerin yönetilmesi,</li>
-                        <li>Yetkili kamu kurum ve kuruluşlarından (BTK, Savcılıklar, Mahkemeler) mevzuata uygun olarak gelecek resmi ve yasal bilgi taleplerinin karşılanması.</li>
-                    </ul>
-
-                    <h4>4. Kişisel Veri Toplamanın Yöntemi ve Hukuki Sebebi</h4>
-                    <p>Kişisel verileriniz; web sitemizdeki üyelik formları, platform içi iletişim panelleri ve üçüncü parti oyun geliştiricilerinin (Riot Games, Valve vb.) sağladığı resmi turnuva API'leri aracılığıyla elektronik ortamda, kısmen veya tamamen otomatik yollarla elde edilmektedir.</p>
-                    <p>Verilerinizin işlenmesi, KVKK'nın 5. maddesinde yer alan aşağıdaki açık hukuki sebeplere dayanmaktadır:</p>
-                    <ul>
-                        <li><strong>KVKK m. 5/2-c uyarınca;</strong> "Bir sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması kaydıyla, sözleşmenin taraflarına ait kişisel verilerin işlenmesinin gerekli olması" (Kullanıcı Sözleşmesi ve Hizmet Şartlarının ifası, hesabın teknik yönetimi),</li>
-                        <li><strong>KVKK m. 5/2-ç uyarınca;</strong> "Veri sorumlusunun hukuki yükümlülüğünü yerine getirebilmesi için zorunlu olması" (5651 sayılı Kanun kapsamındaki yaş doğrulama, log tutma ve yasal bilgi sağlama yükümlülükleri),</li>
-                        <li><strong>KVKK m. 5/2-e uyarınca;</strong> "Bir hakkın tesisi, kullanılması veya korunması için veri işlemenin zorunlu olması" (Olası hukuki uyuşmazlıklarda delillerin muhafazası),</li>
-                        <li><strong>KVKK m. 5/2-f uyarınca;</strong> "İlgili kişinin temel hak ve özgürlüklerine zarar vermemek kaydıyla, veri sorumlusunun meşru menfaatleri için veri işlenmesinin zorunlu olması" (Platformun siber güvenliğinin sağlanması, haksız rekabetin önlenmesi ve adil oyun kurallarının tatbiki).</li>
-                    </ul>
-                    <p>Profesyonel e-spor etkinlikleri kapsamında reklam, pazarlama, canlı yayın ve sponsorluk amaçlarıyla görsel ve işitsel kayıtlarınızın ticari olarak kullanılması ise yalnızca tarafınızdan ayrıca alınacak Açık Rıza (KVKK m. 5/1) doğrultusunda gerçekleştirilecektir.</p>
-
-                    <h4>5. İşlenen Kişisel Verilerin Kimlere ve Hangi Amaçla Aktarılabileceği</h4>
-                    <p>Kişisel verileriniz, yukarıda belirtilen meşru amaçların gerçekleştirilmesi doğrultusunda ve KVKK'nın 8. ve 9. maddelerindeki katı koşullara riayet edilerek aktarılmaktadır:</p>
-                    <ul>
-                        <li><strong>Yurt İçi Aktarım (KVKK m. 8):</strong> Yasal yükümlülüklerimizin yerine getirilmesi amacıyla kanunen yetkili kamu kurumlarına (BTK, Adli Makamlar), ödeme işlemleri ve dolandırıcılık tespiti için BDDK lisanslı ödeme hizmeti sağlayıcılarına, finansal denetim ve beyanname süreçleri amacıyla bağımsız mali müşavirlere aktarılmaktadır.</li>
-                        <li><strong>Yurt Dışı Aktarım (KVKK m. 9):</strong> Platformumuzun kesintisiz ve küresel çapta hizmet verebilmesi amacıyla; sunucu barındırma (server hosting), bulut veri tabanı yönetimi ve iletişim/topluluk (örn: Discord) altyapısı hizmeti alınan yurt dışında mukim çok uluslu teknoloji tedarikçilerine aktarılmaktadır.</li>
-                    </ul>
-
-                    <h4>6. KVKK Madde 11 Kapsamındaki Kanuni Haklarınız</h4>
-                    <p>Kişisel veri sahibi olarak, bize dilediğiniz zaman başvurarak KVKK m. 11 kapsamındaki haklarınızı kullanabilirsiniz. Bu haklar şunlardır:</p>
-                    <ul>
-                        <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme, işlenmişse buna ilişkin detaylı bilgi talep etme,</li>
-                        <li>İşlenme amacını ve verilerin amacına uygun kullanılıp kullanılmadığını öğrenme,</li>
-                        <li>Yurt içinde veya yurt dışında kişisel verilerinizin aktarıldığı üçüncü kişi ve kurumları bilme,</li>
-                        <li>Kişisel verilerinizin eksik veya yanlış işlenmiş olması hâlinde bunların düzeltilmesini isteme,</li>
-                        <li>KVKK'nın 7. maddesinde öngörülen yasal saklama sürelerinin dolması şartıyla kişisel verilerinizin silinmesini veya yok edilmesini isteme,</li>
-                        <li>Düzeltme, silme ve yok etme işlemlerinin, verilerinizin aktarıldığı üçüncü kişilere bildirilmesini isteme,</li>
-                        <li>İşlenen verilerinizin münhasıran otomatik sistemler vasıtasıyla analiz edilmesi suretiyle aleyhinize bir sonucun ortaya çıkmasına itiraz etme,</li>
-                        <li>Kişisel verilerinizin kanuna aykırı olarak işlenmesi sebebiyle fiili bir zarara uğramanız hâlinde maddi ve manevi zararın giderilmesini talep etme.</li>
-                    </ul>
-                    <p>Bu haklarınızı kullanmak için taleplerinizi, "Veri Sorumlusuna Başvuru Usul ve Esasları Hakkında Tebliğ" uyarınca yukarıda belirtilen fiziki adresimize kimlik ispatlayıcı belgelerle birlikte yazılı olarak iletebilir, noter kanalıyla gönderebilir veya sistemimizde kayıtlı bulunan e-posta adresiniz üzerinden obbesports@gmail.com adresine elektronik posta yoluyla iletebilirsiniz.</p>
-                `
-            },
-            yayin: {
-                title: "YAYIN VE İMAJ HAKLARI AÇIK RIZA METNİ",
-                body: `
-                    <p>Kişisel Verilerin İşlenmesine İlişkin Aydınlatma Metni'ni okudum ve anladım. Katıldığım resmi e-spor liglerinde, çevrimiçi turnuvalarda veya platform içi etkinliklerde elde edilen oyun içi performans görüntülerimin, sesli iletişim kayıtlarımın (voice chat), kullanıcı adımın (nickname) ve varsa web kamerası görüntülerimin kaydedilmesine; canlı, naklen veya banttan ulusal ve uluslararası mecralarda (Twitch, YouTube vb.) yayınlanmasına; turnuva organizatörleri, sponsor markalar ve OBB E-Spor'un ticari iş ortaklarıyla reklam, pazarlama, tanıtım ve PR faaliyetleri kapsamında paylaşılmasına ve bu amaçlarla ticari olarak kullanılmasına tamamen özgür irademle açık rıza veriyorum.</p>
-                `
-            },
-            ticari: {
-                title: "TİCARİ İLETİŞİM AÇIK RIZA METNİ",
-                body: `
-                    <p>Kişisel Verilerin İşlenmesine İlişkin Aydınlatma Metni'ni okudum ve anladım. E-posta, SMS ve anlık bildirim (push notification) araçları kullanılarak OBB E-Spor'un düzenleyeceği yeni turnuvalar, etkinlik duyuruları, platform yenilikleri ve sponsor markalara ait kampanya/reklam içerikleri hakkında tarafımla ticari iletişim kurulmasına ve bu kapsamda iletişim verilerimin işlenmesine tamamen özgür irademle açık rıza veriyorum.</p>
-                `
-            },
-            sozlesme: {
-                title: "KULLANICI VE HİZMET SÖZLEŞMESİ (TERMS OF SERVICE)",
-                body: `
-                    <h4>Madde 1. Taraflar, Sözleşmenin Kurulması ve Kapsam</h4>
-                    <p>İşbu Kullanıcı ve Hizmet Sözleşmesi ("Sözleşme"), Ordu Büyükşehir Belediyesi E-Spor (kısaca "OBB E-Spor" veya "Platform") ile www.obbesports.com internet sitesine, e-spor sunucularına veya bağlantılı dijital servislere (müştereken "Hizmetler") üye olarak kaydolan veya Hizmetleri kullanan gerçek kişi ("Oyuncu") arasında, dijital ortamda onaylanması anında akdedilmiştir.</p>
-                    <p>Platformun yasal iletişim adresi "Şarkiye Mahallesi Yükçülük Sokak No:2 52100 Altınordu / ORDU" ve resmi e-posta adresi "obbesports@gmail.com" olarak belirlenmiştir. Oyuncu, kayıt formunda yer alan "Kullanıcı Sözleşmesini okudum ve kabul ediyorum" butonuna tıkladığı anda, bu Sözleşmedeki tüm hukuki, mali ve cezai şartları gayrikabili rücu (geri alınamaz) olarak kabul ettiğini beyan eder.</p>
-
-                    <h4>Madde 2. Yasal Yaş Sınırı, Kayıt Şartları ve Kimlik Doğrulama Yükümlülüğü</h4>
-                    <p><strong>2.1. Yasal Yaş Sınırı:</strong> Türkiye Cumhuriyeti kanunlarında yer alan emredici çocuk koruma düzenlemeleri ve ilgili mevzuat uyarınca, Platforma kaydolabilmek ve Hizmetleri kullanabilmek için Kullanıcının 15 (on beş) yaşını doldurmuş olması zorunludur. 18 (on sekiz) yaşını doldurmamış Oyuncuların platform içi işlemleri, turnuva kayıtları ve olası ödül alımları için yasal veli/vasisinin yazılı veya dijital (e-posta/SMS doğrulama) onayını sunması şarttır. Bu onayın eksikliğinden kaynaklanan hukuki ve mali sorumluluk tamamen Oyuncu'ya ve yasal temsilcisine aittir.</p>
-                    <p><strong>2.2. Resmi Yaş Doğrulama Süreci:</strong> Platform, yasal yaş sınırlarına uyulduğunu teyit etmek amacıyla, Kullanıcının sisteme kaydolduğu esnada veya turnuva süreçlerinde kimlik ibrazı veya dijital doğrulama yöntemleri talep etme hakkına sahiptir. Kimlik doğrulama işlemini tamamlamayan, 15 yaşından küçük olduğu tespit edilen veya gerekli veli/vasi onayını sunamayan kişilerin hesapları derhal ve ön bildirimsiz olarak kalıcı şekilde kapatılacak, elde edilen tüm turnuva hakları ve hesap içi kazanımlar iptal edilecektir.</p>
-                    <p><strong>2.3. Hesap Güvenliği ve Devir Yasağı:</strong> Kullanıcı, platform hesabı için belirlediği şifrenin gizliliğinden ve hesabında gerçekleştirilen tüm eylemlerden müteselsilen ve tek başına sorumludur. Hesabın, hesap içi verilerin veya sıralama/lig (rank) derecelerinin üçüncü bir kişiye devredilmesi, satılması, kiralanması veya ortak kullanılması (account sharing/boosting) kesinlikle yasaktır ve derhal fesih nedenidir.</p>
-
-                    <h4>Madde 3. Sınırlı Kullanım Lisansı ve Fikri Mülkiyet Haklarının Korunması</h4>
-                    <p><strong>3.1. Sınırlı Lisans:</strong> Platform, Kullanıcıya yalnızca işbu Sözleşme şartlarına katı bir şekilde uyması kaydıyla; Hizmetlere erişmesi, oyunları oynaması ve kişisel, ticari olmayan amaçlarla kullanması için münhasır olmayan, devredilemez, alt lisanslanamaz, iptal edilebilir ve sınırlı bir dijital lisans verir.</p>
-                    <p><strong>3.2. Fikri Mülkiyetin İhlali:</strong> Platform'un kendi web sitesi tasarımı, logoları, OBB E-Spor markası, yayınları, görsel arayüzleri ve ürettiği özgün içeriklerin tüm fikri ve sınai mülkiyet hakları münhasıran Platform'a aittir. Kullanıcı, Hizmetlerin hiçbir parçasını kopyalayamaz, kiralayamaz, değiştiremez veya izinsiz ticari amaçla kullanamaz. Turnuvaları düzenlenen üçüncü parti oyunların (Valorant, CS:GO, LOL vb.) oyun motorları, karakterleri, müzikleri ve hikaye (lore) unsurları ilgili oyun geliştiricilerine ait olup, Platform yalnızca turnuva düzenleyici sıfatıyla hareket etmektedir.</p>
-
-                    <h4>Madde 4. Adil Oyun (Fair Play), Hile Koruması ve Üçüncü Parti Yazılım Yasağı</h4>
-                    <p>Platform üzerinden düzenlenen turnuvalarda ve etkinliklerde adil rekabet esastır. Platform, rekabetçi e-spor ekosistemini korumak ve tüm oyuncular için manipülasyondan uzak bir ortam sağlamakla yükümlüdür.</p>
-                    <p><strong>4.1. Hile ve Manipülasyon Yasağı:</strong> Oyuncu, rekabet edilen oyunun (Örn: Valorant, CS:GO, LoL vb.) kendi yayıncısı tarafından belirlenen Hizmet Şartlarına ve Hile Koruma (Anti-Cheat) kurallarına uymak zorundadır. Üçüncü parti hile yazılımları (aimbot, wallhack, makro, otomasyon yazılımları vb.) kullanmak, şike yapmak (match-fixing) veya turnuva işleyişini sabote eden herhangi bir yöntemi kullanmak kesinlikle yasaktır.</p>
-                    <p><strong>4.2. Yaptırım Mekanizması:</strong> Madde 4 hükümlerinin ihlal edildiğinin turnuva hakemleri, platform yetkilileri veya oyun içi hile koruma sistemleri aracılığıyla tespit edilmesi durumunda OBB E-Spor; haksız elde edilen lig puanlarını geri alma, oyuncuyu turnuvalardan men etme, hesabı süreli/süresiz askıya alma ve kazanılan ödülleri iptal etme hakkını saklı tutar.</p>
-
-                    <h4>Madde 5. Toksik Davranışlar, Topluluk Standartları ve İletişim Kuralları</h4>
-                    <p>Platformun oyun içi sohbet (yazılı chat, sesli iletişim - voice comms) sistemlerinde, forumlarında veya e-spor lobi alanlarında, Kullanıcıların aşağıdaki yıkıcı (toxic) davranışlarda bulunması katı surette yasaklanmıştır:</p>
-                    <ul>
-                        <li><strong>5.1. Nefret Söylemi ve Ayrımcılık:</strong> Irk, din, dil, cinsiyet, cinsel yönelim veya etnik köken temelli saldırgan ifadeler kullanmak, aşağılamak ve sistematik ötekileştirme (hate speech) yapmak.</li>
-                        <li><strong>5.2. Siber Zorbalık ve Taciz:</strong> Diğer oyunculara, e-spor hakemlerine, Platform personeline veya üçüncü kişilere yönelik doğrudan tehdit, şantaj, siber zorbalık (cyberbullying) ve sistematik tacizde (griefing) bulunmak.</li>
-                        <li><strong>5.3. Uygunsuz İçerik:</strong> Müstehcen, pornografik içerikli materyal paylaşmak, aşırı küfür ve argo kullanmak.</li>
-                        <li><strong>5.4. Doxxing ve Mahremiyet İhlali:</strong> Başka oyuncuların gerçek kimlik bilgilerini, iletişim numaralarını veya adreslerini (doxxing) rızaları dışında ifşa etmek.</li>
-                    </ul>
-                    <p><strong>5.5. Yaptırım Mekanizması:</strong> Platform moderatörleri veya yapay zeka tabanlı dil analiz sistemleri tarafından tespit edilen bu eylemler; geçici iletişim kısıtlamalarından (chat mute/silence), hesabın rekabetçi eşleştirmeden süreli men edilmesine (ranked ban) ve nihai olarak hesabın kalıcı olarak kapatılmasına (perma-ban) kadar giden kümülatif yaptırımlara tabidir. Asılsız yere diğer oyuncuları raporlamak (false reporting) da aynı yaptırımlara yol açabilir.</p>
-
-                    <h4>Madde 6. E-Spor Turnuvaları ve Ticari Yayın Hakları</h4>
-                    <p><strong>6.1. Turnuva Kurallarına Uyum:</strong> Platform tarafından organize edilen veya desteklenen resmi e-spor liglerine/turnuvalarına katılan Kullanıcılar, Platform tarafından belirlenen turnuva kurallarına ve genel kabul görmüş e-spor davranış kurallarına uymak zorundadır.</p>
-                    <p><strong>6.2. İmaj ve Yayın Hakları:</strong> Kullanıcı, turnuva süresince oynadığı maçların, platform içi eylemlerinin ve oyun içi iletişimlerinin Platform tarafından kaydedilebileceğini, canlı yayınlanabileceğini (streaming), ticari amaçlarla naklen veya banttan dağıtılabileceğini ve Platform'un medya iş ortakları, sponsorları veya reklam verenleri ile paylaşılabileceğini kabul eder. Bu yayınlarda Kullanıcının oyuncu adının (nickname), avatarının ve oyun içi performansının bedelsiz, telifsiz ve süresiz olarak Platform'un ticari kullanımına tahsis edildiği kabul edilir. (Kişisel görüntünün ve sesin kullanımı KVKK Açık Rıza metnindeki onaylara tabidir).</p>
-
-                    <h4>Madde 7. Sorumluluğun Sınırlandırılması ve Hizmet Kesintileri</h4>
-                    <p><strong>7.1. Garanti Feragati:</strong> Platform, Hizmetlerin ("olduğu gibi" ve "mevcut olduğu şekliyle" sunulur) kesintisiz, tamamen hatasız (bug-free) veya siber saldırılara karşı %100 korunaklı olacağını hukuken garanti etmez. Planlı sunucu bakım çalışmaları, yazılım güncellemeleri veya mücbir sebepler (doğal afet, altyapı çökmesi) nedeniyle yaşanacak erişim kesintilerinden dolayı Platform sorumlu tutulamaz.</p>
-                    <p><strong>7.2. Yasal Erişim Engelleri ve Bant Daraltma:</strong> Türkiye Cumhuriyeti kanunlarının (özellikle 5651 sayılı Kanun) uygulanması, yetkili idari mercilerin (BTK, Mahkemeler) kararları veya yeni regülasyonlar doğrultusunda Hizmetlere erişimin tamamen engellenmesi, yasaklanması veya sunucu bant genişliğinin idari yaptırımla daraltılması (throttling) durumlarında, Platform, Kullanıcıya karşı hiçbir maddi tazminat veya sanal ürün iadesi ile yükümlü değildir.</p>
-
-                    <h4>Madde 8. Sözleşmenin Feshi ve Hesabın Kapatılması</h4>
-                    <p><strong>8.1. Kullanıcı Tarafından Fesih:</strong> Kullanıcı, dilediği zaman müşteri hizmetleri paneli üzerinden hesabının kalıcı olarak silinmesini talep ederek işbu Sözleşmeyi tek taraflı feshedebilir.</p>
-                    <p><strong>8.2. Platform Tarafından Haklı Nedenle Fesih:</strong> Platform, Kullanıcının işbu Sözleşmedeki temel yükümlülüklerden herhangi birini (özellikle Madde 2'deki Yaş Şartı, Madde 4'teki Hile Yasağı ve Madde 5'teki Toksik Davranış kurallarını) ihlal ettiğini tespit etmesi halinde, Kullanıcıya herhangi bir ön bildirimde bulunmaksızın Sözleşmeyi tek taraflı olarak derhal feshetme, hesabı kalıcı olarak kapatma (banlama) ve IP/Donanım erişimini bloklama hakkına münhasıran sahiptir.</p>
-
-                    <h4>Madde 9. Uygulanacak Hukuk ve Uyuşmazlıkların Çözüm Yeri</h4>
-                    <p>İşbu Sözleşmenin kurulması, yorumlanması, ifası ve taraflar arasında doğabilecek sözleşme içi veya haksız fiil kaynaklı tüm uyuşmazlıklarda münhasıran Türkiye Cumhuriyeti kanunları uygulanacaktır. Uyuşmazlıkların çözümünde Ordu Mahkemeleri ve İcra Daireleri kesin yetkilidir. Tüketici hukuku kapsamına giren durumlarda, Kullanıcılar yasal parasal sınırlar dâhilinde yerleşim yerlerindeki Tüketici Hakem Heyetlerine başvurabilirler.</p>
-
-                    <h4>Madde 10. Yürürlük ve Değişiklikler</h4>
-                    <p>Platform, operasyonel gereklilikler veya yasal mevzuat değişiklikleri sebebiyle işbu Sözleşme şartlarında dilediği zaman tek taraflı değişiklik yapma hakkını saklı tutar. Yapılan değişiklikler, Platform üzerinden yayınlandığı tarihte yürürlüğe girer. Değişiklik sonrasında Hizmetleri kullanmaya devam etmek, güncel şartların Kullanıcı tarafından kabul edildiği anlamına gelir. İşbu Sözleşme, Kullanıcı tarafından kayıt sürecinde elektronik onay (tık) verilmesi anında yürürlüğe girmiştir.</p>
-                `
-            }
-        };
-
-        // MODAL KONTROL FONKSİYONLARI
-        function openCustomModal(id) {
-            document.getElementById(id).style.display = "flex";
-            setTimeout(() => { document.getElementById(id).classList.add('active'); }, 10);
-        }
-        function closeCustomModal(id) {
-            document.getElementById(id).classList.remove('active');
-            setTimeout(() => { document.getElementById(id).style.display = "none"; }, 300);
-        }
-
-        // --- YENİ ÇEREZ SIFIRLAMA FONKSİYONLARI ---
-        function confirmCookieReset() {
-            openCustomModal('cookieResetModal');
-        }
-
-        function executeCookieReset() {
-            localStorage.removeItem('obb_cookie_consent');
-            location.reload();
-        }
+        // Maskeleme Fonksiyonları
         function maskEmail(email) {
             if (!email) return "Belirtilmemiş";
             const parts = email.split('@');
@@ -593,14 +437,27 @@
 
         function maskPhone(phone) {
             if (!phone || phone.length < 10) return "Belirtilmemiş";
-            // Son 2 hane hariç arayı yıldızla (Örn: +90 5** *** ** 67)
             const cleaned = phone.replace(/\s+/g, '');
             return cleaned.substring(0, 5) + " *** ** " + cleaned.slice(-2);
         }
 
+        const documentContents = { kvkk: {title: "KVKK Yükleniyor..."}, yayin: {title: "Yayın Hakkı Yükleniyor..."}, sozlesme: {title: "Sözleşme Yükleniyor..."} };
+
+        function openCustomModal(id) {
+            document.getElementById(id).style.display = "flex";
+            setTimeout(() => { document.getElementById(id).classList.add('active'); }, 10);
+        }
+        function closeCustomModal(id) {
+            document.getElementById(id).classList.remove('active');
+            setTimeout(() => { document.getElementById(id).style.display = "none"; }, 300);
+        }
+
+        function confirmCookieReset() { openCustomModal('cookieResetModal'); }
+        function executeCookieReset() { localStorage.removeItem('obb_cookie_consent'); location.reload(); }
+
         function openDocModal(docType) {
-            document.getElementById('docModalTitle').innerText = documentContents[docType].title;
-            document.getElementById('docModalBody').innerHTML = documentContents[docType].body;
+            document.getElementById('docModalTitle').innerText = documentContents[docType]?.title || "Sözleşme";
+            document.getElementById('docModalBody').innerHTML = "<p>Metin içerikleri Supabase'den veya statik olarak yüklenecektir.</p>";
             openCustomModal('docModal');
         }
 
@@ -628,10 +485,11 @@
             }
             
             currentUser = user;
-            // Email'i maskele ve yazdır
+
+            // E-posta Maskelemesi Ekle
             document.getElementById('maskedEmailDisplay').innerText = maskEmail(currentUser.email);
 
-            // Telefon numarasını 'user_contacts' tablosundan çek (Eğer varsa)
+            // Telefon Numarası Çekme ve Maskeleme Ekle
             const { data: contactData } = await window.supabaseClient.from('user_contacts').select('phone').eq('user_id', currentUser.id).single();
             if (contactData && contactData.phone) {
                 document.getElementById('maskedPhoneDisplay').innerText = maskPhone(contactData.phone);
@@ -655,9 +513,7 @@
                 if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
                 if(data.avatar_url) document.getElementById('userAvatar').src = data.avatar_url + "?t=" + Date.now();
 
-                if (data.marketing_consent) {
-                    document.getElementById('marketingToggle').checked = true;
-                }
+                if (data.marketing_consent) document.getElementById('marketingToggle').checked = true;
 
                 localStorage.setItem(cacheKey, JSON.stringify({
                     username: data.username,
@@ -667,15 +523,11 @@
                     avatar_url: data.avatar_url
                 }));
             }
-
-            await Promise.all([
-                loadUserStats(currentIgn),
-                loadInvitationsAndTeam()
-            ]);
-            
+            await Promise.all([ loadUserStats(currentIgn), loadInvitationsAndTeam() ]);
             subscribeToInvites();
         }
-        // KULLANICI ADI (USERNAME) GÜNCELLEME FONKSİYONLARI (30 GÜN)
+
+        // Kullanıcı Adı (Username) 30 Gün Güncelleme Fonksiyonları
         async function openUsernameEditModal() {
             try {
                 const { data, error } = await window.supabaseClient.from('profiles').select('username, username_updated_at').eq('id', currentUser.id).single();
@@ -703,7 +555,6 @@
                 if (trimmedUsername.length > 20) return showNotification("Kullanıcı adı en fazla 20 karakter olabilir.", "error");
                 if (!/^[a-zA-Z0-9_]+$/.test(trimmedUsername)) return showNotification("Sadece harf, rakam ve alt çizgi (_) kullanabilirsiniz.", "error");
 
-                // Benzersizlik kontrolü
                 const { data: existingUser } = await window.supabaseClient.from('profiles')
                     .select('username').ilike('username', trimmedUsername).neq('id', currentUser.id).limit(1);
 
@@ -724,21 +575,18 @@
                     const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
                     cachedProfile.username = trimmedUsername;
                     localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
-                    
-                    // Header'ı da tetikleyerek isim değişikliğini oraya da yansıtalım (Opsiyonel)
-                    if (typeof updateHeaderProfileUI === 'function') updateHeaderProfileUI(cachedProfile);
                 }
             }
         }
 
-        // MEVCUT IGN GÜNCELLEME KODUNU (15 GÜN) İLE DEĞİŞTİR:
+        // IGN 15 Gün Güncelleme Kodları
         async function openIgnEditModal() {
             try {
                 const { data, error } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).single();
                 
                 if (data && data.ign_updated_at) {
                     const diffDays = Math.ceil(Math.abs(new Date() - new Date(data.ign_updated_at)) / (1000 * 60 * 60 * 24));
-                    if (diffDays < 15) { // 30 YERİNE 15 YAPTIK
+                    if (diffDays < 15) {
                         return showNotification(`Oyun İçi Nickinizi 15 günde sadece 1 kez değiştirebilirsiniz. Kalan süre: ${15 - diffDays} gün.`, "error");
                     }
                 }
@@ -748,333 +596,6 @@
             } catch(e) {
                 showNotification("Veritabanı bağlantı hatası.", "error");
             }
-        }
-
-        async function loadUserStats(userIgn) {
-            try {
-                let allStats = [];
-                
-                const { data: statsById } = await window.supabaseClient.from('match_player_stats')
-                    .select('map_id, kills, deaths, id, team_id') 
-                    .eq('user_id', currentUser.id);
-                if(statsById) allStats = [...statsById];
-
-                if (userIgn && userIgn !== "Belirlenmedi") {
-                    const { data: statsByIgn } = await window.supabaseClient.from('match_player_stats')
-                        .select('map_id, kills, deaths, id, team_id')
-                        .ilike('in_game_name', userIgn); 
-                        
-                    if(statsByIgn) {
-                        statsByIgn.forEach(st => {
-                            if(!allStats.find(a => a.id === st.id)) {
-                                allStats.push(st);
-                            }
-                        });
-                    }
-                }
-
-                let totalMatches = 0; 
-                let totalKills = 0;
-                let totalDeaths = 0;
-                let wonMaps = 0;
-
-                if (allStats.length > 0) {
-                    const uniqueMaps = new Set();
-                    const userMapTeams = {};
-                    
-                    allStats.forEach(s => {
-                        if (!uniqueMaps.has(s.map_id)) {
-                            uniqueMaps.add(s.map_id);
-                            if (s.team_id) userMapTeams[s.map_id] = s.team_id;
-                        }
-                        totalKills += (s.kills || 0);
-                        totalDeaths += (s.deaths || 0);
-                    });
-                    
-                    totalMatches = uniqueMaps.size;
-
-                    // GERÇEK KAZANMA ORANI HESAPLAMASI
-                    const mapIds = Array.from(uniqueMaps);
-                    if (mapIds.length > 0) {
-                        const { data: mapsData } = await window.supabaseClient.from('match_maps')
-                            .select('id, match_id, score_a, score_b')
-                            .in('id', mapIds);
-
-                        if (mapsData && mapsData.length > 0) {
-                            const matchIds = [...new Set(mapsData.map(m => m.match_id))];
-                            const { data: matchesData } = await window.supabaseClient.from('bracket_matches')
-                                .select('id, team_a_id, team_b_id')
-                                .in('id', matchIds);
-
-                            if (matchesData) {
-                                mapsData.forEach(map => {
-                                    const match = matchesData.find(m => m.id === map.match_id);
-                                    const myTeamId = userMapTeams[map.id];
-                                    if (match && myTeamId) {
-                                        if (match.team_a_id === myTeamId && map.score_a > map.score_b) wonMaps++;
-                                        else if (match.team_b_id === myTeamId && map.score_b > map.score_a) wonMaps++;
-                                    }
-                                });
-                            }
-                        }
-                    }
-                }
-
-                const rankEl = document.getElementById('userRank');
-                if (totalMatches === 0) { rankEl.innerText = "YENİ"; rankEl.style.color = "#888"; rankEl.style.borderColor = "#888"; }
-                else if (totalMatches >= 1 && totalMatches < 10) { rankEl.innerText = "ACEMİ"; rankEl.style.color = "#00d2ff"; rankEl.style.borderColor = "#00d2ff"; }
-                else if (totalMatches >= 10 && totalMatches < 20) { rankEl.innerText = "TECRÜBELİ"; rankEl.style.color = "#f39c12"; rankEl.style.borderColor = "#f39c12"; }
-                else if (totalMatches >= 20 && totalMatches < 50) { rankEl.innerText = "PROFESYONEL"; rankEl.style.color = "#ff4b4b"; rankEl.style.borderColor = "#ff4b4b"; }
-                else { rankEl.innerText = "E-SPORCU"; rankEl.style.color = "gold"; rankEl.style.borderColor = "gold"; rankEl.style.boxShadow = "0 0 10px rgba(255,215,0,0.5)"; }
-
-                let winRate = "%0";
-                if (totalMatches > 0) {
-                    winRate = "%" + Math.round((wonMaps / totalMatches) * 100);
-                }
-
-                let kdRatio = "0.00";
-                if (totalMatches > 0) {
-                    kdRatio = totalDeaths > 0 ? (totalKills / totalDeaths).toFixed(2) : (totalKills > 0 ? "Kusursuz" : "0.00");
-                }
-
-                document.getElementById('statMatches').innerText = totalMatches;
-                document.getElementById('statWinRate').innerText = winRate;
-                document.getElementById('statTotalKills').innerText = totalKills;
-                document.getElementById('statKDRatio').innerText = kdRatio;
-
-            } catch(e) { console.warn("İstatistik hatası:", e); }
-        }
-
-        // ==========================================
-        // DÜZELTİLEN FONKSİYON (loadInvitationsAndTeam)
-        // ==========================================
-async function loadInvitationsAndTeam() {
-            try {
-                // 1. Kullanıcının üye olduğu tüm takımları ve davetleri çek
-                const { data: memberships, error } = await window.supabaseClient.from('team_members')
-                    .select('id, team_id, status, role, teams(id, name, tag, captain_id)')
-                    .eq('user_id', currentUser.id)
-                    .order('created_at', { ascending: false });
-
-                const list = document.getElementById('notificationsList');
-                const title = document.getElementById('inviteSectionTitle');
-                const badge = document.getElementById('notifBadge');
-
-                list.innerHTML = '';
-                badge.style.display = "none";
-
-                const showEmptyState = () => {
-                    title.innerHTML = `<i class="fas fa-users"></i> Takım Durumu`;
-                    list.innerHTML = `
-                        <div style="text-align:center; padding:30px; background: rgba(255,255,255,0.02); border-radius:15px; border: 1px dashed #333;">
-                            <i class="fas fa-user-plus" style="font-size: 30px; color: #444; margin-bottom: 15px;"></i>
-                            <p style="color:#ccc; margin-bottom: 8px;">Henüz bir takım davetin yok.</p>
-                            <p style="font-size: 13px; color:#777; margin-bottom: 20px;">İstersen hemen kendi takımını oluşturabilirsin!</p>
-                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:220px; text-decoration:none; font-size:14px;">
-                                <i class="fas fa-plus-circle"></i> Takım Oluştur
-                            </a>
-                        </div>
-                    `;
-                };
-
-                if (error || !memberships || memberships.length === 0) {
-                    showEmptyState();
-                    return;
-                }
-
-                // Üyelikleri ayır: Kabul edilenler ve Bekleyenler
-                const acceptedMemberships = memberships.filter(m => m.status === 'accepted');
-                const pendingInvites = memberships.filter(m => m.status === 'pending');
-
-                let realTeamData = null;
-                let realAppStatus = null;
-                let draftTeamData = null;
-
-                // Kabul edilen takımları tarayıp "Gerçek" ve "Taslak" olarak sınıflandıralım
-// Kabul edilen takımları tarayıp "Gerçek" ve "Taslak" olarak sınıflandıralım
-if (acceptedMemberships.length > 0) {
-    // Null olan ID'leri filtreliyoruz ki Supabase 400 hatası atmasın
-    const teamIds = acceptedMemberships.map(m => m.team_id).filter(id => id != null);
-    
-    let apps = [];
-    if (teamIds.length > 0) {
-        const { data: fetchedApps } = await window.supabaseClient.from('tournament_applications')
-            .select('team_id, status')
-            .in('team_id', teamIds)
-            .order('created_at', { ascending: false });
-        if (fetchedApps) apps = fetchedApps;
-    }
-                    
-                    for (let m of acceptedMemberships) {
-                        const app = apps?.find(a => a.team_id === m.team_id);
-                        if (app) {
-                            realTeamData = m.teams;
-                            realAppStatus = app.status;
-                            break; // Gerçek bir başvuru bulduk, aramayı kes
-                        } else if (!draftTeamData) {
-                            draftTeamData = m.teams; // Bulduğumuz ilk başvurusuz takımı taslak olarak kenara koy
-                        }
-                    }
-                }
-
-                // --- KURAL 1: GERÇEK TAKIM ÖNCELİĞİ ---
-                if (realTeamData) {
-                    let teamStatusText = "Bilinmiyor";
-                    let teamStatusColor = "#777";
-                    let teamStatusIcon = "fa-tools";
-
-                    if (realAppStatus === 'approved') {
-                        teamStatusText = "Turnuvaya Hazır";
-                        teamStatusColor = "var(--yesil-guven)";
-                        teamStatusIcon = "fa-check-circle";
-                    } else if (realAppStatus === 'pending') {
-                        teamStatusText = "Başvuru İncelemede";
-                        teamStatusColor = "var(--mavi-onay)";
-                        teamStatusIcon = "fa-clock";
-                    } else if (realAppStatus === 'rejected') {
-                        teamStatusText = "Reddedildi";
-                        teamStatusColor = "var(--kirmizi-iptal)";
-                        teamStatusIcon = "fa-times-circle";
-                    }
-
-                    title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
-                    list.innerHTML = `
-                        <div class="active-team-card">
-                            <span class="team-tag-large">${realTeamData.tag || 'LOBİ'}</span>
-                            <h3>${realTeamData.name || 'İSİMSİZ TAKIM'}</h3>
-                            <p>Durum: <span style="color:${teamStatusColor}; font-weight:bold;"><i class="fas ${teamStatusIcon}"></i> ${teamStatusText}</span></p>
-                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
-                        </div>
-                    `;
-                    return; 
-                }
-
-                // --- KURAL 2: DAVET ÖNCELİĞİ (Gerçek takımı yoksa devreye girer) ---
-                if (pendingInvites.length > 0) {
-                    title.innerHTML = `<i class="fas fa-users"></i> Takım Davetleri`;
-                    badge.innerText = pendingInvites.length;
-                    badge.style.display = "inline-block";
-
-                    for (let inv of pendingInvites) {
-                        const tData = inv.teams;
-                        const teamName = tData?.name || "Bilinmeyen Takım";
-                        const teamTag = tData?.tag || "LOBİ";
-                        const roleText = inv.role === 'main' ? 'Asil' : 'Yedek';
-
-                        list.innerHTML += `
-                            <div class="notif-item">
-                                <div class="notif-text"><span class="team-tag">[${teamTag}]</span> <b>${teamName}</b> takımına ${roleText} olarak davetlisin.</div>
-                                <div class="notif-actions">
-                                    <button class="btn-accept" onclick="respondInvite('${inv.id}', 'accepted')">Kabul Et</button>
-                                    <button class="btn-reject" onclick="respondInvite('${inv.id}', 'rejected')">Reddet</button>
-                                </div>
-                            </div>`;
-                    }
-
-                    list.innerHTML += `
-                        <div style="text-align:center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #333;">
-                            <p style="font-size: 13px; color:#777; margin-bottom: 10px;">Veya kendi takımını kurarak lider sen ol!</p>
-                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none; font-size:13px; padding: 8px 15px;">
-                                <i class="fas fa-plus-circle"></i> Takım Oluştur
-                            </a>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // --- KURAL 3: TASLAK TAKIM GÖSTERİMİ (Gerçek takımı yok, Daveti de yoksa) ---
-                if (draftTeamData) {
-                    title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
-                    list.innerHTML = `
-                        <div class="active-team-card">
-                            <span class="team-tag-large">${draftTeamData.tag || 'DRFT'}</span>
-                            <h3>${draftTeamData.name || 'TASLAK TAKIM'}</h3>
-                            <p>Durum: <span style="color:#777; font-weight:bold;"><i class="fas fa-tools"></i> Lobi / Hazırlık (Başvuru Yapılmadı)</span></p>
-                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // --- KURAL 4: HİÇBİRİ YOKSA BOŞ EKRAN ---
-                showEmptyState();
-
-            } catch (err) {
-                console.error("Takım/Davet yükleme hatası:", err);
-                document.getElementById('notificationsList').innerHTML = `<div style="text-align:center; color:#ff4b4b; padding:20px;">Takım bilgileri alınırken bağlantı hatası oluştu.</div>`;
-            }
-        }
-       async function respondInvite(id, action) {
-            if (action === 'accepted') {
-                const { error } = await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', id);
-                if (error) {
-                    showNotification("Kabul ederken hata oluştu: " + error.message, "error");
-                    return;
-                }
-                showNotification("Takıma katıldınız!", "success");
-            } else {
-                const { error } = await window.supabaseClient.from('team_members').delete().eq('id', id);
-                if (error) {
-                    showNotification("Reddederken hata oluştu: " + error.message, "error");
-                    return;
-                }
-                showNotification("Daveti reddettiniz.", "error");
-            }
-            loadInvitationsAndTeam();
-        }
-
-        function subscribeToInvites() {
-            window.supabaseClient.channel('custom-invites')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members', filter: `user_id=eq.${currentUser.id}` }, () => loadInvitationsAndTeam())
-                .subscribe();
-        }
-
-        function openBioEditModal() {
-            const currentBio = document.getElementById('userBio').innerText;
-            document.getElementById('bioInputContent').value = currentBio === "Açıklama eklenmemiş." ? "" : currentBio;
-            openCustomModal('bioEditModal');
-        }
-
-        async function confirmBioUpdate() {
-            const newBio = document.getElementById('bioInputContent').value.trim();
-            if (newBio.length > 150) return showNotification("Biyografi çok uzun!", "error");
-            
-            document.getElementById('userBio').innerText = newBio || "Açıklama eklenmemiş.";
-            closeCustomModal('bioEditModal');
-
-            const { error } = await window.supabaseClient.from('profiles').update({ bio: newBio }).eq('id', currentUser.id);
-            if (error) {
-                console.error("Supabase Bio Hatası:", error);
-                showNotification("Kaydedilemedi!", "error");
-            } else {
-                showNotification("Açıklama başarıyla güncellendi.", "success");
-                const cacheKey = 'obb_profile_cache';
-                const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
-                cachedProfile.bio = newBio;
-                localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
-            }
-        }
-
-      async function openIgnEditModal() {
-            try {
-                const { data, error } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).single();
-                
-                if (data && data.ign_updated_at) {
-                    // Tarih farkını hesaplıyoruz
-                    const diffDays = Math.ceil(Math.abs(new Date() - new Date(data.ign_updated_at)) / (1000 * 60 * 60 * 24));
-                    
-                    // EĞER 15 GÜNDEN AZ OLMUŞSA UYARI VER
-                    if (diffDays < 15) { 
-                        return showNotification(`Oyun İçi Nickinizi 15 günde sadece 1 kez değiştirebilirsiniz. Kalan süre: ${15 - diffDays} gün.`, "error");
-                    }
-                }
-                const currentIgn = data?.ign && data.ign !== "Belirlenmedi" ? data.ign : "";
-                document.getElementById('ignInputContent').value = currentIgn;
-                openCustomModal('ignEditModal');
-            } catch(e) {
-                showNotification("Veritabanı bağlantı hatası.", "error");
-            }
-        }
         }
 
         async function confirmIgnUpdate() {
@@ -1117,7 +638,287 @@ if (acceptedMemberships.length > 0) {
             }
         }
 
-        // --- GÜNCELLENMİŞ GÜVENLİK MODALI VE ONAY İŞLEMLERİ ---
+        // --- DİĞER PROFİL FONKSİYONLARI ---
+        async function loadUserStats(userIgn) {
+            try {
+                let allStats = [];
+                const { data: statsById } = await window.supabaseClient.from('match_player_stats')
+                    .select('map_id, kills, deaths, id, team_id') 
+                    .eq('user_id', currentUser.id);
+                if(statsById) allStats = [...statsById];
+
+                if (userIgn && userIgn !== "Belirlenmedi") {
+                    const { data: statsByIgn } = await window.supabaseClient.from('match_player_stats')
+                        .select('map_id, kills, deaths, id, team_id')
+                        .ilike('in_game_name', userIgn); 
+                        
+                    if(statsByIgn) {
+                        statsByIgn.forEach(st => {
+                            if(!allStats.find(a => a.id === st.id)) {
+                                allStats.push(st);
+                            }
+                        });
+                    }
+                }
+
+                let totalMatches = 0; 
+                let totalKills = 0;
+                let totalDeaths = 0;
+                let wonMaps = 0;
+
+                if (allStats.length > 0) {
+                    const uniqueMaps = new Set();
+                    const userMapTeams = {};
+                    
+                    allStats.forEach(s => {
+                        if (!uniqueMaps.has(s.map_id)) {
+                            uniqueMaps.add(s.map_id);
+                            if (s.team_id) userMapTeams[s.map_id] = s.team_id;
+                        }
+                        totalKills += (s.kills || 0);
+                        totalDeaths += (s.deaths || 0);
+                    });
+                    
+                    totalMatches = uniqueMaps.size;
+
+                    const mapIds = Array.from(uniqueMaps);
+                    if (mapIds.length > 0) {
+                        const { data: mapsData } = await window.supabaseClient.from('match_maps')
+                            .select('id, match_id, score_a, score_b')
+                            .in('id', mapIds);
+
+                        if (mapsData && mapsData.length > 0) {
+                            const matchIds = [...new Set(mapsData.map(m => m.match_id))];
+                            const { data: matchesData } = await window.supabaseClient.from('bracket_matches')
+                                .select('id, team_a_id, team_b_id')
+                                .in('id', matchIds);
+
+                            if (matchesData) {
+                                mapsData.forEach(map => {
+                                    const match = matchesData.find(m => m.id === map.match_id);
+                                    const myTeamId = userMapTeams[map.id];
+                                    if (match && myTeamId) {
+                                        if (match.team_a_id === myTeamId && map.score_a > map.score_b) wonMaps++;
+                                        else if (match.team_b_id === myTeamId && map.score_b > map.score_a) wonMaps++;
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+
+                const rankEl = document.getElementById('userRank');
+                if (totalMatches === 0) { rankEl.innerText = "YENİ"; rankEl.style.color = "#888"; rankEl.style.borderColor = "#888"; }
+                else if (totalMatches >= 1 && totalMatches < 10) { rankEl.innerText = "ACEMİ"; rankEl.style.color = "#00d2ff"; rankEl.style.borderColor = "#00d2ff"; }
+                else if (totalMatches >= 10 && totalMatches < 20) { rankEl.innerText = "TECRÜBELİ"; rankEl.style.color = "#f39c12"; rankEl.style.borderColor = "#f39c12"; }
+                else if (totalMatches >= 20 && totalMatches < 50) { rankEl.innerText = "PROFESYONEL"; rankEl.style.color = "#ff4b4b"; rankEl.style.borderColor = "#ff4b4b"; }
+                else { rankEl.innerText = "E-SPORCU"; rankEl.style.color = "gold"; rankEl.style.borderColor = "gold"; rankEl.style.boxShadow = "0 0 10px rgba(255,215,0,0.5)"; }
+
+                let winRate = "%0";
+                if (totalMatches > 0) winRate = "%" + Math.round((wonMaps / totalMatches) * 100);
+
+                let kdRatio = "0.00";
+                if (totalMatches > 0) kdRatio = totalDeaths > 0 ? (totalKills / totalDeaths).toFixed(2) : (totalKills > 0 ? "Kusursuz" : "0.00");
+
+                document.getElementById('statMatches').innerText = totalMatches;
+                document.getElementById('statWinRate').innerText = winRate;
+                document.getElementById('statTotalKills').innerText = totalKills;
+                document.getElementById('statKDRatio').innerText = kdRatio;
+
+            } catch(e) { console.warn("İstatistik hatası:", e); }
+        }
+
+        async function loadInvitationsAndTeam() {
+            try {
+                const { data: memberships, error } = await window.supabaseClient.from('team_members')
+                    .select('id, team_id, status, role, teams(id, name, tag, captain_id)')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+
+                const list = document.getElementById('notificationsList');
+                const title = document.getElementById('inviteSectionTitle');
+                const badge = document.getElementById('notifBadge');
+
+                list.innerHTML = '';
+                badge.style.display = "none";
+
+                const showEmptyState = () => {
+                    title.innerHTML = `<i class="fas fa-users"></i> Takım Durumu`;
+                    list.innerHTML = `
+                        <div style="text-align:center; padding:30px; background: rgba(255,255,255,0.02); border-radius:15px; border: 1px dashed #333;">
+                            <i class="fas fa-user-plus" style="font-size: 30px; color: #444; margin-bottom: 15px;"></i>
+                            <p style="color:#ccc; margin-bottom: 8px;">Henüz bir takım davetin yok.</p>
+                            <p style="font-size: 13px; color:#777; margin-bottom: 20px;">İstersen hemen kendi takımını oluşturabilirsin!</p>
+                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:220px; text-decoration:none; font-size:14px;">
+                                <i class="fas fa-plus-circle"></i> Takım Oluştur
+                            </a>
+                        </div>
+                    `;
+                };
+
+                if (error || !memberships || memberships.length === 0) {
+                    showEmptyState();
+                    return;
+                }
+
+                const acceptedMemberships = memberships.filter(m => m.status === 'accepted');
+                const pendingInvites = memberships.filter(m => m.status === 'pending');
+
+                let realTeamData = null;
+                let realAppStatus = null;
+                let draftTeamData = null;
+
+                if (acceptedMemberships.length > 0) {
+                    const teamIds = acceptedMemberships.map(m => m.team_id).filter(id => id != null);
+                    let apps = [];
+                    if (teamIds.length > 0) {
+                        const { data: fetchedApps } = await window.supabaseClient.from('tournament_applications')
+                            .select('team_id, status')
+                            .in('team_id', teamIds)
+                            .order('created_at', { ascending: false });
+                        if (fetchedApps) apps = fetchedApps;
+                    }
+                                    
+                    for (let m of acceptedMemberships) {
+                        const app = apps?.find(a => a.team_id === m.team_id);
+                        if (app) {
+                            realTeamData = m.teams;
+                            realAppStatus = app.status;
+                            break; 
+                        } else if (!draftTeamData) {
+                            draftTeamData = m.teams; 
+                        }
+                    }
+                }
+
+                if (realTeamData) {
+                    let teamStatusText = "Bilinmiyor";
+                    let teamStatusColor = "#777";
+                    let teamStatusIcon = "fa-tools";
+
+                    if (realAppStatus === 'approved') {
+                        teamStatusText = "Turnuvaya Hazır";
+                        teamStatusColor = "var(--yesil-guven)";
+                        teamStatusIcon = "fa-check-circle";
+                    } else if (realAppStatus === 'pending') {
+                        teamStatusText = "Başvuru İncelemede";
+                        teamStatusColor = "var(--mavi-onay)";
+                        teamStatusIcon = "fa-clock";
+                    } else if (realAppStatus === 'rejected') {
+                        teamStatusText = "Reddedildi";
+                        teamStatusColor = "var(--kirmizi-iptal)";
+                        teamStatusIcon = "fa-times-circle";
+                    }
+
+                    title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
+                    list.innerHTML = `
+                        <div class="active-team-card">
+                            <span class="team-tag-large">${realTeamData.tag || 'LOBİ'}</span>
+                            <h3>${realTeamData.name || 'İSİMSİZ TAKIM'}</h3>
+                            <p>Durum: <span style="color:${teamStatusColor}; font-weight:bold;"><i class="fas ${teamStatusIcon}"></i> ${teamStatusText}</span></p>
+                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
+                        </div>
+                    `;
+                    return; 
+                }
+
+                if (pendingInvites.length > 0) {
+                    title.innerHTML = `<i class="fas fa-users"></i> Takım Davetleri`;
+                    badge.innerText = pendingInvites.length;
+                    badge.style.display = "inline-block";
+
+                    for (let inv of pendingInvites) {
+                        const tData = inv.teams;
+                        const teamName = tData?.name || "Bilinmeyen Takım";
+                        const teamTag = tData?.tag || "LOBİ";
+                        const roleText = inv.role === 'main' ? 'Asil' : 'Yedek';
+
+                        list.innerHTML += `
+                            <div class="notif-item">
+                                <div class="notif-text"><span class="team-tag">[${teamTag}]</span> <b>${teamName}</b> takımına ${roleText} olarak davetlisin.</div>
+                                <div class="notif-actions">
+                                    <button class="btn-accept" onclick="respondInvite('${inv.id}', 'accepted')">Kabul Et</button>
+                                    <button class="btn-reject" onclick="respondInvite('${inv.id}', 'rejected')">Reddet</button>
+                                </div>
+                            </div>`;
+                    }
+
+                    list.innerHTML += `
+                        <div style="text-align:center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #333;">
+                            <p style="font-size: 13px; color:#777; margin-bottom: 10px;">Veya kendi takımını kurarak lider sen ol!</p>
+                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none; font-size:13px; padding: 8px 15px;">
+                                <i class="fas fa-plus-circle"></i> Takım Oluştur
+                            </a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                if (draftTeamData) {
+                    title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
+                    list.innerHTML = `
+                        <div class="active-team-card">
+                            <span class="team-tag-large">${draftTeamData.tag || 'DRFT'}</span>
+                            <h3>${draftTeamData.name || 'TASLAK TAKIM'}</h3>
+                            <p>Durum: <span style="color:#777; font-weight:bold;"><i class="fas fa-tools"></i> Lobi / Hazırlık (Başvuru Yapılmadı)</span></p>
+                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                showEmptyState();
+
+            } catch (err) {
+                console.error("Takım/Davet yükleme hatası:", err);
+                document.getElementById('notificationsList').innerHTML = `<div style="text-align:center; color:#ff4b4b; padding:20px;">Takım bilgileri alınırken bağlantı hatası oluştu.</div>`;
+            }
+        }
+
+        async function respondInvite(id, action) {
+            if (action === 'accepted') {
+                const { error } = await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', id);
+                if (error) return showNotification("Kabul ederken hata oluştu: " + error.message, "error");
+                showNotification("Takıma katıldınız!", "success");
+            } else {
+                const { error } = await window.supabaseClient.from('team_members').delete().eq('id', id);
+                if (error) return showNotification("Reddederken hata oluştu: " + error.message, "error");
+                showNotification("Daveti reddettiniz.", "error");
+            }
+            loadInvitationsAndTeam();
+        }
+
+        function subscribeToInvites() {
+            window.supabaseClient.channel('custom-invites')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members', filter: `user_id=eq.${currentUser.id}` }, () => loadInvitationsAndTeam())
+                .subscribe();
+        }
+
+        function openBioEditModal() {
+            const currentBio = document.getElementById('userBio').innerText;
+            document.getElementById('bioInputContent').value = currentBio === "Açıklama eklenmemiş." ? "" : currentBio;
+            openCustomModal('bioEditModal');
+        }
+
+        async function confirmBioUpdate() {
+            const newBio = document.getElementById('bioInputContent').value.trim();
+            if (newBio.length > 150) return showNotification("Biyografi çok uzun!", "error");
+            
+            document.getElementById('userBio').innerText = newBio || "Açıklama eklenmemiş.";
+            closeCustomModal('bioEditModal');
+
+            const { error } = await window.supabaseClient.from('profiles').update({ bio: newBio }).eq('id', currentUser.id);
+            if (error) {
+                console.error("Supabase Bio Hatası:", error);
+                showNotification("Kaydedilemedi!", "error");
+            } else {
+                showNotification("Açıklama başarıyla güncellendi.", "success");
+                const cacheKey = 'obb_profile_cache';
+                const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                cachedProfile.bio = newBio;
+                localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+            }
+        }
 
         function initiatePasswordUpdate() {
             const newPass = document.getElementById('newPassword').value;
@@ -1135,19 +936,15 @@ if (acceptedMemberships.length > 0) {
             const currentPass = document.getElementById('modalCurrentPassword').value;
             if (!currentPass) return showNotification("Lütfen mevcut şifrenizi girin.", "error");
             
-            // Eğer giriş yöntemine bağlı olarak email çekilemezse uyar:
             const userEmail = currentUser.email || (currentUser.user_metadata && currentUser.user_metadata.email);
             if (!userEmail) return showNotification("Hesap emailiniz bulunamadı. Şifre doğrulama yapılamıyor.", "error");
 
-            // Doğrulama aşaması: Mevcut email ve şifreyle Supabase'e giriş denemesi yapılır.
             const { error: authError } = await window.supabaseClient.auth.signInWithPassword({
                 email: userEmail,
                 password: currentPass
             });
 
-            if (authError) {
-                return showNotification("Girdiğiniz mevcut şifre yanlış. Lütfen tekrar deneyin.", "error");
-            }
+            if (authError) return showNotification("Girdiğiniz mevcut şifre yanlış. Lütfen tekrar deneyin.", "error");
 
             if (pendingAction === 'passwordUpdate') {
                 const newPass = document.getElementById('newPassword').value;
@@ -1171,93 +968,64 @@ if (acceptedMemberships.length > 0) {
             else showNotification(isChecked ? "Ticari iletişim izni onaylandı." : "Ticari iletişim izni iptal edildi.", "success");
         }
 
-        // --- YENİ EKLENEN OPTİMİZE AVATAR YÜKLEME KODU ---
         document.getElementById('avatarUpload').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // Yükleniyor hissi vermek için resmi hemen ekranda gösterelim
             document.getElementById('userAvatar').src = URL.createObjectURL(file);
 
-            // Resmi tarayıcı hafızasına alıyoruz
             const img = new Image();
             img.src = URL.createObjectURL(file);
 
             img.onload = async () => {
-                // Maksimum boyutlar (Profil resmi için 500x500 piksel fazlasıyla yeterli ve çok hafiftir)
                 const MAX_WIDTH = 500;
                 const MAX_HEIGHT = 500;
                 let width = img.width;
                 let height = img.height;
 
-                // En-boy oranını koruyarak yeniden boyutlandırma hesaplaması
                 if (width > height) {
-                    if (width > MAX_WIDTH) {
-                        height = Math.round(height * (MAX_WIDTH / width));
-                        width = MAX_WIDTH;
-                    }
+                    if (width > MAX_WIDTH) { height = Math.round(height * (MAX_WIDTH / width)); width = MAX_WIDTH; }
                 } else {
-                    if (height > MAX_HEIGHT) {
-                        width = Math.round(width * (MAX_HEIGHT / height));
-                        height = MAX_HEIGHT;
-                    }
+                    if (height > MAX_HEIGHT) { width = Math.round(width * (MAX_HEIGHT / height)); height = MAX_HEIGHT; }
                 }
 
-                // Canvas oluşturup resmi yeni boyutlarıyla çizdiriyoruz
                 const canvas = document.createElement('canvas');
                 canvas.width = width;
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Resmi WebP formatında ve %80 kalite ile sıkıştırıyoruz (0.8)
                 canvas.toBlob(async (blob) => {
-                    
-                    // Son güvenlik kontrolü
-                    if (blob.size > 2 * 1024 * 1024) {
-                        return showNotification("Dosya çok büyük. Lütfen başka bir resim deneyin.", "error");
-                    }
+                    if (blob.size > 2 * 1024 * 1024) return showNotification("Dosya çok büyük. Lütfen başka bir resim deneyin.", "error");
 
-                    // Dosya adını standartlaştırıyoruz (Artık hepsi webp olacak)
                     const fileExt = 'webp';
                     const path = `${currentUser.id}/profil_resmi.${fileExt}`;
 
-                    // Çakışmaları önlemek için eski tüm formatları temizle
                     await window.supabaseClient.storage.from('avatars').remove([
-                        `${currentUser.id}/profil_resmi.jpg`,
-                        `${currentUser.id}/profil_resmi.jpeg`,
-                        `${currentUser.id}/profil_resmi.png`,
-                        `${currentUser.id}/profil_resmi.webp`,
+                        `${currentUser.id}/profil_resmi.jpg`, `${currentUser.id}/profil_resmi.jpeg`,
+                        `${currentUser.id}/profil_resmi.png`, `${currentUser.id}/profil_resmi.webp`,
                         `${currentUser.id}/profil_resmi.gif`
                     ]);
 
-                    // Sıkıştırılmış blob verisini Supabase'e yükle
-                    const { error } = await window.supabaseClient.storage.from('avatars').upload(path, blob, { 
-                        upsert: true, 
-                        cacheControl: '3600' 
-                    });
+                    const { error } = await window.supabaseClient.storage.from('avatars').upload(path, blob, { upsert: true, cacheControl: '3600' });
                     
                     if (!error) {
                         const { data } = window.supabaseClient.storage.from('avatars').getPublicUrl(path);
                         const cleanUrl = data.publicUrl.split('?')[0];
                         
-                        // Veritabanını yeni URL ile güncelle
                         await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
                         showNotification("Profil resmi başarıyla optimize edildi ve güncellendi!", "success");
                         
-                        // Cache'i güncelle
                         const cacheKey = 'obb_profile_cache';
                         const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
                         cachedProfile.avatar_url = cleanUrl;
                         localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
 
-                        // Ekranda güncel (önbelleğe takılmayan) resmi göster
                         document.getElementById('userAvatar').src = cleanUrl + "?t=" + Date.now();
-
                     } else {
                         showNotification("Profil resmi yüklenirken hata oluştu: " + error.message, "error");
                     }
-                }, 'image/webp', 0.8); // 0.8 kalite, gözle görülür fark olmadan max sıkıştırma sağlar
+                }, 'image/webp', 0.8);
             };
         });
 
