@@ -951,7 +951,9 @@ const { data: statsById, error: statsErr1 } = await window.supabaseClient.from('
                     `;
                 };
 
-                if (error || !memberships || memberships.length === 0) {
+         if (error) throw error; // Hata varsa aşağıya inmeden direkt catch'e zıpla
+                
+                if (!memberships || memberships.length === 0) {
                     showEmptyState();
                     return;
                 }
