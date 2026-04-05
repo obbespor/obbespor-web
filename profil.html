@@ -621,12 +621,21 @@
 
             document.getElementById('maskedEmailDisplay').innerText = maskEmail(currentUser.email);
 
-            const { data: contactData } = await window.supabaseClient.from('user_contacts').select('phone').eq('user_id', currentUser.id).single();
-            if (contactData && contactData.phone) {
-                document.getElementById('maskedPhoneDisplay').innerText = maskPhone(contactData.phone);
-            }
+try {
+                const { data: contactData, error: contactErr } = await window.supabaseClient.from('user_contacts').select('phone').eq('user_id', currentUser.id).maybeSingle();
+                if (contactErr) throw contactErr;
+                
+                if (contactData && contactData.phone) {
+                    document.getElementById('maskedPhoneDisplay').innerText = maskPhone(contactData.phone);
+                }
 
-            const { data, error } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+                const { data, error } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+                if (error) throw error;
+                                
+            } catch (err) {
+                console.error("Profil verileri çekilirken hata:", err);
+                showNotification("Profil verileriniz yüklenirken bir hata oluştu.", "error");
+            }
             
             let currentIgn = "Belirlenmedi"; 
             
@@ -781,16 +790,20 @@
             try {
                 let allStats = [];
                 
-                const { data: statsById } = await window.supabaseClient.from('match_player_stats')
+const { data: statsById, error: statsErr1 } = await window.supabaseClient.from('match_player_stats')
                     .select('map_id, kills, deaths, id, team_id') 
                     .eq('user_id', currentUser.id);
-                if(statsById) allStats = [...statsById];
+                if (statsErr1) throw statsErr1;
+                if (statsById) allStats = [...statsById];
 
-                if (userIgn && userIgn !== "Belirlenmedi") {
-                    const { data: statsByIgn } = await window.supabaseClient.from('match_player_stats')
+ if (userIgn && userIgn !== "Belirlenmedi") {
+                    // İki ayrı sorgu yerine tek, zırhlı ve temiz bir sorgu
+                    const { data: statsByIgn, error: statsErr2 } = await window.supabaseClient.from('match_player_stats')
                         .select('map_id, kills, deaths, id, team_id')
                         .ilike('in_game_name', userIgn); 
                         
+                    if (statsErr2) throw statsErr2; // Hata varsa catch bloğuna fırlat
+                    
                     if(statsByIgn) {
                         statsByIgn.forEach(st => {
                             if(!allStats.find(a => a.id === st.id)) {
@@ -1159,27 +1172,36 @@
                         return showNotification("Dosya çok büyük. Lütfen başka bir resim deneyin.", "error");
                     }
 
-                    const fileExt = 'webp';
+const fileExt = 'webp';
                     const path = `${currentUser.id}/profil_resmi.${fileExt}`;
 
-                    await window.supabaseClient.storage.from('avatars').remove([
-                        `${currentUser.id}/profil_resmi.jpg`,
-                        `${currentUser.id}/profil_resmi.jpeg`,
-                        `${currentUser.id}/profil_resmi.png`,
-                        `${currentUser.id}/profil_resmi.webp`,
-                        `${currentUser.id}/profil_resmi.gif`
-                    ]);
+                    // TÜM İŞLEMİ TEK BİR TRY-CATCH İÇİNE ALIYORUZ
+                    try {
+                        // 1. Silme işlemi (Hata verse de devam etsin diye await yapıp error'u yoksayıyoruz, çünkü eski resim olmayabilir)
+                        await window.supabaseClient.storage.from('avatars').remove([
+                            `${currentUser.id}/profil_resmi.jpg`,
+                            `${currentUser.id}/profil_resmi.jpeg`,
+                            `${currentUser.id}/profil_resmi.png`,
+                            `${currentUser.id}/profil_resmi.webp`,
+                            `${currentUser.id}/profil_resmi.gif`
+                        ]);
 
-                    const { error } = await window.supabaseClient.storage.from('avatars').upload(path, blob, { 
-                        upsert: true, 
-                        cacheControl: '3600' 
-                    });
-                    
-                    if (!error) {
+                        // 2. Yükleme İşlemi
+                        const { error } = await window.supabaseClient.storage.from('avatars').upload(path, blob, { 
+                            upsert: true, 
+                            cacheControl: '3600' 
+                        });
+                        
+                        // Yüklemede hata varsa fırlat (ZAP uyarısını engelle)
+                        if (error) throw error;
+                        
+                        // 3. Başarılıysa Public URL al ve kaydet
                         const { data } = window.supabaseClient.storage.from('avatars').getPublicUrl(path);
                         const cleanUrl = data.publicUrl.split('?')[0];
                         
-                        await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
+                        const { error: profileErr } = await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
+                        if (profileErr) throw profileErr; // Profil tablosu güncellenemezse fırlat
+
                         showNotification("Profil resmi başarıyla optimize edildi ve güncellendi!", "success");
                         
                         const cacheKey = 'obb_profile_cache';
@@ -1189,8 +1211,10 @@
 
                         document.getElementById('userAvatar').src = cleanUrl + "?t=" + Date.now();
 
-                    } else {
-                        showNotification("Profil resmi yüklenirken hata oluştu: " + error.message, "error");
+                    } catch (uploadProcessErr) {
+                        // Eğer internet kopar veya Supabase red verirse kullanıcıya güvenli mesaj göster
+                        console.error("Yükleme işlemi hatası:", uploadProcessErr);
+                        showNotification("Profil resmi yüklenirken beklenmeyen bir hata oluştu.", "error");
                     }
                 }, 'image/webp', 0.8);
             };
