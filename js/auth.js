@@ -79,37 +79,16 @@ async function updateNavbarWithUser(user) {
             </div>
         </div>`;
 }
-document.addEventListener("DOMContentLoaded", async () => {
-    const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
-
-    
-    if (authErr || !user) {
-        window.location.replace("kayit.html");
-        return;
-    }
-
-    const { data: profile, error: profileErr } = await window.supabaseClient
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-   
-    if (profile && profile.role === 'admin') {
-        document.documentElement.style.visibility = 'visible'; 
-    } else {
-       
-        window.location.replace("index.html"); 
-    }
-});
 
 window.handleLogoutGlobal = async function() {
-  
     localStorage.removeItem('obb_user_cache');
     await window.supabaseClient.auth.signOut();
     window.location.reload(); 
 }
-// SADECE ADMİN SAYFALARINDA ÇAĞRILACAK GÜVENLİK BEKÇİSİ
+
+// =========================================================================
+// SADECE ADMİN SAYFALARINDA ÇAĞRILACAK GÜVENLİK BEKÇİSİ (FRONTEND BOUNCER)
+// =========================================================================
 async function requireAdminAccess() {
     try {
         if (!window.supabaseClient) throw new Error("Supabase bağlantısı yok.");
