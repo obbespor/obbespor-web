@@ -331,7 +331,6 @@
             if (typeof checkUserStatus === "function") await checkUserStatus();
             if (typeof initNotifications === "function") initNotifications();
 
-            // 3. ADMİN VERİLERİNİ YÜKLE
             await loadTournamentsToSelect();
             loadPendingTeams();
             loadApprovedTeams();
@@ -352,9 +351,6 @@
             btn.disabled = true;
 
             try {
-                // 1. Google botlarını kandırmak için API anahtarını ikiye bölüyoruz
-                // LÜTFEN AŞAĞIDAKİ İKİ YERE YENİ ALDIĞIN API ANAHTARINI BÖLEREK YAZ
-                // Örneğin anahtarın "ABCDEFG12345" ise: part1="ABCDE" part2="FG12345" yap
                 const part1 = "AIzaSyBLJuNxex"; 
                 const part2 = "BRRekbMzEzLRo6i3_caGmS-7c"; 
                 const API_KEY = part1 + part2;
@@ -385,7 +381,6 @@
                     }
                 `;
 
-                // En stabil ve hızlı çalışan Flash modeline geçiş yapıldı (gemini-1.5-flash)
 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -458,7 +453,7 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
             if(tabName === 'fikstur') updateDynamicSelectors();
         }
 
-        async function fetchTeamsWithMembers(statusFilter) {
+       async function fetchTeamsWithMembers(statusFilter) {
             try {
                 const { data: apps, error } = await window.supabaseClient
                     .from('tournament_applications')
@@ -481,21 +476,34 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
 
                 return apps.filter(app => app.teams).map(app => {
                     const t = app.teams;
+                    
+                    let members = (t.team_members || []).map(tm => {
+                        let contactData = tm.profiles?.user_contacts;
+                        if (Array.isArray(contactData)) contactData = contactData[0];
+                        
+                        const isCaptain = tm.user_id === t.captain_id;
+                        
+                        return {
+                            id: tm.id, 
+                            user_id: tm.user_id, 
+                            role: isCaptain ? 'captain' : tm.role, 
+                            status: isCaptain ? 'accepted' : tm.status,
+                            username: tm.profiles?.username || 'Bilinmiyor',
+                            ign: tm.profiles?.ign || '',
+                            phone: contactData?.phone || 'Belirtilmemiş',
+                            email: contactData?.email || 'Belirtilmemiş'
+                        };
+                    });
+                    
+                    const capt = members.filter(m => m.role === 'captain');
+                    const main = members.filter(m => m.role === 'main');
+                    const sub = members.filter(m => m.role === 'sub');
+                    members = [...capt, ...main, ...sub];
+
                     return {
                         id: app.id, team_id: t.id, team_name: t.name, team_tag: t.tag,
                         logo_url: t.logo_url, captain_id: t.captain_id,
-                        members: (t.team_members || []).map(tm => {
-                            let contactData = tm.profiles?.user_contacts;
-                            if (Array.isArray(contactData)) contactData = contactData[0];
-
-                            return {
-                                id: tm.id, user_id: tm.user_id, role: tm.role, status: tm.status,
-                                username: tm.profiles?.username || 'Bilinmiyor',
-                                ign: tm.profiles?.ign || '',
-                                phone: contactData?.phone || 'Belirtilmemiş',
-                                email: contactData?.email || 'Belirtilmemiş'
-                            };
-                        })
+                        members: members
                     };
                 });
             } catch (err) {
@@ -504,7 +512,7 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
             }
         }
 
-        async function loadPendingTeams() {
+      async function loadPendingTeams() {
             const teams = await fetchTeamsWithMembers('pending');
             const grid = document.getElementById('pendingTeamsGrid');
             grid.innerHTML = '';
@@ -514,8 +522,15 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
                     let playersHtml = '';
                     (team.members || []).forEach(m => {
                         const icon = m.status === 'accepted' ? '<i class="fas fa-check" style="color:var(--yesil-guven);"></i>' : '<i class="fas fa-clock" style="color:var(--mavi-onay);"></i>';
-                        playersHtml += `<li>${m.role === 'main' ? 'Asil' : 'Yedek'}: <span>${m.username}</span> ${icon}</li>`;
+                        
+                        let roleText = 'Yedek';
+                        let nameColor = 'var(--gri-yazi)';
+                        if (m.role === 'captain') { roleText = 'Kaptan'; nameColor = 'var(--neon-mor)'; }
+                        else if (m.role === 'main') { roleText = 'Asil'; nameColor = 'white'; }
+
+                        playersHtml += `<li><span style="width:50px; display:inline-block;">${roleText}:</span> <span style="color:${nameColor}; flex:1;">${m.username}</span> ${icon}</li>`;
                     });
+                    
                     const cardUserId = team.captain_id || '';
                     grid.innerHTML += `
                         <div class="team-card">
@@ -642,10 +657,14 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
 
             const rl = document.getElementById('modalRosterList'); rl.innerHTML = '';
             (team.members || []).forEach(m => {
-                const color = m.role === 'main' ? 'var(--yazi-beyaz)' : 'var(--gri-yazi)';
-                rl.innerHTML += `<li><span style="color:${color}; font-weight:normal;">${m.role==='main'?'Asil':'Yedek'}:</span> <span style="color:var(--neon-mor);">${m.username}</span></li>`;
-            });
+                let roleText = 'Yedek';
+                let color = 'var(--gri-yazi)';
+                
+                if (m.role === 'captain') { roleText = 'Kaptan'; color = 'var(--neon-mor)'; }
+                else if (m.role === 'main') { roleText = 'Asil'; color = 'var(--yazi-beyaz)'; }
 
+                rl.innerHTML += `<li><span style="color:${color}; font-weight:normal; width:60px; display:inline-block;">${roleText}:</span> <span style="color:var(--neon-mor); flex:1;">${m.username}</span></li>`;
+            });
             const deleteBtn = document.getElementById('modalDeleteBtn');
             deleteBtn.onclick = () => takimiSil(team.id, team.team_name, team.logo_url, team.captain_id);
             document.getElementById('teamModal').classList.add('active');
