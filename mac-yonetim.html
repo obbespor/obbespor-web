@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
+        /* FRONTEND BOUNCER: JS kapalıysa veya yetki onaylanana kadar sayfayı GİZLE! */
+        html { visibility: hidden; }
+        
         /* --- ADMİN HEADER AKTİF SEKME STİLİ --- */
         nav ul li a { cursor: pointer; }
         .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
@@ -287,6 +290,11 @@
         let loadedMaps = []; 
 
         async function initMatchManagement() {
+            // 1. GÜVENLİK KONTROLÜ (Bouncer)
+            const isAuthorized = await requireAdminAccess();
+            if (!isAuthorized) return; // Yetki yoksa dur!
+
+            // 2. SAYFA YÜKLEMELERİ
             try {
                 const footerRes = await fetch("components/footer.html");
                 if(footerRes.ok) document.getElementById('footer-alani').innerHTML = await footerRes.text();
@@ -311,19 +319,9 @@
 
             if (typeof checkUserStatus === "function") await checkUserStatus();
             if (typeof initNotifications === "function") initNotifications(); 
-            checkAdminAccess();
-        }
-
-        async function checkAdminAccess() {
-            try {
-                const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
-                if (authError || !user) throw new Error("Giriş yapılmadı.");
-                const { data: profile } = await window.supabaseClient.from('profiles').select('role').eq('id', user.id).single();
-                if (!profile || profile.role !== 'admin') throw new Error("Yetkisiz erişim.");
-                
-                await fetchMatchList();
-                document.getElementById('loadingScreen').style.display = 'none';
-            } catch (err) { window.location.replace("index.html"); }
+            
+            // 3. ADMİN VERİLERİNİ YÜKLE
+            await fetchMatchList();
         }
 
         async function fetchMatchList() {
