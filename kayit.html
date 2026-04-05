@@ -148,7 +148,6 @@
                     <div id="spamWarningBox" style="background: rgba(0, 210, 255, 0.05); border-left: 3px solid var(--mavi-onay); padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 11px; color: var(--gri-yazi);">
                         <i class="fas fa-info-circle" style="color: var(--mavi-onay);"></i> Kayıt sonrası doğrulama linki <b>Spam/Gereksiz</b> kutusuna düşebilir. Lütfen tüm klasörleri kontrol etmeyi unutmayın.
                     </div>
-                    <div class="kvkk-group" id="kvkkBox1">
 
                     <div class="kvkk-group" id="kvkkBox1">
                         <input type="checkbox" id="kvkkCheck1">
@@ -400,7 +399,8 @@
             document.getElementById('switchBtn').innerText = isReg ? "KAYIT OL" : "GİRİŞ YAP";
             document.getElementById('toggleText').innerText = isReg ? "Henüz bir hesabın yok mu?" : "Zaten bir hesabın var mı?";
             
-['userGroup', 'phoneGroup', 'dobGroup', 'confirmPassGroup', 'kvkkBox1', 'kvkkBox2', 'kvkkBox3', 'kvkkBox4', 'spamWarningBox'].forEach(id => {                const el = document.getElementById(id);
+['userGroup', 'phoneGroup', 'dobGroup', 'confirmPassGroup', 'kvkkBox1', 'kvkkBox2', 'kvkkBox3', 'kvkkBox4', 'spamWarningBox'].forEach(id => {                
+    const el = document.getElementById(id);
                 if (el) el.style.display = isReg ? "none" : (id.includes('kvkk') ? "flex" : "block");
             });
 
