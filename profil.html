@@ -675,43 +675,6 @@ document.getElementById('maskedEmailDisplay').innerText = maskEmail(currentUser.
                 showNotification("Profil verileriniz yüklenirken bir hata oluştu.", "error");
             }
         }
-            
-            let currentIgn = "Belirlenmedi"; 
-            
-            if (data) {
-                document.getElementById('profileNameDisplay').innerText = data.username || "İsimsiz";
-                document.getElementById('userBio').innerText = data.bio || "Açıklama eklenmemiş.";
-                
-                const ignDisplay = document.getElementById('userIgnDisplay');
-                if (data.ign) {
-                    currentIgn = data.ign;
-                    ignDisplay.innerText = data.ign;
-                    ignDisplay.style.color = "#00d2ff";
-                }
-                
-                if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
-                if(data.avatar_url) document.getElementById('userAvatar').src = data.avatar_url + "?t=" + Date.now();
-
-                if (data.marketing_consent) {
-                    document.getElementById('marketingToggle').checked = true;
-                }
-
-                localStorage.setItem(cacheKey, JSON.stringify({
-                    username: data.username,
-                    bio: data.bio,
-                    ign: data.ign,
-                    banner_url: data.banner_url,
-                    avatar_url: data.avatar_url
-                }));
-            }
-
-            await Promise.all([
-                loadUserStats(currentIgn),
-                loadInvitationsAndTeam()
-            ]);
-            
-            subscribeToInvites();
-        } 
 
         async function openUsernameEditModal() {
             try {
