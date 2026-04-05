@@ -217,9 +217,7 @@
                 title: "VELİ BİLGİLENDİRME VE ONAY METNİ",
                 body: `
                     <h4>18 Yaş Altı Oyuncular İçin Yasal Zorunluluk</h4>
-                    <p>15 yaşını doldurmuş ancak 18 yaşını doldurmamış (reşit olmayan) kullanıcıların, OBB E-SPOR platformuna kayıt olabilmeleri ve etkinliklere/turnuvalara katılabilmeleri için yasal veli veya vasilerinin bilgisi ve onayı zorunludur.</p>
-                    <p>Bu kutucuğu işaretleyerek; platforma kayıt olma işlemini velinizin (anne, baba veya yasal vasi) gözetimi ve izni dâhilinde gerçekleştirdiğinizi beyan edersiniz.</p>
-                    <p>OBB E-SPOR, gerekli gördüğü durumlarda e-posta veya telefon yoluyla veliniz ile iletişime geçerek bu onayı doğrulama hakkını saklı tutar. Gerçeğe aykırı beyanlardan doğacak hukuki sorumluluk kullanıcıya aittir.</p>
+                    <p>18 yaşından küçük olduğum için Kullanıcı ve Hizmet Sözleşmesi'ni okuduğumu, platforma kayıt olmak ve e-spor turnuvalarına katılmak için yasal velimden/vasimden gerekli izinleri aldığımı kabul ve beyan ederim. </p>
                 `
             },
             kvkk: {
@@ -270,7 +268,6 @@
             }
         }
 
-        // --- DİNAMİK YAŞ KONTROLÜ (YENİ EKLENDİ) ---
         document.getElementById('dob').addEventListener('change', function() {
             const dobVal = this.value;
             const veliBox = document.getElementById('veliOnayBox');
@@ -332,7 +329,6 @@
                 if (el) el.style.display = isReg ? "none" : (id.includes('kvkk') ? "flex" : "block");
             });
 
-            // Veli Onay Kutusunun Görünürlüğü (Sadece kayıt ekranında ve şartlar sağlanıyorsa tetikle)
             const veliBox = document.getElementById('veliOnayBox');
             if (veliBox) veliBox.style.display = 'none';
             if (!isReg) {
@@ -348,7 +344,7 @@
             document.getElementById('kvkkCheck2').required = !isReg;
             document.getElementById('kvkkCheck3').required = !isReg;
             document.getElementById('kvkkCheck4').required = false; 
-            document.getElementById('submitBtn').disabled = false; // Geçişte butonu sıfırla
+            document.getElementById('submitBtn').disabled = false; 
         }
 
         async function sifremiUnuttum() {
@@ -455,7 +451,6 @@
                         return;
                     }
 
-                    // TÜM VERİLERİ (DOB, KVKK ve VELİ ONAYI) METADATA İLE GÖNDERİYORUZ
                     const { data, error } = await window.supabaseClient.auth.signUp({
                         email: email, 
                         password: password, 
@@ -463,12 +458,12 @@
                             data: { 
                                 username: usernameInput, 
                                 phone: rawPhone,
-                                dob: dobVal, // User_Contacts tablosu için saklıyoruz
-                                kvkk_aydinlatma: kvkk1Checked, // Profiller tablosu için
+                                dob: dobVal, 
+                                kvkk_aydinlatma: kvkk1Checked, 
                                 sozlesme_kabul: kvkk2Checked,
                                 yayin_haklari: kvkk3Checked,
                                 ticari_ileti: document.getElementById('kvkkCheck4').checked,
-                                veli_onayi: veliBoxVisible ? veliChecked : null // 18'den büyükse null gidecek
+                                veli_onayi: veliBoxVisible ? veliChecked : null 
                             } 
                         }
                     });
