@@ -109,3 +109,33 @@ window.handleLogoutGlobal = async function() {
     await window.supabaseClient.auth.signOut();
     window.location.reload(); 
 }
+// SADECE ADMİN SAYFALARINDA ÇAĞRILACAK GÜVENLİK BEKÇİSİ
+async function requireAdminAccess() {
+    try {
+        if (!window.supabaseClient) throw new Error("Supabase bağlantısı yok.");
+        
+        const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
+        if (authError || !user) throw new Error("Kullanıcı girişi yok.");
+
+        const { data: profile, error: profileError } = await window.supabaseClient
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+
+        if (profileError || profile.role !== 'admin') throw new Error("Admin yetkisi yok.");
+
+        // KONTROL BAŞARILI: Işıkları aç ve yükleme ekranını gizle
+        document.documentElement.style.visibility = 'visible';
+        const loadingScreen = document.getElementById('loadingScreen');
+        if (loadingScreen) loadingScreen.style.display = 'none';
+
+        return true; // Sayfanın geri kalan kodlarının çalışması için onay ver
+        
+    } catch (err) {
+        // KONTROL BAŞARISIZ: Anında ana sayfaya fırlat
+        console.error("Güvenlik Engeli:", err.message);
+        window.location.replace("index.html");
+        return false;
+    }
+}
