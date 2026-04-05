@@ -507,6 +507,7 @@
                     let roleClass = 'role-sub';
                     let iconColor = 'var(--gri-yazi)';
                     
+                   // ROL BELİRLEME MANTIĞI GÜNCELLENDİ
                     if (m.user_id === captainId || m.role === 'captain') {
                         roleText = 'Kaptan';
                         roleClass = 'role-captain';
@@ -517,9 +518,11 @@
                         iconColor = 'var(--yazi-beyaz)';
                     }
 
-                    const isAccepted = m.status === 'accepted';
+                    // 🛠️ KAPTAN İÇİN ONAY MANTIĞINI KESİNLEŞTİRİYORUZ
+                    const isAccepted = (m.status === 'accepted') || (m.user_id === captainId);
+                    
                     const statusIcon = isAccepted 
-                        ? '<i class="fas fa-check" style="color: var(--yesil-guven); font-size: 16px; filter: drop-shadow(0 0 5px var(--yesil-guven));" title="Daveti Onayladı"></i>'
+                        ? '<i class="fas fa-check" style="color: var(--yesil-guven); font-size: 16px; filter: drop-shadow(0 0 5px var(--yesil-guven));" title="Onaylı"></i>'
                         : '<i class="fas fa-hourglass-half fa-spin" style="color: var(--mavi-onay); font-size: 16px; filter: drop-shadow(0 0 5px var(--mavi-onay));" title="Onay Bekliyor"></i>';
 
                     html += `
