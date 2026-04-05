@@ -88,7 +88,31 @@ async function updateNavbarWithUser(user) {
             </div>
         </div>`;
 }
+document.addEventListener("DOMContentLoaded", async () => {
+    // 1. Önce kullanıcının bir oturumu (token) var mı ona bakıyoruz
+    const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
 
+    // Eğer hiç giriş yapmamışsa anında kapı dışarı et
+    if (authErr || !user) {
+        window.location.replace("kayit.html");
+        return;
+    }
+
+    // 2. LOCAL STORAGE'I BOŞVER! Gerçek yetkiyi veritabanından (profiles) çek.
+    const { data: profile, error: profileErr } = await window.supabaseClient
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+    // 3. Eğer Supabase bu kişinin rolüne 'admin' diyorsa geçiş izni ver
+    if (profile && profile.role === 'admin') {
+        document.documentElement.style.visibility = 'visible'; // Işıkları aç!
+    } else {
+        // Değilse, hafızayı ne kadar manipüle ederse etsin ana sayfaya fırlat!
+        window.location.replace("index.html"); 
+    }
+});
 // ÇIKIŞ YAPMA İŞLEMİ
 window.handleLogoutGlobal = async function() {
     // Çıkış yaparken önbelleği silmeyi unutma ki başkası görürse eski hesabı görmesin
