@@ -586,7 +586,13 @@
 
                     <h4>Madde 10. Yürürlük ve Değişiklikler</h4>
                     <p>Platform, operasyonel gereklilikler veya yasal mevzuat değişiklikleri sebebiyle işbu Sözleşme şartlarında dilediği zaman tek taraflı değişiklik yapma hakkını saklı tutar. Yapılan değişiklikler, Platform üzerinden yayınlandığı tarihte yürürlüğe girer. Değişiklik sonrasında Hizmetleri kullanmaya devam etmek, güncel şartların Kullanıcı tarafından kabul edildiği anlamına gelir. İşbu Sözleşme, Kullanıcı tarafından kayıt sürecinde elektronik onay (tık) verilmesi anında yürürlüğe girmiştir.</p>
+                `,
+            veli: {
+                title: "18 YAŞ ALTI KULLANICI BEYANI",
+                body: `
+                    <p>18 yaşından küçük olduğum için Kullanıcı ve Hizmet Sözleşmesi'ni okuduğumu, platforma kayıt olmak ve e-spor turnuvalarına katılmak için yasal velimden/vasimden gerekli izinleri aldığımı kabul ve beyan ederim.</p>
                 `
+            }
             }
         };
 
@@ -673,6 +679,9 @@ document.getElementById('maskedEmailDisplay').innerText = maskEmail(currentUser.
 
                     if (data.marketing_consent) {
                         document.getElementById('marketingToggle').checked = true;
+                    }
+                    if (data.veli_onayi === true) {
+                        document.getElementById('veliOnayiItem').style.display = 'flex';
                     }
 
                     localStorage.setItem(cacheKey, JSON.stringify({
