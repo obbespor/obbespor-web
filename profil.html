@@ -276,31 +276,53 @@
                     </div>
                 </div>
 
-                <div class="settings-box">
-                    <h4>Onaylanan Yasal Metinler</h4>
-                    <p style="font-size: 11px; color: var(--gri-yazi); margin-bottom: 15px;">Kayıt esnasında onayladığınız sözleşmeleri üzerine tıklayarak tekrar okuyabilirsiniz.</p>
-                    
-                    <div class="legal-item">
-                        <span class="clickable-doc" onclick="openDocModal('kvkk')">KVKK Aydınlatma Metni</span>
-                        <span class="legal-status approved"><i class="fas fa-check-circle"></i> Onaylandı</span>
+           <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="settings-box">
+                        <h4>Onaylanan Yasal Metinler</h4>
+                        <p style="font-size: 11px; color: var(--gri-yazi); margin-bottom: 15px;">Kayıt esnasında onayladığınız sözleşmeleri üzerine tıklayarak tekrar okuyabilirsiniz.</p>
+                        
+                        <div class="legal-item">
+                            <span class="clickable-doc" onclick="openDocModal('kvkk')">KVKK Aydınlatma Metni</span>
+                            <span class="legal-status approved"><i class="fas fa-check-circle"></i> Onaylandı</span>
+                        </div>
+                        <div class="legal-item">
+                            <span class="clickable-doc" onclick="openDocModal('sozlesme')">Kullanıcı Sözleşmesi</span>
+                            <span class="legal-status approved"><i class="fas fa-check-circle"></i> Onaylandı</span>
+                        </div>
+                        <div class="legal-item">
+                            <span class="clickable-doc" onclick="openDocModal('yayin')">Yayın ve İmaj Hakları</span>
+                            <span class="legal-status approved"><i class="fas fa-check-circle"></i> Onaylandı</span>
+                        </div>
+                        <div class="legal-item" id="veliOnayiItem" style="display: none;">
+                            <span class="clickable-doc" onclick="openDocModal('veli')">18 Yaş Altı Veli/Vasi Beyanı</span>
+                            <span class="legal-status approved"><i class="fas fa-check-circle"></i> Onaylandı</span>
+                        </div>
+                        
+                        <h4 style="margin-top: 25px;">Kişiselleştirme İzinleri</h4>
+                        <div class="switch-container">
+                            <span style="max-width: 80%;">İletişim İzni (Turnuva, SMS, Mail bildirimleri almak istiyorum)</span>
+                            <label class="switch">
+                                <input type="checkbox" id="marketingToggle" onchange="toggleMarketingConsent(this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div style="margin-top: 20px; text-align: right;">
+                            <a href="#" onclick="confirmCookieReset(); return false;" style="color: var(--gri-yazi); font-size: 12px; text-decoration: underline;">Çerez Tercihlerimi Sıfırla</a>
+                        </div>
                     </div>
-                    <div class="legal-item">
-                        <span class="clickable-doc" onclick="openDocModal('sozlesme')">Kullanıcı Sözleşmesi</span>
-                        <span class="legal-status approved"><i class="fas fa-check-circle"></i> Onaylandı</span>
+
+                    <div class="settings-box">
+                        <h4><i class="fas fa-file-pdf"></i> Turnuva Belgeleri</h4>
+                        <div class="warning-box" style="margin-bottom: 15px; border-color: #00d2ff; color: #00d2ff; background: rgba(0, 210, 255, 0.1);">
+                            <i class="fas fa-info-circle"></i> <b>15-18 Yaş Arası Oyuncuların Dikkatine:</b> Son 16 turu ve sonrasındaki resmi/fiziksel maçlara katılabilmek için <b>Veli İzin ve Muvafakatnamesi</b>'nin veliniz tarafından doldurulup ıslak imzalı şekilde kulübe teslim edilmesi zorunludur.
+                        </div>
+                        <a href="OBB E-SPOR KULÜBÜ VELİ İZİN VE MUVAFAKATNAMESİ.pdf" target="_blank" class="btn-primary" style="background: linear-gradient(45deg, #ff4b4b, #c0392b); border: none;"><i class="fas fa-download"></i> Veli İzin Formunu İndir (PDF)</a>
                     </div>
-                    <div class="legal-item">
-                        <span class="clickable-doc" onclick="openDocModal('yayin')">Yayın ve İmaj Hakları</span>
-                        <span class="legal-status approved"><i class="fas fa-check-circle"></i> Onaylandı</span>
-                    </div>
-                    
-                    <h4 style="margin-top: 25px;">Kişiselleştirme İzinleri</h4>
-                    <div class="switch-container">
-                        <span style="max-width: 80%;">İletişim İzni (Turnuva, SMS, Mail bildirimleri almak istiyorum)</span>
-                        <label class="switch">
-                            <input type="checkbox" id="marketingToggle" onchange="toggleMarketingConsent(this.checked)">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
                     
                     <div style="margin-top: 20px; text-align: right;">
                         <a href="#" onclick="confirmCookieReset(); return false;" style="color: var(--gri-yazi); font-size: 12px; text-decoration: underline;">Çerez Tercihlerimi Sıfırla</a>
