@@ -438,7 +438,7 @@
         let pendingAction = null; 
 
         function maskEmail(email) {
-            if (!email) return "Belirtilmemiş";
+            if (!email || typeof email !== 'string') return "Belirtilmemiş";
             const parts = email.split('@');
             if (parts.length !== 2) return email;
             const name = parts[0];
@@ -586,7 +586,7 @@ yayin: {
                     <h4>Madde 10. Yürürlük ve Değişiklikler</h4>
                     <p>Platform, operasyonel gereklilikler veya yasal mevzuat değişiklikleri sebebiyle işbu Sözleşme şartlarında dilediği zaman tek taraflı değişiklik yapma hakkını saklı tutar. Yapılan değişiklikler, Platform üzerinden yayınlandığı tarihte yürürlüğe girer. Değişiklik sonrasında Hizmetleri kullanmaya devam etmek, güncel şartların Kullanıcı tarafından kabul edildiği anlamına gelir. İşbu Sözleşme, Kullanıcı tarafından kayıt sürecinde elektronik onay (tık) verilmesi anında yürürlüğe girmiştir.</p>
                 `
-            }
+            },
             veli: {
                 title: "18 YAŞ ALTI KULLANICI BEYANI",
                 body: `
@@ -616,25 +616,35 @@ yayin: {
         }
 
         function openDocModal(docType) {
-            document.getElementById('docModalTitle').innerText = documentContents[docType].title;
-            document.getElementById('docModalBody').innerHTML = documentContents[docType].body;
-            openCustomModal('docModal');
+            try {
+                if (!documentContents[docType]) {
+                    console.error("Hata: Sözleşme bulunamadı -> " + docType);
+                    return;
+                }
+                document.getElementById('docModalTitle').innerText = documentContents[docType].title;
+                document.getElementById('docModalBody').innerHTML = documentContents[docType].body;
+                openCustomModal('docModal');
+            } catch(e) {
+                console.error("Modal Açma Hatası:", e);
+            }
         }
 
         async function initProfile() {
             const cacheKey = 'obb_profile_cache';
             const cachedProfile = localStorage.getItem(cacheKey);
             if (cachedProfile) {
-                const p = JSON.parse(cachedProfile);
-                document.getElementById('profileNameDisplay').innerText = p.username || "İsimsiz";
-                document.getElementById('userBio').innerText = p.bio || "Açıklama eklenmemiş.";
-                if (p.ign) {
-                    const ignDisplay = document.getElementById('userIgnDisplay');
-                    ignDisplay.innerText = p.ign;
-                    ignDisplay.style.color = "#00d2ff";
-                }
-                if (p.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${p.banner_url}')`;
-                if (p.avatar_url) document.getElementById('userAvatar').src = p.avatar_url;
+                try {
+                    const p = JSON.parse(cachedProfile);
+                    document.getElementById('profileNameDisplay').innerText = p.username || "İsimsiz";
+                    document.getElementById('userBio').innerText = p.bio || "Açıklama eklenmemiş.";
+                    if (p.ign) {
+                        const ignDisplay = document.getElementById('userIgnDisplay');
+                        ignDisplay.innerText = p.ign;
+                        ignDisplay.style.color = "#00d2ff";
+                    }
+                    if (p.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${p.banner_url}')`;
+                    if (p.avatar_url) document.getElementById('userAvatar').src = p.avatar_url;
+                } catch(e) {}
             }
 
             const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
@@ -646,7 +656,9 @@ yayin: {
             
             currentUser = user;
 
-document.getElementById('maskedEmailDisplay').innerText = maskEmail(currentUser.email);
+            try {
+                document.getElementById('maskedEmailDisplay').innerText = maskEmail(currentUser.email);
+            } catch(e) { console.warn("Email maskeleme hatası", e); }
 
             try {
                 const { data: contactData, error: contactErr } = await window.supabaseClient.from('user_contacts').select('phone').eq('user_id', currentUser.id).maybeSingle();
@@ -655,12 +667,14 @@ document.getElementById('maskedEmailDisplay').innerText = maskEmail(currentUser.
                 if (contactData && contactData.phone) {
                     document.getElementById('maskedPhoneDisplay').innerText = maskPhone(contactData.phone);
                 }
+            } catch (e) {
+                console.warn("Telefon bilgisi çekilemedi", e);
+            }
 
+            let currentIgn = "Belirlenmedi"; 
+            try {
                 const { data, error } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).single();
                 if (error) throw error;
-                
-                // --- KODUN GERİ KALANINI DA TRY İÇİNE ALIYORUZ ---
-                let currentIgn = "Belirlenmedi"; 
                 
                 if (data) {
                     document.getElementById('profileNameDisplay').innerText = data.username || "İsimsiz";
@@ -691,19 +705,16 @@ document.getElementById('maskedEmailDisplay').innerText = maskEmail(currentUser.
                         avatar_url: data.avatar_url
                     }));
                 }
-
-                await Promise.all([
-                    loadUserStats(currentIgn),
-                    loadInvitationsAndTeam()
-                ]);
-                
-                subscribeToInvites();
-                // --- TRY BLOĞU BURADA BİTİYOR ---
-
             } catch (err) {
-                console.error("Profil verileri çekilirken hata:", err);
-                showNotification("Profil verileriniz yüklenirken bir hata oluştu.", "error");
+                console.warn("Profil verileri çekilirken hata:", err);
             }
+
+            await Promise.all([
+                loadUserStats(currentIgn),
+                loadInvitationsAndTeam()
+            ]);
+            
+            subscribeToInvites();
         }
 
         async function openUsernameEditModal() {
@@ -733,7 +744,6 @@ document.getElementById('maskedEmailDisplay').innerText = maskEmail(currentUser.
                 if (trimmedUsername.length > 20) return showNotification("Kullanıcı adı en fazla 20 karakter olabilir.", "error");
                 if (!/^[a-zA-Z0-9_]+$/.test(trimmedUsername)) return showNotification("Sadece harf, rakam ve alt çizgi (_) kullanabilirsiniz.", "error");
 
-                // Benzersizlik kontrolü
                 const { data: existingUser } = await window.supabaseClient.from('profiles')
                     .select('username').ilike('username', trimmedUsername).neq('id', currentUser.id).limit(1);
 
@@ -822,19 +832,18 @@ document.getElementById('maskedEmailDisplay').innerText = maskEmail(currentUser.
             try {
                 let allStats = [];
                 
-const { data: statsById, error: statsErr1 } = await window.supabaseClient.from('match_player_stats')
+                const { data: statsById, error: statsErr1 } = await window.supabaseClient.from('match_player_stats')
                     .select('map_id, kills, deaths, id, team_id') 
                     .eq('user_id', currentUser.id);
                 if (statsErr1) throw statsErr1;
                 if (statsById) allStats = [...statsById];
 
- if (userIgn && userIgn !== "Belirlenmedi") {
-                    // İki ayrı sorgu yerine tek, zırhlı ve temiz bir sorgu
+                if (userIgn && userIgn !== "Belirlenmedi") {
                     const { data: statsByIgn, error: statsErr2 } = await window.supabaseClient.from('match_player_stats')
                         .select('map_id, kills, deaths, id, team_id')
                         .ilike('in_game_name', userIgn); 
                         
-                    if (statsErr2) throw statsErr2; // Hata varsa catch bloğuna fırlat
+                    if (statsErr2) throw statsErr2;
                     
                     if(statsByIgn) {
                         statsByIgn.forEach(st => {
@@ -944,7 +953,7 @@ const { data: statsById, error: statsErr1 } = await window.supabaseClient.from('
                     `;
                 };
 
-         if (error) throw error; // Hata varsa aşağıya inmeden direkt catch'e zıpla
+                if (error) throw error; 
                 
                 if (!memberships || memberships.length === 0) {
                     showEmptyState();
@@ -1206,12 +1215,10 @@ const { data: statsById, error: statsErr1 } = await window.supabaseClient.from('
                         return showNotification("Dosya çok büyük. Lütfen başka bir resim deneyin.", "error");
                     }
 
-const fileExt = 'webp';
+                    const fileExt = 'webp';
                     const path = `${currentUser.id}/profil_resmi.${fileExt}`;
 
-                    // TÜM İŞLEMİ TEK BİR TRY-CATCH İÇİNE ALIYORUZ
                     try {
-                        // 1. Silme işlemi (Hata verse de devam etsin diye await yapıp error'u yoksayıyoruz, çünkü eski resim olmayabilir)
                         await window.supabaseClient.storage.from('avatars').remove([
                             `${currentUser.id}/profil_resmi.jpg`,
                             `${currentUser.id}/profil_resmi.jpeg`,
@@ -1220,21 +1227,18 @@ const fileExt = 'webp';
                             `${currentUser.id}/profil_resmi.gif`
                         ]);
 
-                        // 2. Yükleme İşlemi
                         const { error } = await window.supabaseClient.storage.from('avatars').upload(path, blob, { 
                             upsert: true, 
                             cacheControl: '3600' 
                         });
                         
-                        // Yüklemede hata varsa fırlat (ZAP uyarısını engelle)
                         if (error) throw error;
                         
-                        // 3. Başarılıysa Public URL al ve kaydet
                         const { data } = window.supabaseClient.storage.from('avatars').getPublicUrl(path);
                         const cleanUrl = data.publicUrl.split('?')[0];
                         
                         const { error: profileErr } = await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
-                        if (profileErr) throw profileErr; // Profil tablosu güncellenemezse fırlat
+                        if (profileErr) throw profileErr; 
 
                         showNotification("Profil resmi başarıyla optimize edildi ve güncellendi!", "success");
                         
@@ -1246,7 +1250,6 @@ const fileExt = 'webp';
                         document.getElementById('userAvatar').src = cleanUrl + "?t=" + Date.now();
 
                     } catch (uploadProcessErr) {
-                        // Eğer internet kopar veya Supabase red verirse kullanıcıya güvenli mesaj göster
                         console.error("Yükleme işlemi hatası:", uploadProcessErr);
                         showNotification("Profil resmi yüklenirken beklenmeyen bir hata oluştu.", "error");
                     }
