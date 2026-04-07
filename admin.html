@@ -112,6 +112,30 @@
             .player-stat-row { min-width: 500px; }
             .stats-grid-container { overflow-x: auto; }
         }
+        /* ADMIN PANELİ STİLLERİ */
+        .admin-panel-section { background: rgba(96, 29, 194, 0.05); border: 1px solid var(--neon-mor); border-radius: 20px; padding: 30px; margin-bottom: 30px; display: none; }
+        .admin-panel-section.active { display: block; animation: fadeIn 0.5s ease; }
+        .admin-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid rgba(96, 29, 194, 0.3); padding-bottom: 15px; }
+        .admin-header h3 { color: var(--neon-mor); font-size: 20px; margin: 0; text-transform: uppercase; font-weight: 900; }
+        .admin-header i { font-size: 24px; color: var(--neon-mor); }
+        .user-search-container { display: flex; gap: 15px; margin-bottom: 20px; }
+        .user-search-container input { flex: 1; padding: 12px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; font-family: 'Poppins', sans-serif; outline: none; transition: 0.3s; }
+        .user-search-container input:focus { border-color: var(--neon-mor); }
+        .user-search-container button { background: var(--neon-mor); color: white; border: none; padding: 0 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .user-search-container button:hover { box-shadow: 0 0 15px rgba(96,29,194,0.5); }
+        
+        .user-result-card { background: #111; border: 1px solid #333; border-radius: 10px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .user-result-info strong { display: block; color: white; font-size: 16px; margin-bottom: 5px; }
+        .user-result-info span { color: var(--gri-yazi); font-size: 12px; display: block; }
+        .role-badge { padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .role-admin { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); border: 1px solid var(--neon-mor); }
+        .role-player { background: rgba(255, 255, 255, 0.1); color: #ccc; border: 1px solid #555; }
+        
+        .action-buttons { display: flex; gap: 10px; }
+        .btn-make-admin { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); border: 1px solid var(--neon-mor); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s; }
+        .btn-make-admin:hover { background: var(--neon-mor); color: white; }
+        .btn-remove-admin { background: rgba(255, 75, 75, 0.1); color: var(--kirmizi-iptal); border: 1px solid var(--kirmizi-iptal); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s; }
+        .btn-remove-admin:hover { background: var(--kirmizi-iptal); color: white; }
     </style>
 </head>
 <body>
@@ -131,6 +155,21 @@
                 <li><a id="tab-fikstur" onclick="switchTab('fikstur')">BRACKET<i class="fas fa-sitemap" style="font-size: 10px; margin-left: 5px;"></i></a></li>
                 <li><a href="mac-yonetim.html">DÜZENLE<i class="fas fa-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 <li><a href="zarf.html">ZARF<i class="fas fa-paper-plane" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <div class="admin-panel-section" id="adminPanelSection">
+            <div class="admin-header">
+                <i class="fas fa-user-shield"></i>
+                <h3>Rütbe</h3>
+            </div>
+            <p style="font-size: 13px; color: var(--gri-yazi); margin-bottom: 20px;">Turnuva yetkilisi atamak veya yetki almak için kullanıcı adıyla arama yapın.</p>
+            
+            <div class="user-search-container">
+                <input type="text" id="adminSearchInput" placeholder="Kullanıcı adı girin...">
+                <button onclick="searchUserForAdmin()"><i class="fas fa-search"></i> Ara</button>
+            </div>
+            
+            <div id="adminSearchResult">
+                </div>
+        </div>
                 
                 <li class="nav-bell desktop-only">
                     <a href="#" onclick="toggleNotifPanel('desktopPanel', event)">
@@ -341,6 +380,102 @@
         }
 
         let currentProofImageUrl = ""; 
+        // 1. KULLANICININ ADMİN OLUP OLMADIĞINI KONTROL ET (Sayfa Yüklenirken)
+        async function checkAdminStatus() {
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (data && data.role === 'admin') {
+                    document.getElementById('adminPanelSection').classList.add('active');
+                }
+            } catch (err) {
+                console.error("Admin kontrolü hatası:", err);
+            }
+        }
+
+        // 2. KULLANICI ARAMA FONKSİYONU
+        async function searchUserForAdmin() {
+            const username = document.getElementById('adminSearchInput').value.trim();
+            const resultDiv = document.getElementById('adminSearchResult');
+            
+            if (!username) {
+                showNotification("Lütfen bir kullanıcı adı girin.", "error");
+                return;
+            }
+
+            resultDiv.innerHTML = '<div style="color: #777; font-size: 13px;">Aranıyor...</div>';
+
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('profiles')
+                    .select('id, username, role')
+                    .ilike('username', username)
+                    .single();
+
+                if (error || !data) {
+                    resultDiv.innerHTML = '<div style="color: var(--kirmizi-iptal); font-size: 13px; padding: 10px; background: rgba(255,75,75,0.1); border-radius: 5px;">Kullanıcı bulunamadı.</div>';
+                    return;
+                }
+
+                const roleClass = data.role === 'admin' ? 'role-admin' : 'role-player';
+                const roleText = data.role === 'admin' ? 'YÖNETİCİ' : 'OYUNCU';
+
+                let actionButton = '';
+                // Kendini yetkiden düşürmeyi engelle
+                if (data.id === currentUser.id) {
+                    actionButton = `<span style="color: #777; font-size: 12px; font-style: italic;">(Bu sensin)</span>`;
+                } else if (data.role === 'admin') {
+                    actionButton = `<button class="btn-remove-admin" onclick="changeUserRole('${data.id}', 'player')"><i class="fas fa-user-minus"></i> Yetkiyi Al</button>`;
+                } else {
+                    actionButton = `<button class="btn-make-admin" onclick="changeUserRole('${data.id}', 'admin')"><i class="fas fa-user-check"></i> Admin Yap</button>`;
+                }
+
+                resultDiv.innerHTML = `
+                    <div class="user-result-card">
+                        <div class="user-result-info">
+                            <strong>${data.username}</strong>
+                            <span class="role-badge ${roleClass}">${roleText}</span>
+                        </div>
+                        <div class="action-buttons">
+                            ${actionButton}
+                        </div>
+                    </div>
+                `;
+
+            } catch (err) {
+                console.error("Arama hatası:", err);
+                showNotification("Arama sırasında bir hata oluştu.", "error");
+            }
+        }
+
+        // 3. ROL DEĞİŞTİRME FONKSİYONU (Güvenli SQL Fonksiyonunu Çağırır)
+        async function changeUserRole(targetUserId, newRole) {
+            try {
+                // Supabase'de yazdığımız özel güvenli fonksiyonu (RPC) çağırıyoruz
+                const { error } = await window.supabaseClient.rpc('set_user_role', {
+                    target_user_id: targetUserId,
+                    new_role: newRole
+                });
+
+                if (error) throw error;
+
+                showNotification(newRole === 'admin' ? "Kullanıcıya başarıyla Admin yetkisi verildi!" : "Kullanıcının Admin yetkisi alındı.", "success");
+                
+                // Ekranı güncellemek için aramayı tekrar tetikle
+                searchUserForAdmin();
+
+            } catch (err) {
+                console.error("Yetki değiştirme hatası:", err);
+                showNotification("Yetki değiştirilirken bir hata oluştu. (Sadece adminler bu işlemi yapabilir)", "error");
+            }
+        }
+
+        // initProfile() fonksiyonunun İÇİNE, profil verileri çekildikten sonra şu satırı eklemeyi unutma:
+        // await checkAdminStatus();
 
         async function scanImageWithAI() {
             if (!currentProofImageUrl) return showNotification("Taranacak görsel bulunamadı!", "error");
