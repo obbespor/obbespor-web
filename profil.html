@@ -148,7 +148,6 @@
             .profile-banner { height: 150px; border-radius: 15px 15px 0 0; }
             .profile-card { padding: 0 20px 25px; border-radius: 0 0 15px 15px; }
             
-            /* Mobil Uyumlu Kavisli Geçiş */
             .profile-card::before { top: -55px; width: 130px; height: 130px; }
 
             .avatar-wrapper { width: 110px; height: 110px; margin: -55px auto 15px; } 
@@ -161,7 +160,6 @@
             .bio-container { flex-direction: column; text-align: center; gap: 5px; margin-bottom: 20px; }
             .profile-bio { font-size: 13px; line-height: 1.4; }
             
-            /* Mobilde 4 kutunun daha şık durması için 2x2 ızgara */
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; } 
             .stat-item { padding: 10px 5px; border-radius: 10px; border-bottom-width: 1px; }
             .stat-value { font-size: 18px; }
@@ -519,7 +517,7 @@
                     <p>Bu haklarınızı kullanmak için taleplerinizi, "Veri Sorumlusuna Başvuru Usul ve Esasları Hakkında Tebliğ" uyarınca yukarıda belirtilen fiziki adresimize kimlik ispatlayıcı belgelerle birlikte yazılı olarak iletebilir, noter kanalıyla gönderebilir veya sistemimizde kayıtlı bulunan e-posta adresiniz üzerinden obbesports@gmail.com adresine elektronik posta yoluyla iletebilirsiniz.</p>
                 `
             },
-yayin: {
+            yayin: {
                 title: "YAYIN VE İMAJ HAKLARI AÇIK RIZA METNİ",
                 body: `
                     <p>Kişisel Verilerin İşlenmesine İlişkin Aydınlatma Metni'ni okudum ve anladım. Katıldığım resmi e-spor liglerinde, çevrimiçi turnuvalarda veya platform içi etkinliklerde elde edilen oyun içi performans görüntülerimin, sesli iletişim kayıtlarımın (voice chat), kullanıcı adımın (nickname) ve varsa web kamerası görüntülerimin kaydedilmesine;</p>
@@ -960,33 +958,43 @@ yayin: {
                     return;
                 }
 
-                const acceptedMemberships = memberships.filter(m => m.status === 'accepted');
-                const pendingInvites = memberships.filter(m => m.status === 'pending');
+                const teamIds = memberships.map(m => m.team_id).filter(id => id != null);
+                let apps = [];
+                if (teamIds.length > 0) {
+                    const { data: fetchedApps } = await window.supabaseClient.from('tournament_applications')
+                        .select('team_id, status')
+                        .in('team_id', teamIds)
+                        .order('created_at', { ascending: false });
+                    if (fetchedApps) apps = fetchedApps;
+                }
 
                 let realTeamData = null;
                 let realAppStatus = null;
                 let draftTeamData = null;
+                let validPendingInvites = [];
 
-                if (acceptedMemberships.length > 0) {
-                    const teamIds = acceptedMemberships.map(m => m.team_id).filter(id => id != null);
-                    
-                    let apps = [];
-                    if (teamIds.length > 0) {
-                        const { data: fetchedApps } = await window.supabaseClient.from('tournament_applications')
-                            .select('team_id, status')
-                            .in('team_id', teamIds)
-                            .order('created_at', { ascending: false });
-                        if (fetchedApps) apps = fetchedApps;
-                    }
-                                    
-                    for (let m of acceptedMemberships) {
-                        const app = apps?.find(a => a.team_id === m.team_id);
+                for (let m of memberships) {
+                    const team = Array.isArray(m.teams) ? m.teams[0] : m.teams;
+                    if (!team) continue;
+
+                    const isCaptain = (team.captain_id === currentUser.id);
+                    const app = apps?.find(a => a.team_id === m.team_id);
+
+                    if (isCaptain) {
                         if (app) {
-                            realTeamData = m.teams;
+                            realTeamData = team;
                             realAppStatus = app.status;
-                            break; 
                         } else if (!draftTeamData) {
-                            draftTeamData = m.teams; 
+                            draftTeamData = team;
+                        }
+                    } else {
+                        if (m.status === 'accepted') {
+                            if (app && !realTeamData) {
+                                realTeamData = team;
+                                realAppStatus = app.status;
+                            }
+                        } else if (m.status === 'pending') {
+                            validPendingInvites.push(m);
                         }
                     }
                 }
@@ -1016,24 +1024,39 @@ yayin: {
                             <span class="team-tag-large">${realTeamData.tag || 'LOBİ'}</span>
                             <h3>${realTeamData.name || 'İSİMSİZ TAKIM'}</h3>
                             <p>Durum: <span style="color:${teamStatusColor}; font-weight:bold;"><i class="fas ${teamStatusIcon}"></i> ${teamStatusText}</span></p>
-                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
+                            <a href="takim.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
                         </div>
                     `;
                     return; 
                 }
 
-                if (pendingInvites.length > 0) {
-                    title.innerHTML = `<i class="fas fa-users"></i> Takım Davetleri`;
-                    badge.innerText = pendingInvites.length;
+                let contentHTML = "";
+
+                if (draftTeamData) {
+                    title.innerHTML = `<i class="fas fa-layer-group"></i> Takım Durumu`;
+                    contentHTML += `
+                        <div class="active-team-card" style="margin-bottom: 20px; border-color: #555;">
+                            <span class="team-tag-large" style="background: #444;">${draftTeamData.tag || 'DRFT'}</span>
+                            <h3>${draftTeamData.name || 'TASLAK TAKIM'}</h3>
+                            <p>Durum: <span style="color:#aaa; font-weight:bold;"><i class="fas fa-tools"></i> Lobi / Hazırlık (Başvuru Yapılmadı)</span></p>
+                            <p style="font-size: 12px; color: var(--neon-mor); margin-top: -10px; margin-bottom: 15px;">Bu takımı siz oluşturdunuz. Oyuncularınızı davet edebilirsiniz.</p>
+                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
+                        </div>
+                    `;
+                }
+
+                if (validPendingInvites.length > 0) {
+                    title.innerHTML = `<i class="fas fa-bell"></i> Gelen Davetler`;
+                    badge.innerText = validPendingInvites.length;
                     badge.style.display = "inline-block";
 
-                    for (let inv of pendingInvites) {
-                        const tData = inv.teams;
+                    for (let inv of validPendingInvites) {
+                        const tData = Array.isArray(inv.teams) ? inv.teams[0] : inv.teams;
                         const teamName = tData?.name || "Bilinmeyen Takım";
                         const teamTag = tData?.tag || "LOBİ";
                         const roleText = inv.role === 'main' ? 'Asil' : 'Yedek';
 
-                        list.innerHTML += `
+                        contentHTML += `
                             <div class="notif-item">
                                 <div class="notif-text"><span class="team-tag">[${teamTag}]</span> <b>${teamName}</b> takımına ${roleText} olarak davetlisin.</div>
                                 <div class="notif-actions">
@@ -1042,32 +1065,13 @@ yayin: {
                                 </div>
                             </div>`;
                     }
-
-                    list.innerHTML += `
-                        <div style="text-align:center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #333;">
-                            <p style="font-size: 13px; color:#777; margin-bottom: 10px;">Veya kendi takımını kurarak lider sen ol!</p>
-                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none; font-size:13px; padding: 8px 15px;">
-                                <i class="fas fa-plus-circle"></i> Takım Oluştur
-                            </a>
-                        </div>
-                    `;
-                    return;
                 }
 
-                if (draftTeamData) {
-                    title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
-                    list.innerHTML = `
-                        <div class="active-team-card">
-                            <span class="team-tag-large">${draftTeamData.tag || 'DRFT'}</span>
-                            <h3>${draftTeamData.name || 'TASLAK TAKIM'}</h3>
-                            <p>Durum: <span style="color:#777; font-weight:bold;"><i class="fas fa-tools"></i> Lobi / Hazırlık (Başvuru Yapılmadı)</span></p>
-                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
-                        </div>
-                    `;
-                    return;
+                if (contentHTML !== "") {
+                    list.innerHTML = contentHTML;
+                } else {
+                    showEmptyState();
                 }
-
-                showEmptyState();
 
             } catch (err) {
                 console.error("Takım/Davet yükleme hatası:", err);
