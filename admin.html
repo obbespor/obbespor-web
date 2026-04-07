@@ -340,7 +340,6 @@
         let teamBId_memory = null;
         let currentMode = 'zarflar';
         let activeRecordId = null;
-
         let currentUser = null;
 
         async function initAdminPage() {
@@ -452,12 +451,13 @@
             }
         }
 
+        // RPC YERİNE DOĞRUDAN UPDATE KULLANIYORUZ
         async function changeUserRole(targetUserId, newRole) {
             try {
-                const { error } = await window.supabaseClient.rpc('set_user_role', {
-                    target_user_id: targetUserId,
-                    new_role: newRole
-                });
+                const { error } = await window.supabaseClient
+                    .from('profiles')
+                    .update({ role: newRole })
+                    .eq('id', targetUserId);
 
                 if (error) throw error;
 
