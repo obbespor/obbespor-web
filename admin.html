@@ -342,7 +342,7 @@
         let activeRecordId = null;
         let currentUser = null;
 
-        async function initAdminPage() {
+       async function initAdminPage() {
             
             const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
             if (authErr || !user) {
@@ -354,8 +354,17 @@
             // 1. GÜVENLİK KONTROLÜ (Bouncer)
             if (typeof requireAdminAccess === 'function') {
                 const isAuthorized = await requireAdminAccess();
-                if (!isAuthorized) return;
+                if (!isAuthorized) {
+                    // Yetkisi yoksa anasayfaya postala
+                    window.location.href = "index.html"; 
+                    return;
+                }
             }
+
+            // DÜZELTİLEN KISIM: Yetki onaylandı, perdeyi aç ve yükleme ekranını gizle!
+            document.documentElement.style.visibility = 'visible';
+            const loader = document.getElementById('loadingScreen');
+            if (loader) loader.style.display = 'none';
 
             // 2. SAYFA YÜKLEMELERİ VE EVENT LİSTENER'LAR
             try {
@@ -390,13 +399,7 @@
             generateEmptyRows('teamBPlayersInputs');
             updateDynamicSelectors();
             loadSidebarData();
-        }
-
-        let currentProofImageUrl = ""; 
-        
-        // -----------------------------------------------------
-        // RÜTBE YÖNETİMİ FONKSİYONLARI
-        // -----------------------------------------------------
+        }-------------------------------
 
         async function searchUserForAdmin() {
             const username = document.getElementById('adminSearchInput').value.trim();
