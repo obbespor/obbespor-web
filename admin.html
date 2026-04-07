@@ -452,21 +452,23 @@
         }
 
         // RPC YERİNE DOĞRUDAN UPDATE KULLANIYORUZ
+       // GÜNCELLENDİ: Artık doğrudan update yerine güvenli RPC fonksiyonunu çağırıyoruz
         async function changeUserRole(targetUserId, newRole) {
             try {
-                const { error } = await window.supabaseClient
-                    .from('profiles')
-                    .update({ role: newRole })
-                    .eq('id', targetUserId);
+                // Supabase'de yazdığımız SQL fonksiyonunu tetikliyoruz
+                const { error } = await window.supabaseClient.rpc('set_user_role', {
+                    target_user_id: targetUserId,
+                    new_role: newRole
+                });
 
                 if (error) throw error;
 
                 showNotification(newRole === 'admin' ? "Kullanıcıya başarıyla Admin yetkisi verildi!" : "Kullanıcının Admin yetkisi alındı.", "success");
-                searchUserForAdmin();
+                searchUserForAdmin(); // Arama sonucunu anında güncelle
 
             } catch (err) {
                 console.error("Yetki değiştirme hatası:", err);
-                showNotification("Yetki değiştirilirken bir hata oluştu. (Sadece adminler bu işlemi yapabilir)", "error");
+                showNotification("Yetki değiştirilemedi: " + (err.message || "Bilinmeyen hata"), "error");
             }
         }
 
