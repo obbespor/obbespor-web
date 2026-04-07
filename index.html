@@ -34,33 +34,34 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-       /* HERO KISMINI BU ŞEKİLDE GÜNCELLE */
-.hero { 
-    height: 75vh; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    text-align: center; 
-    position: relative; 
-    background-image: url('img/backgroundmor.webp'); 
-    background-position: center; 
-    background-repeat: no-repeat; 
-    background-size: cover; 
-    /* fixed özelliği mobilde sorun çıkardığı için masaüstüne özel yapıyoruz */
-}
+        /* HERO KISMINI BU ŞEKİLDE GÜNCELLE */
+        .hero { 
+            height: 75vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            position: relative; 
+            background-image: url('img/backgroundmor.webp'); 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            background-size: cover; 
+            /* fixed özelliği mobilde sorun çıkardığı için masaüstüne özel yapıyoruz */
+        }
 
-/* Sadece masaüstünde sabit arka plan efekti olsun */
-@media (min-width: 1024px) {
-    .hero { background-attachment: fixed; }
-}
+        /* Sadece masaüstünde sabit arka plan efekti olsun */
+        @media (min-width: 1024px) {
+            .hero { background-attachment: fixed; }
+        }
 
-/* Mobilde görselin daha iyi görünmesi için yükseklik ayarı */
-@media (max-width: 768px) {
-    .hero { 
-        height: 60vh; /* Mobilde biraz daha kısa olması daha iyi görünür */
-        background-attachment: scroll; /* Mobilde mutlaka scroll olmalı */
-    }
-}
+        /* Mobilde görselin daha iyi görünmesi için yükseklik ayarı */
+        @media (max-width: 768px) {
+            .hero { 
+                height: 60vh; /* Mobilde biraz daha kısa olması daha iyi görünür */
+                background-attachment: scroll; /* Mobilde mutlaka scroll olmalı */
+            }
+        }
+        
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1; }
         .hero-content { position: relative; z-index: 2; padding: 0 20px; }
         .hero h1 { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 900; color: white; margin-bottom: 10px; }
@@ -136,7 +137,7 @@
         /* Marka Renkleri */
         .social-btn.instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
         .social-btn.youtube { background: #ff0000; }
-        .social-btn.kick { background: #53fc18; color: #000; } /* Kick'in neon yeşili */
+        .social-btn.kick { background: #53fc18; color: #000; } 
         .social-btn.x { background: #000; border-color: #333; }
         
         .social-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255,255,255,0.1); }
@@ -147,22 +148,6 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        @media (max-width: 1024px) {
-            .card { flex: 0 0 calc(50% - 10px); }
-        }
-
-        @media (max-width: 768px) {
-            .container { padding: 50px 5%; } 
-            .hero h1 { font-size: 2.2rem; }
-            .section-title { font-size: 24px; }
-            
-            .slider-btn { display: none; }
-            .slider-container { flex-direction: column; overflow-x: visible; gap: 25px; padding-bottom: 0; scroll-snap-type: none; }
-            .card { flex: 1 1 auto; min-width: 100%; scroll-snap-align: none; }
-            
-            .card-body { padding: 20px 15px; } 
-            .card-body h3 { font-size: 18px; }
-        }
         /* EV SAHİBİ (SPONSOR ÜSTÜ) BÖLÜMÜ */
         .host-section { 
             padding: 60px 5%; 
@@ -196,13 +181,15 @@
             background: linear-gradient(45deg, var(--neon-mor), transparent, var(--neon-mor));
             border-radius: 20px;
             display: inline-block;
+            transition: 0.3s;
         }
         .host-img { 
             width: 100%; 
-            max-width: 350px; 
+            max-width: 350px; /* MOBİLDE KÜÇÜK VE ZARİF KALIR */
             border-radius: 15px; 
             display: block;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            transition: 0.3s;
         }
         .host-desc { 
             color: var(--gri-yazi); 
@@ -212,6 +199,37 @@
         }
         .host-desc strong {
             color: white;
+        }
+
+        /* RESPONSIVE AYARLARI */
+        @media (max-width: 1024px) {
+            .card { flex: 0 0 calc(50% - 10px); }
+        }
+
+        /* --- MASAÜSTÜ ÖZEL AYARLAR --- */
+        @media (min-width: 1024px) {
+            .host-content {
+                max-width: 1100px; /* Metinler için daha geniş alan */
+            }
+            .host-img {
+                max-width: 650px; /* MASAÜSTÜNDE FOTOĞRAFI BÜYÜTTÜK */
+            }
+            .host-img-container {
+                padding: 8px; /* Dev ekranda çerçeve biraz daha kalın olursa iyi durur */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 50px 5%; } 
+            .hero h1 { font-size: 2.2rem; }
+            .section-title { font-size: 24px; }
+            
+            .slider-btn { display: none; }
+            .slider-container { flex-direction: column; overflow-x: visible; gap: 25px; padding-bottom: 0; scroll-snap-type: none; }
+            .card { flex: 1 1 auto; min-width: 100%; scroll-snap-align: none; }
+            
+            .card-body { padding: 20px 15px; } 
+            .card-body h3 { font-size: 18px; }
         }
     </style>
 </head>
@@ -341,6 +359,7 @@
             </div>
         </div>
     </div>
+    
     <section class="host-section">
         <div class="host-content">
             <h2 class="host-title"><span>Ev Sahibimiz</span></h2>
@@ -353,7 +372,6 @@
 Gençlerimize duyduğu güven ve bölgemizde e sporun gelişimi için verdiği destekler için <strong>Ordu Büyükşehir Belediyesi’ne</strong> ve Sayın Başkanımız <strong>Dr. Mehmet Hilmi Güler’e</strong> gönülden teşekkür ederiz.            </p>
         </div>
     </section>
-    <div id="footer-alani"></div>
 
     <div id="footer-alani"></div>
 
