@@ -36,11 +36,49 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        /* BU SAYFAYA ÖZEL CSS */
-        .t-header-banner { text-align: center; padding: 80px 20px; background: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(35,8,62,0.8) 50%, rgba(0,0,0,1) 100%); border-bottom: 1px solid rgba(96, 29, 194, 0.3); }
-        .t-header-banner h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; }
+        /* BU SAYFAYA ÖZEL CSS - HERO BANNER */
+        .t-header-banner { 
+            text-align: center; 
+            padding: 120px 20px; /* Daha kahramanca bir his için dolguyu artırdık */
+            position: relative; /* Katmanlama (z-index) için gerekli */
+            background-image: url('img/backgroundmor.webp'); /* Görsel yolu */
+            background-size: cover; /* Görsel tüm alanı kaplasın */
+            background-position: center; /* Görsel ortalansın */
+            background-repeat: no-repeat; /* Görsel tekrar etmesin */
+            border-bottom: 1px solid rgba(96, 29, 194, 0.3); 
+            overflow: hidden; /* Taşmaları önle */
+        }
+
+        /* Metnin okunabilirliği için koyu bir katman (overlay) ekledik */
+        .t-header-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65); /* Yarı şeffaf siyah katman */
+            z-index: 1; /* Metnin altında kalsın */
+        }
+
+        /* Metinlerin overlay üzerinde kalmasını sağlayan kapsayıcı */
+        .t-header-banner .banner-content {
+            position: relative;
+            z-index: 2; /* Overlay'in üstünde kalsın */
+        }
+
+        .t-header-banner h1 { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 900; }
         .purple-text { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
 
+        /* Masaüstünde hafif bir paralaks efekti eklemek için */
+        @media (min-width: 1024px) {
+            .t-header-banner {
+                background-attachment: fixed; /* Mobilde sorunlu olabilir, masaüstünde kalsın */
+                padding: 160px 20px;
+            }
+        }
+
+        /* Diğer Mevcut Stiller */
         .t-container { max-width: 1200px; margin: 0 auto; padding: 60px 10%; }
         .filters { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
         .filter-btn { background: #111; border: 1px solid #333; color: white; padding: 10px 25px; border-radius: 25px; cursor: pointer; transition: 0.3s; font-weight: bold; }
@@ -48,11 +86,9 @@
 
         .t-list-grid { display: flex; flex-direction: column; gap: 25px; }
         
-        /* Kartların varsayılan durumları */
         .t-wide-card { background: linear-gradient(145deg, #0a0a0a, #16072b); border: 1px solid #222; border-radius: 15px; display: flex; align-items: center; padding: 25px; transition: 0.4s; }
         .t-wide-card:hover { border-color: var(--neon-mor); transform: translateX(10px); box-shadow: 0 0 20px rgba(96,29,194,0.2); }
         
-        /* Filtreleme için gizleme class'ı */
         .hide-card { display: none !important; }
 
         .t-image { width: 100px; height: 100px; background: var(--neon-mor); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; flex-shrink: 0; }
@@ -84,15 +120,15 @@
     <div id="header-alani"></div>
 
     <section class="t-header-banner">
-        <h1>AKTİF <span class="purple-text">TURNUVALAR</span></h1>
-        <p>Yeteneklerini sergile, ödülleri topla ve efsane ol.</p>
+        <div class="banner-content"> <h1>AKTİF <span class="purple-text">TURNUVALAR</span></h1>
+            <p>Yeteneklerini sergile, ödülleri topla ve efsane ol.</p>
+        </div>
     </section>
 
     <main class="t-container">
         <div class="filters">
             <button class="filter-btn active" onclick="filterTournaments('all')">GÜNCEL</button>
             <button class="filter-btn" onclick="filterTournaments('active')">AKTİF</button>
-            <button class="filter-btn" onclick="filterTournaments('finished')">SONUÇLANMIŞ</button>
         </div>
 
         <div class="t-list-grid">
@@ -129,22 +165,6 @@
                 </div>
             </div>
 
-            <div class="t-wide-card filter-item filter-finished hide-card">
-                <div class="t-image" style="background: #1d4ed8;">VALO</div>
-                <div class="t-details">
-                    <span class="tag open">SONUÇLANDI</span>
-                    <h2>OBB 1. DOSTLUK MÜSABAKASI</h2>
-                    <p>İlk dostluk turnuvamızın şampiyonu belli oldu.</p>
-                    <div class="t-meta">
-                        <span><strong>Ödül:</strong> Dostluk</span>
-                        <span><strong>Kazanan:</strong> OBB E-SPORTS</span> 
-                    </div>
-                </div>
-                <div class="t-action">
-                  <button class="register-btn" onclick="window.location.href='obb1.dostlukmaci.html'">SONUÇLANDI</button>
-                </div>
-            </div>
-
         </div>
     </main>
 
@@ -178,18 +198,12 @@
                     } else {
                         card.classList.add('hide-card');
                     }
-                } else if (category === 'finished') {
-                    if (card.classList.contains('filter-finished')) {
-                        card.classList.remove('hide-card');
-                    } else {
-                        card.classList.add('hide-card');
-                    }
                 }
             });
         }
 
         // Yeni İlişkisel Mimariye Uygun Sayaç Fonksiyonu
-       async function loadApprovedCount() {
+        async function loadApprovedCount() {
             try {
                 // Önce sistemdeki ilk/aktif turnuvayı bul
                 const { data: tourney, error: tourneyErr } = await window.supabaseClient
