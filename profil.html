@@ -1180,85 +1180,96 @@
             else showNotification(isChecked ? "Ticari iletişim izni onaylandı." : "Ticari iletişim izni iptal edildi.", "success");
         }
 
-        document.getElementById('avatarUpload').addEventListener('change', async (e) => {
+       document.getElementById('avatarUpload').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            document.getElementById('userAvatar').src = URL.createObjectURL(file);
+            // YASAKLI BLOB YERİNE FILEREADER KULLANIYORUZ
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                const base64DataUrl = event.target.result;
+                
+                // Önizlemeyi base64 olarak göster (Sunucu bunu engellemez)
+                document.getElementById('userAvatar').src = base64DataUrl;
 
-            const img = new Image();
-            img.src = URL.createObjectURL(file);
+                const img = new Image();
+                img.src = base64DataUrl;
 
-            img.onload = async () => {
-                const MAX_WIDTH = 500;
-                const MAX_HEIGHT = 500;
-                let width = img.width;
-                let height = img.height;
+                img.onload = async () => {
+                    const MAX_WIDTH = 500;
+                    const MAX_HEIGHT = 500;
+                    let width = img.width;
+                    let height = img.height;
 
-                if (width > height) {
-                    if (width > MAX_WIDTH) {
-                        height = Math.round(height * (MAX_WIDTH / width));
-                        width = MAX_WIDTH;
-                    }
-                } else {
-                    if (height > MAX_HEIGHT) {
-                        width = Math.round(width * (MAX_HEIGHT / height));
-                        height = MAX_HEIGHT;
-                    }
-                }
-
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-
-                canvas.toBlob(async (blob) => {
-                    
-                    if (blob.size > 2 * 1024 * 1024) {
-                        return showNotification("Dosya çok büyük. Lütfen başka bir resim deneyin.", "error");
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height = Math.round(height * (MAX_WIDTH / width));
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width = Math.round(width * (MAX_HEIGHT / height));
+                            height = MAX_HEIGHT;
+                        }
                     }
 
-                    const fileExt = 'webp';
-                    const path = `${currentUser.id}/profil_resmi.${fileExt}`;
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
 
-                    try {
-                        await window.supabaseClient.storage.from('avatars').remove([
-                            `${currentUser.id}/profil_resmi.jpg`,
-                            `${currentUser.id}/profil_resmi.jpeg`,
-                            `${currentUser.id}/profil_resmi.png`,
-                            `${currentUser.id}/profil_resmi.webp`,
-                            `${currentUser.id}/profil_resmi.gif`
-                        ]);
-
-                        const { error } = await window.supabaseClient.storage.from('avatars').upload(path, blob, { 
-                            upsert: true, 
-                            cacheControl: '3600' 
-                        });
+                    canvas.toBlob(async (blob) => {
                         
-                        if (error) throw error;
-                        
-                        const { data } = window.supabaseClient.storage.from('avatars').getPublicUrl(path);
-                        const cleanUrl = data.publicUrl.split('?')[0];
-                        
-                        const { error: profileErr } = await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
-                        if (profileErr) throw profileErr; 
+                        if (blob.size > 2 * 1024 * 1024) {
+                            return showNotification("Dosya çok büyük. Lütfen başka bir resim deneyin.", "error");
+                        }
 
-                        showNotification("Profil resmi başarıyla optimize edildi ve güncellendi!", "success");
-                        
-                        const cacheKey = 'obb_profile_cache';
-                        const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
-                        cachedProfile.avatar_url = cleanUrl;
-                        localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+                        const fileExt = 'webp';
+                        const path = `${currentUser.id}/profil_resmi.${fileExt}`;
 
-                        document.getElementById('userAvatar').src = cleanUrl + "?t=" + Date.now();
+                        try {
+                            await window.supabaseClient.storage.from('avatars').remove([
+                                `${currentUser.id}/profil_resmi.jpg`,
+                                `${currentUser.id}/profil_resmi.jpeg`,
+                                `${currentUser.id}/profil_resmi.png`,
+                                `${currentUser.id}/profil_resmi.webp`,
+                                `${currentUser.id}/profil_resmi.gif`
+                            ]);
 
-                    } catch (uploadProcessErr) {
-                        console.error("Yükleme işlemi hatası:", uploadProcessErr);
-                        showNotification("Profil resmi yüklenirken beklenmeyen bir hata oluştu.", "error");
-                    }
-                }, 'image/webp', 0.8);
+                            const { error } = await window.supabaseClient.storage.from('avatars').upload(path, blob, { 
+                                upsert: true, 
+                                cacheControl: '3600' 
+                            });
+                            
+                            if (error) throw error;
+                            
+                            const { data } = window.supabaseClient.storage.from('avatars').getPublicUrl(path);
+                            const cleanUrl = data.publicUrl.split('?')[0];
+                            
+                            const { error: profileErr } = await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
+                            if (profileErr) throw profileErr; 
+
+                            showNotification("Profil resmi başarıyla optimize edildi ve güncellendi!", "success");
+                            
+                            const cacheKey = 'obb_profile_cache';
+                            const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                            cachedProfile.avatar_url = cleanUrl;
+                            localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+
+                            document.getElementById('userAvatar').src = cleanUrl + "?t=" + Date.now();
+
+                        } catch (uploadProcessErr) {
+                            console.error("Yükleme işlemi hatası:", uploadProcessErr);
+                            showNotification("Profil resmi yüklenirken beklenmeyen bir hata oluştu.", "error");
+                        }
+                    }, 'image/webp', 0.8);
+                };
             };
+
+            // Dosyayı güvenli formatta oku
+            reader.readAsDataURL(file);
         });
 
         function openBannerModal() {
