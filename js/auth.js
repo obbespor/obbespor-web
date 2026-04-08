@@ -2,11 +2,20 @@
 
 function renderCachedHeader() {
     const authAction = document.getElementById('authAction');
+    
+    // Çan elementlerini HTML'den buluyoruz
+    const mobileBell = document.querySelector('.floating-bell.mobile-only');
+    const desktopBell = document.querySelector('.nav-bell.desktop-only');
+
     if (!authAction) return;
 
     const cachedUser = localStorage.getItem('obb_user_cache');
     
     if (cachedUser) {
+        // KULLANICI GİRİŞ YAPMIŞSA ÇANLARI GÖSTER (CSS varsayılanına döner)
+        if (mobileBell) mobileBell.style.display = ''; 
+        if (desktopBell) desktopBell.style.display = '';
+
         const user = JSON.parse(cachedUser);
         const adminLinkHTML = user.isAdmin ? `<a href="admin.html" style="color: var(--neon-mor); font-weight: 900; border-bottom: 1px solid #222; margin-bottom: 5px;"><i class="fas fa-shield-alt"></i> YÖNETİM PANELİ</a>` : '';
 
@@ -25,6 +34,10 @@ function renderCachedHeader() {
                 </div>
             </div>`;
     } else {
+        // KULLANICI GİRİŞ YAPMAMIŞSA ÇANLARI KÖKÜNDEN GİZLE
+        if (mobileBell) mobileBell.style.display = 'none';
+        if (desktopBell) desktopBell.style.display = 'none';
+
         authAction.innerHTML = `<a href="kayit.html" class="nav-btn">KAYIT / GİRİŞ</a>`;
     }
     
@@ -50,6 +63,9 @@ async function checkUserStatus() {
 
 async function updateNavbarWithUser(user) {
     const authAction = document.getElementById('authAction');
+    const mobileBell = document.querySelector('.floating-bell.mobile-only');
+    const desktopBell = document.querySelector('.nav-bell.desktop-only');
+
     if (!authAction) return;
 
     const { data: profileData } = await window.supabaseClient.from('profiles').select('username, role').eq('id', user.id).maybeSingle();
@@ -61,6 +77,10 @@ async function updateNavbarWithUser(user) {
         username: username,
         isAdmin: isAdmin
     }));
+
+    // Veritabanı onayı gelince çanları kesin olarak açık tut
+    if (mobileBell) mobileBell.style.display = '';
+    if (desktopBell) desktopBell.style.display = '';
 
     const adminLinkHTML = isAdmin ? `<a href="admin.html" style="color: var(--neon-mor); font-weight: 900; border-bottom: 1px solid #222; margin-bottom: 5px;"><i class="fas fa-shield-alt"></i> YÖNETİM PANELİ</a>` : '';
 
