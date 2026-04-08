@@ -5,7 +5,6 @@ function initNotifications() {
     listenRealtimeNotifications();
 }
 
-// --- OTOMATİK ÇEVİRMEN FONKSİYONU ---
 function cevirSupabaseHatasi(hataMesaji) {
     if (!hataMesaji) return "Bilinmeyen bir hata oluştu.";
     
@@ -22,7 +21,6 @@ function cevirSupabaseHatasi(hataMesaji) {
     return hataMesaji.replace('Hata: ', '').replace('Error: ', ''); 
 }
 
-// --- BİLDİRİM BALONCUĞU (TOAST) ---
 window.showNotification = function(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
@@ -52,22 +50,18 @@ function getIconForType(tip) {
     }
 }
 
-// --- KİŞİSEL BİLDİRİMLERİ ÇEKME VE ÇAN GİZLEME MANTIĞI ---
 window.fetchRealNotifications = async function() {
     try {
         const { data: { user } } = await window.supabaseClient.auth.getUser();
         
-        // ÇAN ELEMENTLERİNİ HTML'DEN BUL
         const mobileBell = document.querySelector('.floating-bell.mobile-only');
         const desktopBell = document.querySelector('.nav-bell.desktop-only');
 
-        // EĞER KULLANICI GİRİŞ YAPMAMIŞSA ÇANLARI GİZLE VE İŞLEMİ DURDUR
         if (!user) {
             if (mobileBell) mobileBell.style.display = 'none';
             if (desktopBell) desktopBell.style.display = 'none';
             return;
         } else {
-            // GİRİŞ YAPMIŞSA GÖRÜNÜR YAP (CSS'teki varsayılan ayarlarına döner)
             if (mobileBell) mobileBell.style.display = '';
             if (desktopBell) desktopBell.style.display = '';
         }
@@ -87,7 +81,6 @@ window.fetchRealNotifications = async function() {
     } catch (err) { console.error("Bildirim çekilemedi:", err); }
 };
 
-// --- REALTIME DİNLEME ---
 window.listenRealtimeNotifications = async function() {
     const { data: { user } } = await window.supabaseClient.auth.getUser();
     if (!user) return;
@@ -162,7 +155,6 @@ window.clearNotifications = async function(event) {
     } catch (err) { console.error("Temizleme hatası:", err); }
 };
 
-// --- GLOBAL DAVET SİSTEMİ ---
 window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = []) {
     const { data: pendingInvites } = await window.supabaseClient
         .from('team_members')
@@ -224,9 +216,7 @@ window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = 
         }).subscribe();
 };
 
-// ==========================================
-// KVKK OPT-IN ÇEREZ (COOKIE) YÖNETİM SİSTEMİ
-// ==========================================
+=======================================
 
 const cookiePolicyContent = `
     <h4>Çerez Nedir ve Hangi Amaçlarla Kullanıyoruz?</h4>
