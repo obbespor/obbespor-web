@@ -1,6 +1,4 @@
-/* ==================================================
-   HEADER TEMEL & LOGO
-   ================================================== */
+
 header.main-nav {
     background-color: var(--nav-bg); padding: 0 10%; display: flex;
     justify-content: space-between; align-items: center; height: 80px;
@@ -9,7 +7,6 @@ header.main-nav {
 }
 header.main-nav.nav-hidden { transform: translateY(-110%); }
 
-/* Logo ve Metin Hizalaması */
 .logo { 
     display: flex; 
     align-items: center; 
@@ -32,9 +29,6 @@ nav ul { list-style: none; display: flex; align-items: center; gap: 20px; margin
 nav ul li a { color: white; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
 nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
 
-/* ==================================================
-   PROFİL DROPDOWN MENÜSÜ
-   ================================================== */
 .user-dropdown { position: relative; display: inline-block; }
 .dropdown-trigger {
     background: rgba(96, 29, 194, 0.1); border: 1px solid var(--neon-mor);
@@ -61,9 +55,6 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
 .logout-link { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; }
 .logout-link:hover { color: #ff4b4b !important; background: rgba(255, 75, 75, 0.1) !important; }
 
-/* ==================================================
-   BİLDİRİM SİSTEMİ
-   ================================================== */
 .desktop-only { display: block !important; }
 .mobile-only { display: none !important; }
 
@@ -72,7 +63,6 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
 .nav-bell a:hover { color: var(--neon-mor); }
 .notif-badge { position: absolute; top: -8px; right: -12px; background: #ff0000; color: white; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 50%; display: none; }
 
-/* YÜZER ZİL (MASAÜSTÜ) */
 .floating-bell { 
     position: fixed; bottom: 30px; right: 20px; width: 55px; height: 55px; 
     background: #0d0d0d; border: 2px solid var(--neon-mor); border-radius: 50%; 
@@ -101,9 +91,6 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
 .notif-item-content strong { color: white; display: block; margin-bottom: 3px; }
 .notif-empty { padding: 40px 20px; text-align: center; color: var(--gri-yazi); font-size: 13px; }
 
-/* ==================================================
-   TOAST & ANİMASYONLAR
-   ================================================== */
 #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 999999; display: flex; flex-direction: column; gap: 15px; pointer-events: none; }
 .custom-toast { background: rgba(15, 15, 15, 0.95); color: #fff; padding: 16px 24px; border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); min-width: 300px; max-width: 400px; transform: translateX(120%); opacity: 0; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease; backdrop-filter: blur(10px); pointer-events: auto; }
 .custom-toast.show { transform: translateX(0); opacity: 1; }
@@ -115,21 +102,17 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
 
 @keyframes menuFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* MOBİL HAYALET TIKLAMA KORUYUCUSU */
 @keyframes preventGhostClick {
     0% { pointer-events: none; }
     99% { pointer-events: none; }
     100% { pointer-events: auto; }
 }
 
-/* ==================================================
-   MOBİL UYUMLULUK
-   ================================================== */
+
 @media (max-width: 768px) {
     header.main-nav { height: auto; padding: 15px 5%; flex-direction: column; gap: 15px; transform: none !important; }
     body { padding-top: 125px; }
     
-    /* Logo Mobil Ayarı */
     .logo { font-size: 20px; gap: 8px; }
     .header-logo { height: 35px; }
 
@@ -140,7 +123,6 @@ nav ul li a:hover, nav ul li a.active-tab { color: var(--neon-mor); }
     .user-name-text, .arrow-icon { display: none; } 
     .dropdown-trigger { padding: 10px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
     
-    /* GHOST CLICK KORUMASI */
     .dropdown-content { 
         position: fixed; right: 15px; top: 85px; width: 180px; 
         animation: menuFadeIn 0.2s ease-out, preventGhostClick 0.4s forwards;
