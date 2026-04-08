@@ -1,4 +1,3 @@
-/* --- GENEL FOOTER YAPISI --- */
 footer {
     background-color: var(--nav-bg); 
     border-top: 2px solid var(--neon-mor);
@@ -7,7 +6,6 @@ footer {
     color: white;
 }
 
-/* --- SPONSOR TICKER --- */
 .sponsor-ticker {
     width: 100%;
     padding-bottom: 50px;
@@ -31,7 +29,6 @@ footer {
     overflow: hidden;
 }
 
-/* Yanlardan yumuşak silinme efekti */
 .ticker-wrapper::before, .ticker-wrapper::after {
     content: "";
     position: absolute;
@@ -46,18 +43,17 @@ footer {
     display: flex;
     width: max-content;
     animation: scroll-loop 40s linear infinite;
-    align-items: center; /* Logoların yükseklikleri farklıysa dikeyde ortalar */
+    align-items: center; 
 }
 
-/* 🚀 LOGO AYARLARI: Orijinal Renkler ve Yüksek Netlik */
 .ticker-scroll img {
-    height: 70px; /* Büyük ve prestijli görünüm */
+    height: 70px; 
     width: auto;
     margin: 0 60px;
-    filter: none !important; /* Tüm renk değiştirme filtreleri iptal edildi */
-    opacity: 1; /* Logolar tam belirgin */
+    filter: none !important; 
+    opacity: 1; 
     transition: transform 0.3s ease;
-    image-rendering: -webkit-optimize-contrast; /* Tarayıcıda daha keskin görünüm sağlar */
+    image-rendering: -webkit-optimize-contrast; 
 }
 
 .ticker-wrapper:hover .ticker-scroll {
@@ -65,7 +61,7 @@ footer {
 }
 
 .ticker-scroll img:hover {
-    transform: scale(1.1); /* Üzerine gelince tatlı bir büyüme */
+    transform: scale(1.1); 
 }
 
 @keyframes scroll-loop {
@@ -73,7 +69,6 @@ footer {
     to { transform: translateX(-50%); }
 }
 
-/* --- FOOTER GRID VE İÇERİK --- */
 .footer-grid { 
     display: grid; 
     grid-template-columns: 1.5fr 1fr 1fr; 
@@ -152,7 +147,6 @@ footer {
     font-size: 13px; 
 }
 
-/* --- MOBİL UYUMLULUK --- */
 @media (max-width: 768px) {
     .sponsor-ticker { padding-bottom: 40px; }
     .ticker-scroll img { 
