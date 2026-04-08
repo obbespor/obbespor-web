@@ -52,11 +52,25 @@ function getIconForType(tip) {
     }
 }
 
-// --- KİŞİSEL BİLDİRİMLERİ ÇEKME ---
+// --- KİŞİSEL BİLDİRİMLERİ ÇEKME VE ÇAN GİZLEME MANTIĞI ---
 window.fetchRealNotifications = async function() {
     try {
         const { data: { user } } = await window.supabaseClient.auth.getUser();
-        if (!user) return;
+        
+        // ÇAN ELEMENTLERİNİ HTML'DEN BUL
+        const mobileBell = document.querySelector('.floating-bell.mobile-only');
+        const desktopBell = document.querySelector('.nav-bell.desktop-only');
+
+        // EĞER KULLANICI GİRİŞ YAPMAMIŞSA ÇANLARI GİZLE VE İŞLEMİ DURDUR
+        if (!user) {
+            if (mobileBell) mobileBell.style.display = 'none';
+            if (desktopBell) desktopBell.style.display = 'none';
+            return;
+        } else {
+            // GİRİŞ YAPMIŞSA GÖRÜNÜR YAP (CSS'teki varsayılan ayarlarına döner)
+            if (mobileBell) mobileBell.style.display = '';
+            if (desktopBell) desktopBell.style.display = '';
+        }
 
         const { data: kisiselData } = await window.supabaseClient.from('bildirimler').select('*').eq('kullanici_id', user.id); 
 
@@ -148,7 +162,7 @@ window.clearNotifications = async function(event) {
     } catch (err) { console.error("Temizleme hatası:", err); }
 };
 
-// --- GLOBAL DAVET SİSTEMİ (MİMARİ DÜZELTİLDİ) ---
+// --- GLOBAL DAVET SİSTEMİ ---
 window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = []) {
     const { data: pendingInvites } = await window.supabaseClient
         .from('team_members')
