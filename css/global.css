@@ -27,7 +27,6 @@ body {
 
 main { flex: 1; }
 
-/* Genel Buton Stilleri */
 .nav-btn { 
     border: 2px solid var(--neon-mor); padding: 8px 20px; border-radius: 5px; 
     color: white !important; background: transparent; transition: 0.3s; 
@@ -35,17 +34,15 @@ main { flex: 1; }
 }
 .nav-btn:hover { background: var(--neon-mor); box-shadow: 0 0 15px var(--neon-mor); }
 
-/* Sayfa Başlıkları */
 .section-title { 
     margin-bottom: 40px; border-left: 5px solid var(--neon-mor); 
     padding-left: 15px; font-size: 28px; font-weight: 900; text-transform: uppercase; 
 }
 .section-title span { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
 
-/* --- BİLDİRİM PANELİ İÇİ METİN DÜZENLEMELERİ --- */
 .notif-item-content {
     flex: 1;
-    min-width: 0; /* Taşmaları engellemek için kritik */
+    min-width: 0; 
 }
 
 .notif-item-content span {
@@ -57,14 +54,12 @@ main { flex: 1; }
     font-size: 12px;
 }
 
-/* Bildirim Paneli Çok Dolarsa Kaydırma Çubuğu Çıksın */
 .notif-body {
     max-height: 350px; 
     overflow-y: auto;
     padding-bottom: 10px;
 }
 
-/* --- SAĞ ALT/ÜST TOAST BİLDİRİM BALONLARI İÇİN DÜZEN (MASAÜSTÜ) --- */
 #toast-container {
     position: fixed;
     bottom: 20px; 
@@ -84,38 +79,33 @@ main { flex: 1; }
     word-break: break-word; 
 }
 
-/* =======================================================
-   MOBİL CİHAZLAR İÇİN KUSURSUZ BİLDİRİM PANELİ DÜZENİ
-======================================================== */
+
 @media (max-width: 768px) {
     
-    /* 1. Bildirim Kutusunu "Arenaya Katıl" Butonunu Ezecek Şekilde Sabitle */
     .notif-panel {
         position: fixed !important;
         top: auto !important;
-        bottom: 100px !important; /* Zilin üzerinde durur */
-        left: 5vw !important; /* Ekranın soluyla bağını kesin olarak kopartır */
-        right: 5vw !important; /* Ekranın sağıyla bağını kesin olarak kopartır */
-        width: 90vw !important; /* Ekranın %90'ını kaplar */
-        min-width: 90vw !important; /* Herhangi bir butonun onu SIKIŞTIRMASINI ENGELLER */
+        bottom: 100px !important; 
+        left: 5vw !important; 
+        right: 5vw !important; 
+        width: 90vw !important; 
+        min-width: 90vw !important; 
         max-width: none !important;
-        transform: none !important; /* Ortadaki butonla girdiği çatışmayı bitirir */
+        transform: none !important; 
         margin: 0 !important;
         padding: 0 !important;
-        z-index: 999999 !important; /* "Arenaya Giriş Yap" butonunun KESİNLİKLE üstüne çıkar */
+        z-index: 999999 !important; 
         border-radius: 15px !important;
         box-shadow: 0 10px 50px rgba(0,0,0,0.95) !important;
-        background-color: rgba(10, 10, 10, 0.98) !important; /* Arka planı iyice koyulaştırdık ki alttaki buton görünmesin */
+        background-color: rgba(10, 10, 10, 0.98) !important; 
     }
 
-    /* Kutu İçindeki İçeriklerin Sıkışmasını Engelle */
     .notif-panel .notif-body {
         max-height: 50vh !important; 
         overflow-y: auto !important;
         padding: 10px !important;
     }
 
-    /* 2. TOAST BİLDİRİMLERİ (YEŞİL/KIRMIZI BALONLAR) DÜZELTMESİ */
     #toast-container {
         bottom: auto !important; 
         top: 20px !important; 
@@ -143,7 +133,6 @@ main { flex: 1; }
     }
 }
 
-/* MOBİL TOAST ANİMASYONLARI */
 @keyframes slideDownMobileToast {
     from { opacity: 0; transform: translateY(-50px); }
     to { opacity: 1; transform: translateY(0); }
