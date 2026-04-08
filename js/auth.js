@@ -1,17 +1,28 @@
 
+function updateBellVisibility(isLoggedIn) {
+    let styleEl = document.getElementById('bell-visibility-style');
+    if (!isLoggedIn) {
+        if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = 'bell-visibility-style';
+            styleEl.innerHTML = '.floating-bell, .nav-bell { display: none !important; }';
+            document.head.appendChild(styleEl);
+        }
+    } else {
+        if (styleEl) {
+            styleEl.remove();
+        }
+    }
+}
+
 function renderCachedHeader() {
     const authAction = document.getElementById('authAction');
-    
-    const mobileBell = document.querySelector('.floating-bell.mobile-only');
-    const desktopBell = document.querySelector('.nav-bell.desktop-only');
-
-    if (!authAction) return;
-
     const cachedUser = localStorage.getItem('obb_user_cache');
     
     if (cachedUser) {
-        if (mobileBell) mobileBell.style.display = ''; 
-        if (desktopBell) desktopBell.style.display = '';
+        updateBellVisibility(true); 
+        
+        if (!authAction) return;
 
         const user = JSON.parse(cachedUser);
         const adminLinkHTML = user.isAdmin ? `<a href="admin.html" style="color: var(--neon-mor); font-weight: 900; border-bottom: 1px solid #222; margin-bottom: 5px;"><i class="fas fa-shield-alt"></i> YÖNETİM PANELİ</a>` : '';
@@ -31,13 +42,14 @@ function renderCachedHeader() {
                 </div>
             </div>`;
     } else {
-        if (mobileBell) mobileBell.style.display = 'none';
-        if (desktopBell) desktopBell.style.display = 'none';
+        updateBellVisibility(false); 
+
+        if (!authAction) return;
 
         authAction.innerHTML = `<a href="kayit.html" class="nav-btn">KAYIT / GİRİŞ</a>`;
     }
     
-    authAction.style.opacity = "1"; 
+    if (authAction) authAction.style.opacity = "1"; 
 }
 
 async function checkUserStatus() {
@@ -57,10 +69,8 @@ async function checkUserStatus() {
 }
 
 async function updateNavbarWithUser(user) {
+    updateBellVisibility(true); 
     const authAction = document.getElementById('authAction');
-    const mobileBell = document.querySelector('.floating-bell.mobile-only');
-    const desktopBell = document.querySelector('.nav-bell.desktop-only');
-
     if (!authAction) return;
 
     const { data: profileData } = await window.supabaseClient.from('profiles').select('username, role').eq('id', user.id).maybeSingle();
@@ -72,9 +82,6 @@ async function updateNavbarWithUser(user) {
         username: username,
         isAdmin: isAdmin
     }));
-
-    if (mobileBell) mobileBell.style.display = '';
-    if (desktopBell) desktopBell.style.display = '';
 
     const adminLinkHTML = isAdmin ? `<a href="admin.html" style="color: var(--neon-mor); font-weight: 900; border-bottom: 1px solid #222; margin-bottom: 5px;"><i class="fas fa-shield-alt"></i> YÖNETİM PANELİ</a>` : '';
 
@@ -88,7 +95,7 @@ async function updateNavbarWithUser(user) {
             <div class="dropdown-content">
                 ${adminLinkHTML}
                 <a href="profil.html"><i class="fas fa-user-circle"></i> Profil</a>
-                <a href="my-tournaments.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
+                <a href="turnuvalarim.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
                 <a href="#" onclick="handleLogoutGlobal(); return false;" class="logout-link"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
             </div>
         </div>`;
@@ -99,6 +106,7 @@ window.handleLogoutGlobal = async function() {
     await window.supabaseClient.auth.signOut();
     window.location.reload(); 
 }
+
 
 async function requireAdminAccess() {
     try {
