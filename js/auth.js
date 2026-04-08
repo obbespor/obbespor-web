@@ -1,9 +1,7 @@
-// js/auth.js
 
 function renderCachedHeader() {
     const authAction = document.getElementById('authAction');
     
-    // Çan elementlerini HTML'den buluyoruz
     const mobileBell = document.querySelector('.floating-bell.mobile-only');
     const desktopBell = document.querySelector('.nav-bell.desktop-only');
 
@@ -12,7 +10,6 @@ function renderCachedHeader() {
     const cachedUser = localStorage.getItem('obb_user_cache');
     
     if (cachedUser) {
-        // KULLANICI GİRİŞ YAPMIŞSA ÇANLARI GÖSTER (CSS varsayılanına döner)
         if (mobileBell) mobileBell.style.display = ''; 
         if (desktopBell) desktopBell.style.display = '';
 
@@ -34,7 +31,6 @@ function renderCachedHeader() {
                 </div>
             </div>`;
     } else {
-        // KULLANICI GİRİŞ YAPMAMIŞSA ÇANLARI KÖKÜNDEN GİZLE
         if (mobileBell) mobileBell.style.display = 'none';
         if (desktopBell) desktopBell.style.display = 'none';
 
@@ -54,7 +50,6 @@ async function checkUserStatus() {
             updateNavbarWithUser(user);
             if(typeof initGlobalInviteSystem === "function") initGlobalInviteSystem(user.id);
         } else {
-            // Supabase "Giriş yapmamış" derse ve hafızada biri takılı kalmışsa temizle
             localStorage.removeItem('obb_user_cache');
             renderCachedHeader();
         }
@@ -78,7 +73,6 @@ async function updateNavbarWithUser(user) {
         isAdmin: isAdmin
     }));
 
-    // Veritabanı onayı gelince çanları kesin olarak açık tut
     if (mobileBell) mobileBell.style.display = '';
     if (desktopBell) desktopBell.style.display = '';
 
@@ -106,9 +100,6 @@ window.handleLogoutGlobal = async function() {
     window.location.reload(); 
 }
 
-// =========================================================================
-// SADECE ADMİN SAYFALARINDA ÇAĞRILACAK GÜVENLİK BEKÇİSİ (FRONTEND BOUNCER)
-// =========================================================================
 async function requireAdminAccess() {
     try {
         if (!window.supabaseClient) throw new Error("Supabase bağlantısı yok.");
@@ -124,15 +115,13 @@ async function requireAdminAccess() {
 
         if (profileError || profile.role !== 'admin') throw new Error("Admin yetkisi yok.");
 
-        // KONTROL BAŞARILI: Işıkları aç ve yükleme ekranını gizle
         document.documentElement.style.visibility = 'visible';
         const loadingScreen = document.getElementById('loadingScreen');
         if (loadingScreen) loadingScreen.style.display = 'none';
 
-        return true; // Sayfanın geri kalan kodlarının çalışması için onay ver
+        return true; 
         
     } catch (err) {
-        // KONTROL BAŞARISIZ: Anında ana sayfaya fırlat
         console.error("Güvenlik Engeli:", err.message);
         window.location.replace("index.html");
         return false;
