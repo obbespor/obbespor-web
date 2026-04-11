@@ -989,7 +989,6 @@
                         }
                     } else {
                         if (m.status === 'accepted') {
-                            // ÇÖZÜM 1 BURADA: Başvuru (app) olmasa bile takımı kabul et ve 'draft' (taslak) statüsüne al
                             if (!realTeamData) {
                                 realTeamData = team;
                                 realAppStatus = app ? app.status : 'draft';
@@ -1018,7 +1017,6 @@
                         teamStatusColor = "var(--kirmizi-iptal)";
                         teamStatusIcon = "fa-times-circle";
                     } else if (realAppStatus === 'draft') {
-                        // Eğer oyuncu takıma katılmış ama kaptan henüz turnuvaya başvurmamışsa:
                         teamStatusText = "Kaptan Başvuruyu Tamamlayacak";
                         teamStatusColor = "#aaa";
                         teamStatusIcon = "fa-clock";
@@ -1030,7 +1028,7 @@
                             <span class="team-tag-large" style="${realAppStatus === 'draft' ? 'background: #444;' : ''}">${realTeamData.tag || 'LOBİ'}</span>
                             <h3>${realTeamData.name || 'İSİMSİZ TAKIM'}</h3>
                             <p>Durum: <span style="color:${teamStatusColor}; font-weight:bold;"><i class="fas ${teamStatusIcon}"></i> ${teamStatusText}</span></p>
-                            <a href="turnuvalarim.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
+                            <a href="my-tournaments.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
                         </div>
                     `;
                     return; 
@@ -1088,23 +1086,19 @@
         async function respondInvite(id, action) {
             if (action === 'accepted') {
                 try {
-                    // --- ÇÖZÜM 2 BURADA: OTOMATİK TASLAK (DRFT) TEMİZLİĞİ ---
-                    // Kullanıcının kaptanı olduğu takımları bul
+            
                     const { data: myTeams } = await window.supabaseClient.from('teams').select('id').eq('captain_id', currentUser.id);
                     
                     if (myTeams && myTeams.length > 0) {
                         const myTeamIds = myTeams.map(t => t.id);
                         
-                        // Bu takımların turnuva başvurusu var mı kontrol et
                         const { data: myApps } = await window.supabaseClient.from('tournament_applications')
                             .select('team_id').in('team_id', myTeamIds);
                         
                         const appliedTeamIds = myApps ? myApps.map(a => a.team_id) : [];
                         
-                        // Başvurusu OLMAYAN (Sadece taslak/DRFT olan) takımları filtrele
                         const draftTeamIds = myTeamIds.filter(tid => !appliedTeamIds.includes(tid));
                         
-                        // Bu taslak takımları veritabanından kalıcı olarak SİL
                         if (draftTeamIds.length > 0) {
                             await window.supabaseClient.from('teams').delete().in('id', draftTeamIds);
                         }
