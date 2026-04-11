@@ -955,6 +955,82 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
                 console.error(e);
             }
         }
+        // -----------------------------------------------------
+        // EKSİK OLAN UI (ARAYÜZ) OLUŞTURMA FONKSİYONLARI
+        // -----------------------------------------------------
+
+        function syncTeamName(teamStr, name) {
+            const header = document.getElementById(teamStr === 'A' ? 'headerTeamA' : 'headerTeamB');
+            const colorText = teamStr === 'A' ? '(Mavi)' : '(Kırmızı)';
+            header.innerHTML = `${name ? name.toUpperCase() : (teamStr === 'A' ? 'SOL TAKIM' : 'SAĞ TAKIM')} <span>${colorText}</span>`;
+        }
+
+        function updateAgentIcon(inputEl, iconId) {
+            const imgEl = document.getElementById(iconId);
+            const agentName = inputEl.value.trim().toLowerCase();
+            if (agentName) {
+                imgEl.src = `img/agents/${agentName}.png`;
+                imgEl.onerror = () => { imgEl.src = 'https://via.placeholder.com/30/222/fff?text=?'; };
+            } else {
+                imgEl.src = 'https://via.placeholder.com/30/222/fff?text=?';
+            }
+        }
+
+        function generateEmptyRows(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="player-stat-row" style="background:transparent; border:none; padding:0 8px; margin-bottom:2px;">
+                    <div class="stat-label">AJAN</div>
+                    <div class="stat-label">SİSTEM EŞLEŞTİRME</div>
+                    <div class="stat-label">OYUN İÇİ NİCK</div>
+                    <div class="stat-label">K</div>
+                    <div class="stat-label">D</div>
+                    <div class="stat-label">A</div>
+                    <div class="stat-label">ACS</div>
+                </div>
+            `;
+            for (let i = 0; i < 5; i++) {
+                container.innerHTML += `
+                    <div class="player-stat-row">
+                        <input type="hidden" class="hidden-user-id" value="">
+                        <div class="agent-input-group">
+                            <img id="${containerId}_icon_${i}" src="https://via.placeholder.com/30/222/fff?text=?" class="agent-icon">
+                            <input type="text" class="agent-name-input" placeholder="Ajan" onkeyup="updateAgentIcon(this, '${containerId}_icon_${i}')">
+                        </div>
+                        <select class="user-matcher-select"><option value="">-- Manuel Seç --</option></select>
+                        <input type="text" class="ign-input" placeholder="Oyun İçi Nick">
+                        <input type="number" class="k-input" placeholder="0" min="0">
+                        <input type="number" class="d-input" placeholder="0" min="0">
+                        <input type="number" class="a-input" placeholder="0" min="0">
+                        <input type="number" class="acs-input" placeholder="0" min="0">
+                    </div>
+                `;
+            }
+        }
+
+        function renderPlayerRows(containerId, stats) {
+            generateEmptyRows(containerId);
+            if (!stats || stats.length === 0) return;
+            
+            const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
+            
+            for (let i = 0; i < Math.min(stats.length, 5); i++) {
+                const row = rows[i + 1]; // +1 yapıyoruz çünkü 0. index başlık (Ajan, K, D, A) satırı
+                const s = stats[i];
+                
+                row.querySelector('.hidden-user-id').value = s.user_id || '';
+                
+                const agentInput = row.querySelector('.agent-name-input');
+                agentInput.value = s.agent_name !== 'unknown' ? s.agent_name : '';
+                updateAgentIcon(agentInput, `${containerId}_icon_${i}`);
+                
+                row.querySelector('.ign-input').value = s.in_game_name || '';
+                row.querySelector('.k-input').value = s.kills || 0;
+                row.querySelector('.d-input').value = s.deaths || 0;
+                row.querySelector('.a-input').value = s.assists || 0;
+                row.querySelector('.acs-input').value = s.acs || 0;
+            }
+        }
 
         async function openExistingMap(matchId, mapId) {
             activeRecordId = { matchId, mapId };
