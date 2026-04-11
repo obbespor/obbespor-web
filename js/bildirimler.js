@@ -190,6 +190,9 @@ window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = 
     window.globalInviteChannel = window.supabaseClient.channel('global-invite-' + userId);
     window.globalInviteChannel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'team_members', filter: `user_id=eq.${userId}` }, 
         async (payload) => {
+            // EKLENEN FİLTRE: Eğer eklenen kayıt "bekleyen" (pending) bir davet değilse işlemi anında durdur (Kaptan kendi kurduğu takımdan bildirim almaz).
+            if (payload.new.status !== 'pending') return;
+
             const tId = payload.new.team_id;
             const { data: teamData } = await window.supabaseClient.from('teams').select('name').eq('id', tId).single();
             const teamName = teamData ? teamData.name : "Bir takım";
