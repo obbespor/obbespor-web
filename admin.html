@@ -577,7 +577,7 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
             }
         }
 
-      async function fetchProfilesIfMissing(teamStr) {
+        async function fetchProfilesIfMissing(teamStr) {
             const teamName = document.getElementById(teamStr === 'A' ? 'teamAName' : 'teamBName').value;
             const containerId = teamStr === 'A' ? 'teamAPlayersInputs' : 'teamBPlayersInputs';
             const selects = document.getElementById(containerId).querySelectorAll('.user-matcher-select');
@@ -596,21 +596,52 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
                 if(teamStr === 'A') teamAId_memory = teamData.id;
                 else teamBId_memory = teamData.id;
 
-                // 2. Takım üyelerini çekiyoruz (SQL'deki strict accepted filtresini kaldırdık)
+                // 2. Takım üyelerini çekiyoruz
                 const { data: players } = await window.supabaseClient.from('team_members')
                     .select(`user_id, status, profiles (username, ign)`)
                     .eq('team_id', teamData.id);
                 
-                let optionsHtml = '<option value="">-- Manuel Seç --</option>';
-                if(players) {
+                // Güvenli ve eksiksiz bir kullanıcı listesi oluşturuyoruz
+                let validUsers = [];
+                
+                if (players) {
                     players.forEach(p => {
-                        // ÇÖZÜM BURADA: Eğer oyuncu 'accepted' ise VEYA Takım Kaptanı ise listeye ekle!
+                        // Sadece kabul edilenleri VEYA ID'si kaptan olanları ekle
                         if (p.status === 'accepted' || p.user_id === teamData.captain_id) {
-                            const disp = p.profiles?.ign ? `${p.profiles.ign} (${p.profiles.username})` : p.profiles.username;
-                            optionsHtml += `<option value="${p.user_id}" data-ign="${p.profiles?.ign||''}">${disp}</option>`;
+                            validUsers.push({
+                                id: p.user_id,
+                                username: p.profiles?.username || 'Bilinmiyor',
+                                ign: p.profiles?.ign || ''
+                            });
                         }
                     });
                 }
+
+                // 3. Zırh Delici Kontrol: Kaptan bu listede YİNE DE yok mu? (team_members'a hiç yazılmamış olabilir)
+                const isCaptainInList = validUsers.some(u => u.id === teamData.captain_id);
+                
+                if (!isCaptainInList && teamData.captain_id) {
+                    // Kaptanı zorla profiles tablosundan çek!
+                    const { data: captainProfile } = await window.supabaseClient.from('profiles')
+                        .select('username, ign')
+                        .eq('id', teamData.captain_id)
+                        .single();
+                        
+                    if (captainProfile) {
+                        validUsers.push({
+                            id: teamData.captain_id,
+                            username: captainProfile.username || 'Bilinmiyor',
+                            ign: captainProfile.ign || ''
+                        });
+                    }
+                }
+
+                // 4. HTML Optionlarını oluştur
+                let optionsHtml = '<option value="">-- Manuel Seç --</option>';
+                validUsers.forEach(u => {
+                    const disp = u.ign ? `${u.ign} (${u.username})` : u.username;
+                    optionsHtml += `<option value="${u.id}" data-ign="${u.ign}">${disp}</option>`;
+                });
                 
                 selects.forEach((sel) => { 
                     sel.innerHTML = optionsHtml; 
@@ -681,6 +712,65 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
                         </div>`;
                 });
             } else list.innerHTML = '<p style="color: var(--gri-yazi);">Onaylanmış takım bulunmuyor.</p>';
+        }
+
+        async function fetchTeamsWithMembers(statusFilter) {
+            try {
+                const { data: apps, error } = await window.supabaseClient
+                    .from('tournament_applications')
+                    .select(`
+                        id, status,
+                        teams (
+                            id, name, tag, logo_url, captain_id,
+                            team_members (
+                                id, user_id, role, status, 
+                                profiles (
+                                    username, ign,
+                                    user_contacts (phone, email)
+                                )
+                            )
+                        )
+                    `)
+                    .eq('status', statusFilter);
+                
+                if (error || !apps) return [];
+
+                return apps.filter(app => app.teams).map(app => {
+                    const t = app.teams;
+                    
+                    let members = (t.team_members || []).map(tm => {
+                        let contactData = tm.profiles?.user_contacts;
+                        if (Array.isArray(contactData)) contactData = contactData[0];
+                        
+                        const isCaptain = tm.user_id === t.captain_id;
+                        
+                        return {
+                            id: tm.id, 
+                            user_id: tm.user_id, 
+                            role: isCaptain ? 'captain' : tm.role, 
+                            status: isCaptain ? 'accepted' : tm.status,
+                            username: tm.profiles?.username || 'Bilinmiyor',
+                            ign: tm.profiles?.ign || '',
+                            phone: contactData?.phone || 'Belirtilmemiş',
+                            email: contactData?.email || 'Belirtilmemiş'
+                        };
+                    });
+                    
+                    const capt = members.filter(m => m.role === 'captain');
+                    const main = members.filter(m => m.role === 'main');
+                    const sub = members.filter(m => m.role === 'sub');
+                    members = [...capt, ...main, ...sub];
+
+                    return {
+                        id: app.id, team_id: t.id, team_name: t.name, team_tag: t.tag,
+                        logo_url: t.logo_url, captain_id: t.captain_id,
+                        members: members
+                    };
+                });
+            } catch (err) {
+                console.error("Veri çekme hatası:", err);
+                return [];
+            }
         }
 
         async function rejectTeam(appId, userId) {
@@ -952,10 +1042,11 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
             const imgEl = document.getElementById(iconId);
             const agentName = inputEl.value.trim().toLowerCase();
             if (agentName) {
-                imgEl.src = `img/agents/${agentName}.webp`;
-                imgEl.onerror = () => { imgEl.src = 'https://via.placeholder.com/30/222/fff?text=?'; };
+                // DOĞRU YOL BURASI
+                imgEl.src = `img/imgagents/${agentName}.webp`;
+                imgEl.onerror = () => { imgEl.src = 'img/unknown.webp'; };
             } else {
-                imgEl.src = 'https://via.placeholder.com/30/222/fff?text=?';
+                imgEl.src = 'img/unknown.webp';
             }
         }
 
@@ -977,7 +1068,7 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
                     <div class="player-stat-row">
                         <input type="hidden" class="hidden-user-id" value="">
                         <div class="agent-input-group">
-                            <img id="${containerId}_icon_${i}" src="https://via.placeholder.com/30/222/fff?text=?" class="agent-icon">
+                            <img id="${containerId}_icon_${i}" src="img/unknown.webp" class="agent-icon">
                             <input type="text" class="agent-name-input" placeholder="Ajan" onkeyup="updateAgentIcon(this, '${containerId}_icon_${i}')">
                         </div>
                         <select class="user-matcher-select"><option value="">-- Manuel Seç --</option></select>
@@ -998,7 +1089,7 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             
             for (let i = 0; i < Math.min(stats.length, 5); i++) {
-                const row = rows[i + 1]; // +1 yapıyoruz çünkü 0. index başlık (Ajan, K, D, A) satırı
+                const row = rows[i + 1]; 
                 const s = stats[i];
                 
                 row.querySelector('.hidden-user-id').value = s.user_id || '';
@@ -1064,53 +1155,6 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
 
             } catch(e) {
                 console.error(e);
-            }
-        }
-
-        async function fetchProfilesIfMissing(teamStr) {
-            const teamName = document.getElementById(teamStr === 'A' ? 'teamAName' : 'teamBName').value;
-            const containerId = teamStr === 'A' ? 'teamAPlayersInputs' : 'teamBPlayersInputs';
-            const selects = document.getElementById(containerId).querySelectorAll('.user-matcher-select');
-            
-            if(teamStr === 'A') teamAId_memory = null;
-            else teamBId_memory = null;
-
-            if(!teamName || teamName.length < 2) return;
-            if(selects.length === 0) return; 
-            
-            try {
-                const { data: teamData } = await window.supabaseClient.from('teams').select('id').ilike('name', `%${teamName.trim()}%`).single();
-                if(!teamData) throw new Error("Kayıtlı takım bulunamadı");
-                
-                if(teamStr === 'A') teamAId_memory = teamData.id;
-                else teamBId_memory = teamData.id;
-
-                const { data: players } = await window.supabaseClient.from('team_members').select(`user_id, profiles (username, ign)`).eq('team_id', teamData.id).eq('status', 'accepted');
-                
-                let optionsHtml = '<option value="">-- Manuel Seç --</option>';
-                if(players) {
-                    players.forEach(p => {
-                        const disp = p.profiles?.ign ? `${p.profiles.ign} (${p.profiles.username})` : p.profiles.username;
-                        optionsHtml += `<option value="${p.user_id}" data-ign="${p.profiles?.ign||''}">${disp}</option>`;
-                    });
-                }
-                
-                selects.forEach((sel) => { 
-                    sel.innerHTML = optionsHtml; 
-                    const row = sel.closest('.player-stat-row');
-                    const currentIgn = row.querySelector('.ign-input').value.trim().toLowerCase();
-                    
-                    if (currentIgn) {
-                        for (let opt of sel.options) {
-                            if (opt.getAttribute('data-ign') && opt.getAttribute('data-ign').toLowerCase() === currentIgn) {
-                                opt.selected = true; 
-                                break;
-                            }
-                        }
-                    }
-                });
-            } catch (e) {
-                selects.forEach(sel => { sel.innerHTML = '<option value="">-- Sistemde Yok --</option>'; });
             }
         }
 
