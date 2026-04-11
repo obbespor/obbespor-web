@@ -989,9 +989,10 @@
                         }
                     } else {
                         if (m.status === 'accepted') {
-                            if (app && !realTeamData) {
+                            // ÇÖZÜM 1 BURADA: Başvuru (app) olmasa bile takımı kabul et ve 'draft' (taslak) statüsüne al
+                            if (!realTeamData) {
                                 realTeamData = team;
-                                realAppStatus = app.status;
+                                realAppStatus = app ? app.status : 'draft';
                             }
                         } else if (m.status === 'pending') {
                             validPendingInvites.push(m);
@@ -1016,15 +1017,20 @@
                         teamStatusText = "Reddedildi";
                         teamStatusColor = "var(--kirmizi-iptal)";
                         teamStatusIcon = "fa-times-circle";
+                    } else if (realAppStatus === 'draft') {
+                        // Eğer oyuncu takıma katılmış ama kaptan henüz turnuvaya başvurmamışsa:
+                        teamStatusText = "Kaptan Başvuruyu Tamamlayacak";
+                        teamStatusColor = "#aaa";
+                        teamStatusIcon = "fa-clock";
                     }
 
                     title.innerHTML = `<i class="fas fa-shield-alt"></i> Mevcut Takımın`;
                     list.innerHTML = `
-                        <div class="active-team-card">
-                            <span class="team-tag-large">${realTeamData.tag || 'LOBİ'}</span>
+                        <div class="active-team-card" style="${realAppStatus === 'draft' ? 'border-color: #555;' : ''}">
+                            <span class="team-tag-large" style="${realAppStatus === 'draft' ? 'background: #444;' : ''}">${realTeamData.tag || 'LOBİ'}</span>
                             <h3>${realTeamData.name || 'İSİMSİZ TAKIM'}</h3>
                             <p>Durum: <span style="color:${teamStatusColor}; font-weight:bold;"><i class="fas ${teamStatusIcon}"></i> ${teamStatusText}</span></p>
-                            <a href="my-tournaments.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
+                            <a href="turnuvalarim.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
                         </div>
                     `;
                     return; 
@@ -1081,12 +1087,78 @@
 
         async function respondInvite(id, action) {
             if (action === 'accepted') {
-                const { error } = await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', id);
-                if (error) {
-                    showNotification("Kabul ederken hata oluştu: " + error.message, "error");
+                try {
+                    // --- ÇÖZÜM 2 BURADA: OTOMATİK TASLAK (DRFT) TEMİZLİĞİ ---
+                    // Kullanıcının kaptanı olduğu takımları bul
+                    const { data: myTeams } = await window.supabaseClient.from('teams').select('id').eq('captain_id', currentUser.id);
+                    
+                    if (myTeams && myTeams.length > 0) {
+                        const myTeamIds = myTeams.map(t => t.id);
+                        
+                        // Bu takımların turnuva başvurusu var mı kontrol et
+                        const { data: myApps } = await window.supabaseClient.from('tournament_applications')
+                            .select('team_id').in('team_id', myTeamIds);
+                        
+                        const appliedTeamIds = myApps ? myApps.map(a => a.team_id) : [];
+                        
+                        // Başvurusu OLMAYAN (Sadece taslak/DRFT olan) takımları filtrele
+                        const draftTeamIds = myTeamIds.filter(tid => !appliedTeamIds.includes(tid));
+                        
+                        // Bu taslak takımları veritabanından kalıcı olarak SİL
+                        if (draftTeamIds.length > 0) {
+                            await window.supabaseClient.from('teams').delete().in('id', draftTeamIds);
+                        }
+                    }
+             
+                    const { error } = await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', id);
+                    if (error) throw error;
+                    
+                    showNotification("Takıma katıldınız!", "success");
+                } catch (err) {
+                    showNotification("Kabul ederken beklenmeyen bir hata oluştu: " + err.message, "error");
                     return;
                 }
-                showNotification("Takıma katıldınız!", "success");
+            } else {
+                const { error } = await window.supabaseClient.from('team_members').delete().eq('id', id);
+                if (error) {
+                    showNotification("Reddederken hata oluştu: " + error.message, "error");
+                    return;
+                }
+                showNotification("Daveti reddettiniz.", "error");
+            }
+            loadInvitationsAndTeam();
+        }
+        async function respondInvite(id, action) {
+            if (action === 'accepted') {
+                try {
+          
+                    const { data: myTeams } = await window.supabaseClient.from('teams').select('id').eq('captain_id', currentUser.id);
+                    
+                    if (myTeams && myTeams.length > 0) {
+                        const myTeamIds = myTeams.map(t => t.id);
+                        
+                        const { data: myApps } = await window.supabaseClient.from('tournament_applications')
+                            .select('team_id').in('team_id', myTeamIds);
+                        
+                        const appliedTeamIds = myApps ? myApps.map(a => a.team_id) : [];
+                        
+                        const draftTeamIds = myTeamIds.filter(tid => !appliedTeamIds.includes(tid));
+                        
+                        if (draftTeamIds.length > 0) {
+                            await window.supabaseClient.from('teams').delete().in('id', draftTeamIds);
+                        }
+                    }
+
+                    const { error } = await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', id);
+                    if (error) {
+                        showNotification("Kabul ederken hata oluştu: " + error.message, "error");
+                        return;
+                    }
+                    showNotification("Takıma katıldınız!", "success");
+                } catch (err) {
+                    showNotification("Kabul ederken beklenmeyen bir hata oluştu.", "error");
+                    return;
+                }
             } else {
                 const { error } = await window.supabaseClient.from('team_members').delete().eq('id', id);
                 if (error) {
