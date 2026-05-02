@@ -48,13 +48,15 @@
         /* ==========================================================
            LİNEER AĞAÇ (8 TAKIMLIK ÇEYREK FİNAL BAŞLANGICI)
            ========================================================== */
-        .bracket-scroll-area { width: 100%; overflow-x: auto; padding-top: 40px; padding-bottom: 60px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; -webkit-overflow-scrolling: touch; }
+        /* KESİLME SORUNU ÇÖZÜMÜ: padding-top 40px'den 80px'e çıkarıldı */
+        .bracket-scroll-area { width: 100%; overflow-x: auto; padding-top: 80px; padding-bottom: 60px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; -webkit-overflow-scrolling: touch; }
         
         .bracket-container { display: flex; align-items: stretch; justify-content: center; min-width: max-content; min-height: 500px; padding-left: 20px; padding-right: 20px; gap: 40px; }
         
         .bracket-column { display: flex; flex-direction: column; width: 280px; position: relative; }
         
-        .round-header { position: absolute; top: -50px; left: 10px; right: 10px; text-align: center; color: var(--neon-mor); font-weight: 900; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; border-bottom: 2px solid #222; padding-bottom: 10px; z-index: 10; }
+        /* KESİLME SORUNU ÇÖZÜMÜ: top -60px yapıldı, padding-bottom artırıldı */
+        .round-header { position: absolute; top: -60px; left: 10px; right: 10px; text-align: center; color: var(--neon-mor); font-weight: 900; text-transform: uppercase; font-size: 16px; letter-spacing: 1px; border-bottom: 2px solid #222; padding-bottom: 15px; z-index: 10; line-height: 1.2; }
 
         .match-wrapper { 
             flex: 1 1 0%; 
