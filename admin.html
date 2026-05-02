@@ -480,7 +480,7 @@
             if(tabName === 'fikstur') updateDynamicSelectors();
         }
 
-        async function scanImageWithAI() {
+       async function scanImageWithAI() {
             if (!currentProofImageUrl) return showNotification("Taranacak görsel bulunamadı!", "error");
 
             const btn = document.getElementById('btnAiScan');
@@ -508,18 +508,22 @@
                     reader.readAsDataURL(imageBlob);
                 });
 
+                // YAPAY ZEKA PROMPTU RENK ALGILAMASINA GÖRE GÜNCELLENDİ
                 const promptText = `
                     Bu bir Valorant maç sonu ekranıdır. Resimdeki tabloyu analiz et. 
-                    Oyuncuları üstteki 5 kişi (Takım A) ve alttaki 5 kişi (Takım B) olarak ikiye ayır.
-                    AJAN İSİMLERİ İÇİN (Eğer ajan ikonunu anlıyorsan 'agent' kısmına İngilizce adını yaz, anlamadıysan boş bırak).
-                    Lütfen SADECE aşağıdaki JSON formatında çıktı ver, başka hiçbir kelime yazma:
+                    DİKKAT: Oyuncular alt alta takımlar halinde DEĞİL, karışık olarak sıralanmıştır.
+                    Oyuncuları doğru takımlara ayırmak için SATIRLARIN ARKA PLAN RENKLERİNE bakmalısın!
+                    - Arka planı MAVİ / TURKUAZ (Teal/Cyan) olan satırlardaki oyuncuları "playersA" listesine koy.
+                    - Arka planı KIRMIZI / PEMBE (Red/Pink) olan satırlardaki oyuncuları "playersB" listesine koy.
+                    AJAN İSİMLERİ İÇİN: Eğer ajan ikonunu anlıyorsan 'agent' kısmına İngilizce adını yaz (Örn: Reyna, Jett, Omen vs), anlamadıysan boş bırak.
+                    Lütfen SADECE aşağıdaki JSON formatında çıktı ver, başka hiçbir kelime yazma, kod bloğu (\`\`\`json) KULLANMA:
                     {
                         "playersA": [ {"agent": "Jett", "ign": "OyuncuNicki", "k": 10, "d": 5, "a": 3, "acs": 250} ],
                         "playersB": [ {"agent": "Omen", "ign": "RakipNicki", "k": 8, "d": 10, "a": 2, "acs": 180} ]
                     }
                 `;
 
-const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -555,7 +559,7 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
                 await fetchProfilesIfMissing('A');
                 await fetchProfilesIfMissing('B');
 
-                showNotification("Sihir gerçekleşti! Veriler başarıyla dolduruldu.", "success");
+                showNotification("Sihir gerçekleşti! Veriler renklere göre başarıyla ayrıldı.", "success");
 
             } catch (err) {
                 console.error("Yapay Zeka Çöktü:", err);
@@ -589,24 +593,20 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
             if(selects.length === 0) return; 
             
             try {
-                // 1. Takım bilgilerini ve KAPTAN ID'sini çekiyoruz
                 const { data: teamData } = await window.supabaseClient.from('teams').select('id, captain_id').ilike('name', `%${teamName.trim()}%`).single();
                 if(!teamData) throw new Error("Kayıtlı takım bulunamadı");
                 
                 if(teamStr === 'A') teamAId_memory = teamData.id;
                 else teamBId_memory = teamData.id;
 
-                // 2. Takım üyelerini çekiyoruz
                 const { data: players } = await window.supabaseClient.from('team_members')
                     .select(`user_id, status, profiles (username, ign)`)
                     .eq('team_id', teamData.id);
                 
-                // Güvenli ve eksiksiz bir kullanıcı listesi oluşturuyoruz
                 let validUsers = [];
                 
                 if (players) {
                     players.forEach(p => {
-                        // Sadece kabul edilenleri VEYA ID'si kaptan olanları ekle
                         if (p.status === 'accepted' || p.user_id === teamData.captain_id) {
                             validUsers.push({
                                 id: p.user_id,
@@ -617,11 +617,9 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
                     });
                 }
 
-                // 3. Zırh Delici Kontrol: Kaptan bu listede YİNE DE yok mu? (team_members'a hiç yazılmamış olabilir)
                 const isCaptainInList = validUsers.some(u => u.id === teamData.captain_id);
                 
                 if (!isCaptainInList && teamData.captain_id) {
-                    // Kaptanı zorla profiles tablosundan çek!
                     const { data: captainProfile } = await window.supabaseClient.from('profiles')
                         .select('username, ign')
                         .eq('id', teamData.captain_id)
@@ -636,7 +634,6 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
                     }
                 }
 
-                // 4. HTML Optionlarını oluştur
                 let optionsHtml = '<option value="">-- Manuel Seç --</option>';
                 validUsers.forEach(u => {
                     const disp = u.ign ? `${u.ign} (${u.username})` : u.username;
