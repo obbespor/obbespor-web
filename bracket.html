@@ -36,33 +36,21 @@
     <style>
         body { background-color: #050505; color: white; overflow-x: hidden; }
         
-        /* --- SAYFA BAŞLIĞI VE SEKMELER --- */
+        /* --- SAYFA BAŞLIĞI VE DÜZEN --- */
         .page-header { text-align: center; padding: 40px 20px 20px; background: radial-gradient(circle at top, #110522 0%, #050505 100%); border-bottom: 1px solid #222; }
         .page-title { font-size: 36px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; }
         .page-title span { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
         .page-subtitle { color: var(--gri-yazi); font-size: 14px; font-weight: 500; margin-bottom: 30px; }
 
-        .stage-tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
-        .stage-btn { background: #111; border: 1px solid #333; color: var(--gri-yazi); padding: 12px 25px; border-radius: 8px; font-weight: 900; font-size: 15px; cursor: pointer; transition: 0.3s; font-family: 'Poppins', sans-serif; letter-spacing: 1px; white-space: nowrap; }
-        .stage-btn.active, .stage-btn:hover { background: var(--neon-mor); color: white; border-color: var(--neon-mor); box-shadow: 0 0 20px rgba(96, 29, 194, 0.4); transform: translateY(-2px); }
-
-        /* --- AŞAMA İÇERİK ALANLARI --- */
         .stage-content { display: none; padding: 40px 5%; animation: fadeIn 0.4s ease; min-height: 60vh; }
         .stage-content.active { display: block; }
 
-        /* --- 1. AŞAMA: LİSTE (GRUP) GÖRÜNÜMÜ STİLLERİ --- */
-        .round-list-wrapper { margin-bottom: 50px; }
-        .round-list-title { display: flex; align-items: center; gap: 15px; font-size: 20px; font-weight: 900; color: white; margin-bottom: 25px; border-bottom: 2px solid #222; padding-bottom: 10px; }
-        .round-list-title span { background: var(--neon-mor); padding: 2px 10px; border-radius: 5px; font-size: 14px; }
-        
-        .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-
         /* ==========================================================
-           2. AŞAMA: LINEER AĞAÇ (SOLDAN SAĞA)
+           LİNEER AĞAÇ (8 TAKIMLIK ÇEYREK FİNAL BAŞLANGICI)
            ========================================================== */
-        .bracket-scroll-area { width: 100%; overflow-x: auto; padding-top: 60px; padding-bottom: 60px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; -webkit-overflow-scrolling: touch; }
+        .bracket-scroll-area { width: 100%; overflow-x: auto; padding-top: 40px; padding-bottom: 60px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; -webkit-overflow-scrolling: touch; }
         
-        .bracket-container { display: flex; align-items: stretch; justify-content: flex-start; min-width: max-content; min-height: 750px; padding-left: 20px; padding-right: 20px; }
+        .bracket-container { display: flex; align-items: stretch; justify-content: center; min-width: max-content; min-height: 500px; padding-left: 20px; padding-right: 20px; gap: 40px; }
         
         .bracket-column { display: flex; flex-direction: column; width: 280px; position: relative; }
         
@@ -71,7 +59,7 @@
         .match-wrapper { 
             flex: 1 1 0%; 
             display: flex; flex-direction: column; justify-content: center; 
-            position: relative; padding: 0 30px; margin: 0; 
+            position: relative; padding: 0; margin: 0; 
         }
 
         /* --- ORTAK MAÇ KARTI TASARIMI --- */
@@ -105,21 +93,20 @@
         .match-card.scheduled-slot .team-name { color: #ccc; }
 
         /* ==========================================================
-           ÇİZGİLER (1 Piksel Bile Şaşmaz)
+           ÇİZGİLER (Ağaç Bağlantıları)
            ========================================================== */
-        
         .bracket-column:not(:last-child) .match-card::after { 
-            content: ''; position: absolute; top: 50%; right: -30px; width: 30px; 
+            content: ''; position: absolute; top: 50%; right: -20px; width: 20px; 
             border-top: 2px solid #444; z-index: 1; 
         }
         
         .bracket-column:not(:first-child) .match-card::before { 
-            content: ''; position: absolute; top: 50%; left: -30px; width: 30px; 
+            content: ''; position: absolute; top: 50%; left: -20px; width: 20px; 
             border-top: 2px solid #444; z-index: 1; 
         }
 
         .bracket-column:not(:first-child) .match-wrapper::before { 
-            content: ''; position: absolute; left: 0; 
+            content: ''; position: absolute; left: -20px; 
             top: 25%; bottom: 25%; 
             border-left: 2px solid #444; z-index: 0; 
         }
@@ -178,19 +165,17 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
- @media (max-width: 768px) {
+        @media (max-width: 768px) {
             .page-title { font-size: 24px; }
-            .stage-tabs { padding: 0 10px; }
             .bracket-column { width: 230px; } 
-            .match-wrapper { padding: 0 15px; } 
+            .match-wrapper { padding: 0; } 
             .bracket-column:not(:last-child) .match-card::after { right: -15px; width: 15px; }
             .bracket-column:not(:first-child) .match-card::before { left: -15px; width: 15px; }
+            .bracket-column:not(:first-child) .match-wrapper::before { left: -15px; }
             
-            /* -- MODAL VE TABLO KAYDIRMA (SCROLL) DÜZELTMESİ -- */
-            .modal-overlay { padding: 5px; } /* Mobilde ekranı tam kaplasın */
+            .modal-overlay { padding: 5px; } 
             .modal-content { max-width: 95vw; max-height: 90vh; }
             
-            /* İç tablonun zorla kaydırılabilmesi için kilidi açıyoruz */
             .stats-tables-container { display: block; width: 100%; }
             .table-half { width: 100%; border-right: none; margin-bottom: 20px; }
             .table-responsive { 
@@ -199,7 +184,7 @@
                 -webkit-overflow-scrolling: touch; 
                 display: block; 
             }
-            .stats-table { min-width: 340px; } /* Mobilde çok sıkışırsa sağa kaydırılabilir olsun */
+            .stats-table { min-width: 340px; } 
             
             .modal-team-name { font-size: 14px; }
             .modal-team img { width: 40px; height: 40px; }
@@ -221,20 +206,14 @@
 
     <div class="page-header">
         <h1 class="page-title">OBB 1. TOPLULUK TURNUVASI <span>FİKSTÜRÜ</span></h1>
-        <p class="page-subtitle">Toplam Ödül Havuzu: 30.000 TL | 64 Takım</p>
-        
-        <div class="stage-tabs">
-            <button class="stage-btn active" onclick="switchStage('groupStage', this)"><i class="fas fa-list-ul"></i> GRUP AŞAMASI (R1 & R2)</button>
-            <button class="stage-btn" onclick="switchStage('playoffStage', this)"><i class="fas fa-sitemap"></i> PLAYOFF AĞACI (Son 16)</button>
-        </div>
+        <p class="page-subtitle">Toplam Ödül Havuzu: 30.000 TL | 8 Takım</p>
     </div>
 
-    <div id="groupStage" class="stage-content active"></div>
-
-    <div id="playoffStage" class="stage-content">
+    <div id="playoffStage" class="stage-content active">
         <div class="bracket-scroll-area">
             <div class="bracket-container" id="bracketContainer">
-                </div>
+                <!-- Javascript ile Doldurulacak 8 Takımlık Ağaç -->
+            </div>
         </div>
     </div>
 
@@ -281,20 +260,9 @@
             } catch(e) { console.error("Komponent yüklenemedi", e); }
         }
 
-        function switchStage(tabId, btnElement) {
-            document.querySelectorAll('.stage-btn').forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
-            document.querySelectorAll('.stage-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-        }
-
+        // SADECE 8 TAKIM İÇİN GÜNCELLENMİŞ YAPI (Çeyrek, Yarı, Final)
         const TOURNAMENT_STRUCTURE = {
-            group: [
-                { id: 'SON 64', title: 'SON 64 EŞLEŞMELERİ (BO1)', count: 32, format: 'BO1' },
-                { id: 'SON 32', title: 'SON 32 EŞLEŞMELERİ (BO1)', count: 16, format: 'BO1' }
-            ],
             playoff: [
-                { id: 'SON 16', count: 8, format: 'BO3', dbName: 'SON 16' },
                 { id: 'ÇEYREK FİNAL', count: 4, format: 'BO3', dbName: 'ÇEYREK FİNAL' },
                 { id: 'YARI FİNAL', count: 2, format: 'BO3', dbName: 'YARI FİNAL' },
                 { id: 'FİNAL', count: 1, format: 'BO5', dbName: 'FİNAL' }
@@ -361,23 +329,21 @@
 
         async function fetchAndRenderBracket() {
             try {
-// 1. Önce aktif turnuvayı (upcoming) veya en son turnuvayı bul
                 const { data: tourney, error: tourneyErr } = await window.supabaseClient
                     .from('tournaments')
                     .select('id')
                     .order('created_at', { ascending: false })
                     .limit(1)
-                    .maybeSingle(); // .single() yerine .maybeSingle() kullandık
+                    .maybeSingle();
 
-                if (tourneyErr) throw tourneyErr; // Hatayı yakalayıp en alttaki catch bloğuna gönderiyoruz
+                if (tourneyErr) throw tourneyErr;
                 
                 if (!tourney) {
                     console.warn("Aktif turnuva bulunamadı.");
-                    document.getElementById('groupStage').innerHTML = '<p style="text-align:center; padding: 50px; color: var(--gri-yazi);">Şu an fikstürü çizilmiş aktif bir turnuva bulunmuyor.</p>';
+                    document.getElementById('bracketContainer').innerHTML = '<p style="text-align:center; padding: 50px; color: var(--gri-yazi);">Şu an fikstürü çizilmiş aktif bir turnuva bulunmuyor.</p>';
                     return;
                 }
 
-                // 2. Takım isimlerini ve logolarını YENİ TEAMS tablosundan çek (Sadece id, name ve logo_url yeterli)
                 const { data: teamsData, error: teamsErr } = await window.supabaseClient.from('teams').select('id, name, logo_url');
                 if (teamsErr) throw teamsErr;
                 
@@ -391,7 +357,6 @@
                     });
                 }
 
-                // 3. SADECE bu turnuvaya ait maçları çek
                 const { data: matchesData, error: matchesErr } = await window.supabaseClient
                     .from('bracket_matches')
                     .select('*')
@@ -399,7 +364,6 @@
                     .order('round_order', { ascending: true });
                 if (matchesErr) throw matchesErr;
 
-                // 4. Haritaları çek
                 const { data: mapsData, error: mapsErr } = await window.supabaseClient.from('match_maps').select('match_id, score_a, score_b');
                 if (mapsErr) throw mapsErr;
 
@@ -463,21 +427,7 @@
                     });
                 }
 
-                // --- GRUP AŞAMASI RENDER ---
-                const groupStageDiv = document.getElementById('groupStage');
-                let groupHtml = '';
-                TOURNAMENT_STRUCTURE.group.forEach(round => {
-                    groupHtml += `<div class="round-list-wrapper"><h3 class="round-list-title"><span>${round.id}</span> ${round.title}</h3><div class="match-grid">`;
-                    const dbMatches = roundsData[round.id] || [];
-                    for (let i = 0; i < round.count; i++) {
-                        if (dbMatches[i]) groupHtml += createMatchCardHTML(dbMatches[i], round.format);
-                        else groupHtml += createMatchCardHTML({ isDummy: true }, round.format);
-                    }
-                    groupHtml += `</div></div>`;
-                });
-                groupStageDiv.innerHTML = groupHtml;
-
-                // --- PLAYOFF AĞACI RENDER ---
+                // --- SADECE PLAYOFF AĞACI RENDER ---
                 const playoffDiv = document.getElementById('bracketContainer');
                 let playoffHtml = '';
                 
