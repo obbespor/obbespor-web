@@ -13,15 +13,13 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        /* Siyah Ekran Sorunu Çözüldü (visibility: hidden kaldırıldı) */
-
-        body { background: #050505; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-top: 120px; padding-bottom: 40px; }
+        body { background: #050505; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-top: 120px; padding-bottom: 0px; margin: 0; }
         
-        /* HEADER AKTİF MENÜ RENGİ */
+        /* HEADER AKTİF SEKME RENGİ */
         nav ul li a { cursor: pointer; }
         .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
 
-        .zarf-container { background: #0a0a0a; border: 1px solid #222; border-radius: 20px; width: 90%; max-width: 800px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); overflow: hidden; animation: fadeIn 0.4s ease; margin-bottom: 40px; }
+        .zarf-container { background: #0a0a0a; border: 1px solid #222; border-radius: 20px; width: 90%; max-width: 800px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); overflow: hidden; animation: fadeIn 0.4s ease; margin-bottom: 50px; }
         
         .zarf-header { background: #111; padding: 20px 30px; border-bottom: 2px solid var(--neon-mor); display: flex; justify-content: space-between; align-items: center; }
         .zarf-header h2 { font-size: 22px; font-weight: 900; margin: 0; }
@@ -79,18 +77,18 @@
         <h2>Güvenlik Kontrolü...</h2>
     </div>
 
-    <!-- GLOBAL BİREBİR AYNI HEADER EKLENDİ -->
+    <!-- GLOBAL ADMIN HEADER -->
     <header class="main-nav" id="mainHeader">
         <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
         <nav>
             <ul>
                 <li><a href="admin.html">ANA SAYFA</a></li>
                 <li><a href="admin.html">ONAY / ONAYLI</a></li>
-                <li><a href="admin.html">RÜTBE</a></li>
+                <li><a href="zarf.html" class="active-admin-tab">ZARF GÖNDER<i class="fas fa-paper-plane" style="font-size: 10px; margin-left: 5px;"></i></a></li>
                 <li><a href="admin.html">TAKVİM <i class="far fa-calendar-alt" style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 <li><a href="admin.html">FİKSTÜR <i class="fas fa-sitemap" style="font-size: 10px; margin-left: 5px;"></i></a></li>
-                <li><a href="zarf.html" class="active-admin-tab">ZARF GÖNDER <i class="fas fa-paper-plane" style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 
+                <!-- BİLDİRİM ÇANI MASAÜSTÜ -->
                 <li class="nav-bell desktop-only">
                     <a href="#" onclick="toggleNotifPanel('desktopPanel', event)">
                         <i class="fas fa-bell"></i>
@@ -109,6 +107,7 @@
         </nav>
     </header>
 
+    <!-- BİLDİRİM ÇANI MOBİL -->
     <div class="floating-bell mobile-only" onclick="toggleNotifPanel('mobilePanel', event)">
         <i class="fas fa-bell"></i>
         <span class="notif-badge" id="badge-mobile">0</span>
@@ -120,8 +119,10 @@
             <div class="notif-body" id="notif-list-mobile"></div>
         </div>
     </div>
-    <!-- HEADER BİTİŞ -->
+    
+    <div id="toast-container"></div>
 
+    <!-- ZARF GÖNDERME KISMI -->
     <div class="zarf-container">
         <div class="zarf-header">
             <h2>OBB <span>ZARF SİSTEMİ</span></h2>
@@ -183,10 +184,8 @@
         </div>
     </div>
 
-    <!-- FOOTER ALANI EKLENDİ -->
-    <div id="footer-alani" style="width: 100%;"></div>
-
-    <div id="toast-container"></div>
+    <!-- GLOBAL FOOTER -->
+    <div id="footer-alani" style="width: 100%; margin-top: auto;"></div>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
@@ -197,13 +196,19 @@
         let selectedFile = null;
 
         async function initZarfPage() {
-            // FOOTER YÜKLEMESİ EKLENDİ
+            // 1. GÜVENLİK KONTROLÜ (Bouncer)
+            const isAuthorized = await requireAdminAccess();
+            if (!isAuthorized) return; 
+            
+            document.getElementById('loadingScreen').style.display = 'none';
+
+            // FOOTER YÜKLEMESİ
             try {
                 const response = await fetch("components/footer.html");
                 if (response.ok) document.getElementById("footer-alani").innerHTML = await response.text();
             } catch(e) {}
 
-            // HEADER SCROLL GİZLEME EKLENDİ
+            // HEADER SCROLL GİZLEME VE BİLDİRİM PANELİ
             let lastScrollTop = 0;
             const header = document.getElementById("mainHeader");
             window.addEventListener("scroll", function() {
@@ -221,13 +226,6 @@
                 }
             });
 
-            // 1. GÜVENLİK KONTROLÜ (Bouncer)
-            const isAuthorized = await requireAdminAccess();
-            if (!isAuthorized) return; // Yetki yoksa dur ve işlemi iptal et!
-            
-            document.getElementById('loadingScreen').style.display = 'none';
-
-            // Menü ve bildirimler
             if (typeof checkUserStatus === "function") await checkUserStatus();
             if (typeof initNotifications === "function") initNotifications();
         }
