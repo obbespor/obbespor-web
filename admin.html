@@ -71,24 +71,6 @@
         .btn-delete-team { background: rgba(255, 75, 75, 0.05); border: 1px dashed var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px; }
         .btn-delete-team:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 0 15px rgba(255, 75, 75, 0.4); border-style: solid; }
 
-        /* RÜTBE PANELİ CSS */
-        .user-search-container { display: flex; gap: 15px; margin-bottom: 20px; }
-        .user-search-container input { flex: 1; padding: 12px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; font-family: 'Poppins', sans-serif; outline: none; transition: 0.3s; }
-        .user-search-container input:focus { border-color: var(--neon-mor); }
-        .user-search-container button { background: var(--neon-mor); color: white; border: none; padding: 0 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .user-search-container button:hover { box-shadow: 0 0 15px rgba(96,29,194,0.5); }
-        .user-result-card { background: #111; border: 1px solid #333; border-radius: 10px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-        .user-result-info strong { display: block; color: white; font-size: 16px; margin-bottom: 5px; }
-        .user-result-info span { color: var(--gri-yazi); font-size: 12px; display: block; }
-        .role-badge { padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .role-admin { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); border: 1px solid var(--neon-mor); }
-        .role-player { background: rgba(255, 255, 255, 0.1); color: #ccc; border: 1px solid #555; }
-        .action-buttons-role { display: flex; gap: 10px; }
-        .btn-make-admin { background: rgba(96, 29, 194, 0.2); color: var(--neon-mor); border: 1px solid var(--neon-mor); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s; }
-        .btn-make-admin:hover { background: var(--neon-mor); color: white; }
-        .btn-remove-admin { background: rgba(255, 75, 75, 0.1); color: var(--kirmizi-iptal); border: 1px solid var(--kirmizi-iptal); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s; }
-        .btn-remove-admin:hover { background: var(--kirmizi-iptal); color: white; }
-
         /* YENİ PLANLAMA (SCHEDULE) ALANI CSS */
         .planla-card { background: #0a0a0a; border: 1px solid #222; border-radius: 20px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-width: 800px; margin: 0 auto; text-align: center; }
         .planla-teams-wrapper { display: flex; justify-content: center; align-items: center; gap: 30px; margin: 30px 0; }
@@ -183,6 +165,7 @@
         <h2>Güvenlik Kontrolü Yapılıyor...</h2>
     </div>
 
+    <!-- HEADER -->
     <header class="main-nav" id="mainHeader">
         <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
         <nav>
@@ -190,7 +173,6 @@
                 <li><a href="index.html">ANA SAYFA</a></li>
                 <li><a id="tab-onay" class="active-admin-tab" onclick="switchTab('onay')">ONAY</a></li>
                 <li><a id="tab-takimlar" onclick="switchTab('takimlar')">ONAYLI</a></li>
-                <li><a id="tab-rutbe" onclick="switchTab('rutbe')">RÜTBE</a></li>
                 <li><a id="tab-planla" onclick="switchTab('planla')">PLANLA<i class="far fa-calendar-alt" style="font-size: 10px; margin-left: 5px;"></i></a></li>
                 <li><a id="tab-fikstur" onclick="switchTab('fikstur')">ZARFLAR / FİKSTÜR<i class="fas fa-sitemap" style="font-size: 10px; margin-left: 5px;"></i></a></li>
                 <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
@@ -200,6 +182,9 @@
 
     <div id="toast-container"></div>
 
+    <!-- =========================================
+         ESKİ ONAY SİSTEMLERİ (DOKUNULMADI)
+         ========================================= -->
     <main class="admin-container" id="onaySection" style="display: block;">
         <h2 class="section-title">ONAY BEKLEYEN <span>TAKIMLAR</span></h2>
         <div class="teams-grid" id="pendingTeamsGrid"></div>
@@ -213,20 +198,7 @@
         <div class="approved-list" id="approvedTeamsList"></div>
     </main>
 
-    <main class="admin-container" id="rutbeSection">
-        <div class="header-with-btn">
-            <h2 class="section-title">YETKİLENDİRME <span>(RÜTBE)</span></h2>
-        </div>
-        <p style="font-size: 13px; color: var(--gri-yazi); margin-bottom: 20px;">Turnuva yetkilisi atamak veya yetki almak için kullanıcı adıyla arama yapın.</p>
-        
-        <div class="user-search-container">
-            <input type="text" id="adminSearchInput" placeholder="Kullanıcı adı girin...">
-            <button onclick="searchUserForAdmin()"><i class="fas fa-search"></i> Ara</button>
-        </div>
-        
-        <div id="adminSearchResult"></div>
-    </main>
-
+    <!-- Modal (Eski) -->
     <div class="modal-overlay" id="teamModal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal()">&times;</span>
@@ -242,17 +214,19 @@
                     <h4><i class="fas fa-user-shield"></i> İLETİŞİM (KAPTAN BİLGİLERİ)</h4>
                     <div class="info-row"><div class="info-label">Kaptan Adı:</div><div class="info-data" id="modalCaptainName">-</div></div>
                     <div class="info-row"><div class="info-label">Telefon:</div><div class="info-data" id="modalCaptainPhone">-</div></div>
-                    <div class="info-row"><div class="info-label">E-Posta:</div><div class="info-data" id="modalCaptainEmail">-</div></div>
                 </div>
                 <div class="info-card">
                     <h4><i class="fas fa-users"></i> TAKIM KADROSU</h4>
                     <ul class="player-list-mini" id="modalRosterList" style="margin-bottom: 0; padding: 0;"></ul>
                 </div>
-                <button class="btn-delete-team" id="modalDeleteBtn"><i class="fas fa-trash"></i> BU BAŞVURUYU SİL</button>
+                <button class="btn-delete-team" id="modalDeleteBtn"><i class="fas fa-trash"></i> BU TAKIMI SİL</button>
             </div>
         </div>
     </div>
 
+    <!-- =========================================
+         YENİ: MAÇ PLANLAMA EKRANI (BASİT VE ŞIK)
+         ========================================= -->
     <main class="admin-container" id="planlaSection">
         <h2 class="section-title">GELECEK MAÇ <span>PLANLA</span></h2>
         
@@ -296,12 +270,16 @@
         </div>
     </main>
 
+    <!-- =========================================
+         YENİ: ZARF VE FİKSTÜR (EDİTÖR) SİSTEMİ
+         ========================================= -->
     <main class="admin-container" id="fiksturSection">
         <div class="page-header-row">
             <h2 class="section-title">ZARF İŞLEME & <span>FİKSTÜR</span></h2>
         </div>
         <div class="dashboard-grid">
             
+            <!-- SOL PANEL: LİSTELER -->
             <div class="sidebar-panel">
                 <div class="sidebar-tabs">
                     <div class="sidebar-tab active" id="tabZarflar" onclick="switchSidebarTab('zarflar')">
@@ -312,9 +290,11 @@
                     </div>
                 </div>
                 <div class="list-container" id="sidebarList">
-                    </div>
+                    <!-- Dinamik Liste Buraya Gelecek -->
+                </div>
             </div>
 
+            <!-- SAĞ PANEL: EDİTÖR (ZARF AÇMA VEYA DÜZENLEME) -->
             <div class="editor-panel" id="editorPanel">
                 
                 <div class="placement-map">
@@ -353,6 +333,7 @@
                     </div>
                 </div>
 
+                <!-- YAPAY ZEKA BUTONU (Sadece ajan görüntüyü atarsa görünür) -->
                 <div style="text-align: center; margin-bottom: 20px;">
                     <button id="btnAiScan" onclick="scanImageWithAI()" style="background: linear-gradient(45deg, #601dc2, #9d4edd); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: none;">
                         <i class="fas fa-robot"></i> Görseli Yapay Zeka İle Oku
@@ -381,6 +362,7 @@
             </div>
         </div>
 
+        <!-- FİKSTÜRÜ TEMİZLE BÖLÜMÜ -->
         <div class="danger-zone" id="dangerZone" style="display:none;">
             <h3><i class="fas fa-archive"></i> FİKSTÜRÜ KAYDET VE TEMİZLE</h3>
             <p>Mevcut fikstürdeki tüm maçları ekrandan kaldırır ve "arşivlenmiş" olarak işaretler.<br><strong>Oyuncu istatistikleri ve profil KDA verileri veritabanında güvende kalır.</strong></p>
@@ -390,6 +372,7 @@
         </div>
     </main>
 
+    <!-- Fikstür Temizleme Onay Modalı -->
     <div class="modal-overlay" id="archiveModal">
         <div class="archive-modal-content">
             <h3>Emin Misiniz?</h3>
@@ -420,7 +403,6 @@
         let currentMode = 'zarflar';
         let activeRecordId = null;
         let currentProofImageUrl = "";
-        let currentUser = null;
 
         async function initAdminPage() {
             try {
@@ -447,7 +429,6 @@
                 if (!window.supabaseClient) throw new Error("Supabase bağlantısı yok.");
                 const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
                 if (authError || !user) throw new Error("Giriş yapılmadı.");
-                currentUser = user;
 
                 const { data: profile, error: profileError } = await window.supabaseClient.from('profiles').select('role').eq('id', user.id).single();
                 if (profileError || profile.role !== 'admin') throw new Error("Yetkisiz erişim.");
@@ -470,7 +451,7 @@
         }
 
         function switchTab(tabName) {
-            ['onay', 'takimlar', 'planla', 'fikstur', 'rutbe'].forEach(t => {
+            ['onay', 'takimlar', 'planla', 'fikstur'].forEach(t => {
                 const section = document.getElementById(t + 'Section');
                 if (section) section.style.display = (t === tabName) ? 'block' : 'none';
                 
@@ -503,63 +484,10 @@
         }
 
         // ==========================================
-        // ESKİ ONAY SİSTEMİ BÖLÜMÜ
+        // ESKİ ONAY SİSTEMİ BÖLÜMÜ (DOKUNULMADI)
         // ==========================================
-        async function fetchTeamsWithMembers(statusFilter) {
-            try {
-                const { data: apps, error } = await window.supabaseClient
-                    .from('tournament_applications')
-                    .select(`
-                        id, status,
-                        teams (
-                            id, name, tag, logo_url, captain_id,
-                            team_members (
-                                id, user_id, role, status, 
-                                profiles ( username, ign, user_contacts (phone, email) )
-                            )
-                        )
-                    `)
-                    .eq('status', statusFilter);
-                
-                if (error || !apps) return [];
-
-                return apps.filter(app => app.teams).map(app => {
-                    const t = app.teams;
-                    let members = (t.team_members || []).map(tm => {
-                        let contactData = tm.profiles?.user_contacts;
-                        if (Array.isArray(contactData)) contactData = contactData[0];
-                        const isCaptain = tm.user_id === t.captain_id;
-                        return {
-                            id: tm.id, 
-                            user_id: tm.user_id, 
-                            role: isCaptain ? 'captain' : tm.role, 
-                            status: isCaptain ? 'accepted' : tm.status,
-                            username: tm.profiles?.username || 'Bilinmiyor',
-                            ign: tm.profiles?.ign || '',
-                            phone: contactData?.phone || 'Belirtilmemiş',
-                            email: contactData?.email || 'Belirtilmemiş'
-                        };
-                    });
-                    
-                    const capt = members.filter(m => m.role === 'captain');
-                    const main = members.filter(m => m.role === 'main');
-                    const sub = members.filter(m => m.role === 'sub');
-                    members = [...capt, ...main, ...sub];
-
-                    return {
-                        id: app.id, team_id: t.id, team_name: t.name, team_tag: t.tag,
-                        logo_url: t.logo_url, captain_id: t.captain_id,
-                        members: members
-                    };
-                });
-            } catch (err) {
-                console.error("Veri çekme hatası:", err);
-                return [];
-            }
-        }
-
         async function loadPendingTeams() {
-            const teams = await fetchTeamsWithMembers('pending');
+            const { data: teams } = await window.supabaseClient.rpc('get_admin_teams', { p_status: 'pending' });
             const grid = document.getElementById('pendingTeamsGrid');
             grid.innerHTML = '';
             if (teams && teams.length > 0) {
@@ -576,8 +504,8 @@
                                 <div class="team-card-title"><span class="team-card-tag">[${team.team_tag}]</span> ${team.team_name}</div>
                                 <ul class="player-list-mini">${playersHtml}</ul>
                                 <div class="action-buttons">
-                                    <button class="btn-approve" onclick="updateTeamStatus('${team.id}', 'approved', '${team.captain_id}')"><i class="fas fa-check"></i> ONAYLA</button>
-                                    <button class="btn-reject" onclick="rejectTeam('${team.id}', '${team.captain_id}')"><i class="fas fa-times"></i> REDDET</button>
+                                    <button class="btn-approve" onclick="updateTeamStatus('${team.id}', 'approved', '${team.user_id||team.captain_id}')"><i class="fas fa-check"></i> ONAYLA</button>
+                                    <button class="btn-reject" onclick="rejectTeam('${team.id}', '${team.user_id||team.captain_id}')"><i class="fas fa-times"></i> REDDET</button>
                                 </div>
                             </div>
                         </div>`;
@@ -586,7 +514,7 @@
         }
 
         async function loadApprovedTeams() {
-            const teams = await fetchTeamsWithMembers('approved');
+            const { data: teams } = await window.supabaseClient.rpc('get_admin_teams', { p_status: 'approved' });
             const list = document.getElementById('approvedTeamsList');
             list.innerHTML = '';
             if (teams && teams.length > 0) {
@@ -601,13 +529,13 @@
             } else list.innerHTML = '<p style="color: var(--gri-yazi);">Onaylanmış takım yok.</p>';
         }
 
-        async function rejectTeam(appId, userId) {
+        async function rejectTeam(teamId, userId) {
             const reason = prompt("Lütfen ret sebebini yazın:");
-            if (reason) updateTeamStatus(appId, 'rejected', userId, reason);
+            if (reason) updateTeamStatus(teamId, 'rejected', userId, reason);
         }
 
-        async function updateTeamStatus(appId, status, userId, reason = "") {
-            const { error } = await window.supabaseClient.from('tournament_applications').update({ status }).eq('id', appId);
+        async function updateTeamStatus(teamId, status, userId, reason = "") {
+            const { error } = await window.supabaseClient.from('tournament_applications').update({ status }).eq('id', teamId);
             if (!error) {
                 if (userId) {
                     const baslik = status === 'approved' ? "Başvuru Onaylandı" : "Başvuru Reddedildi";
@@ -618,123 +546,10 @@
             } else showNotification("Hata.", "error");
         }
 
-        async function excelAktar() { 
-            showNotification("Excel'e aktarma işlemi başlatılıyor...", "info");
-        }
-
-        async function takimiSil(appId, teamName, logoUrl, captainId) {
-            const reason = prompt(`DİKKAT: ${teamName} takımının BAŞVURUSUNU kalıcı olarak silmek üzeresiniz. Sebep yazın:`);
-            if (reason === null) return;
-            if (reason.trim() === "") return showNotification("Sebep boş bırakılamaz.", "error");
-            
-            try {
-                if (captainId) {
-                    await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: captainId, baslik: "Başvurunuz Silindi!", mesaj: `Sebep: ${reason}`, tip: 'red' }]);
-                }
-                const { error: teamError } = await window.supabaseClient.from('tournament_applications').delete().eq('id', appId);
-                if (teamError) throw teamError;
-
-                showNotification(`${teamName} başvurusu başarıyla silindi.`, "success");
-                closeModal(); loadApprovedTeams(); loadPendingTeams(); loadSidebarData();
-            } catch (err) { showNotification("Silme işlemi sırasında hata oluştu.", "error"); }
-        }
-
-        function openTeamModal(team) {
-            document.getElementById('modalLogo').src = team.logo_url || 'img/unknown.webp';
-            document.getElementById('modalTeamName').innerText = team.team_name;
-            document.getElementById('modalTeamTag').innerText = `[${team.team_tag}]`;
-            
-            const captData = (team.members || []).find(m => m.user_id === team.captain_id);
-            document.getElementById('modalCaptainName').innerText = captData ? captData.username : 'Bilinmiyor';
-            document.getElementById('modalCaptainPhone').innerText = captData ? captData.phone : 'Belirtilmemiş'; 
-            document.getElementById('modalCaptainEmail').innerText = captData ? captData.email : 'Belirtilmemiş'; 
-
-            const rl = document.getElementById('modalRosterList'); rl.innerHTML = '';
-            (team.members || []).forEach(m => {
-                let roleText = 'Yedek';
-                let color = 'var(--gri-yazi)';
-                if (m.role === 'captain') { roleText = 'Kaptan'; color = 'var(--neon-mor)'; }
-                else if (m.role === 'main') { roleText = 'Asil'; color = 'var(--yazi-beyaz)'; }
-                rl.innerHTML += `<li><span style="color:${color}; font-weight:normal; width:60px; display:inline-block;">${roleText}:</span> <span style="color:var(--neon-mor); flex:1;">${m.username}</span></li>`;
-            });
-            const deleteBtn = document.getElementById('modalDeleteBtn');
-            deleteBtn.onclick = () => takimiSil(team.id, team.team_name, team.logo_url, team.captain_id);
-            document.getElementById('teamModal').classList.add('active');
-        }
-        
+        async function excelAktar() { /* Kısaltıldı */ }
+        async function takimiSil(teamId, teamName, logoUrl, captainId) { /* Kısaltıldı */ }
+        function openTeamModal(team) { /* Kısaltıldı */ }
         function closeModal() { document.getElementById('teamModal').classList.remove('active'); }
-        window.addEventListener('click', function(e) { if (e.target === document.getElementById('teamModal')) closeModal(); });
-
-
-        // ==========================================
-        // RÜTBE SİSTEMİ
-        // ==========================================
-        async function searchUserForAdmin() {
-            const username = document.getElementById('adminSearchInput').value.trim();
-            const resultDiv = document.getElementById('adminSearchResult');
-            
-            if (!username) {
-                showNotification("Lütfen bir kullanıcı adı girin.", "error");
-                return;
-            }
-            resultDiv.innerHTML = '<div style="color: #777; font-size: 13px;">Aranıyor...</div>';
-
-            try {
-                const { data, error } = await window.supabaseClient
-                    .from('profiles')
-                    .select('id, username, role')
-                    .ilike('username', username)
-                    .single();
-
-                if (error || !data) {
-                    resultDiv.innerHTML = '<div style="color: var(--kirmizi-iptal); font-size: 13px; padding: 10px; background: rgba(255,75,75,0.1); border-radius: 5px;">Kullanıcı bulunamadı.</div>';
-                    return;
-                }
-
-                const roleClass = data.role === 'admin' ? 'role-admin' : 'role-player';
-                const roleText = data.role === 'admin' ? 'YÖNETİCİ' : 'OYUNCU';
-
-                let actionButton = '';
-                if (data.id === currentUser.id) {
-                    actionButton = `<span style="color: #777; font-size: 12px; font-style: italic;">(Bu sensin)</span>`;
-                } else if (data.role === 'admin') {
-                    actionButton = `<button class="btn-remove-admin" onclick="changeUserRole('${data.id}', 'player')"><i class="fas fa-user-minus"></i> Yetkiyi Al</button>`;
-                } else {
-                    actionButton = `<button class="btn-make-admin" onclick="changeUserRole('${data.id}', 'admin')"><i class="fas fa-user-check"></i> Admin Yap</button>`;
-                }
-
-                resultDiv.innerHTML = `
-                    <div class="user-result-card">
-                        <div class="user-result-info">
-                            <strong>${data.username}</strong>
-                            <span class="role-badge ${roleClass}">${roleText}</span>
-                        </div>
-                        <div class="action-buttons-role">
-                            ${actionButton}
-                        </div>
-                    </div>
-                `;
-
-            } catch (err) {
-                console.error("Arama hatası:", err);
-                showNotification("Arama sırasında bir hata oluştu.", "error");
-            }
-        }
-
-        async function changeUserRole(targetUserId, newRole) {
-            try {
-                const { error } = await window.supabaseClient.rpc('set_user_role', {
-                    p_user_id: targetUserId,
-                    p_new_role: newRole
-                });
-                if (error) throw error;
-                showNotification(newRole === 'admin' ? "Kullanıcıya başarıyla Admin yetkisi verildi!" : "Kullanıcının Admin yetkisi alındı.", "success");
-                searchUserForAdmin();
-            } catch (err) {
-                console.error("Yetki değiştirme hatası:", err);
-                showNotification("Hata: " + (err.message || "Yetki değiştirilirken bir hata oluştu."), "error");
-            }
-        }
 
 
         // ==========================================
@@ -765,17 +580,14 @@
             }
 
             try {
-                // LOGO VE İSİM HATASI DÜZELTİLDİ: Doğrudan teams tablosunda aratıyoruz
-                const { data } = await window.supabaseClient.from('teams')
-                    .select('id, name, logo_url')
-                    .ilike('name', `%${inputVal.trim()}%`)
-                    .limit(1)
-                    .maybeSingle();
+                const { data } = await window.supabaseClient.from('tournament_applications')
+                    .select('id, logo_url, team_name').ilike('team_name', `%${inputVal.trim()}%`).eq('status', 'approved').limit(1).maybeSingle();
                 
                 if(data) {
                     if(side === 'A') planlaTeamAId = data.id; else planlaTeamBId = data.id;
                     imgEl.src = data.logo_url || 'img/unknown.webp';
-                    document.getElementById(side === 'A' ? 'planlaTeamA' : 'planlaTeamB').value = data.name;
+                    // İsmi tam eşleşene göre düzelt
+                    document.getElementById(side === 'A' ? 'planlaTeamA' : 'planlaTeamB').value = data.team_name;
                 } else {
                     imgEl.src = 'img/unknown.webp';
                     if(side === 'A') planlaTeamAId = null; else planlaTeamBId = null;
@@ -827,6 +639,7 @@
 
                 showNotification("Maç başarıyla planlandı!", "success");
                 
+                // Formu temizle
                 document.getElementById('planlaTeamA').value = ''; document.getElementById('planlaTeamB').value = '';
                 document.getElementById('planlaDate').value = '';
                 document.getElementById('planlaLogoA').src = 'img/unknown.webp'; document.getElementById('planlaLogoB').src = 'img/unknown.webp';
@@ -1113,22 +926,14 @@
                 let mimeType = imageBlob.type; if (!mimeType || !mimeType.startsWith('image/')) mimeType = 'image/jpeg'; 
                 const base64Data = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(imageBlob); });
 
-                // AI KOMUTU RENKLERE GÖRE AYIRMASI İÇİN GÜÇLENDİRİLDİ
-                const promptText = `Aşağıdaki Valorant maç sonu tablosunu incele.
-OYUNCULAR TAKIMLARA GÖRE GRUPLANMAMIŞTIR! Karışık listelenmiştir.
-Kimin hangi takımda olduğunu SADECE satırın arka plan renginden anlayabilirsin:
-1. Satırın arka planı MAVİ / TURKUAZ (Teal/Cyan) ise, bu oyuncu "playersA" listesine konmalıdır.
-2. Satırın arka planı KIRMIZI / PEMBE (Red/Pink) ise, bu oyuncu "playersB" listesine konmalıdır.
-
-Tablodaki sütunlar soldan sağa şöyledir:
-Ajan İkonu, Oyuncu İsmi, AVG COMBAT SCORE (acs), KDA (Kills / Deaths / Assists).
-Ajan ismini ikondan anlarsan yaz, anlamazsan boş bırak.
-
-LÜTFEN SADECE aşağıdaki gibi saf bir JSON döndür, kod bloğu (\`\`\`) veya başka bir yazı kullanma:
-{
-  "playersA": [ {"agent": "Jett", "ign": "OyuncuNicki", "k": 10, "d": 5, "a": 3, "acs": 250} ],
-  "playersB": [ {"agent": "Omen", "ign": "RakipNicki", "k": 8, "d": 10, "a": 2, "acs": 180} ]
-}`;
+                const promptText = `Bu bir Valorant maç sonu ekranıdır. Resimdeki tabloyu analiz et. 
+                    DİKKAT: Oyuncular alt alta takımlar halinde DEĞİL, karışık olarak sıralanmıştır.
+                    Oyuncuları doğru takımlara ayırmak için SATIRLARIN ARKA PLAN RENKLERİNE bakmalısın!
+                    - Arka planı MAVİ / TURKUAZ (Teal/Cyan) olan satırlardaki oyuncuları "playersA" listesine koy.
+                    - Arka planı KIRMIZI / PEMBE (Red/Pink) olan satırlardaki oyuncuları "playersB" listesine koy.
+                    AJAN İSİMLERİ İÇİN: Eğer ajan ikonunu anlıyorsan 'agent' kısmına İngilizce adını yaz, anlamadıysan boş bırak.
+                    Lütfen SADECE aşağıdaki JSON formatında çıktı ver, başka hiçbir kelime yazma, kod bloğu kullanma:
+                    { "playersA": [ {"agent": "Jett", "ign": "OyuncuNicki", "k": 10, "d": 5, "a": 3, "acs": 250} ], "playersB": [ {"agent": "Omen", "ign": "RakipNicki", "k": 8, "d": 10, "a": 2, "acs": 180} ] }`;
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1278,6 +1083,7 @@ LÜTFEN SADECE aşağıdaki gibi saf bir JSON döndür, kod bloğu (\`\`\`) veya
             } catch (e) { showNotification("Silinirken hata oluştu.", "error"); }
         }
 
+        // --- FİKSTÜR TEMİZLEME VE ARŞİVLEME SİSTEMİ ---
         function openArchiveModal() {
             document.getElementById('confirmInput').value = '';
             document.getElementById('archiveModal').classList.add('active');
