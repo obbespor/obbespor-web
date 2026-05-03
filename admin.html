@@ -162,6 +162,7 @@
                 <li><a id="tab-takvim" onclick="switchTab('takvim')">TAKVİM <i class="far fa-calendar-alt" style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 <li><a id="tab-fikstur" onclick="switchTab('fikstur')">FİKSTÜR<i class="fas fa-sitemap" style="font-size: 10px; margin-left: 5px;"></i></a></li>
                 <li><a href="mac-yonetim.html">DÜZENLE<i class="fas fa-cog" style="font-size: 10px; margin-left: 5px;"></i></a></li>
+                <li><a id="tab-kullanici" onclick="switchTab('kullanici')">YETKİ <i class="fas fa-users-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
             </ul>
         </nav>
@@ -191,6 +192,31 @@
             <button class="btn-excel" onclick="excelAktar()"><i class="fas fa-file-excel"></i> Excel'e Aktar</button>
         </div>
         <div class="approved-list" id="approvedTeamsList"></div>
+        <!-- KULLANICI (ROL) YÖNETİMİ SİSTEMİ -->
+    <main class="admin-container" id="kullaniciSection">
+        <div class="header-with-btn">
+            <h2 class="section-title">KULLANICI <span>YETKİLENDİRME</span></h2>
+        </div>
+        
+        <div class="planla-card" style="max-width: 600px;">
+            <p style="color:var(--gri-yazi); font-size:13px; margin-bottom: 25px;">Bir kullanıcının yetkisini değiştirmek için oyun içi nickini (IGN) veya e-posta adresini girin.</p>
+            
+            <div style="display:flex; flex-direction: column; gap:15px; margin-bottom: 30px;">
+                <input type="text" id="roleSearchInput" class="form-control" style="text-align:center; font-size: 16px; padding: 15px;" placeholder="Nick (Örn: PATRON#TR1) veya E-Posta Girin">
+                
+                <div style="display: flex; gap: 10px;">
+                    <select id="newRoleSelect" class="form-control" style="flex: 1; text-align:center; font-size: 15px;">
+                        <option value="user">USER (Standart Oyuncu)</option>
+                        <option value="admin">ADMIN (Tam Yetkili)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-schedule" id="btnUpdateRole" onclick="updateUserRole()" style="width: 100%; justify-content: center;">
+                <i class="fas fa-user-shield"></i> YETKİYİ GÜNCELLE
+            </button>
+        </div>
+    </main>
     </main>
 
     <!-- Modal (Eski Onay) -->
@@ -1003,6 +1029,48 @@
                 if (match.tournament_id) document.getElementById('tourneySelect').value = match.tournament_id;
 
             } catch(e) { console.error(e); }
+        }
+        async function updateUserRole() {
+            const searchVal = document.getElementById('roleSearchInput').value.trim();
+            const newRole = document.getElementById('newRoleSelect').value;
+
+            if(!searchVal) return showNotification("Lütfen bir nick veya e-posta girin.", "error");
+            if(!confirm(`Bu kullanıcının yetkisini "${newRole.toUpperCase()}" olarak değiştirmek istediğinize emin misiniz?`)) return;
+
+            const btn = document.getElementById('btnUpdateRole');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GÜNCELLENİYOR...';
+            btn.disabled = true;
+
+            try {
+                // Önce kullanıcıyı bulalım (Nick veya Email ile)
+                const { data: userProfile, error: findErr } = await window.supabaseClient.from('profiles')
+                    .select('id, username, ign')
+                    .or(`ign.ilike.%${searchVal}%,email.ilike.%${searchVal}%`)
+                    .maybeSingle();
+
+                if (findErr) throw findErr;
+                if (!userProfile) {
+                    showNotification("Bu bilgilere ait bir kullanıcı bulunamadı.", "error");
+                    return;
+                }
+
+                // Rolü güncelleyelim
+                const { error: updErr } = await window.supabaseClient.from('profiles')
+                    .update({ role: newRole })
+                    .eq('id', userProfile.id);
+
+                if (updErr) throw updErr;
+
+                showNotification(`${userProfile.ign || userProfile.username} adlı kullanıcının yetkisi ${newRole.toUpperCase()} yapıldı!`, "success");
+                document.getElementById('roleSearchInput').value = '';
+
+            } catch (err) {
+                showNotification("Yetki güncellenirken hata: " + err.message, "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
 
         function syncTeamName(teamStr, name) {
