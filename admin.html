@@ -789,10 +789,10 @@
                             .update({ team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live' }).eq('id', matchId);
                         if(updErr) throw updErr;
                     } else {
-                        const { data: newMatch, error: insMatchErr } = await window.supabaseClient.from('bracket_matches').insert([{
-                            tournament_id: tourneyId, round_name: sName, round_order: matchO, 
-                            team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live', match_format: formatStr
-                        }]).select().single();
+                       const { data: newMatch, error: insMatchErr } = await window.supabaseClient.from('bracket_matches').insert([{
+    tournament_id: tourneyId, round_name: sName, round_order: matchO, 
+    team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live', match_format: formatStr
+}]).select().single();
                         if(insMatchErr) throw insMatchErr;
                         matchId = newMatch.id;
                     }
