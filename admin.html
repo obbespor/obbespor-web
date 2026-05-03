@@ -595,11 +595,6 @@
             document.getElementById('teamModal').classList.add('active');
         }
         function closeModal() { document.getElementById('teamModal').classList.remove('active'); }
-
-
-        // ==========================================
-        // YENİ: TAKVİM (MAÇ PLANLAMA) SİSTEMİ
-        // ==========================================
         function updateTakvimSelectors() {
             const stage = document.getElementById('takvimStage').value;
             const matchOrder = document.getElementById('takvimMatchOrder');
@@ -674,7 +669,6 @@
                         .eq('id', existingMatch.id);
                     if (updErr) throw new Error(updErr.message);
                 } else {
-                    // HATALI KISIM DÜZELTİLDİ: tournament_name artık gönderilmiyor!
                     const { error: insErr } = await window.supabaseClient.from('bracket_matches').insert([{
                         tournament_id: tourneyId, round_name: sName, round_order: matchO,
                         team_a_id: takvimTeamAId, team_b_id: takvimTeamBId, status: 'pending', match_date: matchDate,
@@ -736,7 +730,6 @@
                             .update({ team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live' }).eq('id', matchId);
                         if(updErr) throw updErr;
                     } else {
-                        // HATALI KISIM DÜZELTİLDİ: tournament_name artık gönderilmiyor!
                         const { data: newMatch, error: insMatchErr } = await window.supabaseClient.from('bracket_matches').insert([{
                             tournament_id: tourneyId, round_name: sName, round_order: matchO, 
                             team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live', match_format: formatStr
@@ -779,9 +772,7 @@
             } catch(e) { console.error(e); showNotification("HATA: " + e.message, "error"); } finally { btn.innerHTML = originalText; btn.disabled = false; }
         }
 
-        // ==========================================
-        // ZARF VE FİKSTÜR İŞLEME SİSTEMİ (EDİTÖR)
-        // ==========================================
+
         function switchSidebarTab(mode) {
             currentMode = mode;
             document.getElementById('tabZarflar').classList.toggle('active', mode === 'zarflar');
@@ -1198,21 +1189,29 @@ LÜTFEN SADECE aşağıdaki gibi saf bir JSON döndür, kod bloğu (\`\`\`) veya
             } catch(e) { console.error(e); showNotification("HATA: " + e.message, "error"); } finally { btn.innerHTML = originalText; btn.disabled = false; }
         }
 
-        async function rejectOrDelete() {
-            if(!activeRecordId) return;
-            if(!confirm("Bu kaydı kalıcı olarak silmek/reddetmek istediğinize emin misiniz?")) return;
+async function rejectOrDelete() {
+    if(!activeRecordId) return;
+    if(!confirm("Bu kaydı silmek istediğinize emin misiniz?")) return;
 
-            try {
-                if(currentMode === 'zarflar') {
-                    await window.supabaseClient.from('bekleyen_zarflar').delete().eq('id', activeRecordId);
-                    showNotification("Zarf çöpe atıldı.", "success");
-                } else {
-                    await window.supabaseClient.from('match_maps').delete().eq('id', activeRecordId.mapId);
-                    showNotification("Harita kaydı silindi.", "success");
-                }
-                switchSidebarTab(currentMode); 
-            } catch (e) { showNotification("Silinirken hata oluştu.", "error"); }
+    try {
+        if(currentMode === 'zarflar') {
+            await window.supabaseClient.from('bekleyen_zarflar').delete().eq('id', activeRecordId);
+            showNotification("Zarf çöpe atıldı.", "success");
+        } else {
+            await window.supabaseClient.from('match_maps').delete().eq('id', activeRecordId.mapId);
+            
+            if(confirm("Harita silindi. Bu eşleşmeyi fikstürden TAMAMEN kaldırıp 'Belirlenmedi' slotuna döndürmek ister misin?")) {
+                await window.supabaseClient.from('bracket_matches').delete().eq('id', activeRecordId.matchId);
+                showNotification("Eşleşme fikstürden tamamen temizlendi.", "success");
+            } else {
+                showNotification("Harita silindi ama takımlar fikstürde bekliyor.", "success");
+            }
         }
+        switchSidebarTab(currentMode); 
+    } catch (e) { 
+        showNotification("Silinirken hata oluştu.", "error"); 
+    }
+}
 
         document.addEventListener('DOMContentLoaded', initAdminPage);
     </script>
