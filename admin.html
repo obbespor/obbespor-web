@@ -460,7 +460,7 @@
         }
 
         function switchTab(tabName) {
-            ['onay', 'takimlar', 'fikstur', 'takvim'].forEach(t => {
+            ['onay', 'takimlar', 'fikstur', 'takvim','fikstur'].forEach(t => {
                 const section = document.getElementById(t + 'Section');
                 if (section) section.style.display = (t === tabName) ? 'block' : 'none';
                 
