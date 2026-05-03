@@ -258,9 +258,14 @@
                 <input type="text" id="takvimDate" class="planla-date-input" placeholder="Tarih Girin (Örn: 24 Mart 21:00)">
             </div>
 
-            <button class="btn-schedule" id="btnExecuteTakvim" onclick="executeScheduleMatch()">
-                <i class="far fa-calendar-check"></i> MAÇI FİKSTÜRE PLANLA
-            </button>
+<div style="display: flex; gap: 15px; justify-content: center;">
+                <button class="btn-schedule" id="btnExecuteTakvim" onclick="executeScheduleMatch()">
+                    <i class="far fa-calendar-check"></i> MAÇI PLANLA
+                </button>
+                <button class="btn-reject-env" id="btnDeleteTakvim" onclick="deleteScheduleMatch()" style="flex: none; padding: 18px 40px; border-radius: 12px; margin-top: 0;">
+                    <i class="fas fa-calendar-times"></i> PLANI SİL
+                </button>
+            </div>
         </div>
     </main>
 
@@ -686,6 +691,60 @@
 
             } catch (err) {
                 showNotification("Planlama Hatası: " + err.message, "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+        async function deleteScheduleMatch() {
+            const tourneyId = document.getElementById('takvimTourney').value;
+            if(!tourneyId) return showNotification("Lütfen bir turnuva seçin.", "error");
+
+            const sNameRaw = document.getElementById('takvimStage').value;
+            const sName = sNameRaw.split(' (')[0]; 
+            const matchO = document.getElementById('takvimMatchOrder').value;
+
+            // Kullanıcıdan onay alıyoruz
+            if(!confirm(`${sName} - ${matchO}. Maç slotundaki planlamayı fikstürden tamamen silmek istediğinize emin misiniz?`)) return;
+
+            const btn = document.getElementById('btnDeleteTakvim');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SİLİNİYOR...';
+            btn.disabled = true;
+
+            try {
+                // Önce o slotta bir maç var mı diye kontrol edelim
+                const { data: existingMatch, error: findErr } = await window.supabaseClient.from('bracket_matches')
+                    .select('id, status').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
+
+                if (findErr) throw findErr;
+
+                if (!existingMatch) {
+                    showNotification("Bu slotta planlanmış bir maç bulunamadı.", "info");
+                    return;
+                }
+
+                // DİKKAT: Eğer maç zaten oynanmış ve skor girilmişse (status !== 'pending') ekstra uyar
+                if(existingMatch.status !== 'pending') {
+                     if(!confirm("DİKKAT: Bu maça zaten zarf işlenmiş ve skor girilmiş! Yine de bu eşleşmeyi tamamen silmek istiyor musunuz?")) {
+                         return; // İptal ederse çık
+                     }
+                }
+
+                // Supabase'den maçı tamamen sil
+                const { error: delErr } = await window.supabaseClient.from('bracket_matches').delete().eq('id', existingMatch.id);
+                if (delErr) throw delErr;
+
+                showNotification("Planlanmış maç başarıyla silindi ve slot boşaltıldı!", "success");
+                
+                // Ekrandaki form kutularını sıfırla
+                document.getElementById('takvimTeamA').value = ''; document.getElementById('takvimTeamB').value = '';
+                document.getElementById('takvimDate').value = '';
+                document.getElementById('takvimLogoA').src = 'img/unknown.webp'; document.getElementById('takvimLogoB').src = 'img/unknown.webp';
+                takvimTeamAId = null; takvimTeamBId = null;
+
+            } catch (err) {
+                showNotification("Silme Hatası: " + err.message, "error");
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
