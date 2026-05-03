@@ -509,19 +509,21 @@
                 });
 
                 // YAPAY ZEKA PROMPTU RENK ALGILAMASINA GÖRE GÜNCELLENDİ
-                const promptText = `
-                    Bu bir Valorant maç sonu ekranıdır. Resimdeki tabloyu analiz et. 
-                    DİKKAT: Oyuncular alt alta takımlar halinde DEĞİL, karışık olarak sıralanmıştır.
-                    Oyuncuları doğru takımlara ayırmak için SATIRLARIN ARKA PLAN RENKLERİNE bakmalısın!
-                    - Arka planı MAVİ / TURKUAZ (Teal/Cyan) olan satırlardaki oyuncuları "playersA" listesine koy.
-                    - Arka planı KIRMIZI / PEMBE (Red/Pink) olan satırlardaki oyuncuları "playersB" listesine koy.
-                    AJAN İSİMLERİ İÇİN: Eğer ajan ikonunu anlıyorsan 'agent' kısmına İngilizce adını yaz (Örn: Reyna, Jett, Omen vs), anlamadıysan boş bırak.
-                    Lütfen SADECE aşağıdaki JSON formatında çıktı ver, başka hiçbir kelime yazma, kod bloğu (\`\`\`json) KULLANMA:
-                    {
-                        "playersA": [ {"agent": "Jett", "ign": "OyuncuNicki", "k": 10, "d": 5, "a": 3, "acs": 250} ],
-                        "playersB": [ {"agent": "Omen", "ign": "RakipNicki", "k": 8, "d": 10, "a": 2, "acs": 180} ]
-                    }
-                `;
+                const promptText = `Aşağıdaki Valorant maç sonu tablosunu incele.
+OYUNCULAR TAKIMLARA GÖRE GRUPLANMAMIŞTIR! Karışık listelenmiştir.
+Kimin hangi takımda olduğunu SADECE satırın arka plan renginden anlayabilirsin:
+1. Satırın arka planı MAVİ / TURKUAZ (Teal/Cyan) ise, bu oyuncu "playersA" listesine konmalıdır.
+2. Satırın arka planı KIRMIZI / PEMBE (Red/Pink) ise, bu oyuncu "playersB" listesine konmalıdır.
+
+Tablodaki sütunlar soldan sağa şöyledir:
+Ajan İkonu, Oyuncu İsmi, AVG COMBAT SCORE (acs), KDA (Kills / Deaths / Assists).
+Ajan ismini ikondan anlarsan yaz, anlamazsan boş bırak.
+
+LÜTFEN SADECE aşağıdaki gibi saf bir JSON döndür, kod bloğu (\`\`\`) veya başka bir yazı kullanma:
+{
+  "playersA": [ {"agent": "Jett", "ign": "OyuncuNicki", "k": 10, "d": 5, "a": 3, "acs": 250} ],
+  "playersB": [ {"agent": "Omen", "ign": "RakipNicki", "k": 8, "d": 10, "a": 2, "acs": 180} ]
+}`;
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
                     method: 'POST',
