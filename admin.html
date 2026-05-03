@@ -646,10 +646,8 @@
             } catch(e) { console.error(e); }
         }
 
-        async function executeScheduleMatch() {
+       async function executeScheduleMatch() {
             const tourneyId = document.getElementById('takvimTourney').value;
-            const tourneySelectEl = document.getElementById('takvimTourney');
-            const tourneyName = tourneySelectEl.options[tourneySelectEl.selectedIndex].text;
             
             if(!tourneyId) return showNotification("Lütfen bir turnuva seçin.", "error");
 
@@ -680,8 +678,9 @@
                         .eq('id', existingMatch.id);
                     if (updErr) throw new Error(updErr.message);
                 } else {
+                    // HATALI KISIM DÜZELTİLDİ: tournament_name artık gönderilmiyor!
                     const { error: insErr } = await window.supabaseClient.from('bracket_matches').insert([{
-                        tournament_id: tourneyId, tournament_name: tourneyName, round_name: sName, round_order: matchO,
+                        tournament_id: tourneyId, round_name: sName, round_order: matchO,
                         team_a_id: takvimTeamAId, team_b_id: takvimTeamBId, status: 'pending', match_date: matchDate,
                         match_format: formatStr, series_score_a: 0, series_score_b: 0
                     }]);
@@ -703,6 +702,86 @@
             }
         }
 
+        async function saveToBracket() {
+            if(!activeRecordId) return;
+
+            const tourneyId = document.getElementById('tourneySelect').value;
+            
+            if(!tourneyId) return showNotification("Lütfen bir turnuva seçin.", "error");
+
+            const sNameRaw = document.getElementById('stageSelect').value;
+            const sName = sNameRaw.split(' (')[0]; 
+            const matchO = document.getElementById('matchOrderSelect').value;
+            const mapO = document.getElementById('mapOrderSelect').value;
+            const scoreA = document.getElementById('scoreA').value;
+            const scoreB = document.getElementById('scoreB').value;
+            const mapName = document.getElementById('mapNameInput').value;
+
+            let formatStr = 'BO1';
+            if (sNameRaw.includes('BO3')) formatStr = 'BO3';
+            if (sNameRaw.includes('BO5')) formatStr = 'BO5';
+
+            if(!teamAId_memory || !teamBId_memory) return showNotification("HATA: Takım(lar) onaylı listede bulunamadı!", "error");
+
+            const btn = document.getElementById('btnSaveToBracket');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İŞLENİYOR...';
+            btn.disabled = true;
+
+            try {
+                if(currentMode === 'zarflar') {
+                    const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
+                        .select('id').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
+                    
+                    let matchId;
+                    if(existingMatch) {
+                        matchId = existingMatch.id;
+                        const { error: updErr } = await window.supabaseClient.from('bracket_matches')
+                            .update({ team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live' }).eq('id', matchId);
+                        if(updErr) throw updErr;
+                    } else {
+                        // HATALI KISIM DÜZELTİLDİ: tournament_name artık gönderilmiyor!
+                        const { data: newMatch, error: insMatchErr } = await window.supabaseClient.from('bracket_matches').insert([{
+                            tournament_id: tourneyId, round_name: sName, round_order: matchO, 
+                            team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live', match_format: formatStr
+                        }]).select().single();
+                        if(insMatchErr) throw insMatchErr;
+                        matchId = newMatch.id;
+                    }
+
+                    const { data: mapData, error: mapErr } = await window.supabaseClient.from('match_maps').insert([{
+                        match_id: matchId, map_order: mapO, map_name: mapName, score_a: scoreA, score_b: scoreB
+                    }]).select().single();
+                    if(mapErr) throw mapErr;
+
+                    const insertData = [ ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, mapData.id)), ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, mapData.id)) ];
+                    if(insertData.length > 0) {
+                        const { error: statsErr } = await window.supabaseClient.from('match_player_stats').insert(insertData);
+                        if (statsErr) throw statsErr;
+                    }
+
+                    await window.supabaseClient.from('bekleyen_zarflar').update({ durum: 'processed' }).eq('id', activeRecordId);
+                    
+                    showNotification("Başarıyla Fikstüre İğnelendi!", "success");
+                    setTimeout(() => switchSidebarTab('zarflar'), 1500);
+
+                } else {
+                    const mapId = activeRecordId.mapId;
+                    const { error: mapUpdateErr } = await window.supabaseClient.from('match_maps').update({ map_name: mapName, score_a: scoreA, score_b: scoreB }).eq('id', mapId);
+                    if(mapUpdateErr) throw mapUpdateErr;
+
+                    await window.supabaseClient.from('match_player_stats').delete().eq('map_id', mapId);
+                    const insertData = [ ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, mapId)), ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, mapId)) ];
+                    if(insertData.length > 0) {
+                        const { error: statsErr } = await window.supabaseClient.from('match_player_stats').insert(insertData);
+                        if (statsErr) throw statsErr;
+                    }
+
+                    showNotification("Harita başarıyla güncellendi.", "success");
+                    setTimeout(() => switchSidebarTab('fikstur'), 1500);
+                }
+            } catch(e) { console.error(e); showNotification("HATA: " + e.message, "error"); } finally { btn.innerHTML = originalText; btn.disabled = false; }
+        }
 
         // ==========================================
         // ZARF VE FİKSTÜR İŞLEME SİSTEMİ (EDİTÖR)
