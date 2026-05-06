@@ -3,73 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yönetici Paneli | OBB E-SPORTS</title>
+    <title>Zarf İşleme ve Fikstür | OBB E-SPORTS</title>
     <link rel="icon" type="image/png" href="img/obblogo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        /* FRONTEND BOUNCER Kodu Kaldırıldı (Siyah Ekran Hatasını Çözmek İçin) */
-        
         nav ul li a { cursor: pointer; }
         .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
-        .admin-container { padding: 40px 10%; flex: 1; display: none; animation: fadeIn 0.4s ease; }
+        
+        .admin-container { padding: 40px 10%; flex: 1; animation: fadeIn 0.4s ease; display: block; }
         .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; color: white;}
         .section-title span { color: var(--neon-mor); }
-
-        /* ESKİ SİSTEMLER */
-        .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; }
-        .team-card { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .team-card:hover { border-color: var(--neon-mor); transform: translateY(-5px); box-shadow: 0 15px 40px rgba(96, 29, 194, 0.2); }
-        .team-logo-area { height: 120px; background: #111; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid #222; }
-        .team-logo-area img { max-height: 90px; max-width: 90%; object-fit: contain; }
-        .team-card-body { padding: 20px; }
-        .team-card-title { font-size: 20px; font-weight: 900; color: white; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
-        .team-card-tag { font-size: 12px; background: var(--neon-mor); padding: 3px 8px; border-radius: 4px; }
-        .player-list-mini { list-style: none; margin-bottom: 20px; padding: 0; }
-        .player-list-mini li { font-size: 13px; color: var(--gri-yazi); padding: 5px 0; border-bottom: 1px dashed #222; display: flex; justify-content: space-between; }
-        .player-list-mini li span { color: white; font-weight: bold; }
-        .action-buttons { display: flex; gap: 10px; }
-        .btn-approve { flex: 1; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--yesil-guven); color: var(--yesil-guven); padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-approve:hover { background: var(--yesil-guven); color: #000; box-shadow: 0 0 15px var(--yesil-guven); }
-        .btn-reject { flex: 1; background: rgba(255, 75, 75, 0.1); border: 1px solid var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-reject:hover { background: var(--kirmizi-iptal); color: #fff; box-shadow: 0 0 15px var(--kirmizi-iptal); }
-
-        .header-with-btn { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
-        .header-with-btn .section-title { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
-        .btn-excel { background: #1f8536; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; font-family: 'Poppins', sans-serif; }
-        .btn-excel:hover { background: #28a745; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4); }
-        
-        .approved-list { display: flex; flex-direction: column; gap: 10px; }
-        .approved-item { display: flex; align-items: center; background: #0a0a0a; border: 1px solid #222; padding: 15px 25px; border-radius: 10px; cursor: pointer; transition: 0.3s; }
-        .approved-item:hover { border-color: var(--neon-mor); background: #111; transform: translateX(10px); }
-        .approved-number { font-size: 20px; font-weight: 900; color: var(--neon-mor); width: 40px; }
-        .approved-name { font-size: 16px; font-weight: bold; color: white; flex: 1; }
-        .approved-tag { font-size: 12px; color: var(--gri-yazi); border: 1px solid #333; padding: 2px 8px; border-radius: 4px; margin-left: 10px; }
-
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
-        .modal-content { background: rgba(15, 15, 15, 0.9); border: 1px solid var(--neon-mor); border-radius: 20px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 0; box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(96, 29, 194, 0.1); position: relative; }
-        .modal-header { padding: 30px; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 20px; position: relative; }
-        .modal-header img { width: 80px; height: 80px; object-fit: contain; background: #000; border-radius: 10px; border: 1px solid #333; }
-        .modal-title-area h2 { font-size: 24px; font-weight: 900; color: white; margin-bottom: 5px; }
-        .modal-title-area span { background: var(--neon-mor); color: white; padding: 3px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; }
-        .close-modal { position: absolute; top: 20px; right: 25px; font-size: 30px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; z-index: 100; }
-        .close-modal:hover { color: var(--kirmizi-iptal); }
-        .modal-body { padding: 30px; }
-        .info-card { background: #050505; border: 1px solid #222; border-radius: 10px; padding: 20px; margin-bottom: 25px; }
-        .info-card h4 { color: var(--neon-mor); font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 8px; }
-        .info-row { display: flex; margin-bottom: 10px; font-size: 14px; }
-        .info-label { color: var(--gri-yazi); width: 120px; font-weight: bold; }
-        .info-data { color: white; font-weight: 500; }
-        .btn-delete-team { background: rgba(255, 75, 75, 0.05); border: 1px dashed var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px; }
-        .btn-delete-team:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 0 15px rgba(255, 75, 75, 0.4); border-style: solid; }
+        .page-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
+        .page-header-row .section-title { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
 
         /* ZARF & FİKSTÜR SİSTEMİ CSS */
         .dashboard-grid { display: grid; grid-template-columns: 350px 1fr; gap: 30px; align-items: start; }
@@ -118,19 +69,6 @@
         .btn-reject-env { color: var(--kirmizi-iptal); background: rgba(255, 75, 75, 0.1); border: 1px dashed var(--kirmizi-iptal); padding: 15px; border-radius: 12px; font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 10px; flex: 1; }
         .btn-reject-env:hover { background: var(--kirmizi-iptal); color: white; }
 
-        /* YENİ: TAKVİM / PLANLAMA CSS */
-        .planla-card { background: #0a0a0a; border: 1px solid #222; border-radius: 20px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-width: 800px; margin: 0 auto; text-align: center; }
-        .planla-teams-wrapper { display: flex; justify-content: center; align-items: center; gap: 30px; margin: 30px 0; }
-        .planla-team-box { display: flex; flex-direction: column; align-items: center; flex: 1; }
-        .planla-team-box img { width: 100px; height: 100px; object-fit: contain; background: #111; border: 1px solid #333; border-radius: 15px; margin-bottom: 15px; transition: 0.3s; }
-        .planla-team-box input { text-align: center; font-size: 18px; font-weight: 900; background: transparent; border: none; border-bottom: 2px dashed #444; color: white; padding: 10px; width: 100%; outline: none; transition: 0.3s; }
-        .planla-team-box input:focus { border-bottom-color: var(--neon-mor); }
-        .planla-vs { font-size: 30px; font-weight: 900; color: #444; }
-        .planla-date-input { background: rgba(0, 210, 255, 0.05); border: 1px solid #00d2ff; color: #00d2ff; padding: 15px; border-radius: 10px; font-size: 18px; font-weight: bold; text-align: center; width: 100%; max-width: 400px; margin: 0 auto 30px; outline: none; transition: 0.3s; }
-        .planla-date-input:focus { box-shadow: 0 0 20px rgba(0, 210, 255, 0.3); color: white; }
-        .btn-schedule { background: linear-gradient(45deg, #0056b3, #00d2ff); color: white; border: none; padding: 18px 40px; border-radius: 12px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; letter-spacing: 1px; }
-        .btn-schedule:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0, 210, 255, 0.4); }
-
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
         #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
 
@@ -139,7 +77,6 @@
             .sidebar-panel { height: 400px; }
             .player-stat-row { min-width: 600px; }
             .stats-grid-container { overflow-x: auto; }
-            .planla-teams-wrapper { flex-direction: column; }
         }
     </style>
 </head>
@@ -156,152 +93,18 @@
         <nav>
             <ul>
                 <li><a href="index.html">ANA SAYFA</a></li>
-                <li><a id="tab-onay" class="active-admin-tab" onclick="switchTab('onay')">ONAY</a></li>
-                <li><a id="tab-takimlar" onclick="switchTab('takimlar')">ONAYLI</a></li>
-                <li><a href="zarf.html">ZARF GÖNDER<i class="fas fa-paper-plane" style="font-size: 10px; margin-left: 5px;"></i></a></li>
-                <li><a id="tab-takvim" onclick="switchTab('takvim')">TAKVİM <i class="far fa-calendar-alt" style="font-size: 10px; margin-left: 3px;"></i></a></li>
-                <li><a id="tab-fikstur" onclick="switchTab('fikstur')">FİKSTÜR<i class="fas fa-sitemap" style="font-size: 10px; margin-left: 5px;"></i></a></li>
-                <li><a href="mac-yonetim.html">DÜZENLE<i class="fas fa-cog" style="font-size: 10px; margin-left: 5px;"></i></a></li>
-                <li><a id="tab-kullanici" onclick="switchTab('kullanici')">YETKİ <i class="fas fa-users-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <li><a href="onay.html">ONAY</a></li>
+                <li><a href="onayli.html">ONAYLI</a></li>
+                <li><a href="takvim.html">TAKVİM <i class="far fa-calendar-alt" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <li><a href="fikstur.html" class="active-admin-tab">FİKSTÜR <i class="fas fa-sitemap" style="font-size: 10px; margin-left: 5px;"></i></a></li>
+                <li><a href="admin.html">DİĞER ARAÇLAR <i class="fas fa-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
             </ul>
         </nav>
     </header>
 
-    <div class="floating-bell mobile-only" onclick="toggleNotifPanel('mobilePanel', event)">
-        <i class="fas fa-bell"></i>
-        <span class="notif-badge" id="badge-mobile">0</span>
-        <div class="notif-panel mobile-panel" id="mobilePanel" onclick="event.stopPropagation()">
-            <div class="notif-header">
-                <h4>Bildirimler</h4>
-                <button class="clear-btn" onclick="clearNotifications(event)">Tümünü Temizle</button>
-            </div>
-            <div class="notif-body" id="notif-list-mobile"></div>
-        </div>
-    </div>
     <div id="toast-container"></div>
 
-    <main class="admin-container" id="onaySection" style="display: block;">
-        <h2 class="section-title">ONAY BEKLEYEN <span>TAKIMLAR</span></h2>
-        <div class="teams-grid" id="pendingTeamsGrid"></div>
-    </main>
-
-    <main class="admin-container" id="takimlarSection">
-        <div class="header-with-btn">
-            <h2 class="section-title">ONAYLI <span>TAKIM LİSTESİ</span></h2>
-            <button class="btn-excel" onclick="excelAktar()"><i class="fas fa-file-excel"></i> Excel'e Aktar</button>
-        </div>
-        <div class="approved-list" id="approvedTeamsList"></div>
-      <main class="admin-container" id="takimlarSection">
-        <div class="header-with-btn">
-            <h2 class="section-title">ONAYLI <span>TAKIM LİSTESİ</span></h2>
-            <button class="btn-excel" onclick="excelAktar()"><i class="fas fa-file-excel"></i> Excel'e Aktar</button>
-        </div>
-        <div class="approved-list" id="approvedTeamsList"></div>
-    </main>
-
-    <!-- KULLANICI (ROL) YÖNETİMİ SİSTEMİ -->
-    <main class="admin-container" id="kullaniciSection">
-        <div class="header-with-btn">
-            <h2 class="section-title">KULLANICI <span>YETKİLENDİRME</span></h2>
-        </div>
-        
-        <div class="planla-card" style="max-width: 600px;">
-            <p style="color:var(--gri-yazi); font-size:13px; margin-bottom: 25px;">Bir kullanıcının yetkisini değiştirmek için oyun içi nickini (IGN) veya e-posta adresini girin.</p>
-            
-            <div style="display:flex; flex-direction: column; gap:15px; margin-bottom: 30px;">
-                <input type="text" id="roleSearchInput" class="form-control" style="text-align:center; font-size: 16px; padding: 15px;" placeholder="Nick (Örn: PATRON#TR1) veya E-Posta Girin">
-                
-                <div style="display: flex; gap: 10px;">
-                    <select id="newRoleSelect" class="form-control" style="flex: 1; text-align:center; font-size: 15px;">
-                        <option value="user">USER (Standart Oyuncu)</option>
-                        <option value="admin">ADMIN (Tam Yetkili)</option>
-                    </select>
-                </div>
-            </div>
-
-            <button class="btn-schedule" id="btnUpdateRole" onclick="updateUserRole()" style="width: 100%; justify-content: center;">
-                <i class="fas fa-user-shield"></i> YETKİYİ GÜNCELLE
-            </button>
-        </div>
-    </main>
-    <!-- Modal (Eski Onay) -->
-    <div class="modal-overlay" id="teamModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <div class="modal-header">
-                <img id="modalLogo" src="" alt="Team Logo">
-                <div class="modal-title-area">
-                    <h2 id="modalTeamName">TAKIM ADI</h2>
-                    <span id="modalTeamTag">TAG</span>
-                </div>
-            </div>
-            <div class="modal-body">
-                <div class="info-card">
-                    <h4><i class="fas fa-user-shield"></i> İLETİŞİM (KAPTAN BİLGİLERİ)</h4>
-                    <div class="info-row"><div class="info-label">Kaptan Adı:</div><div class="info-data" id="modalCaptainName">-</div></div>
-                    <div class="info-row"><div class="info-label">Telefon:</div><div class="info-data" id="modalCaptainPhone">-</div></div>
-                </div>
-                <div class="info-card">
-                    <h4><i class="fas fa-users"></i> TAKIM KADROSU</h4>
-                    <ul class="player-list-mini" id="modalRosterList" style="margin-bottom: 0; padding: 0;"></ul>
-                </div>
-                <button class="btn-delete-team" id="modalDeleteBtn"><i class="fas fa-trash"></i> BU TAKIMI SİL</button>
-            </div>
-        </div>
-    </div>
-
-    <main class="admin-container" id="takvimSection">
-        <div class="header-with-btn">
-            <h2 class="section-title">GELECEK MAÇ <span>TAKVİMİ</span></h2>
-        </div>
-        
-        <div class="planla-card">
-            <p style="color:var(--gri-yazi); font-size:13px; margin-bottom: 25px;">Buradan belirlediğiniz maçlar fikstürde "Tarih" ile gösterilir. Maç oynanıp zarf geldiğinde Zarf sekmesinden üzerine işleyebilirsiniz.</p>
-            
-            <div style="display:flex; gap:15px; margin-bottom: 30px; flex-wrap: wrap;">
-                <select id="takvimTourney" class="form-control" style="flex:2;">
-                    <option value="">Turnuva Yükleniyor...</option>
-                </select>
-                <select id="takvimStage" class="form-control" style="flex:1;" onchange="updateTakvimSelectors()">
-                    <option value="SON 64">SON 64 (BO1)</option>
-                    <option value="SON 32">SON 32 (BO1)</option>
-                    <option value="SON 16">SON 16 (BO3)</option>
-                    <option value="ÇEYREK FİNAL">ÇEYREK FİNAL (BO3)</option>
-                    <option value="YARI FİNAL">YARI FİNAL (BO3)</option>
-                    <option value="FİNAL">BÜYÜK FİNAL (BO5)</option>
-                </select>
-                <select id="takvimMatchOrder" class="form-control" style="flex:1;"></select>
-            </div>
-
-            <div class="planla-teams-wrapper">
-                <div class="planla-team-box">
-                    <img id="takvimLogoA" src="img/unknown.webp">
-                    <input type="text" id="takvimTeamA" placeholder="SOL TAKIM ADI" onblur="resolveTakvimTeam('A')">
-                </div>
-                <div class="planla-vs">VS</div>
-                <div class="planla-team-box">
-                    <img id="takvimLogoB" src="img/unknown.webp">
-                    <input type="text" id="takvimTeamB" placeholder="SAĞ TAKIM ADI" onblur="resolveTakvimTeam('B')">
-                </div>
-            </div>
-
-            <div>
-                <input type="text" id="takvimDate" class="planla-date-input" placeholder="Tarih Girin (Örn: 24 Mart 21:00)">
-            </div>
-
-<div style="display: flex; gap: 15px; justify-content: center;">
-                <button class="btn-schedule" id="btnExecuteTakvim" onclick="executeScheduleMatch()">
-                    <i class="far fa-calendar-check"></i> MAÇI PLANLA
-                </button>
-                <button class="btn-reject-env" id="btnDeleteTakvim" onclick="deleteScheduleMatch()" style="flex: none; padding: 18px 40px; border-radius: 12px; margin-top: 0;">
-                    <i class="fas fa-calendar-times"></i> PLANI SİL
-                </button>
-            </div>
-        </div>
-    </main>
-
-    <!-- ZARF VE FİKSTÜR SİSTEMİ -->
     <main class="admin-container" id="fiksturSection">
         <div class="page-header-row">
             <h2 class="section-title">ZARF İŞLEME & <span>FİKSTÜR</span></h2>
@@ -404,31 +207,18 @@
         let teamAId_memory = null;
         let teamBId_memory = null;
         
-        let takvimTeamAId = null;
-        let takvimTeamBId = null;
-
         let currentMode = 'zarflar';
         let activeRecordId = null;
         let currentProofImageUrl = "";
         let currentUser = null;
 
-        async function initAdminPage() {
+        async function initPage() {
             try {
                 const response = await fetch("components/footer.html");
                 if (response.ok) document.getElementById("footer-alani").innerHTML = await response.text();
             } catch(e) {}
 
-            let lastScrollTop = 0;
-            const header = document.getElementById("mainHeader");
-            window.addEventListener("scroll", function() {
-                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                if (scrollTop > lastScrollTop && scrollTop > 100) header.classList.add("nav-hidden");
-                else header.classList.remove("nav-hidden");
-                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
-            }, false);
-
             if (typeof checkUserStatus === "function") await checkUserStatus();
-            if (typeof initNotifications === "function") initNotifications();
             checkAdminAccess();
         }
 
@@ -445,424 +235,29 @@
                 document.getElementById('loadingScreen').style.display = 'none';
                 
                 await loadTournamentsToSelect();
-                loadPendingTeams();
-                loadApprovedTeams();
-                
                 generateEmptyRows('teamAPlayersInputs');
                 generateEmptyRows('teamBPlayersInputs');
                 updateDynamicSelectors();
-                updateTakvimSelectors(); // TAKVİM SEÇİCİLERİNİ YÜKLE
                 loadSidebarData();
 
             } catch (err) {
-                window.location.replace("index.html");
+                window.location.replace("index.html"); 
             }
-        }
-
-        function switchTab(tabName) {
-            ['onay', 'takimlar', 'fikstur', 'takvim','kullanici'].forEach(t => {
-                const section = document.getElementById(t + 'Section');
-                if (section) section.style.display = (t === tabName) ? 'block' : 'none';
-                
-                const tabLink = document.getElementById('tab-' + t);
-                if(tabLink) {
-                    if (t === tabName) tabLink.classList.add('active-admin-tab');
-                    else tabLink.classList.remove('active-admin-tab');
-                }
-            });
-            if(tabName === 'fikstur') updateDynamicSelectors();
-            if(tabName === 'takvim') updateTakvimSelectors();
         }
 
         async function loadTournamentsToSelect() {
             const { data: tournaments } = await window.supabaseClient.from('tournaments').select('id, name').order('created_at', { ascending: false });
-            
             const selectEd = document.getElementById('tourneySelect');
-            const selectTk = document.getElementById('takvimTourney');
             selectEd.innerHTML = ''; 
-            if(selectTk) selectTk.innerHTML = '';
 
             if (tournaments && tournaments.length > 0) {
                 tournaments.forEach(t => {
-                    const opt = `<option value="${t.id}">${t.name}</option>`;
-                    selectEd.innerHTML += opt; 
-                    if(selectTk) selectTk.innerHTML += opt;
+                    selectEd.innerHTML += `<option value="${t.id}">${t.name}</option>`;
                 });
             } else {
                 selectEd.innerHTML = `<option value="">Önce Turnuva Oluşturun</option>`;
-                if(selectTk) selectTk.innerHTML = `<option value="">Önce Turnuva Oluşturun</option>`;
             }
         }
-
-        // ESKİ ONAY SİSTEMİ BÖLÜMÜ
-        async function fetchTeamsWithMembers(statusFilter) {
-            try {
-                const { data: apps, error } = await window.supabaseClient
-                    .from('tournament_applications')
-                    .select(`
-                        id, status,
-                        teams (
-                            id, name, tag, logo_url, captain_id,
-                            team_members (
-                                id, user_id, role, status, 
-                                profiles ( username, ign, user_contacts (phone, email) )
-                            )
-                        )
-                    `)
-                    .eq('status', statusFilter);
-                
-                if (error || !apps) return [];
-
-                return apps.filter(app => app.teams).map(app => {
-                    const t = app.teams;
-                    let members = (t.team_members || []).map(tm => {
-                        let contactData = tm.profiles?.user_contacts;
-                        if (Array.isArray(contactData)) contactData = contactData[0];
-                        const isCaptain = tm.user_id === t.captain_id;
-                        return {
-                            id: tm.id, user_id: tm.user_id, role: isCaptain ? 'captain' : tm.role, 
-                            status: isCaptain ? 'accepted' : tm.status,
-                            username: tm.profiles?.username || 'Bilinmiyor', ign: tm.profiles?.ign || '',
-                            phone: contactData?.phone || 'Belirtilmemiş', email: contactData?.email || 'Belirtilmemiş'
-                        };
-                    });
-                    const capt = members.filter(m => m.role === 'captain');
-                    const main = members.filter(m => m.role === 'main');
-                    const sub = members.filter(m => m.role === 'sub');
-                    members = [...capt, ...main, ...sub];
-
-                    return { id: app.id, team_id: t.id, team_name: t.name, team_tag: t.tag, logo_url: t.logo_url, captain_id: t.captain_id, members: members };
-                });
-            } catch (err) { console.error("Veri çekme hatası:", err); return []; }
-        }
-
-        async function loadPendingTeams() {
-            const teams = await fetchTeamsWithMembers('pending');
-            const grid = document.getElementById('pendingTeamsGrid');
-            grid.innerHTML = '';
-            if (teams && teams.length > 0) {
-                teams.forEach(team => {
-                    let playersHtml = '';
-                    (team.members || []).forEach(m => {
-                        const icon = m.status === 'accepted' ? '<i class="fas fa-check" style="color:var(--yesil-guven);"></i>' : '<i class="fas fa-clock" style="color:var(--mavi-onay);"></i>';
-                        playersHtml += `<li>${m.role === 'main' ? 'Asil' : 'Yedek'}: <span>${m.username}</span> ${icon}</li>`;
-                    });
-                    grid.innerHTML += `
-                        <div class="team-card">
-                            <div class="team-logo-area"><img src="${team.logo_url || 'https://via.placeholder.com/100'}"></div>
-                            <div class="team-card-body">
-                                <div class="team-card-title"><span class="team-card-tag">[${team.team_tag}]</span> ${team.team_name}</div>
-                                <ul class="player-list-mini">${playersHtml}</ul>
-                                <div class="action-buttons">
-                                    <button class="btn-approve" onclick="updateTeamStatus('${team.id}', 'approved', '${team.captain_id}')"><i class="fas fa-check"></i> ONAYLA</button>
-                                    <button class="btn-reject" onclick="rejectTeam('${team.id}', '${team.captain_id}')"><i class="fas fa-times"></i> REDDET</button>
-                                </div>
-                            </div>
-                        </div>`;
-                });
-            } else grid.innerHTML = '<p style="color: var(--gri-yazi);">Onay bekleyen takım yok.</p>';
-        }
-
-        async function loadApprovedTeams() {
-            const teams = await fetchTeamsWithMembers('approved');
-            const list = document.getElementById('approvedTeamsList');
-            list.innerHTML = '';
-            if (teams && teams.length > 0) {
-                teams.forEach((team, index) => {
-                    list.innerHTML += `
-                        <div class="approved-item" onclick='openTeamModal(${JSON.stringify(team).replace(/'/g, "&apos;")})'>
-                            <div class="approved-number">${index + 1}</div>
-                            <div class="approved-name">${team.team_name.toUpperCase()} <span class="approved-tag">[${team.team_tag}]</span></div>
-                            <i class="fas fa-chevron-right" style="color: var(--neon-mor);"></i>
-                        </div>`;
-                });
-            } else list.innerHTML = '<p style="color: var(--gri-yazi);">Onaylanmış takım yok.</p>';
-        }
-
-        async function rejectTeam(appId, userId) {
-            const reason = prompt("Lütfen ret sebebini yazın:");
-            if (reason) updateTeamStatus(appId, 'rejected', userId, reason);
-        }
-
-        async function updateTeamStatus(appId, status, userId, reason = "") {
-            const { error } = await window.supabaseClient.from('tournament_applications').update({ status }).eq('id', appId);
-            if (!error) {
-                if (userId) {
-                    const baslik = status === 'approved' ? "Başvuru Onaylandı" : "Başvuru Reddedildi";
-                    const mesaj = status === 'approved' ? "Tebrikler!" : `Sebep: ${reason}`;
-                    await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: userId, baslik, mesaj, tip: status === 'approved' ? 'onay' : 'red' }]);
-                }
-                showNotification("Güncellendi.", "success"); loadPendingTeams(); loadApprovedTeams();
-            } else showNotification("Hata.", "error");
-        }
-
-        async function excelAktar() { showNotification("Excel'e aktarma işlemi başlatılıyor...", "info"); }
-
-        async function takimiSil(appId, teamName, logoUrl, captainId) {
-            const reason = prompt(`DİKKAT: ${teamName} takımının BAŞVURUSUNU kalıcı olarak silmek üzeresiniz. Sebep yazın:`);
-            if (reason === null) return;
-            if (reason.trim() === "") return showNotification("Sebep boş bırakılamaz.", "error");
-            try {
-                if (captainId) {
-                    await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: captainId, baslik: "Başvurunuz Silindi!", mesaj: `Sebep: ${reason}`, tip: 'red' }]);
-                }
-                const { error: teamError } = await window.supabaseClient.from('tournament_applications').delete().eq('id', appId);
-                if (teamError) throw teamError;
-                showNotification(`${teamName} başvurusu başarıyla silindi.`, "success");
-                closeModal(); loadApprovedTeams(); loadPendingTeams(); loadSidebarData();
-            } catch (err) { showNotification("Silme işlemi sırasında hata oluştu.", "error"); }
-        }
-
-        function openTeamModal(team) {
-            document.getElementById('modalLogo').src = team.logo_url || 'img/unknown.webp';
-            document.getElementById('modalTeamName').innerText = team.team_name;
-            document.getElementById('modalTeamTag').innerText = `[${team.team_tag}]`;
-            
-            const captData = (team.members || []).find(m => m.user_id === team.captain_id);
-            document.getElementById('modalCaptainName').innerText = captData ? captData.username : 'Bilinmiyor';
-            document.getElementById('modalCaptainPhone').innerText = captData ? captData.phone : 'Belirtilmemiş'; 
-            const rl = document.getElementById('modalRosterList'); rl.innerHTML = '';
-            (team.members || []).forEach(m => {
-                let roleText = 'Yedek'; let color = 'var(--gri-yazi)';
-                if (m.role === 'captain') { roleText = 'Kaptan'; color = 'var(--neon-mor)'; } else if (m.role === 'main') { roleText = 'Asil'; color = 'var(--yazi-beyaz)'; }
-                rl.innerHTML += `<li><span style="color:${color}; font-weight:normal; width:60px; display:inline-block;">${roleText}:</span> <span style="color:var(--neon-mor); flex:1;">${m.username}</span></li>`;
-            });
-            const deleteBtn = document.getElementById('modalDeleteBtn');
-            deleteBtn.onclick = () => takimiSil(team.id, team.team_name, team.logo_url, team.captain_id);
-            document.getElementById('teamModal').classList.add('active');
-        }
-        function closeModal() { document.getElementById('teamModal').classList.remove('active'); }
-        function updateTakvimSelectors() {
-            const stage = document.getElementById('takvimStage').value;
-            const matchOrder = document.getElementById('takvimMatchOrder');
-            
-            matchOrder.innerHTML = '';
-            let maxMatch = 1;
-            if(stage.includes('SON 64')) maxMatch = 32;
-            if(stage.includes('SON 32')) maxMatch = 16;
-            if(stage.includes('SON 16')) maxMatch = 8;
-            if(stage.includes('ÇEYREK')) maxMatch = 4;
-            if(stage.includes('YARI')) maxMatch = 2;
-
-            for(let i=1; i<=maxMatch; i++) matchOrder.innerHTML += `<option value="${i}">${i}. MAÇ</option>`;
-        }
-
-        async function resolveTakvimTeam(side) {
-            const inputVal = document.getElementById(side === 'A' ? 'takvimTeamA' : 'takvimTeamB').value;
-            const imgEl = document.getElementById(side === 'A' ? 'takvimLogoA' : 'takvimLogoB');
-            if(!inputVal || inputVal.trim().length < 2) {
-                imgEl.src = 'img/unknown.webp';
-                if(side === 'A') takvimTeamAId = null; else takvimTeamBId = null;
-                return;
-            }
-
-            try {
-                const { data } = await window.supabaseClient.from('teams')
-                    .select('id, name, logo_url')
-                    .ilike('name', `%${inputVal.trim()}%`)
-                    .limit(1)
-                    .maybeSingle();
-                
-                if(data) {
-                    if(side === 'A') takvimTeamAId = data.id; else takvimTeamBId = data.id;
-                    imgEl.src = data.logo_url || 'img/unknown.webp';
-                    document.getElementById(side === 'A' ? 'takvimTeamA' : 'takvimTeamB').value = data.name;
-                } else {
-                    imgEl.src = 'img/unknown.webp';
-                    if(side === 'A') takvimTeamAId = null; else takvimTeamBId = null;
-                }
-            } catch(e) { console.error(e); }
-        }
-
-       async function executeScheduleMatch() {
-            const tourneyId = document.getElementById('takvimTourney').value;
-            
-            if(!tourneyId) return showNotification("Lütfen bir turnuva seçin.", "error");
-
-            const sNameRaw = document.getElementById('takvimStage').value;
-            const sName = sNameRaw.split(' (')[0]; 
-            const matchO = document.getElementById('takvimMatchOrder').value;
-            const matchDate = document.getElementById('takvimDate').value.trim();
-
-            if(!takvimTeamAId || !takvimTeamBId) return showNotification("Lütfen takım isimlerini tam girin ve logoların belirmesini bekleyin.", "error");
-            if(!matchDate) return showNotification("Lütfen 'Tarih' kutusunu doldurun.", "error");
-
-            let formatStr = 'BO1';
-            if (sNameRaw.includes('BO3')) formatStr = 'BO3';
-            if (sNameRaw.includes('BO5')) formatStr = 'BO5';
-
-            const btn = document.getElementById('btnExecuteTakvim');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PLANLANIYOR...';
-            btn.disabled = true;
-
-            try {
-                const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
-                    .select('id').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
-
-                if (existingMatch) {
-                    const { error: updErr } = await window.supabaseClient.from('bracket_matches')
-                        .update({ team_a_id: takvimTeamAId, team_b_id: takvimTeamBId, match_date: matchDate, status: 'pending' })
-                        .eq('id', existingMatch.id);
-                    if (updErr) throw new Error(updErr.message);
-                } else {
-                    const { error: insErr } = await window.supabaseClient.from('bracket_matches').insert([{
-                        tournament_id: tourneyId, round_name: sName, round_order: matchO,
-                        team_a_id: takvimTeamAId, team_b_id: takvimTeamBId, status: 'pending', match_date: matchDate,
-                        match_format: formatStr, series_score_a: 0, series_score_b: 0
-                    }]);
-                    if (insErr) throw new Error(insErr.message);
-                }
-
-                showNotification("Maç başarıyla planlandı!", "success");
-                
-                document.getElementById('takvimTeamA').value = ''; document.getElementById('takvimTeamB').value = '';
-                document.getElementById('takvimDate').value = '';
-                document.getElementById('takvimLogoA').src = 'img/unknown.webp'; document.getElementById('takvimLogoB').src = 'img/unknown.webp';
-                takvimTeamAId = null; takvimTeamBId = null;
-
-            } catch (err) {
-                showNotification("Planlama Hatası: " + err.message, "error");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        }
-        async function deleteScheduleMatch() {
-            const tourneyId = document.getElementById('takvimTourney').value;
-            if(!tourneyId) return showNotification("Lütfen bir turnuva seçin.", "error");
-
-            const sNameRaw = document.getElementById('takvimStage').value;
-            const sName = sNameRaw.split(' (')[0]; 
-            const matchO = document.getElementById('takvimMatchOrder').value;
-
-            // Kullanıcıdan onay alıyoruz
-            if(!confirm(`${sName} - ${matchO}. Maç slotundaki planlamayı fikstürden tamamen silmek istediğinize emin misiniz?`)) return;
-
-            const btn = document.getElementById('btnDeleteTakvim');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SİLİNİYOR...';
-            btn.disabled = true;
-
-            try {
-                // Önce o slotta bir maç var mı diye kontrol edelim
-                const { data: existingMatch, error: findErr } = await window.supabaseClient.from('bracket_matches')
-                    .select('id, status').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
-
-                if (findErr) throw findErr;
-
-                if (!existingMatch) {
-                    showNotification("Bu slotta planlanmış bir maç bulunamadı.", "info");
-                    return;
-                }
-
-                // DİKKAT: Eğer maç zaten oynanmış ve skor girilmişse (status !== 'pending') ekstra uyar
-                if(existingMatch.status !== 'pending') {
-                     if(!confirm("DİKKAT: Bu maça zaten zarf işlenmiş ve skor girilmiş! Yine de bu eşleşmeyi tamamen silmek istiyor musunuz?")) {
-                         return; // İptal ederse çık
-                     }
-                }
-
-                // Supabase'den maçı tamamen sil
-                const { error: delErr } = await window.supabaseClient.from('bracket_matches').delete().eq('id', existingMatch.id);
-                if (delErr) throw delErr;
-
-                showNotification("Planlanmış maç başarıyla silindi ve slot boşaltıldı!", "success");
-                
-                // Ekrandaki form kutularını sıfırla
-                document.getElementById('takvimTeamA').value = ''; document.getElementById('takvimTeamB').value = '';
-                document.getElementById('takvimDate').value = '';
-                document.getElementById('takvimLogoA').src = 'img/unknown.webp'; document.getElementById('takvimLogoB').src = 'img/unknown.webp';
-                takvimTeamAId = null; takvimTeamBId = null;
-
-            } catch (err) {
-                showNotification("Silme Hatası: " + err.message, "error");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        }
-
-        async function saveToBracket() {
-            if(!activeRecordId) return;
-
-            const tourneyId = document.getElementById('tourneySelect').value;
-            
-            if(!tourneyId) return showNotification("Lütfen bir turnuva seçin.", "error");
-
-            const sNameRaw = document.getElementById('stageSelect').value;
-            const sName = sNameRaw.split(' (')[0]; 
-            const matchO = document.getElementById('matchOrderSelect').value;
-            const mapO = document.getElementById('mapOrderSelect').value;
-            const scoreA = document.getElementById('scoreA').value;
-            const scoreB = document.getElementById('scoreB').value;
-            const mapName = document.getElementById('mapNameInput').value;
-
-            let formatStr = 'BO1';
-            if (sNameRaw.includes('BO3')) formatStr = 'BO3';
-            if (sNameRaw.includes('BO5')) formatStr = 'BO5';
-
-            if(!teamAId_memory || !teamBId_memory) return showNotification("HATA: Takım(lar) onaylı listede bulunamadı!", "error");
-
-            const btn = document.getElementById('btnSaveToBracket');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İŞLENİYOR...';
-            btn.disabled = true;
-
-            try {
-                if(currentMode === 'zarflar') {
-                    const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
-                        .select('id').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
-                    
-                    let matchId;
-                    if(existingMatch) {
-                        matchId = existingMatch.id;
-                        const { error: updErr } = await window.supabaseClient.from('bracket_matches')
-                            .update({ team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live' }).eq('id', matchId);
-                        if(updErr) throw updErr;
-                    } else {
-                       const { data: newMatch, error: insMatchErr } = await window.supabaseClient.from('bracket_matches').insert([{
-    tournament_id: tourneyId, round_name: sName, round_order: matchO, 
-    team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live', match_format: formatStr
-}]).select().single();
-                        if(insMatchErr) throw insMatchErr;
-                        matchId = newMatch.id;
-                    }
-
-                    const { data: mapData, error: mapErr } = await window.supabaseClient.from('match_maps').insert([{
-                        match_id: matchId, map_order: mapO, map_name: mapName, score_a: scoreA, score_b: scoreB
-                    }]).select().single();
-                    if(mapErr) throw mapErr;
-
-                    const insertData = [ ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, mapData.id)), ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, mapData.id)) ];
-                    if(insertData.length > 0) {
-                        const { error: statsErr } = await window.supabaseClient.from('match_player_stats').insert(insertData);
-                        if (statsErr) throw statsErr;
-                    }
-
-                    await window.supabaseClient.from('bekleyen_zarflar').update({ durum: 'processed' }).eq('id', activeRecordId);
-                    
-                    showNotification("Başarıyla Fikstüre İğnelendi!", "success");
-                    setTimeout(() => switchSidebarTab('zarflar'), 1500);
-
-                } else {
-                    const mapId = activeRecordId.mapId;
-                    const { error: mapUpdateErr } = await window.supabaseClient.from('match_maps').update({ map_name: mapName, score_a: scoreA, score_b: scoreB }).eq('id', mapId);
-                    if(mapUpdateErr) throw mapUpdateErr;
-
-                    await window.supabaseClient.from('match_player_stats').delete().eq('map_id', mapId);
-                    const insertData = [ ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, mapId)), ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, mapId)) ];
-                    if(insertData.length > 0) {
-                        const { error: statsErr } = await window.supabaseClient.from('match_player_stats').insert(insertData);
-                        if (statsErr) throw statsErr;
-                    }
-
-                    showNotification("Harita başarıyla güncellendi.", "success");
-                    setTimeout(() => switchSidebarTab('fikstur'), 1500);
-                }
-            } catch(e) { console.error(e); showNotification("HATA: " + e.message, "error"); } finally { btn.innerHTML = originalText; btn.disabled = false; }
-        }
-
 
         function switchSidebarTab(mode) {
             currentMode = mode;
@@ -1035,48 +430,6 @@
                 if (match.tournament_id) document.getElementById('tourneySelect').value = match.tournament_id;
 
             } catch(e) { console.error(e); }
-        }
-        async function updateUserRole() {
-            const searchVal = document.getElementById('roleSearchInput').value.trim();
-            const newRole = document.getElementById('newRoleSelect').value;
-
-            if(!searchVal) return showNotification("Lütfen bir nick veya e-posta girin.", "error");
-            if(!confirm(`Bu kullanıcının yetkisini "${newRole.toUpperCase()}" olarak değiştirmek istediğinize emin misiniz?`)) return;
-
-            const btn = document.getElementById('btnUpdateRole');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GÜNCELLENİYOR...';
-            btn.disabled = true;
-
-            try {
-                // Önce kullanıcıyı bulalım (Nick veya Email ile)
-                const { data: userProfile, error: findErr } = await window.supabaseClient.from('profiles')
-                    .select('id, username, ign')
-                    .or(`ign.ilike.%${searchVal}%,email.ilike.%${searchVal}%`)
-                    .maybeSingle();
-
-                if (findErr) throw findErr;
-                if (!userProfile) {
-                    showNotification("Bu bilgilere ait bir kullanıcı bulunamadı.", "error");
-                    return;
-                }
-
-                // Rolü güncelleyelim
-                const { error: updErr } = await window.supabaseClient.from('profiles')
-                    .update({ role: newRole })
-                    .eq('id', userProfile.id);
-
-                if (updErr) throw updErr;
-
-                showNotification(`${userProfile.ign || userProfile.username} adlı kullanıcının yetkisi ${newRole.toUpperCase()} yapıldı!`, "success");
-                document.getElementById('roleSearchInput').value = '';
-
-            } catch (err) {
-                showNotification("Yetki güncellenirken hata: " + err.message, "error");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
         }
 
         function syncTeamName(teamStr, name) {
@@ -1322,31 +675,31 @@ LÜTFEN SADECE aşağıdaki gibi saf bir JSON döndür, kod bloğu (\`\`\`) veya
             } catch(e) { console.error(e); showNotification("HATA: " + e.message, "error"); } finally { btn.innerHTML = originalText; btn.disabled = false; }
         }
 
-async function rejectOrDelete() {
-    if(!activeRecordId) return;
-    if(!confirm("Bu kaydı silmek istediğinize emin misiniz?")) return;
+        async function rejectOrDelete() {
+            if(!activeRecordId) return;
+            if(!confirm("Bu kaydı silmek istediğinize emin misiniz?")) return;
 
-    try {
-        if(currentMode === 'zarflar') {
-            await window.supabaseClient.from('bekleyen_zarflar').delete().eq('id', activeRecordId);
-            showNotification("Zarf çöpe atıldı.", "success");
-        } else {
-            await window.supabaseClient.from('match_maps').delete().eq('id', activeRecordId.mapId);
-            
-            if(confirm("Harita silindi. Bu eşleşmeyi fikstürden TAMAMEN kaldırıp 'Belirlenmedi' slotuna döndürmek ister misin?")) {
-                await window.supabaseClient.from('bracket_matches').delete().eq('id', activeRecordId.matchId);
-                showNotification("Eşleşme fikstürden tamamen temizlendi.", "success");
-            } else {
-                showNotification("Harita silindi ama takımlar fikstürde bekliyor.", "success");
+            try {
+                if(currentMode === 'zarflar') {
+                    await window.supabaseClient.from('bekleyen_zarflar').delete().eq('id', activeRecordId);
+                    showNotification("Zarf çöpe atıldı.", "success");
+                } else {
+                    await window.supabaseClient.from('match_maps').delete().eq('id', activeRecordId.mapId);
+                    
+                    if(confirm("Harita silindi. Bu eşleşmeyi fikstürden TAMAMEN kaldırıp 'Belirlenmedi' slotuna döndürmek ister misin?")) {
+                        await window.supabaseClient.from('bracket_matches').delete().eq('id', activeRecordId.matchId);
+                        showNotification("Eşleşme fikstürden tamamen temizlendi.", "success");
+                    } else {
+                        showNotification("Harita silindi ama takımlar fikstürde bekliyor.", "success");
+                    }
+                }
+                switchSidebarTab(currentMode); 
+            } catch (e) { 
+                showNotification("Silinirken hata oluştu.", "error"); 
             }
         }
-        switchSidebarTab(currentMode); 
-    } catch (e) { 
-        showNotification("Silinirken hata oluştu.", "error"); 
-    }
-}
 
-        document.addEventListener('DOMContentLoaded', initAdminPage);
+        document.addEventListener('DOMContentLoaded', initPage);
     </script>
 </body>
 </html>
