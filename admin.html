@@ -87,7 +87,6 @@
         <h2>Güvenlik Kontrolü Yapılıyor...</h2>
     </div>
 
-    <!-- HEADER -->
     <header class="main-nav" id="mainHeader">
         <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
         <nav>
@@ -95,9 +94,10 @@
                 <li><a href="index.html">ANA SAYFA</a></li>
                 <li><a href="onay.html">ONAY</a></li>
                 <li><a href="onayli.html">ONAYLI</a></li>
-                <li><a href="takvim.html">TAKVİM<i style="font-size: 10px; margin-left: 3px;"></i></a></li>
-                <li><a href="fikstur.html" class="active-admin-tab">FİKSTÜR<i style="font-size: 10px; margin-left: 5px;"></i></a></li>
-                <li><a href="mac-yonetim.html">DÜZENLE<i style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <li><a href="takvim.html">TAKVİM <i class="far fa-calendar-alt" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <li><a href="fikstur.html" class="active-admin-tab">FİKSTÜR <i class="fas fa-sitemap" style="font-size: 10px; margin-left: 5px;"></i></a></li>
+                <li><a href="yetki.html">YETKİ <i class="fas fa-users-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <li><a href="admin.html">DİĞER ARAÇLAR <i class="fas fa-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
             </ul>
         </nav>
@@ -111,7 +111,6 @@
         </div>
         <div class="dashboard-grid">
             
-            <!-- SOL PANEL: LİSTELER -->
             <div class="sidebar-panel">
                 <div class="sidebar-tabs">
                     <div class="sidebar-tab active" id="tabZarflar" onclick="switchSidebarTab('zarflar')">
@@ -122,11 +121,9 @@
                     </div>
                 </div>
                 <div class="list-container" id="sidebarList">
-                    <!-- Dinamik Liste Buraya Gelecek -->
-                </div>
+                    </div>
             </div>
 
-            <!-- SAĞ PANEL: EDİTÖR (ZARF AÇMA VEYA DÜZENLEME) -->
             <div class="editor-panel" id="editorPanel">
                 
                 <div class="placement-map">
@@ -136,6 +133,8 @@
                             <option value="">Turnuva Yükleniyor...</option>
                         </select>
                         <select id="stageSelect" class="form-control" onchange="updateDynamicSelectors()">
+                            <option value="GRUP A">A GRUBU (BO1)</option>
+                            <option value="GRUP B">B GRUBU (BO1)</option>
                             <option value="SON 64">SON 64 (BO1)</option>
                             <option value="SON 32">SON 32 (BO1)</option>
                             <option value="SON 16">SON 16 (BO3)</option>
@@ -165,7 +164,6 @@
                     </div>
                 </div>
 
-                <!-- YAPAY ZEKA BUTONU -->
                 <div style="text-align: center; margin-bottom: 20px;">
                     <button id="btnAiScan" onclick="scanImageWithAI()" style="background: linear-gradient(45deg, #601dc2, #9d4edd); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: none;">
                         <i class="fas fa-robot"></i> Görseli Yapay Zeka İle Oku
@@ -324,6 +322,9 @@
             
             matchOrder.innerHTML = '';
             let maxMatch = 1;
+            
+            // YENİ EKLENEN GRUP MANTIĞI
+            if(stage.includes('GRUP')) maxMatch = 3; // Gruplarda 3'er maç var
             if(stage.includes('SON 64')) maxMatch = 32;
             if(stage.includes('SON 32')) maxMatch = 16;
             if(stage.includes('SON 16')) maxMatch = 8;
