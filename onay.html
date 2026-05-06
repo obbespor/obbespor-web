@@ -13,11 +13,13 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
+        nav ul li a { cursor: pointer; }
         .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
+        /* DİKKAT: display:none kaldırıldı, doğrudan sayfa açılacak */
         .admin-container { padding: 40px 10%; flex: 1; animation: fadeIn 0.4s ease; }
         .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; color: white;}
         .section-title span { color: var(--neon-mor); }
-        
+
         .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; }
         .team-card { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .team-card:hover { border-color: var(--neon-mor); transform: translateY(-5px); box-shadow: 0 15px 40px rgba(96, 29, 194, 0.2); }
@@ -43,10 +45,9 @@
 
     <div id="loadingScreen">
         <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
-        <h2>Yetki Kontrolü Yapılıyor...</h2>
+        <h2>Güvenlik Kontrolü Yapılıyor...</h2>
     </div>
 
-    <!-- HEADER -->
     <header class="main-nav" id="mainHeader">
         <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
         <nav>
@@ -54,7 +55,6 @@
                 <li><a href="index.html">ANA SAYFA</a></li>
                 <li><a href="onay.html" class="active-admin-tab">ONAY</a></li>
                 <li><a href="onayli.html">ONAYLI</a></li>
-                <li><a href="zarf.html">ZARF GÖNDER<i class="fas fa-paper-plane" style="font-size: 10px; margin-left: 5px;"></i></a></li>
                 <li><a href="admin.html">DİĞER ARAÇLAR <i class="fas fa-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
             </ul>
@@ -63,7 +63,8 @@
 
     <div id="toast-container"></div>
 
-    <main class="admin-container" id="onaySection">
+    <!-- Container her zaman görünür olacak şekilde ayarlandı -->
+    <main class="admin-container" id="onaySection" style="display: block;">
         <h2 class="section-title">ONAY BEKLEYEN <span>TAKIMLAR</span></h2>
         <div class="teams-grid" id="pendingTeamsGrid"></div>
     </main>
@@ -75,11 +76,8 @@
     <script src="js/bildirimler.js"></script>
     <script src="js/auth.js"></script>
     
-    <!-- YENİ MODÜLÜMÜZÜ BURAYA ÇAĞIRIYORUZ -->
-    <script src="js/admin-onay.js"></script>
-    
     <script>
-        async function initPage() {
+        async function initAdminPage() {
             try {
                 const response = await fetch("components/footer.html");
                 if (response.ok) document.getElementById("footer-alani").innerHTML = await response.text();
@@ -98,19 +96,106 @@
                 const { data: profile, error: profileError } = await window.supabaseClient.from('profiles').select('role').eq('id', user.id).single();
                 if (profileError || profile.role !== 'admin') throw new Error("Yetkisiz erişim.");
 
+                // Yetki doğrulandıysa yükleme ekranını kaldır ve takımları yükle
                 document.getElementById('loadingScreen').style.display = 'none';
-                
-                // Yetki tamamsa verileri çek!
-                if(typeof window.loadPendingTeams === 'function') {
-                    window.loadPendingTeams();
-                }
+                loadPendingTeams();
 
             } catch (err) {
-                window.location.replace("index.html"); // Admin değilse anasayfaya şutla
+                window.location.replace("index.html"); // Admin değilse direkt anasayfaya yolla
             }
         }
 
-        document.addEventListener('DOMContentLoaded', initPage);
+        async function fetchTeamsWithMembers(statusFilter) {
+            try {
+                const { data: apps, error } = await window.supabaseClient
+                    .from('tournament_applications')
+                    .select(`
+                        id, status,
+                        teams (
+                            id, name, tag, logo_url, captain_id,
+                            team_members (
+                                id, user_id, role, status, 
+                                profiles ( username, ign, user_contacts (phone, email) )
+                            )
+                        )
+                    `)
+                    .eq('status', statusFilter);
+                
+                if (error || !apps) return [];
+
+                return apps.filter(app => app.teams).map(app => {
+                    const t = app.teams;
+                    let members = (t.team_members || []).map(tm => {
+                        let contactData = tm.profiles?.user_contacts;
+                        if (Array.isArray(contactData)) contactData = contactData[0];
+                        const isCaptain = tm.user_id === t.captain_id;
+                        return {
+                            id: tm.id, user_id: tm.user_id, role: isCaptain ? 'captain' : tm.role, 
+                            status: isCaptain ? 'accepted' : tm.status,
+                            username: tm.profiles?.username || 'Bilinmiyor', ign: tm.profiles?.ign || '',
+                            phone: contactData?.phone || 'Belirtilmemiş', email: contactData?.email || 'Belirtilmemiş'
+                        };
+                    });
+                    const capt = members.filter(m => m.role === 'captain');
+                    const main = members.filter(m => m.role === 'main');
+                    const sub = members.filter(m => m.role === 'sub');
+                    members = [...capt, ...main, ...sub];
+
+                    return { id: app.id, team_id: t.id, team_name: t.name, team_tag: t.tag, logo_url: t.logo_url, captain_id: t.captain_id, members: members };
+                });
+            } catch (err) { console.error("Veri çekme hatası:", err); return []; }
+        }
+
+        async function loadPendingTeams() {
+            const teams = await fetchTeamsWithMembers('pending');
+            const grid = document.getElementById('pendingTeamsGrid');
+            grid.innerHTML = '';
+            if (teams && teams.length > 0) {
+                teams.forEach(team => {
+                    let playersHtml = '';
+                    (team.members || []).forEach(m => {
+                        const icon = m.status === 'accepted' ? '<i class="fas fa-check" style="color:var(--yesil-guven);"></i>' : '<i class="fas fa-clock" style="color:var(--mavi-onay);"></i>';
+                        playersHtml += `<li>${m.role === 'main' ? 'Asil' : 'Yedek'}: <span>${m.username}</span> ${icon}</li>`;
+                    });
+                    grid.innerHTML += `
+                        <div class="team-card">
+                            <div class="team-logo-area"><img src="${team.logo_url || 'https://via.placeholder.com/100'}"></div>
+                            <div class="team-card-body">
+                                <div class="team-card-title"><span class="team-card-tag">[${team.team_tag}]</span> ${team.team_name}</div>
+                                <ul class="player-list-mini">${playersHtml}</ul>
+                                <div class="action-buttons">
+                                    <button class="btn-approve" onclick="updateTeamStatus('${team.id}', 'approved', '${team.captain_id}')"><i class="fas fa-check"></i> ONAYLA</button>
+                                    <button class="btn-reject" onclick="rejectTeam('${team.id}', '${team.captain_id}')"><i class="fas fa-times"></i> REDDET</button>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            } else {
+                grid.innerHTML = '<p style="color: var(--gri-yazi);">Onay bekleyen takım yok.</p>';
+            }
+        }
+
+        async function rejectTeam(appId, userId) {
+            const reason = prompt("Lütfen ret sebebini yazın:");
+            if (reason) updateTeamStatus(appId, 'rejected', userId, reason);
+        }
+
+        async function updateTeamStatus(appId, status, userId, reason = "") {
+            const { error } = await window.supabaseClient.from('tournament_applications').update({ status }).eq('id', appId);
+            if (!error) {
+                if (userId) {
+                    const baslik = status === 'approved' ? "Başvuru Onaylandı" : "Başvuru Reddedildi";
+                    const mesaj = status === 'approved' ? "Tebrikler!" : `Sebep: ${reason}`;
+                    await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: userId, baslik, mesaj, tip: status === 'approved' ? 'onay' : 'red' }]);
+                }
+                showNotification("Güncellendi.", "success"); 
+                loadPendingTeams(); 
+            } else {
+                showNotification("Hata oluştu.", "error");
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initAdminPage);
     </script>
 </body>
 </html>
