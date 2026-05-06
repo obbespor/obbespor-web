@@ -1,4 +1,3 @@
-
 function updateBellVisibility(isLoggedIn) {
     let styleEl = document.getElementById('bell-visibility-style');
     if (!isLoggedIn) {
@@ -37,6 +36,7 @@ function renderCachedHeader() {
                 <div class="dropdown-content">
                     ${adminLinkHTML}
                     <a href="profil.html"><i class="fas fa-user-circle"></i> Profil</a>
+                    <a href="takimim.html"><i class="fas fa-users"></i> Takımım</a>
                     <a href="my-tournaments.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
                     <a href="#" onclick="handleLogoutGlobal(); return false;" class="logout-link"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
                 </div>
@@ -95,7 +95,8 @@ async function updateNavbarWithUser(user) {
             <div class="dropdown-content">
                 ${adminLinkHTML}
                 <a href="profil.html"><i class="fas fa-user-circle"></i> Profil</a>
-                <a href="turnuvalarim.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
+                <a href="takimim.html"><i class="fas fa-users"></i> Takımım</a>
+                <a href="my-tournaments.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
                 <a href="#" onclick="handleLogoutGlobal(); return false;" class="logout-link"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
             </div>
         </div>`;
@@ -106,7 +107,6 @@ window.handleLogoutGlobal = async function() {
     await window.supabaseClient.auth.signOut();
     window.location.reload(); 
 }
-
 
 async function requireAdminAccess() {
     try {
