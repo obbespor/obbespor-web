@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Onaylı Takımlar | OBB E-SPORTS</title>
+    <link rel="icon" type="image/png" href="img/obblogo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    
+    <style>
+        .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
+        .admin-container { padding: 40px 10%; flex: 1; animation: fadeIn 0.4s ease; }
+        .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; color: white;}
+        .section-title span { color: var(--neon-mor); }
+
+        .header-with-btn { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
+        .header-with-btn .section-title { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+        .btn-excel { background: #1f8536; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; font-family: 'Poppins', sans-serif; }
+        .btn-excel:hover { background: #28a745; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4); }
+        
+        .approved-list { display: flex; flex-direction: column; gap: 10px; }
+        .approved-item { display: flex; align-items: center; background: #0a0a0a; border: 1px solid #222; padding: 15px 25px; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+        .approved-item:hover { border-color: var(--neon-mor); background: #111; transform: translateX(10px); }
+        .approved-number { font-size: 20px; font-weight: 900; color: var(--neon-mor); width: 40px; }
+        .approved-name { font-size: 16px; font-weight: bold; color: white; flex: 1; }
+        .approved-tag { font-size: 12px; color: var(--gri-yazi); border: 1px solid #333; padding: 2px 8px; border-radius: 4px; margin-left: 10px; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+        .modal-content { background: rgba(15, 15, 15, 0.9); border: 1px solid var(--neon-mor); border-radius: 20px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 0; box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(96, 29, 194, 0.1); position: relative; }
+        .modal-header { padding: 30px; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 20px; position: relative; }
+        .modal-header img { width: 80px; height: 80px; object-fit: contain; background: #000; border-radius: 10px; border: 1px solid #333; }
+        .modal-title-area h2 { font-size: 24px; font-weight: 900; color: white; margin-bottom: 5px; }
+        .modal-title-area span { background: var(--neon-mor); color: white; padding: 3px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; }
+        .close-modal { position: absolute; top: 20px; right: 25px; font-size: 30px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; z-index: 100; }
+        .close-modal:hover { color: var(--kirmizi-iptal); }
+        .modal-body { padding: 30px; }
+        .info-card { background: #050505; border: 1px solid #222; border-radius: 10px; padding: 20px; margin-bottom: 25px; }
+        .info-card h4 { color: var(--neon-mor); font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 8px; }
+        .info-row { display: flex; margin-bottom: 10px; font-size: 14px; }
+        .info-label { color: var(--gri-yazi); width: 120px; font-weight: bold; }
+        .info-data { color: white; font-weight: 500; }
+        .player-list-mini { list-style: none; margin-bottom: 20px; padding: 0; }
+        .player-list-mini li { font-size: 13px; color: var(--gri-yazi); padding: 5px 0; border-bottom: 1px dashed #222; display: flex; justify-content: space-between; }
+        .btn-delete-team { background: rgba(255, 75, 75, 0.05); border: 1px dashed var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px; }
+        .btn-delete-team:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 0 15px rgba(255, 75, 75, 0.4); border-style: solid; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
+    </style>
+</head>
+<body>
+
+    <div id="loadingScreen">
+        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
+        <h2>Yetki Kontrolü Yapılıyor...</h2>
+    </div>
+
+    <!-- HEADER -->
+    <header class="main-nav" id="mainHeader">
+        <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
+        <nav>
+            <ul>
+                <li><a href="index.html">ANA SAYFA</a></li>
+                <li><a href="onay.html">ONAY</a></li>
+                <li><a href="onayli.html" class="active-admin-tab">ONAYLI</a></li>
+                <li><a href="zarf.html">ZARF GÖNDER<i class="fas fa-paper-plane" style="font-size: 10px; margin-left: 5px;"></i></a></li>
+                <li><a href="admin.html">DİĞER ARAÇLAR <i class="fas fa-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div id="toast-container"></div>
+
+    <main class="admin-container" id="takimlarSection">
+        <div class="header-with-btn">
+            <h2 class="section-title">ONAYLI <span>TAKIM LİSTESİ</span></h2>
+            <button class="btn-excel" onclick="excelAktar()"><i class="fas fa-file-excel"></i> Excel'e Aktar</button>
+        </div>
+        <div class="approved-list" id="approvedTeamsList"></div>
+    </main>
+
+    <!-- Modal (Takım Detay) -->
+    <div class="modal-overlay" id="teamModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <img id="modalLogo" src="" alt="Team Logo">
+                <div class="modal-title-area">
+                    <h2 id="modalTeamName">TAKIM ADI</h2>
+                    <span id="modalTeamTag">TAG</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="info-card">
+                    <h4><i class="fas fa-user-shield"></i> İLETİŞİM (KAPTAN BİLGİLERİ)</h4>
+                    <div class="info-row"><div class="info-label">Kaptan Adı:</div><div class="info-data" id="modalCaptainName">-</div></div>
+                    <div class="info-row"><div class="info-label">Telefon:</div><div class="info-data" id="modalCaptainPhone">-</div></div>
+                </div>
+                <div class="info-card">
+                    <h4><i class="fas fa-users"></i> TAKIM KADROSU</h4>
+                    <ul class="player-list-mini" id="modalRosterList" style="margin-bottom: 0; padding: 0;"></ul>
+                </div>
+                <button class="btn-delete-team" id="modalDeleteBtn"><i class="fas fa-trash"></i> BU TAKIMI SİL</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-alani"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/bildirimler.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <!-- YENİ MODÜLÜMÜZÜ BURAYA ÇAĞIRIYORUZ -->
+    <script src="js/admin-onayli.js"></script>
+
+    <script>
+        async function initPage() {
+            try {
+                const response = await fetch("components/footer.html");
+                if (response.ok) document.getElementById("footer-alani").innerHTML = await response.text();
+            } catch(e) {}
+
+            if (typeof checkUserStatus === "function") await checkUserStatus();
+            checkAdminAccess();
+        }
+
+        async function checkAdminAccess() {
+            try {
+                if (!window.supabaseClient) throw new Error("Supabase bağlantısı yok.");
+                const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
+                if (authError || !user) throw new Error("Giriş yapılmadı.");
+
+                const { data: profile, error: profileError } = await window.supabaseClient.from('profiles').select('role').eq('id', user.id).single();
+                if (profileError || profile.role !== 'admin') throw new Error("Yetkisiz erişim.");
+
+                document.getElementById('loadingScreen').style.display = 'none';
+                
+                // Yetki tamamsa verileri çek!
+                if(typeof window.loadApprovedTeams === 'function') {
+                    window.loadApprovedTeams();
+                }
+
+            } catch (err) {
+                window.location.replace("index.html"); // Admin değilse anasayfaya şutla
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>
