@@ -164,11 +164,30 @@
     <script src="js/app.js"></script>
 
     <script>
-        let currentUser = null;
+       let currentUser = null;
         let myTeamData = null;
         let isCaptain = false;
         let isRosterLocked = false;
-        let totalMembers = 0; // Kaptan dahil kabul eden ve bekleyen toplam üye sayısı
+        let totalMembers = 0; 
+
+        // --- ÖZEL ONAY MODALI FONKSİYONLARI ---
+        let confirmCallback = null;
+
+        function openConfirmModal(message, callback) {
+            document.getElementById('confirmMessage').innerHTML = message;
+            confirmCallback = callback;
+            document.getElementById('customConfirmModal').classList.add('active');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('customConfirmModal').classList.remove('active');
+            confirmCallback = null;
+        }
+
+        document.getElementById('confirmActionBtn').addEventListener('click', () => {
+            if (confirmCallback) confirmCallback();
+            closeConfirmModal();
+        });
 
         async function initTeamPage() {
             try {
@@ -179,7 +198,6 @@
                 }
                 currentUser = user;
                 
-                // Profil kontrolü: Username ve IGN var mı?
                 const { data: profile } = await window.supabaseClient.from('profiles').select('username, ign').eq('id', currentUser.id).single();
                 if (!profile?.username) {
                     showNotification("Devam etmeden önce profilinizi tamamlamalısınız.", "error");
@@ -265,13 +283,11 @@
                     .eq('team_id', myTeamData.id)
                     .order('created_at', { ascending: true });
 
-                totalMembers = 1; // Kaptan = 1
-                let mainCount = 1; // Kaptan Asil sayılır
+                totalMembers = 1; 
+                let mainCount = 1; 
                 
-                // 1. Kaptanı Listele
                 grid.innerHTML += createPlayerCard(myTeamData.captain_id, null, captainProfile?.username, captainProfile?.ign, 'KAPTAN', 'role-cap', 'accepted', captainProfile?.avatar_url, captainProfile?.matches_played);
 
-                // 2. Diğer Üyeleri Listele
                 if (members) {
                     const filteredMembers = members.filter(m => m.user_id !== myTeamData.captain_id);
                     totalMembers += filteredMembers.length;
@@ -292,9 +308,8 @@
                     });
                 }
 
-                // 3. Dinamik Boş Slot Ekleme (Sadece Kaptan ve Kilitli Değilse ve 10 kişiden azsa)
                 if (isCaptain && !isRosterLocked && totalMembers < 10) {
-                    const nextRole = totalMembers < 5 ? 'main' : 'sub'; // İlk 5'e kadar asil, sonrası yedek
+                    const nextRole = totalMembers < 5 ? 'main' : 'sub';
                     const nextRoleText = nextRole === 'main' ? 'Asil Oyuncu Ekle' : 'Yedek Oyuncu Ekle';
                     
                     grid.innerHTML += `
@@ -326,17 +341,14 @@
             }
 
             let kickBtnHTML = '';
-            // Kaptan, kilitli değil ve kişi kendisi değilse ATMA ve ROL DEĞİŞTİRME işlevi ekle
             if (isCaptain && !isRosterLocked && userId !== currentUser.id) {
                 kickBtnHTML = `<button class="btn-kick" onclick="kickPlayer('${memberId}', '${username}')" title="Daveti İptal Et/At"><i class="fas fa-times"></i></button>`;
                 
-                // Eğer oyuncu kabul ettiyse rolünü değiştirebilsin
                 if (status === 'accepted') {
-                    const currentMainCount = Array.from(document.querySelectorAll('.role-main')).length + 1; // +1 kaptan
+                    const currentMainCount = Array.from(document.querySelectorAll('.role-main')).length + 1; 
                     if (dbRole === 'main') {
                         roleText = `<span onclick="changeRole('${memberId}', 'sub')" title="Yedek Yap" style="cursor:pointer;"><i class="fas fa-exchange-alt"></i> ASİL</span>`;
                     } else if (dbRole === 'sub') {
-                        // Sadece asil sayısı 5'ten küçükse asil yapabilsin
                         if (currentMainCount < 5) {
                             roleText = `<span onclick="changeRole('${memberId}', 'main')" title="Asil Yap" style="cursor:pointer;"><i class="fas fa-exchange-alt"></i> YEDEK</span>`;
                         } else {
@@ -369,7 +381,7 @@
             `;
         }
 
-        // --- TAKIM KURMA (CREATE TEAM) ---
+        // --- TAKIM KURMA (DİZİ FORMATI EKLENDİ) ---
         document.getElementById('teamForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnCreateTeam');
@@ -394,16 +406,17 @@
                     logoUrl = data.publicUrl;
                 }
 
-                const { data: newTeam, error } = await window.supabaseClient.from('teams').insert({
+                // Dizi formatına çevrildi [{...}]
+                const { data: newTeam, error } = await window.supabaseClient.from('teams').insert([{
                     captain_id: currentUser.id, name: name, tag: tag, logo_url: logoUrl
-                }).select().single();
+                }]).select().single();
                 
                 if (error) throw error;
 
-                // Kaptanı otomatik asil olarak ekle (Gerçi captain_id yetiyor ama team_members'da da dursun ileride lazım olursa)
-                await window.supabaseClient.from('team_members').insert({
+                // Dizi formatına çevrildi [{...}]
+                await window.supabaseClient.from('team_members').insert([{
                     team_id: newTeam.id, user_id: currentUser.id, role: 'main', status: 'accepted'
-                });
+                }]);
 
                 showNotification("Takım başarıyla kuruldu!", "success");
                 setTimeout(() => location.reload(), 1500);
@@ -414,7 +427,7 @@
             }
         });
 
-        // --- DİNAMİK ARAMA VE DAVET (SEARCH & INVITE) ---
+        // --- DİNAMİK ARAMA VE DAVET (DİZİ FORMATI VE SELECT SINGLE EKLENDİ) ---
         function attachDynamicSearchEvent(autoRole) {
             const input = document.getElementById('dynamicSearch');
             if (!input) return;
@@ -437,7 +450,6 @@
                     
                     if (!profiles || profiles.length === 0) return;
 
-                    // Bu takımda zaten olanları filtrele
                     const { data: existing } = await window.supabaseClient.from('team_members').select('user_id').eq('team_id', myTeamData.id);
                     const existingIds = existing ? existing.map(e => e.user_id) : [];
                     existingIds.push(myTeamData.captain_id);
@@ -454,9 +466,14 @@
                             list.innerHTML = '';
                             
                             try {
-                                const { error } = await window.supabaseClient.from('team_members').insert({
-                                    team_id: myTeamData.id, user_id: u.id, role: autoRole, status: 'pending'
-                                });
+                                // TAMAMEN ESKİ ÇALIŞAN YAPIYA GERİ DÖNDÜRÜLDÜ: [{...}] ve select().single() eklendi
+                                const { data: newMember, error } = await window.supabaseClient.from('team_members').insert([{
+                                    team_id: myTeamData.id, 
+                                    user_id: u.id, 
+                                    role: autoRole, 
+                                    status: 'pending'
+                                }]).select().single();
+
                                 if (error) throw error;
 
                                 await window.supabaseClient.from('bildirimler').insert([{ 
@@ -464,10 +481,12 @@
                                     mesaj: `${myTeamData.name} takımı sizi davet etti. Profilinizden kabul edebilirsiniz.`, tip: 'sistem' 
                                 }]);
                                 
-                                fetchRoster(); // Listeyi yenile ve yeni boş slot aç
+                                showNotification("Davet başarıyla gönderildi!", "success");
+                                fetchRoster(); 
 
                             } catch(e) {
-                                showNotification("Davet gönderilemedi.", "error");
+                                console.error(e);
+                                showNotification("Davet gönderilemedi: " + e.message, "error");
                                 input.value = ''; input.disabled = false;
                             }
                         };
@@ -478,12 +497,14 @@
         }
 
         async function kickPlayer(memberId, username) {
-            if (!confirm(`Bu oyuncuyu takımdan atmak (veya davetini iptal etmek) istediğinize emin misiniz?`)) return;
-            try {
-                const { error } = await window.supabaseClient.from('team_members').delete().eq('id', memberId);
-                if (error) throw error;
-                fetchRoster(); 
-            } catch (err) { showNotification("İşlem başarısız.", "error"); }
+            openConfirmModal(`<b>${username}</b> adlı oyuncuyu takımdan atmak (veya davetini iptal etmek) istediğinize emin misiniz?`, async () => {
+                try {
+                    const { error } = await window.supabaseClient.from('team_members').delete().eq('id', memberId);
+                    if (error) throw error;
+                    fetchRoster(); 
+                    showNotification("Oyuncu takımdan çıkarıldı.", "success");
+                } catch (err) { showNotification("İşlem başarısız.", "error"); }
+            });
         }
 
         async function changeRole(memberId, newRole) {
@@ -495,27 +516,28 @@
         }
 
         async function disbandTeam() {
-            if (!confirm("DİKKAT: Takımı tamamen dağıtmak istediğinize emin misiniz? Bu işlem geri alınamaz!")) return;
-            try {
-                await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id);
-                const { error } = await window.supabaseClient.from('teams').delete().eq('id', myTeamData.id);
-                if (error) throw error;
-                showNotification("Takım dağıtıldı.", "success");
-                setTimeout(() => window.location.reload(), 1500);
-            } catch (err) { showNotification("Takım silinirken hata oluştu.", "error"); }
+            openConfirmModal("<span style='color:var(--kirmizi-iptal);'>DİKKAT:</span> Takımı tamamen dağıtmak istediğinize emin misiniz? Bu işlem geri alınamaz!", async () => {
+                try {
+                    await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id);
+                    const { error } = await window.supabaseClient.from('teams').delete().eq('id', myTeamData.id);
+                    if (error) throw error;
+                    showNotification("Takım dağıtıldı.", "success");
+                    setTimeout(() => window.location.reload(), 1500);
+                } catch (err) { showNotification("Takım silinirken hata oluştu.", "error"); }
+            });
         }
 
         async function leaveTeam() {
-            if (!confirm("Takımdan ayrılmak istediğinize emin misiniz?")) return;
-            try {
-                const { error } = await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id).eq('user_id', currentUser.id);
-                if (error) throw error;
-                showNotification("Takımdan ayrıldınız.", "success");
-                setTimeout(() => window.location.reload(), 1500);
-            } catch (err) { showNotification("Ayrılma işlemi başarısız.", "error"); }
+            openConfirmModal("Takımdan ayrılmak istediğinize emin misiniz?", async () => {
+                try {
+                    const { error } = await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id).eq('user_id', currentUser.id);
+                    if (error) throw error;
+                    showNotification("Takımdan ayrıldınız.", "success");
+                    setTimeout(() => window.location.reload(), 1500);
+                } catch (err) { showNotification("Ayrılma işlemi başarısız.", "error"); }
+            });
         }
 
-        // Realtime dinleyici: Birisi daveti kabul ederse listeyi otomatik yenile
         window.addEventListener('storage', function(e) {
             if (e.key === 'teamInviteSignal' && myTeamData) {
                 fetchRoster(); 
