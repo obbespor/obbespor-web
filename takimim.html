@@ -15,21 +15,13 @@
     <style>
         .team-page-container { max-width: 1100px; margin: 40px auto; padding: 20px; flex: 1; animation: fadeIn 0.4s ease; display: none; }
         
-        /* OLUŞTURMA STATE (BASVURU BENZERİ) */
+        /* NO TEAM STATE (BASVURU BENZERİ) */
         .auth-card { background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); max-width: 800px; margin: 0 auto; }
         .input-group { margin-bottom: 20px; position: relative; }
         .input-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--gri-yazi); font-weight: bold; }
         .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; outline: none; font-family: 'Poppins', sans-serif; transition: 0.3s; }
         .input-group input:focus { border-color: var(--neon-mor); }
-        .input-group input[readonly] { background: #0a0a0a; border-color: var(--neon-mor); color: var(--neon-mor); font-weight: bold; }
-        .input-group input.main-captain { border-color: var(--mavi-onay); color: var(--mavi-onay); }
         
-        .player-wrapper { position: relative; display: flex; align-items: center; }
-        .status-tick { position: absolute; right: 40px; font-size: 18px; display: none; }
-        .status-tick.grey { display: block; color: #444; }
-        .status-tick.blue { display: block; color: var(--mavi-onay); filter: drop-shadow(0 0 5px var(--mavi-onay)); }
-        .remove-player { position: absolute; right: 10px; font-size: 16px; color: var(--kirmizi-iptal); cursor: pointer; display: none; transition: 0.3s; }
-        .remove-player:hover { transform: scale(1.2); filter: drop-shadow(0 0 5px var(--kirmizi-iptal)); }
         .autocomplete-items { position: absolute; border: 1px solid var(--neon-mor); border-top: none; z-index: 99; top: 100%; left: 0; right: 0; background-color: #0a0a0a; max-height: 200px; overflow-y: auto; border-radius: 0 0 8px 8px; }
         .autocomplete-items div { padding: 10px; cursor: pointer; border-bottom: 1px solid #222; font-size: 13px; }
         .autocomplete-items div:hover { background-color: var(--neon-mor); }
@@ -82,20 +74,28 @@
         .btn-disband { background: rgba(255, 75, 75, 0.1); color: var(--kirmizi-iptal); border: 1px solid var(--kirmizi-iptal); width: max-content; margin: 0 auto; }
         .btn-disband:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 0 15px rgba(255, 75, 75, 0.4); }
 
-        /* Dynamic Slot Styles */
         .dynamic-slot { animation: slideInUp 0.3s ease; }
         @keyframes slideInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ÖZEL ONAY MODALI EKLENTİSİ */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+        .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--kirmizi-iptal); border-radius: 15px; width: 90%; max-width: 400px; padding: 40px 20px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; }
 
         #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
+        @media (max-width: 768px) {
+            .team-profile-name { font-size: 28px; }
+            .team-profile-logo { width: 120px; height: 120px; }
+        }
     </style>
 </head>
 <body>
 
     <div id="loadingScreen">
         <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
-        <h2>Veriler Çekiliyor...</h2>
+        <h2>Takım Verileri Çekiliyor...</h2>
     </div>
 
     <div id="header-alani"></div>
@@ -155,6 +155,18 @@
         </div>
     </main>
 
+    <div class="modal-overlay" id="customConfirmModal">
+        <div class="modal-content">
+            <i class="fas fa-exclamation-triangle" style="font-size: 50px; color: var(--kirmizi-iptal); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(255,75,75,0.4));"></i>
+            <h3 style="color: white; font-weight: 900; font-size: 22px; margin-bottom: 10px; text-transform: uppercase;">Emin Misiniz?</h3>
+            <p id="confirmMessage" style="color: var(--gri-yazi); font-size: 14px; margin-bottom: 30px;"></p>
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button onclick="closeConfirmModal()" style="flex: 1; background: transparent; border: 1px solid #555; color: #aaa; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;">İptal Et</button>
+                <button id="confirmActionBtn" style="flex: 1; background: var(--kirmizi-iptal); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 0 15px rgba(255,75,75,0.3);">Evet, Onaylıyorum</button>
+            </div>
+        </div>
+    </div>
+
     <div id="footer-alani"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -164,13 +176,12 @@
     <script src="js/app.js"></script>
 
     <script>
-       let currentUser = null;
+        let currentUser = null;
         let myTeamData = null;
         let isCaptain = false;
         let isRosterLocked = false;
         let totalMembers = 0; 
-
-        // --- ÖZEL ONAY MODALI FONKSİYONLARI ---
+        
         let confirmCallback = null;
 
         function openConfirmModal(message, callback) {
@@ -309,7 +320,7 @@
                 }
 
                 if (isCaptain && !isRosterLocked && totalMembers < 10) {
-                    const nextRole = totalMembers < 5 ? 'main' : 'sub';
+                    const nextRole = totalMembers < 5 ? 'main' : 'sub'; 
                     const nextRoleText = nextRole === 'main' ? 'Asil Oyuncu Ekle' : 'Yedek Oyuncu Ekle';
                     
                     grid.innerHTML += `
@@ -381,7 +392,7 @@
             `;
         }
 
-        // --- TAKIM KURMA (DİZİ FORMATI EKLENDİ) ---
+        // --- TAKIM KURMA FORMU ---
         document.getElementById('teamForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnCreateTeam');
@@ -406,14 +417,13 @@
                     logoUrl = data.publicUrl;
                 }
 
-                // Dizi formatına çevrildi [{...}]
+                // EKSİKSİZ VERİ YAPISI
                 const { data: newTeam, error } = await window.supabaseClient.from('teams').insert([{
                     captain_id: currentUser.id, name: name, tag: tag, logo_url: logoUrl
                 }]).select().single();
                 
                 if (error) throw error;
 
-                // Dizi formatına çevrildi [{...}]
                 await window.supabaseClient.from('team_members').insert([{
                     team_id: newTeam.id, user_id: currentUser.id, role: 'main', status: 'accepted'
                 }]);
@@ -427,7 +437,7 @@
             }
         });
 
-        // --- DİNAMİK ARAMA VE DAVET (DİZİ FORMATI VE SELECT SINGLE EKLENDİ) ---
+        // --- DİNAMİK ARAMA VE DAVET ---
         function attachDynamicSearchEvent(autoRole) {
             const input = document.getElementById('dynamicSearch');
             if (!input) return;
@@ -466,7 +476,6 @@
                             list.innerHTML = '';
                             
                             try {
-                                // TAMAMEN ESKİ ÇALIŞAN YAPIYA GERİ DÖNDÜRÜLDÜ: [{...}] ve select().single() eklendi
                                 const { data: newMember, error } = await window.supabaseClient.from('team_members').insert([{
                                     team_id: myTeamData.id, 
                                     user_id: u.id, 
@@ -543,6 +552,8 @@
                 fetchRoster(); 
             }
         });
+
+        document.getElementById('teamForm').addEventListener('submit', async (e) => { ... });
 
         document.addEventListener('DOMContentLoaded', initTeamPage);
     </script>
