@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Maç Takvimi | OBB E-SPORTS</title>
+    <link rel="icon" type="image/png" href="img/obblogo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    
+    <style>
+        nav ul li a { cursor: pointer; }
+        .active-admin-tab { color: var(--neon-mor) !important; border-bottom: 2px solid var(--neon-mor); padding-bottom: 3px; }
+        
+        .admin-container { padding: 40px 10%; flex: 1; animation: fadeIn 0.4s ease; display: block; }
+        .section-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; color: white;}
+        .section-title span { color: var(--neon-mor); }
+        .header-with-btn { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #222; padding-bottom: 10px; }
+        .header-with-btn .section-title { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+
+        /* TAKVİM / PLANLAMA CSS */
+        .planla-card { background: #0a0a0a; border: 1px solid #222; border-radius: 20px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-width: 800px; margin: 0 auto; text-align: center; }
+        .planla-teams-wrapper { display: flex; justify-content: center; align-items: center; gap: 30px; margin: 30px 0; }
+        .planla-team-box { display: flex; flex-direction: column; align-items: center; flex: 1; }
+        .planla-team-box img { width: 100px; height: 100px; object-fit: contain; background: #111; border: 1px solid #333; border-radius: 15px; margin-bottom: 15px; transition: 0.3s; }
+        .planla-team-box input { text-align: center; font-size: 18px; font-weight: 900; background: transparent; border: none; border-bottom: 2px dashed #444; color: white; padding: 10px; width: 100%; outline: none; transition: 0.3s; }
+        .planla-team-box input:focus { border-bottom-color: var(--neon-mor); }
+        .planla-vs { font-size: 30px; font-weight: 900; color: #444; }
+        .planla-date-input { background: rgba(0, 210, 255, 0.05); border: 1px solid #00d2ff; color: #00d2ff; padding: 15px; border-radius: 10px; font-size: 18px; font-weight: bold; text-align: center; width: 100%; max-width: 400px; margin: 0 auto 30px; outline: none; transition: 0.3s; }
+        .planla-date-input:focus { box-shadow: 0 0 20px rgba(0, 210, 255, 0.3); color: white; }
+        
+        .form-control { background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: bold; width: 100%; outline: none; transition: 0.3s; }
+        .form-control:focus { border-color: var(--neon-mor); }
+
+        .btn-schedule { background: linear-gradient(45deg, #0056b3, #00d2ff); color: white; border: none; padding: 18px 40px; border-radius: 12px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; letter-spacing: 1px; }
+        .btn-schedule:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0, 210, 255, 0.4); }
+        
+        .btn-reject-env { color: var(--kirmizi-iptal); background: rgba(255, 75, 75, 0.1); border: 1px dashed var(--kirmizi-iptal); padding: 15px; border-radius: 12px; font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 10px; flex: 1; }
+        .btn-reject-env:hover { background: var(--kirmizi-iptal); color: white; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
+
+        @media (max-width: 768px) {
+            .planla-teams-wrapper { flex-direction: column; }
+            .btn-schedule, .btn-reject-env { width: 100%; padding: 15px; }
+            .planla-card > div:last-child { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loadingScreen">
+        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
+        <h2>Yetki Kontrolü Yapılıyor...</h2>
+    </div>
+
+    <!-- HEADER -->
+    <header class="main-nav" id="mainHeader">
+        <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
+        <nav>
+            <ul>
+                <li><a href="index.html">ANA SAYFA</a></li>
+                <li><a href="onay.html">ONAY</a></li>
+                <li><a href="onayli.html">ONAYLI</a></li>
+                <li><a href="takvim.html" class="active-admin-tab">TAKVİM <i class="far fa-calendar-alt" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <li><a href="admin.html">DİĞER ARAÇLAR <i class="fas fa-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div id="toast-container"></div>
+
+    <main class="admin-container" id="takvimSection">
+        <div class="header-with-btn">
+            <h2 class="section-title">GELECEK MAÇ <span>TAKVİMİ</span></h2>
+        </div>
+        
+        <div class="planla-card">
+            <p style="color:var(--gri-yazi); font-size:13px; margin-bottom: 25px;">Buradan belirlediğiniz maçlar fikstürde "Tarih" ile gösterilir. Maç oynanıp zarf geldiğinde Zarf sekmesinden üzerine işleyebilirsiniz.</p>
+            
+            <div style="display:flex; gap:15px; margin-bottom: 30px; flex-wrap: wrap;">
+                <select id="takvimTourney" class="form-control" style="flex:2;">
+                    <option value="">Turnuva Yükleniyor...</option>
+                </select>
+                <select id="takvimStage" class="form-control" style="flex:1;" onchange="updateTakvimSelectors()">
+                    <option value="SON 64">SON 64 (BO1)</option>
+                    <option value="SON 32">SON 32 (BO1)</option>
+                    <option value="SON 16">SON 16 (BO3)</option>
+                    <option value="ÇEYREK FİNAL">ÇEYREK FİNAL (BO3)</option>
+                    <option value="YARI FİNAL">YARI FİNAL (BO3)</option>
+                    <option value="FİNAL">BÜYÜK FİNAL (BO5)</option>
+                </select>
+                <select id="takvimMatchOrder" class="form-control" style="flex:1;"></select>
+            </div>
+
+            <div class="planla-teams-wrapper">
+                <div class="planla-team-box">
+                    <img id="takvimLogoA" src="img/unknown.webp">
+                    <input type="text" id="takvimTeamA" placeholder="SOL TAKIM ADI" onblur="resolveTakvimTeam('A')">
+                </div>
+                <div class="planla-vs">VS</div>
+                <div class="planla-team-box">
+                    <img id="takvimLogoB" src="img/unknown.webp">
+                    <input type="text" id="takvimTeamB" placeholder="SAĞ TAKIM ADI" onblur="resolveTakvimTeam('B')">
+                </div>
+            </div>
+
+            <div>
+                <input type="text" id="takvimDate" class="planla-date-input" placeholder="Tarih Girin (Örn: 24 Mart 21:00)">
+            </div>
+
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button class="btn-schedule" id="btnExecuteTakvim" onclick="executeScheduleMatch()">
+                    <i class="far fa-calendar-check"></i> MAÇI PLANLA
+                </button>
+                <button class="btn-reject-env" id="btnDeleteTakvim" onclick="deleteScheduleMatch()" style="flex: none; padding: 18px 40px; border-radius: 12px; margin-top: 0;">
+                    <i class="fas fa-calendar-times"></i> PLANI SİL
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-alani"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/bildirimler.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <script>
+        let takvimTeamAId = null;
+        let takvimTeamBId = null;
+        let currentUser = null;
+
+        async function initPage() {
+            try {
+                const response = await fetch("components/footer.html");
+                if (response.ok) document.getElementById("footer-alani").innerHTML = await response.text();
+            } catch(e) {}
+
+            if (typeof checkUserStatus === "function") await checkUserStatus();
+            checkAdminAccess();
+        }
+
+        async function checkAdminAccess() {
+            try {
+                if (!window.supabaseClient) throw new Error("Supabase bağlantısı yok.");
+                const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
+                if (authError || !user) throw new Error("Giriş yapılmadı.");
+                currentUser = user;
+
+                const { data: profile, error: profileError } = await window.supabaseClient.from('profiles').select('role').eq('id', user.id).single();
+                if (profileError || profile.role !== 'admin') throw new Error("Yetkisiz erişim.");
+
+                document.getElementById('loadingScreen').style.display = 'none';
+                
+                await loadTournamentsToSelect();
+                updateTakvimSelectors(); 
+
+            } catch (err) {
+                window.location.replace("index.html"); // Yetkisizse anasayfaya at
+            }
+        }
+
+        async function loadTournamentsToSelect() {
+            const { data: tournaments } = await window.supabaseClient.from('tournaments').select('id, name').order('created_at', { ascending: false });
+            
+            const selectTk = document.getElementById('takvimTourney');
+            selectTk.innerHTML = '';
+
+            if (tournaments && tournaments.length > 0) {
+                tournaments.forEach(t => {
+                    selectTk.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+                });
+            } else {
+                selectTk.innerHTML = `<option value="">Önce Turnuva Oluşturun</option>`;
+            }
+        }
+
+        function updateTakvimSelectors() {
+            const stage = document.getElementById('takvimStage').value;
+            const matchOrder = document.getElementById('takvimMatchOrder');
+            
+            matchOrder.innerHTML = '';
+            let maxMatch = 1;
+            if(stage.includes('SON 64')) maxMatch = 32;
+            if(stage.includes('SON 32')) maxMatch = 16;
+            if(stage.includes('SON 16')) maxMatch = 8;
+            if(stage.includes('ÇEYREK')) maxMatch = 4;
+            if(stage.includes('YARI')) maxMatch = 2;
+
+            for(let i=1; i<=maxMatch; i++) matchOrder.innerHTML += `<option value="${i}">${i}. MAÇ</option>`;
+        }
+
+        async function resolveTakvimTeam(side) {
+            const inputVal = document.getElementById(side === 'A' ? 'takvimTeamA' : 'takvimTeamB').value;
+            const imgEl = document.getElementById(side === 'A' ? 'takvimLogoA' : 'takvimLogoB');
+            
+            if(!inputVal || inputVal.trim().length < 2) {
+                imgEl.src = 'img/unknown.webp';
+                if(side === 'A') takvimTeamAId = null; else takvimTeamBId = null;
+                return;
+            }
+
+            try {
+                const { data } = await window.supabaseClient.from('teams')
+                    .select('id, name, logo_url')
+                    .ilike('name', `%${inputVal.trim()}%`)
+                    .limit(1)
+                    .maybeSingle();
+                
+                if(data) {
+                    if(side === 'A') takvimTeamAId = data.id; else takvimTeamBId = data.id;
+                    imgEl.src = data.logo_url || 'img/unknown.webp';
+                    document.getElementById(side === 'A' ? 'takvimTeamA' : 'takvimTeamB').value = data.name;
+                } else {
+                    imgEl.src = 'img/unknown.webp';
+                    if(side === 'A') takvimTeamAId = null; else takvimTeamBId = null;
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function executeScheduleMatch() {
+            const tourneyId = document.getElementById('takvimTourney').value;
+            if(!tourneyId) return showNotification("Lütfen bir turnuva seçin.", "error");
+
+            const sNameRaw = document.getElementById('takvimStage').value;
+            const sName = sNameRaw.split(' (')[0]; 
+            const matchO = document.getElementById('takvimMatchOrder').value;
+            const matchDate = document.getElementById('takvimDate').value.trim();
+
+            if(!takvimTeamAId || !takvimTeamBId) return showNotification("Lütfen takım isimlerini tam girin ve logoların belirmesini bekleyin.", "error");
+            if(!matchDate) return showNotification("Lütfen 'Tarih' kutusunu doldurun.", "error");
+
+            let formatStr = 'BO1';
+            if (sNameRaw.includes('BO3')) formatStr = 'BO3';
+            if (sNameRaw.includes('BO5')) formatStr = 'BO5';
+
+            const btn = document.getElementById('btnExecuteTakvim');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PLANLANIYOR...';
+            btn.disabled = true;
+
+            try {
+                const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
+                    .select('id').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
+
+                if (existingMatch) {
+                    const { error: updErr } = await window.supabaseClient.from('bracket_matches')
+                        .update({ team_a_id: takvimTeamAId, team_b_id: takvimTeamBId, match_date: matchDate, status: 'pending' })
+                        .eq('id', existingMatch.id);
+                    if (updErr) throw new Error(updErr.message);
+                } else {
+                    const { error: insErr } = await window.supabaseClient.from('bracket_matches').insert([{
+                        tournament_id: tourneyId, round_name: sName, round_order: matchO,
+                        team_a_id: takvimTeamAId, team_b_id: takvimTeamBId, status: 'pending', match_date: matchDate,
+                        match_format: formatStr, series_score_a: 0, series_score_b: 0
+                    }]);
+                    if (insErr) throw new Error(insErr.message);
+                }
+
+                showNotification("Maç başarıyla planlandı!", "success");
+                
+                // Formu Sıfırla
+                document.getElementById('takvimTeamA').value = ''; document.getElementById('takvimTeamB').value = '';
+                document.getElementById('takvimDate').value = '';
+                document.getElementById('takvimLogoA').src = 'img/unknown.webp'; document.getElementById('takvimLogoB').src = 'img/unknown.webp';
+                takvimTeamAId = null; takvimTeamBId = null;
+
+            } catch (err) {
+                showNotification("Planlama Hatası: " + err.message, "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function deleteScheduleMatch() {
+            const tourneyId = document.getElementById('takvimTourney').value;
+            if(!tourneyId) return showNotification("Lütfen bir turnuva seçin.", "error");
+
+            const sNameRaw = document.getElementById('takvimStage').value;
+            const sName = sNameRaw.split(' (')[0]; 
+            const matchO = document.getElementById('takvimMatchOrder').value;
+
+            if(!confirm(`${sName} - ${matchO}. Maç slotundaki planlamayı fikstürden tamamen silmek istediğinize emin misiniz?`)) return;
+
+            const btn = document.getElementById('btnDeleteTakvim');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SİLİNİYOR...';
+            btn.disabled = true;
+
+            try {
+                const { data: existingMatch, error: findErr } = await window.supabaseClient.from('bracket_matches')
+                    .select('id, status').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
+
+                if (findErr) throw findErr;
+                if (!existingMatch) {
+                    showNotification("Bu slotta planlanmış bir maç bulunamadı.", "info");
+                    return;
+                }
+
+                if(existingMatch.status !== 'pending') {
+                     if(!confirm("DİKKAT: Bu maça zaten zarf işlenmiş ve skor girilmiş! Yine de bu eşleşmeyi tamamen silmek istiyor musunuz?")) {
+                         return;
+                     }
+                }
+
+                const { error: delErr } = await window.supabaseClient.from('bracket_matches').delete().eq('id', existingMatch.id);
+                if (delErr) throw delErr;
+
+                showNotification("Planlanmış maç başarıyla silindi ve slot boşaltıldı!", "success");
+                
+                document.getElementById('takvimTeamA').value = ''; document.getElementById('takvimTeamB').value = '';
+                document.getElementById('takvimDate').value = '';
+                document.getElementById('takvimLogoA').src = 'img/unknown.webp'; document.getElementById('takvimLogoB').src = 'img/unknown.webp';
+                takvimTeamAId = null; takvimTeamBId = null;
+
+            } catch (err) {
+                showNotification("Silme Hatası: " + err.message, "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>
