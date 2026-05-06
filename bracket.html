@@ -15,15 +15,8 @@
     <meta property="og:title" content="OBB 1. TOPLULUK TURNUVASI Fikstürü | OBB E-SPORTS">
     <meta property="og:description" content="Ordu'dan yükselen e-spor topluluğu OBB E-SPORTS'a katıl! Turnuvalarda rekabet et ve zafere ulaş.">
     <meta property="og:url" content="https://obbesports.com">
-    <meta property="og:image" content="https://obbesports.com/img/obblogo.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="OBB 1. TOPLULUK TURNUVASI Fikstürü | OBB E-SPORTS">
-    <meta name="twitter:description" content="Ordu'dan yükselen e-spor topluluğu OBB E-SPORTS'a katıl! Turnuvalarda rekabet et ve zafere ulaş.">
-    <meta name="twitter:image" content="https://obbesports.com/img/obblogo.png">
-
+    <meta property="og:image" content="https://obbesports.com/img/obbmorlogo.png">
+    
     <link rel="icon" type="image/png" href="img/obblogo.png">
     <link rel="apple-touch-icon" href="img/obblogo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -42,21 +35,26 @@
         .page-title span { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
         .page-subtitle { color: var(--gri-yazi); font-size: 14px; font-weight: 500; margin-bottom: 30px; }
 
-        .stage-content { display: none; padding: 40px 5%; animation: fadeIn 0.4s ease; min-height: 60vh; }
-        .stage-content.active { display: block; }
+        .stage-content { padding: 40px 5%; animation: fadeIn 0.4s ease; min-height: 60vh; }
 
         /* ==========================================================
-           LİNEER AĞAÇ (8 TAKIMLIK ÇEYREK FİNAL BAŞLANGICI)
+           GRUP AŞAMASI (YENİ SİSTEM)
            ========================================================== */
-        /* KESİLME SORUNU ÇÖZÜMÜ: padding-top 40px'den 80px'e çıkarıldı */
-        .bracket-scroll-area { width: 100%; overflow-x: auto; padding-top: 80px; padding-bottom: 60px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; -webkit-overflow-scrolling: touch; }
+        .group-stage-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-bottom: 60px; }
+        .group-box { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .group-header { background: var(--neon-mor); color: white; padding: 15px; text-align: center; font-size: 18px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+        .group-match-list { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+
+        /* ==========================================================
+           PLAY-OFF AĞACI (YARI FİNAL -> FİNAL)
+           ========================================================== */
+        .playoff-title { text-align: center; font-size: 24px; font-weight: 900; color: white; margin-bottom: 10px; border-top: 2px dashed #222; padding-top: 40px;}
         
-        .bracket-container { display: flex; align-items: stretch; justify-content: center; min-width: max-content; min-height: 500px; padding-left: 20px; padding-right: 20px; gap: 40px; }
+        .bracket-scroll-area { width: 100%; overflow-x: auto; padding-top: 60px; padding-bottom: 60px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; -webkit-overflow-scrolling: touch; }
+        .bracket-container { display: flex; align-items: stretch; justify-content: center; min-width: max-content; min-height: 400px; padding-left: 20px; padding-right: 20px; gap: 60px; }
+        .bracket-column { display: flex; flex-direction: column; width: 300px; position: relative; }
         
-        .bracket-column { display: flex; flex-direction: column; width: 280px; position: relative; }
-        
-        /* KESİLME SORUNU ÇÖZÜMÜ: top -60px yapıldı, padding-bottom artırıldı */
-        .round-header { position: absolute; top: -60px; left: 10px; right: 10px; text-align: center; color: var(--neon-mor); font-weight: 900; text-transform: uppercase; font-size: 16px; letter-spacing: 1px; border-bottom: 2px solid #222; padding-bottom: 15px; z-index: 10; line-height: 1.2; }
+        .round-header { position: absolute; top: -50px; left: 10px; right: 10px; text-align: center; color: var(--neon-mor); font-weight: 900; text-transform: uppercase; font-size: 18px; letter-spacing: 1px; border-bottom: 2px solid #222; padding-bottom: 10px; z-index: 10; }
 
         .match-wrapper { 
             flex: 1 1 0%; 
@@ -95,31 +93,30 @@
         .match-card.scheduled-slot .team-name { color: #ccc; }
 
         /* ==========================================================
-           ÇİZGİLER (Ağaç Bağlantıları)
+           ÇİZGİLER (Sadece 2 Sütun İçin Ayarlandı)
            ========================================================== */
-        .bracket-column:not(:last-child) .match-card::after { 
-            content: ''; position: absolute; top: 50%; right: -20px; width: 20px; 
+        .bracket-column:first-child .match-card::after { 
+            content: ''; position: absolute; top: 50%; right: -30px; width: 30px; 
             border-top: 2px solid #444; z-index: 1; 
         }
         
-        .bracket-column:not(:first-child) .match-card::before { 
-            content: ''; position: absolute; top: 50%; left: -20px; width: 20px; 
+        .bracket-column:last-child .match-card::before { 
+            content: ''; position: absolute; top: 50%; left: -30px; width: 30px; 
             border-top: 2px solid #444; z-index: 1; 
         }
 
-        .bracket-column:not(:first-child) .match-wrapper::before { 
-            content: ''; position: absolute; left: -20px; 
+        .bracket-column:last-child .match-wrapper::before { 
+            content: ''; position: absolute; left: -30px; 
             top: 25%; bottom: 25%; 
             border-left: 2px solid #444; z-index: 0; 
         }
 
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* --- DETAY MODALI VE HARİTA SEKMELER --- */
+        /* --- DETAY MODALI VE HARİTA SEKMELER --- (Aynı Kaldı) */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(8px); padding: 10px; }
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
         .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 100%; max-width: 900px; max-height: 95vh; overflow-y: auto; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
-        
         .modal-content::-webkit-scrollbar { width: 6px; height: 6px; }
         .modal-content::-webkit-scrollbar-track { background: #111; border-radius: 10px; }
         .modal-content::-webkit-scrollbar-thumb { background: var(--neon-mor); border-radius: 10px; }
@@ -169,23 +166,18 @@
 
         @media (max-width: 768px) {
             .page-title { font-size: 24px; }
-            .bracket-column { width: 230px; } 
+            .bracket-column { width: 260px; } 
             .match-wrapper { padding: 0; } 
-            .bracket-column:not(:last-child) .match-card::after { right: -15px; width: 15px; }
-            .bracket-column:not(:first-child) .match-card::before { left: -15px; width: 15px; }
-            .bracket-column:not(:first-child) .match-wrapper::before { left: -15px; }
+            .bracket-column:first-child .match-card::after { right: -20px; width: 20px; }
+            .bracket-column:last-child .match-card::before { left: -20px; width: 20px; }
+            .bracket-column:last-child .match-wrapper::before { left: -20px; }
             
             .modal-overlay { padding: 5px; } 
             .modal-content { max-width: 95vw; max-height: 90vh; }
             
             .stats-tables-container { display: block; width: 100%; }
             .table-half { width: 100%; border-right: none; margin-bottom: 20px; }
-            .table-responsive { 
-                width: 100%; 
-                overflow-x: auto !important; 
-                -webkit-overflow-scrolling: touch; 
-                display: block; 
-            }
+            .table-responsive { width: 100%; overflow-x: auto !important; -webkit-overflow-scrolling: touch; display: block; }
             .stats-table { min-width: 340px; } 
             
             .modal-team-name { font-size: 14px; }
@@ -208,15 +200,31 @@
 
     <div class="page-header">
         <h1 class="page-title">OBB 1. TOPLULUK TURNUVASI <span>FİKSTÜRÜ</span></h1>
-        <p class="page-subtitle">Toplam Ödül Havuzu: 30.000 TL | 8 Takım</p>
+        <p class="page-subtitle">Toplam Ödül Havuzu: 30.000 TL | 6 Takım</p>
     </div>
 
-    <div id="playoffStage" class="stage-content active">
-        <div class="bracket-scroll-area">
-            <div class="bracket-container" id="bracketContainer">
-                <!-- Javascript ile Doldurulacak 8 Takımlık Ağaç -->
+    <div class="stage-content">
+        
+        <div class="group-stage-container">
+            <div class="group-box">
+                <div class="group-header">A GRUBU MAÇLARI</div>
+                <div class="group-match-list" id="groupA_List">
+                    </div>
+            </div>
+
+            <div class="group-box">
+                <div class="group-header" style="background:#00d2ff;">B GRUBU MAÇLARI</div>
+                <div class="group-match-list" id="groupB_List">
+                    </div>
             </div>
         </div>
+
+        <h2 class="playoff-title">PLAY-OFF EŞLEŞMELERİ</h2>
+        <div class="bracket-scroll-area">
+            <div class="bracket-container" id="bracketContainer">
+                </div>
+        </div>
+
     </div>
 
     <div class="modal-overlay" id="matchModal" onclick="this.classList.remove('active'); document.body.style.overflow = 'auto';">
@@ -262,12 +270,11 @@
             } catch(e) { console.error("Komponent yüklenemedi", e); }
         }
 
-        // SADECE 8 TAKIM İÇİN GÜNCELLENMİŞ YAPI (Çeyrek, Yarı, Final)
+        // YENİ FORMAT: GRUPLAR + YARI FİNAL + FİNAL
         const TOURNAMENT_STRUCTURE = {
             playoff: [
-                { id: 'ÇEYREK FİNAL', count: 4, format: 'BO3', dbName: 'ÇEYREK FİNAL' },
                 { id: 'YARI FİNAL', count: 2, format: 'BO3', dbName: 'YARI FİNAL' },
-                { id: 'FİNAL', count: 1, format: 'BO5', dbName: 'FİNAL' }
+                { id: 'BÜYÜK FİNAL', count: 1, format: 'BO5', dbName: 'FİNAL' }
             ]
         };
 
@@ -342,7 +349,7 @@
                 
                 if (!tourney) {
                     console.warn("Aktif turnuva bulunamadı.");
-                    document.getElementById('bracketContainer').innerHTML = '<p style="text-align:center; padding: 50px; color: var(--gri-yazi);">Şu an fikstürü çizilmiş aktif bir turnuva bulunmuyor.</p>';
+                    document.querySelector('.stage-content').innerHTML = '<p style="text-align:center; padding: 50px; color: var(--gri-yazi);">Şu an fikstürü çizilmiş aktif bir turnuva bulunmuyor.</p>';
                     return;
                 }
 
@@ -378,14 +385,16 @@
                 }
 
                 const roundsData = {};
+                // Yeni Grup Maçları İçin Diziler
+                const groupA_Matches = [];
+                const groupB_Matches = [];
+
                 if (matchesData) {
                     matchesData.forEach(m => {
                         if (!roundsData[m.round_name]) roundsData[m.round_name] = [];
                         
-                        let sA = 0;
-                        let sB = 0;
-                        let calcStatus = 'pending';
-                        let calcWinner = null;
+                        let sA = 0; let sB = 0;
+                        let calcStatus = 'pending'; let calcWinner = null;
                         
                         let winsNeeded = 1; 
                         if (["SON 16", "ÇEYREK FİNAL", "YARI FİNAL"].includes(m.round_name)) winsNeeded = 2; // BO3
@@ -406,30 +415,43 @@
                             else if (sB >= winsNeeded) { calcStatus = 'finished'; calcWinner = m.team_b_id; }
                             else { calcStatus = 'live'; } 
                         } else {
-                            sA = '-';
-                            sB = '-';
-                            calcStatus = 'pending'; 
+                            sA = '-'; sB = '-'; calcStatus = 'pending'; 
                         }
 
-                        roundsData[m.round_name].push({
+                        const matchObj = {
                             id: m.id,
-                            teamAId: m.team_a_id,
-                            teamBId: m.team_b_id,
+                            teamAId: m.team_a_id, teamBId: m.team_b_id,
                             teamA: teamMap[m.team_a_id]?.name || 'Belirlenmedi',
                             teamB: teamMap[m.team_b_id]?.name || 'Belirlenmedi',
                             logoA: teamMap[m.team_a_id]?.logo || 'img/unknown.webp',
                             logoB: teamMap[m.team_b_id]?.logo || 'img/unknown.webp',
-                            scoreA: sA, 
-                            scoreB: sB, 
-                            status: calcStatus, 
-                            winnerId: calcWinner,
-                            format: m.match_format,
-                            matchDate: m.match_date || null
-                        });
+                            scoreA: sA, scoreB: sB, 
+                            status: calcStatus, winnerId: calcWinner,
+                            format: m.match_format, matchDate: m.match_date || null
+                        };
+
+                        roundsData[m.round_name].push(matchObj);
+
+                        // Grupları Ayırıyoruz (Admin panelindeki isme göre)
+                        if(m.round_name === "GRUP A") groupA_Matches.push(matchObj);
+                        if(m.round_name === "GRUP B") groupB_Matches.push(matchObj);
                     });
                 }
 
-                // --- SADECE PLAYOFF AĞACI RENDER ---
+                // --- 1. GRUP MAÇLARINI RENDER ET ---
+                const groupADiv = document.getElementById('groupA_List');
+                const groupBDiv = document.getElementById('groupB_List');
+                
+                groupADiv.innerHTML = groupA_Matches.length > 0 
+                    ? groupA_Matches.map(match => createMatchCardHTML(match, 'BO1')).join('') 
+                    : '<p style="text-align:center; color:#555; padding: 20px;">Maç Planlanmadı</p>';
+
+                groupBDiv.innerHTML = groupB_Matches.length > 0 
+                    ? groupB_Matches.map(match => createMatchCardHTML(match, 'BO1')).join('') 
+                    : '<p style="text-align:center; color:#555; padding: 20px;">Maç Planlanmadı</p>';
+
+
+                // --- 2. PLAYOFF (AĞAÇ) RENDER ET ---
                 const playoffDiv = document.getElementById('bracketContainer');
                 let playoffHtml = '';
                 
