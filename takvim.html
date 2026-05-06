@@ -56,10 +56,9 @@
 
     <div id="loadingScreen">
         <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
-        <h2>Yetki Kontrolü Yapılıyor...</h2>
+        <h2>Güvenlik Kontrolü Yapılıyor...</h2>
     </div>
 
-    <!-- HEADER -->
     <header class="main-nav" id="mainHeader">
         <a href="index.html" class="logo">OBB <span>ADMIN</span></a>
         <nav>
@@ -67,10 +66,10 @@
                 <li><a href="index.html">ANA SAYFA</a></li>
                 <li><a href="onay.html">ONAY</a></li>
                 <li><a href="onayli.html">ONAYLI</a></li>
-                <li><a href="takvim.html" class="active-admin-tab">TAKVİM <i  style="font-size: 10px; margin-left: 3px;"></i></a></li>
-                <li><a href="admin.html">FİKSTÜR <i style="font-size: 10px; margin-left: 3px;"></i></a></li>
-               <li><a href="mac-yonetim.html">DÜZENLE<i style="font-size: 10px; margin-left: 3px;"></i></a></li>
-
+                <li><a href="takvim.html" class="active-admin-tab">TAKVİM <i class="far fa-calendar-alt" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <li><a href="fikstur.html">FİKSTÜR <i class="fas fa-sitemap" style="font-size: 10px; margin-left: 5px;"></i></a></li>
+                <li><a href="yetki.html">YETKİ <i class="fas fa-users-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <li><a href="admin.html">DİĞER ARAÇLAR <i class="fas fa-cog" style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
             </ul>
         </nav>
@@ -91,12 +90,14 @@
                     <option value="">Turnuva Yükleniyor...</option>
                 </select>
                 <select id="takvimStage" class="form-control" style="flex:1;" onchange="updateTakvimSelectors()">
-                    <option value="SON 64">SON 64 (BO1)</option>
-                    <option value="SON 32">SON 32 (BO1)</option>
-                    <option value="SON 16">SON 16 (BO3)</option>
-                    <option value="ÇEYREK FİNAL">ÇEYREK FİNAL (BO3)</option>
-                    <option value="YARI FİNAL">YARI FİNAL (BO3)</option>
-                    <option value="FİNAL">BÜYÜK FİNAL (BO5)</option>
+                    <option value="GRUP A (BO1)">A GRUBU (BO1)</option>
+                    <option value="GRUP B (BO1)">B GRUBU (BO1)</option>
+                    <option value="SON 64 (BO1)">SON 64 (BO1)</option>
+                    <option value="SON 32 (BO1)">SON 32 (BO1)</option>
+                    <option value="SON 16 (BO3)">SON 16 (BO3)</option>
+                    <option value="ÇEYREK FİNAL (BO3)">ÇEYREK FİNAL (BO3)</option>
+                    <option value="YARI FİNAL (BO3)">YARI FİNAL (BO3)</option>
+                    <option value="FİNAL (BO5)">BÜYÜK FİNAL (BO5)</option>
                 </select>
                 <select id="takvimMatchOrder" class="form-control" style="flex:1;"></select>
             </div>
@@ -114,7 +115,7 @@
             </div>
 
             <div>
-                <input type="text" id="takvimDate" class="planla-date-input" placeholder="Tarih Girin (Örn: 24 Mart 21:00)">
+                <input type="text" id="takvimDate" class="planla-date-input" placeholder="Tarih Girin (Örn: Cumartesi 21:00)">
             </div>
 
             <div style="display: flex; gap: 15px; justify-content: center;">
@@ -191,6 +192,9 @@
             
             matchOrder.innerHTML = '';
             let maxMatch = 1;
+            
+            // YENİ EKLENEN GRUP MANTIĞI: Gruplarda 3 maç var
+            if(stage.includes('GRUP')) maxMatch = 3; 
             if(stage.includes('SON 64')) maxMatch = 32;
             if(stage.includes('SON 32')) maxMatch = 16;
             if(stage.includes('SON 16')) maxMatch = 8;
@@ -233,7 +237,7 @@
             if(!tourneyId) return showNotification("Lütfen bir turnuva seçin.", "error");
 
             const sNameRaw = document.getElementById('takvimStage').value;
-            const sName = sNameRaw.split(' (')[0]; 
+            const sName = sNameRaw.split(' (')[0]; // Parantez içindeki BO bilgisini siler, sadece aşama kalır.
             const matchO = document.getElementById('takvimMatchOrder').value;
             const matchDate = document.getElementById('takvimDate').value.trim();
 
