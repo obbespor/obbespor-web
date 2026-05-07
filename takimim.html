@@ -16,7 +16,7 @@
         .team-page-container { max-width: 1100px; margin: 40px auto; padding: 20px; flex: 1; animation: fadeIn 0.4s ease; display: none; }
         
         /* TAKIM KURMA KARTI & GELEN DAVETLER */
-        .auth-card { background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); max-width: 800px; margin: 0 auto; }
+        .auth-card { background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); max-width: 600px; margin: 0 auto; }
         .input-group { margin-bottom: 20px; position: relative; }
         .input-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--gri-yazi); font-weight: bold; }
         .input-group input { width: 100%; padding: 12px 15px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; outline: none; font-family: 'Poppins', sans-serif; transition: 0.3s; }
@@ -68,6 +68,7 @@
         
         .role-badges-area { margin-top: 5px; display: flex; gap: 5px; align-items: center; }
         .player-role { font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: 0.3s;}
+        .player-role:hover { opacity: 0.8; }
         .role-main { background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid #00d4ff; }
         .role-sub { background: rgba(255, 255, 255, 0.05); color: #aaa; border: 1px solid #555; }
         .role-pending { background: rgba(255, 152, 0, 0.1); color: #ff9800; border: 1px solid #ff9800; cursor: default;}
@@ -129,19 +130,18 @@
         <div class="auth-card">
             <h2 class="section-title" style="text-align: center; border:none; margin-bottom:10px;">TAKIMINI <span>KUR</span></h2>
             <form id="teamForm">
-                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <div class="input-group" style="flex: 2; min-width: 200px;">
-                        <label>Takım Adı (Min 3, Max 20 Karakter) *</label>
-                        <input type="text" id="newTeamName" placeholder="Örn: OBB Tigers" minlength="3" maxlength="20" required>
-                    </div>
-                    <div class="input-group" style="flex: 1; min-width: 100px;">
-                        <label>Kısaltma (2-4 Karakter) *</label>
-                        <input type="text" id="newTeamTag" placeholder="OBB" minlength="2" maxlength="4" required>
-                    </div>
+                <div class="input-group">
+                    <label>Takım Adı (Min 3, Max 20 Karakter) *</label>
+                    <input type="text" id="newTeamName" placeholder="Örn: OBB Tigers" minlength="3" maxlength="20" required>
+                </div>
+                <div class="input-group">
+                    <label>Kısaltma (2-4 Karakter) *</label>
+                    <input type="text" id="newTeamTag" placeholder="OBB" minlength="2" maxlength="4" required>
                 </div>
                 <div class="input-group">
                     <label>Takım Logosu (PNG, JPG, Max 2MB)</label>
                     <input type="file" id="newTeamLogo" accept="image/png, image/jpeg, image/jpg, image/webp">
+                    <span style="font-size:11px; color:#555;">Logo zorunlu değildir, sonradan ekleyebilirsiniz.</span>
                 </div>
                 <button type="submit" class="save-btn" id="btnCreateTeam">TAKIMI OLUŞTUR</button>
             </form>
@@ -281,7 +281,7 @@
             } catch (err) { console.error(err); } finally { document.getElementById('loadingScreen').style.display = 'none'; }
         }
 
-        // --- YENİ EKLENEN: GELEN DAVETLERİ ÇEKME ---
+        // --- GELEN DAVETLERİ ÇEKME ---
         async function fetchPendingInvites() {
             try {
                 const { data: invites } = await window.supabaseClient.from('team_members')
@@ -323,7 +323,6 @@
             try {
                 if (action === 'accepted') {
                     await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', memberId);
-                    // Kabul ettiği an diğer tüm bekleyen davetleri çöpe atar!
                     await window.supabaseClient.from('team_members').delete().eq('user_id', currentUser.id).eq('status', 'pending');
                     showNotification("Daveti kabul ettiniz! Yönlendiriliyorsunuz...", "success");
                     setTimeout(() => location.reload(), 1500);
@@ -350,7 +349,7 @@
                 if (!myTeamData) { 
                     document.getElementById('createTeamSection').style.display = 'block'; 
                     document.getElementById('myTeamSection').style.display = 'none';
-                    await fetchPendingInvites(); // Takımı yoksa davetlerini çek
+                    await fetchPendingInvites(); 
                     return; 
                 }
 
@@ -368,10 +367,16 @@
 
             document.getElementById('tName').innerText = myTeamData.name;
             document.getElementById('tTag').innerText = `[${myTeamData.tag}]`;
-            document.getElementById('tLogo').src = myTeamData.logo_url || 'img/unknown.webp';
+            
+            const logoEl = document.getElementById('tLogo');
+            if (myTeamData.logo_url) {
+                logoEl.src = `${myTeamData.logo_url}?t=${new Date().getTime()}`;
+            } else {
+                logoEl.src = 'img/unknown.webp';
+            }
+            
             document.getElementById('tDate').innerText = new Date(myTeamData.created_at).toLocaleDateString('tr-TR');
 
-            // GÜVENLİK DÜZELTMESİ (Aksiyonların gizliliği)
             document.getElementById('captainActionArea').style.display = 'none';
             document.getElementById('memberActionArea').style.display = 'none';
 
@@ -454,7 +459,7 @@
                 </div>`;
         }
 
-        // --- TAKIM GÜNCELLEME (JS Doğrulama Eklendi) ---
+        // --- TAKIM GÜNCELLEME ---
         async function updateTeamSettings() {
             if(isRosterLocked) return;
             
@@ -496,7 +501,7 @@
             } catch (err) { showNotification(err.message, "error"); btn.disabled = false; btn.innerHTML = originalText; }
         }
 
-        // --- TAKIM KURMA FORMU (JS Doğrulama Eklendi) ---
+        // --- TAKIM KURMA FORMU ---
         document.getElementById('teamForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -512,7 +517,6 @@
                 const logoFile = document.getElementById('newTeamLogo').files[0];
                 let logoUrl = "";
 
-                // Takım Kurarken (Bekleyen Davetleri Sil)
                 await window.supabaseClient.from('team_members').delete().eq('user_id', currentUser.id).eq('status', 'pending');
 
                 const { data: newTeam, error } = await window.supabaseClient.from('teams').insert([{ captain_id: currentUser.id, name, tag }]).select().single();
@@ -554,7 +558,6 @@
                         div.onclick = async () => {
                             try {
                                 await window.supabaseClient.rpc('send_team_invite', { p_team_id: myTeamData.id, p_user_id: u.id, p_role: autoRole });
-                                await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: u.id, baslik: "Yeni Takım Daveti", mesaj: `${myTeamData.name} takımı sizi davet etti.`, tip: 'sistem' }]);
                                 showNotification("Davet gönderildi!", "success"); fetchRoster();
                             } catch(e) { showNotification("Hata oluştu.", "error"); }
                         };
