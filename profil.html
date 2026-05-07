@@ -36,7 +36,7 @@
     <style>
         .profile-container { max-width: 1000px; margin: 40px auto; padding: 20px; flex: 1; }
         .profile-banner { height: 250px; background: url('img/banner+.jpg') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
-        .edit-banner-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 15px; border-radius: 5px; border: 1px solid var(--neon-mor); cursor: pointer; font-size: 12px; transition: 0.3s; z-index: 1000;}
+        .edit-banner-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 15px; border-radius: 5px; border: 1px solid var(--neon-mor); cursor: pointer; font-size: 12px; transition: 0.3s; z-index: 10;}
         .edit-banner-btn:hover { background: var(--neon-mor); }
 
         .profile-card { background: var(--card-bg); border: 1px solid #222; border-top: none; border-radius: 0 0 20px 20px; padding: 0 40px 40px; position: relative; text-align: center; margin-bottom: 30px; border-top: 2px solid var(--neon-mor); border-top-left-radius: 20px; border-top-right-radius: 20px; }
@@ -45,7 +45,7 @@
 
         .avatar-wrapper { position: relative; width: 150px; height: 150px; margin: -75px auto 20px; }
         .profile-avatar { width: 150px; height: 150px; border-radius: 50%; border: 5px solid var(--card-bg); background: #111; object-fit: cover; box-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
-        .edit-avatar-btn { position: absolute; bottom: 5px; right: 5px; background: var(--neon-mor); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid var(--card-bg); color: white; transition: 0.3s; z-index: 1000; }
+        .edit-avatar-btn { position: absolute; bottom: 5px; right: 5px; background: var(--neon-mor); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid var(--card-bg); color: white; transition: 0.3s; z-index: 10; }
         
         .rank-badge { display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: 800; background: rgba(96, 29, 194, 0.2); border: 1px solid var(--neon-mor); color: var(--neon-mor); margin-bottom: 10px; transition: 0.3s; text-transform: uppercase; }
         
@@ -94,8 +94,8 @@
         
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-size: 12px; color: var(--gri-yazi); margin-bottom: 5px; font-weight: bold; }
-        .input-group input, .input-group textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; font-family: 'Poppins', sans-serif; outline: none; transition: 0.3s; }
-        .input-group input:focus, .input-group textarea:focus { border-color: var(--neon-mor); }
+        .input-group input, .input-group textarea, .input-group select { width: 100%; padding: 12px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; font-family: 'Poppins', sans-serif; outline: none; transition: 0.3s; }
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus { border-color: var(--neon-mor); }
         .btn-primary { background: var(--neon-mor); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; display: inline-block; text-align: center; }
         .btn-primary:hover { box-shadow: 0 0 15px rgba(96,29,194,0.5); transform: translateY(-2px); }
 
@@ -200,7 +200,7 @@
             
             <div>
                 <div class="ign-container">
-                    <span class="ign-label">OYUN İÇİ NİCK:</span>
+                    <span class="ign-label">VALORANT NİCK:</span>
                     <span class="ign-value" id="userIgnDisplay">Belirlenmedi</span>
                     <div class="ign-actions">
                         <i class="fas fa-pencil-alt" onclick="openIgnEditModal()" title="Nicki Düzenle"></i>
@@ -391,13 +391,25 @@
             <span class="modal-close" onclick="closeCustomModal('ignEditModal')">&times;</span>
             <div class="modal-title">Oyun İçi Nick Belirle</div>
             <p class="modal-desc">Liderlik tablosu ve turnuvalar için oyundaki asıl nickinizi (Etiketi ile birlikte) girin.</p>
+            
             <div class="warning-box">
-                <i class="fas fa-exclamation-triangle"></i> DİKKAT: Oyun İçi Nickinizi <b>15 günde yalnızca 1 kez</b> değiştirebileceksiniz. Emin misiniz?
+                <i class="fas fa-exclamation-triangle"></i> DİKKAT: Oyun İçi Nickinizi <b>15 günde yalnızca 1 kez</b> değiştirebileceksiniz.
             </div>
+            
             <div class="input-group">
-                <label>Yeni IGN (Örn: PaTRooN#TR1)</label>
+                <label>Oyun Seçimi</label>
+                <select id="ignGameSelect" class="form-control" style="background: #000;">
+                    <option value="valorant">VALORANT</option>
+                    <option value="csgo" disabled>CS:GO (Henüz Hazır Değil)</option>
+                    <option value="lol" disabled>League of Legends (Henüz Hazır Değil)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>VALORANT IGN (Örn: PaTRooN#TR1)</label>
                 <input type="text" id="ignInputContent" placeholder="NICK#TAG formatında giriniz">
             </div>
+            
             <button class="btn-primary" onclick="confirmIgnUpdate()">Kabul Ediyorum ve Kaydet</button>
         </div>
     </div>
@@ -925,6 +937,13 @@
 
         async function loadInvitationsAndTeam() {
             try {
+                // 1. Kullanıcının Kaptan Olduğu Takımı Doğrudan Kontrol Et
+                const { data: captainTeam } = await window.supabaseClient.from('teams')
+                    .select('id, name, tag, captain_id')
+                    .eq('captain_id', currentUser.id)
+                    .maybeSingle();
+
+                // 2. Kullanıcının Üyesi Olduğu Takım ve Davetleri Çek
                 const { data: memberships, error } = await window.supabaseClient.from('team_members')
                     .select('id, team_id, status, role, teams(id, name, tag, captain_id)')
                     .eq('user_id', currentUser.id)
@@ -944,7 +963,7 @@
                             <i class="fas fa-user-plus" style="font-size: 30px; color: #444; margin-bottom: 15px;"></i>
                             <p style="color:#ccc; margin-bottom: 8px;">Henüz bir takım davetin yok.</p>
                             <p style="font-size: 13px; color:#777; margin-bottom: 20px;">İstersen hemen kendi takımını oluşturabilirsin!</p>
-                            <a href="basvuru.html" class="btn-primary" style="display:inline-block; max-width:220px; text-decoration:none; font-size:14px;">
+                            <a href="takimim.html" class="btn-primary" style="display:inline-block; max-width:220px; text-decoration:none; font-size:14px;">
                                 <i class="fas fa-plus-circle"></i> Takım Oluştur
                             </a>
                         </div>
@@ -952,54 +971,56 @@
                 };
 
                 if (error) throw error; 
-                
-                if (!memberships || memberships.length === 0) {
+
+                let realTeamData = null;
+                let validPendingInvites = [];
+                let teamIdsToCheck = [];
+
+                // Kullanıcı kaptansa, kendi takımı birincil önceliklidir
+                if (captainTeam) {
+                    realTeamData = captainTeam;
+                    teamIdsToCheck.push(captainTeam.id);
+                }
+
+                if (memberships) {
+                    for (let m of memberships) {
+                        const team = Array.isArray(m.teams) ? m.teams[0] : m.teams;
+                        if (!team) continue;
+
+                        // Kaptan değilse ve accepted bir üyelik bulursa, o onun takımıdır
+                        if (!realTeamData && m.status === 'accepted') {
+                            realTeamData = team;
+                        }
+
+                        if (m.status === 'pending') {
+                            validPendingInvites.push(m);
+                        }
+                        
+                        teamIdsToCheck.push(team.id);
+                    }
+                }
+
+                // Ne takımı var, ne de daveti var
+                if (!realTeamData && validPendingInvites.length === 0) {
                     showEmptyState();
                     return;
                 }
 
-                const teamIds = memberships.map(m => m.team_id).filter(id => id != null);
                 let apps = [];
-                if (teamIds.length > 0) {
+                if (teamIdsToCheck.length > 0) {
+                    const uniqueTeamIds = [...new Set(teamIdsToCheck)];
                     const { data: fetchedApps } = await window.supabaseClient.from('tournament_applications')
                         .select('team_id, status')
-                        .in('team_id', teamIds)
+                        .in('team_id', uniqueTeamIds)
                         .order('created_at', { ascending: false });
                     if (fetchedApps) apps = fetchedApps;
                 }
 
-                let realTeamData = null;
-                let realAppStatus = null;
-                let validPendingInvites = [];
-
-                for (let m of memberships) {
-                    const team = Array.isArray(m.teams) ? m.teams[0] : m.teams;
-                    if (!team) continue;
-
-                    const isCaptain = (team.captain_id === currentUser.id);
-                    const app = apps?.find(a => a.team_id === m.team_id);
-
-                    if (isCaptain) {
-                        // Eğer kaptan benimsem ve başvuru varsa gerçek takımdır. Başvuru yoksa DRFT'tir, onu YASAKLADIK (Göstermiyoruz)
-                        if (app) {
-                            realTeamData = team;
-                            realAppStatus = app.status;
-                        }
-                    } else {
-                        // Eğer kaptan değilsem (üye olarak davet edildiysem)
-                        if (m.status === 'accepted') {
-                            if (!realTeamData) {
-                                realTeamData = team;
-                                realAppStatus = app ? app.status : 'draft'; 
-                            }
-                        } else if (m.status === 'pending') {
-                            // Onay bekleyen TÜM davetleri (Takım draft olsa bile) listeye ekliyoruz
-                            validPendingInvites.push(m);
-                        }
-                    }
-                }
-
+                // EĞER OYUNCUNUN BİR TAKIMI VARSA (Kaptan veya Onaylı Üye)
                 if (realTeamData) {
+                    const app = apps.find(a => a.team_id === realTeamData.id);
+                    let realAppStatus = app ? app.status : 'draft'; 
+
                     let teamStatusText = "Bilinmiyor";
                     let teamStatusColor = "#777";
                     let teamStatusIcon = "fa-tools";
@@ -1028,12 +1049,13 @@
                             <span class="team-tag-large" style="${realAppStatus === 'draft' ? 'background: #444;' : ''}">${realTeamData.tag || 'LOBİ'}</span>
                             <h3>${realTeamData.name || 'İSİMSİZ TAKIM'}</h3>
                             <p>Durum: <span style="color:${teamStatusColor}; font-weight:bold;"><i class="fas ${teamStatusIcon}"></i> ${teamStatusText}</span></p>
-                            <a href="my-tournaments.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
+                            <a href="takimim.html" class="btn-primary" style="display:inline-block; max-width:200px; text-decoration:none;">Takım Lobisine Git</a>
                         </div>
                     `;
                     return; 
                 }
 
+                // OYUNCUNUN TAKIMI YOKSA VE DAVETLERİ VARSA
                 let contentHTML = "";
 
                 if (validPendingInvites.length > 0) {
@@ -1070,45 +1092,6 @@
             }
         }
 
-        async function respondInvite(id, action) {
-            if (action === 'accepted') {
-                try {
-            
-                    const { data: myTeams } = await window.supabaseClient.from('teams').select('id').eq('captain_id', currentUser.id);
-                    
-                    if (myTeams && myTeams.length > 0) {
-                        const myTeamIds = myTeams.map(t => t.id);
-                        
-                        const { data: myApps } = await window.supabaseClient.from('tournament_applications')
-                            .select('team_id').in('team_id', myTeamIds);
-                        
-                        const appliedTeamIds = myApps ? myApps.map(a => a.team_id) : [];
-                        
-                        const draftTeamIds = myTeamIds.filter(tid => !appliedTeamIds.includes(tid));
-                        
-                        if (draftTeamIds.length > 0) {
-                            await window.supabaseClient.from('teams').delete().in('id', draftTeamIds);
-                        }
-                    }
-             
-                    const { error } = await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', id);
-                    if (error) throw error;
-                    
-                    showNotification("Takıma katıldınız!", "success");
-                } catch (err) {
-                    showNotification("Kabul ederken beklenmeyen bir hata oluştu: " + err.message, "error");
-                    return;
-                }
-            } else {
-                const { error } = await window.supabaseClient.from('team_members').delete().eq('id', id);
-                if (error) {
-                    showNotification("Reddederken hata oluştu: " + error.message, "error");
-                    return;
-                }
-                showNotification("Daveti reddettiniz.", "error");
-            }
-            loadInvitationsAndTeam();
-        }
         async function respondInvite(id, action) {
             if (action === 'accepted') {
                 try {
@@ -1237,13 +1220,10 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            // YASAKLI BLOB YERİNE FILEREADER KULLANIYORUZ
             const reader = new FileReader();
             
             reader.onload = function(event) {
                 const base64DataUrl = event.target.result;
-                
-                // Önizlemeyi base64 olarak göster (Sunucu bunu engellemez)
                 document.getElementById('userAvatar').src = base64DataUrl;
 
                 const img = new Image();
@@ -1320,8 +1300,6 @@
                     }, 'image/webp', 0.8);
                 };
             };
-
-            // Dosyayı güvenli formatta oku
             reader.readAsDataURL(file);
         });
 
