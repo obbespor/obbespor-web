@@ -39,17 +39,16 @@
         /* BU SAYFAYA ÖZEL CSS - HERO BANNER */
         .t-header-banner { 
             text-align: center; 
-            padding: 120px 20px; /* Daha kahramanca bir his için dolguyu artırdık */
-            position: relative; /* Katmanlama (z-index) için gerekli */
-            background-image: url('img/backgroundmor.webp'); /* Görsel yolu */
-            background-size: cover; /* Görsel tüm alanı kaplasın */
-            background-position: center; /* Görsel ortalansın */
-            background-repeat: no-repeat; /* Görsel tekrar etmesin */
+            padding: 120px 20px; 
+            position: relative; 
+            background-image: url('img/backgroundmor.webp'); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
             border-bottom: 1px solid rgba(96, 29, 194, 0.3); 
-            overflow: hidden; /* Taşmaları önle */
+            overflow: hidden; 
         }
 
-        /* Metnin okunabilirliği için koyu bir katman (overlay) ekledik */
         .t-header-banner::before {
             content: '';
             position: absolute;
@@ -57,23 +56,21 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.65); /* Yarı şeffaf siyah katman */
-            z-index: 1; /* Metnin altında kalsın */
+            background: rgba(0, 0, 0, 0.65); 
+            z-index: 1; 
         }
 
-        /* Metinlerin overlay üzerinde kalmasını sağlayan kapsayıcı */
         .t-header-banner .banner-content {
             position: relative;
-            z-index: 2; /* Overlay'in üstünde kalsın */
+            z-index: 2; 
         }
 
         .t-header-banner h1 { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 900; }
         .purple-text { color: var(--neon-mor); text-shadow: 0 0 15px var(--neon-mor); }
 
-        /* Masaüstünde hafif bir paralaks efekti eklemek için */
         @media (min-width: 1024px) {
             .t-header-banner {
-                background-attachment: fixed; /* Mobilde sorunlu olabilir, masaüstünde kalsın */
+                background-attachment: fixed; 
                 padding: 160px 20px;
             }
         }
@@ -141,7 +138,7 @@
                     <p>Ordu'nun en iyileri belli oluyor!</p>
                     <div class="t-meta">
                         <span><strong>Ödül:</strong> 30.000 TL</span>
-                        <span><strong>Kayıtlı:</strong> <span id="valoCounter" class="counter-highlight">Yükleniyor...</span></span>
+                        <span><strong>Kayıtlı Takım:</strong> <span id="valoCounter" class="counter-highlight">Yükleniyor...</span></span>
                     </div>
                 </div>
                 <div class="t-action">
@@ -157,7 +154,7 @@
                     <p>FİFA oyuncuları 2v2 ile karşı karşıya</p>
                     <div class="t-meta">
                         <span><strong>Ödül:</strong> Belirtilmemiş</span>
-                        <span><strong>Kayıtlı:</strong> 0/16</span> 
+                        <span><strong>Kayıtlı Takım:</strong> 0</span> 
                     </div>
                 </div>
                 <div class="t-action">
@@ -202,7 +199,7 @@
             });
         }
 
-        // Yeni İlişkisel Mimariye Uygun Sayaç Fonksiyonu
+        // Yeni İlişkisel Mimariye Uygun Sayaç Fonksiyonu (LİMİTSİZ FORMAT)
         async function loadApprovedCount() {
             try {
                 // Önce sistemdeki ilk/aktif turnuvayı bul
@@ -213,7 +210,7 @@
                     .limit(1)
                     .maybeSingle();
                 
-                if (tourneyErr) throw tourneyErr; // Supabase hatasını catch'e atıyoruz
+                if (tourneyErr) throw tourneyErr; 
 
                 let registeredCount = 0;
 
@@ -225,15 +222,16 @@
                         .eq('status', 'approved')
                         .eq('tournament_id', tourney.id);
 
-                    if (error) throw error; // Supabase hatasını catch'e atıyoruz
+                    if (error) throw error; 
                     registeredCount = count || 0;
                 }
 
-                document.getElementById('valoCounter').innerText = `${registeredCount}/64`;
+                // Sadece sayıyı yazdır (Örn: 22)
+                document.getElementById('valoCounter').innerText = registeredCount;
                 
             } catch (err) {
                 console.error("Sayaç hatası:", err);
-                document.getElementById('valoCounter').innerText = `0/64`;
+                document.getElementById('valoCounter').innerText = "0";
             }
         }
         
