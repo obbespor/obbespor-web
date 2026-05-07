@@ -15,7 +15,7 @@
     <style>
         .team-page-container { max-width: 1100px; margin: 40px auto; padding: 20px; flex: 1; animation: fadeIn 0.4s ease; display: none; }
         
-        /* OLUŞTURMA & DÜZENLEME KARTI */
+        /* TAKIM KURMA KARTI */
         .auth-card { background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); max-width: 800px; margin: 0 auto; }
         .input-group { margin-bottom: 20px; position: relative; }
         .input-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--gri-yazi); font-weight: bold; }
@@ -29,13 +29,19 @@
         .save-btn { padding: 15px; width: 100%; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.3s; font-size: 16px; margin-top: 20px;}
         .save-btn:hover { box-shadow: 0 0 15px var(--neon-mor); transform: translateY(-2px); }
         
-        /* TAKIM PROFİL BAŞLIĞI */
-        .team-profile-header { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 40px 20px; position: relative; margin-bottom: 30px; }
-        .team-profile-header::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 100vw; height: 100%; background: radial-gradient(circle at center, rgba(96, 29, 194, 0.15) 0%, rgba(5, 5, 5, 0) 70%); z-index: -1; pointer-events: none; }
+        /* YENİ: HERO ALANLI TAKIM PROFİLİ */
+        .team-profile-header { position: relative; padding: 60px 20px 40px; border-radius: 20px; margin-bottom: 40px; display: flex; flex-direction: column; align-items: center; text-align: center; overflow: hidden; border: 1px solid #333; background-color: #0a0a0a; box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
+        
+        .team-hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('img/hero-bg.jpg'); /* Buraya istediğin arka plan görselinin adını yazabilirsin */ background-size: cover; background-position: center; opacity: 0.3; z-index: 1; transition: 0.3s; }
+        .team-hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.1) 100%); z-index: 2; }
+        
+        .team-profile-content { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 100%; }
         .team-profile-logo { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; background: #0a0a0a; border: 4px solid var(--neon-mor); padding: 5px; box-shadow: 0 0 30px rgba(96, 29, 194, 0.4); margin-bottom: 20px; transition: 0.3s; }
         .team-profile-name { font-size: 36px; font-weight: 900; color: white; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
         .team-profile-tag { font-size: 16px; background: var(--neon-mor); color: white; padding: 4px 12px; border-radius: 8px; font-weight: bold; letter-spacing: 2px; }
         .team-profile-meta { color: var(--gri-yazi); font-size: 13px; margin-top: 10px; }
+        .team-role-badge { display: inline-block; border: 1px solid #555; color: #aaa; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-left: 10px; vertical-align: middle; }
+        .team-role-badge.captain { border-color: gold; color: gold; background: rgba(255, 215, 0, 0.1); }
 
         .lock-alert { background: rgba(255, 75, 75, 0.1); border-left: 4px solid var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 15px 20px; border-radius: 8px; font-size: 13px; font-weight: bold; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }
         
@@ -89,9 +95,11 @@
         #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
+        /* MOBİL UYUM */
         @media (max-width: 768px) {
-            .team-profile-name { font-size: 28px; }
-            .team-profile-logo { width: 120px; height: 120px; }
+            .team-profile-header { padding: 40px 15px 30px; }
+            .team-profile-name { font-size: 26px; }
+            .team-profile-logo { width: 110px; height: 110px; margin-bottom: 15px; }
             .captain-btns { flex-direction: column; width: 100%; }
         }
     </style>
@@ -100,7 +108,7 @@
 
     <div id="loadingScreen">
         <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
-        <h2>Veriler Çekiliyor...</h2>
+        <h2>Takım Verileri Çekiliyor...</h2>
     </div>
 
     <div id="header-alani"></div>
@@ -123,6 +131,7 @@
                 <div class="input-group">
                     <label>Takım Logosu (PNG, JPG, WEBP, Max 2MB)</label>
                     <input type="file" id="newTeamLogo" accept="image/png, image/jpeg, image/jpg, image/webp">
+                    <span style="font-size:11px; color:#555;">Logo zorunlu değildir, sonradan ekleyebilirsiniz.</span>
                 </div>
                 <button type="submit" class="save-btn" id="btnCreateTeam">TAKIMI OLUŞTUR</button>
             </form>
@@ -130,10 +139,16 @@
     </main>
 
     <main class="team-page-container" id="myTeamSection">
+        
         <div class="team-profile-header">
-            <img src="img/unknown.webp" id="tLogo" class="team-profile-logo" alt="Takım Logosu">
-            <h2 class="team-profile-name"><span id="tName">YÜKLENİYOR...</span> <span class="team-profile-tag" id="tTag">[TAG]</span></h2>
-            <p class="team-profile-meta">Kuruluş Tarihi: <span id="tDate" style="color: white; font-weight: bold;">-</span></p>
+            <div class="team-hero-bg" id="teamHeroBg"></div>
+            <div class="team-hero-overlay"></div>
+            
+            <div class="team-profile-content">
+                <img src="img/unknown.webp" id="tLogo" class="team-profile-logo" alt="Takım Logosu">
+                <h2 class="team-profile-name"><span id="tName">YÜKLENİYOR...</span> <span class="team-profile-tag" id="tTag">[TAG]</span></h2>
+                <p class="team-profile-meta">Kuruluş Tarihi: <span id="tDate" style="color: white; font-weight: bold;">-</span></p>
+            </div>
         </div>
 
         <div class="lock-alert" id="lockAlert" style="display: none;">
@@ -169,8 +184,8 @@
                 <input type="text" id="editTeamTag" maxlength="5" placeholder="Yeni Tag">
             </div>
             <div class="input-group" style="text-align: left;">
-                <label>Yeni Logo Seç</label>
-                <input type="file" id="editTeamLogo" accept="image/*">
+                <label>Yeni Logo Seç (Eskisinin Üzerine Yazılır)</label>
+                <input type="file" id="editTeamLogo" accept="image/png, image/jpeg, image/jpg, image/webp">
             </div>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button onclick="closeEditTeamModal()" style="flex:1; background: transparent; border: 1px solid #444; color: #888; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">İptal</button>
@@ -274,7 +289,15 @@
             document.getElementById('myTeamSection').style.display = 'block';
             document.getElementById('tName').innerText = myTeamData.name;
             document.getElementById('tTag').innerText = `[${myTeamData.tag}]`;
-            document.getElementById('tLogo').src = myTeamData.logo_url || 'img/unknown.webp';
+            
+            // Logoyu yerleştirme (Zaman damgası ile önbellek kırma)
+            const logoEl = document.getElementById('tLogo');
+            if (myTeamData.logo_url) {
+                logoEl.src = `${myTeamData.logo_url}?t=${new Date().getTime()}`;
+            } else {
+                logoEl.src = 'img/unknown.webp';
+            }
+            
             document.getElementById('tDate').innerText = new Date(myTeamData.created_at).toLocaleDateString('tr-TR');
 
             if (isCaptain && !isRosterLocked) document.getElementById('captainActionArea').style.display = 'flex';
@@ -354,7 +377,42 @@
                 </div>`;
         }
 
-        // --- TAKIM GÜNCELLEME (YENİ) ---
+        // --- TAKIM KURMA (DÜZELTİLMİŞ UPLOAD MANTIĞI) ---
+        document.getElementById('teamForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnCreateTeam');
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            try {
+                const name = document.getElementById('newTeamName').value.trim();
+                const tag = document.getElementById('newTeamTag').value.trim().toUpperCase();
+                const logoFile = document.getElementById('newTeamLogo').files[0];
+                let logoUrl = "";
+
+                // 1. Önce Takımı Oluştur (ID almak için)
+                const { data: newTeam, error } = await window.supabaseClient.from('teams').insert([{ captain_id: currentUser.id, name, tag }]).select().single();
+                if (error) { if (error.code === '23505') throw new Error("Bu isim veya tag zaten alınmış."); throw error; }
+
+                // 2. Takım ID'si ile logoyu yükle (Bloat engelleme)
+                if (logoFile) {
+                    const ext = logoFile.name.split('.').pop().toLowerCase();
+                    if (!['png', 'jpg', 'jpeg', 'webp'].includes(ext)) throw new Error("Sadece PNG, JPG, WEBP yüklenebilir.");
+                    
+                    const fileName = `logo_${newTeam.id}`; // Uzantısız sabit isim
+                    await window.supabaseClient.storage.from('team-logos').upload(fileName, logoFile, { upsert: true });
+                    const { data } = window.supabaseClient.storage.from('team-logos').getPublicUrl(fileName);
+                    logoUrl = `${data.publicUrl}?t=${Date.now()}`; // Önbelleği kırmak için
+                    
+                    // Logoyu takıma kaydet
+                    await window.supabaseClient.from('teams').update({ logo_url: logoUrl }).eq('id', newTeam.id);
+                }
+
+                await window.supabaseClient.from('team_members').insert([{ team_id: newTeam.id, user_id: currentUser.id, role: 'main', status: 'accepted' }]);
+                showNotification("Takım kuruldu!", "success");
+                setTimeout(() => location.reload(), 1500);
+            } catch (err) { showNotification(err.message, "error"); btn.disabled = false; btn.innerHTML = 'TAKIMI OLUŞTUR'; }
+        });
+
+        // --- TAKIM GÜNCELLEME (DÜZELTİLMİŞ UPLOAD MANTIĞI) ---
         async function updateTeamSettings() {
             if(isRosterLocked) return;
             const btn = document.getElementById('btnSaveSettings');
@@ -369,11 +427,14 @@
 
                 if (logoFile) {
                     const ext = logoFile.name.split('.').pop().toLowerCase();
-                    const fileName = `logo_${myTeamData.id}_${Date.now()}.${ext}`; 
+                    if (!['png', 'jpg', 'jpeg', 'webp'].includes(ext)) throw new Error("Sadece PNG, JPG, WEBP yüklenebilir.");
+                    
+                    const fileName = `logo_${myTeamData.id}`; // Eskisinin tam üzerine yazar
                     const { error: upErr } = await window.supabaseClient.storage.from('team-logos').upload(fileName, logoFile, { upsert: true });
                     if (upErr) throw upErr;
+                    
                     const { data } = window.supabaseClient.storage.from('team-logos').getPublicUrl(fileName);
-                    logoUrl = data.publicUrl;
+                    logoUrl = `${data.publicUrl}?t=${Date.now()}`; // URL'yi yenile ki tarayıcı yeni fotoyu görsün
                 }
 
                 const { error } = await window.supabaseClient.from('teams').update({
@@ -389,33 +450,6 @@
                 setTimeout(() => location.reload(), 1200);
             } catch (err) { showNotification(err.message, "error"); btn.disabled = false; btn.innerHTML = originalText; }
         }
-
-        // --- TAKIM KURMA ---
-        document.getElementById('teamForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnCreateTeam');
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            try {
-                const name = document.getElementById('newTeamName').value.trim();
-                const tag = document.getElementById('newTeamTag').value.trim().toUpperCase();
-                const logoFile = document.getElementById('newTeamLogo').files[0];
-                let logoUrl = "";
-
-                if (logoFile) {
-                    const ext = logoFile.name.split('.').pop().toLowerCase();
-                    const fileName = `logo_${currentUser.id}_${Date.now()}.${ext}`; 
-                    await window.supabaseClient.storage.from('team-logos').upload(fileName, logoFile);
-                    logoUrl = (window.supabaseClient.storage.from('team-logos').getPublicUrl(fileName)).data.publicUrl;
-                }
-
-                const { data: newTeam, error } = await window.supabaseClient.from('teams').insert([{ captain_id: currentUser.id, name, tag, logo_url: logoUrl }]).select().single();
-                if (error) { if (error.code === '23505') throw new Error("Bu isim zaten alınmış."); throw error; }
-
-                await window.supabaseClient.from('team_members').insert([{ team_id: newTeam.id, user_id: currentUser.id, role: 'main', status: 'accepted' }]);
-                showNotification("Takım kuruldu!", "success");
-                setTimeout(() => location.reload(), 1500);
-            } catch (err) { showNotification(err.message, "error"); btn.disabled = false; btn.innerHTML = 'TAKIMI OLUŞTUR'; }
-        });
 
         // --- DİNAMİK ARAMA ---
         function attachDynamicSearchEvent(autoRole) {
