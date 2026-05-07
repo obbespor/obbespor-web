@@ -141,7 +141,7 @@
                 <div class="input-group">
                     <label>Takım Logosu (PNG, JPG, Max 2MB)</label>
                     <input type="file" id="newTeamLogo" accept="image/png, image/jpeg, image/jpg, image/webp">
-                    <span style="font-size:11px; color:#555;">Logo zorunlu değildir, sonradan ekleyebilirsiniz.</span>
+                    <span style="font-size:11px; color:#555; display:block; margin-top:5px;">Logo zorunlu değildir, sonradan ekleyebilirsiniz.</span>
                 </div>
                 <button type="submit" class="save-btn" id="btnCreateTeam">TAKIMI OLUŞTUR</button>
             </form>
@@ -201,7 +201,7 @@
                 <input type="text" id="editTeamTag" minlength="2" maxlength="4" placeholder="Yeni Tag">
             </div>
             <div class="input-group" style="text-align: left;">
-                <label>Yeni Logo Seç (Eskisinin Üzerine Yazılır)</label>
+                <label>Yeni Logo Seç</label>
                 <input type="file" id="editTeamLogo" accept="image/png, image/jpeg, image/jpg, image/webp">
             </div>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -399,6 +399,8 @@
                 if (!members) return;
                 
                 members.forEach(m => { if (m.role === 'main' && m.status === 'accepted') currentMainCount++; });
+                
+                // Kaptanı en başa al
                 members.sort((a, b) => a.user_id === myTeamData.captain_id ? -1 : 1);
 
                 members.forEach(m => {
@@ -478,6 +480,7 @@
                 let logoUrl = myTeamData.logo_url;
 
                 if (logoFile) {
+                    if (logoFile.size > 2 * 1024 * 1024) throw new Error("Logo 2MB'dan büyük olamaz.");
                     const ext = logoFile.name.split('.').pop().toLowerCase();
                     const fileName = `logo_${myTeamData.id}`; 
                     await window.supabaseClient.storage.from('team-logos').upload(fileName, logoFile, { upsert: true });
@@ -516,6 +519,8 @@
             try {
                 const logoFile = document.getElementById('newTeamLogo').files[0];
                 let logoUrl = "";
+
+                if (logoFile && logoFile.size > 2 * 1024 * 1024) throw new Error("Logo 2MB'dan büyük olamaz.");
 
                 await window.supabaseClient.from('team_members').delete().eq('user_id', currentUser.id).eq('status', 'pending');
 
@@ -558,6 +563,7 @@
                         div.onclick = async () => {
                             try {
                                 await window.supabaseClient.rpc('send_team_invite', { p_team_id: myTeamData.id, p_user_id: u.id, p_role: autoRole });
+                                await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: u.id, baslik: "Takım Daveti!", mesaj: `${myTeamData.name} takımı sizi davet etti.`, tip: 'sistem' }]);
                                 showNotification("Davet gönderildi!", "success"); fetchRoster();
                             } catch(e) { showNotification("Hata oluştu.", "error"); }
                         };
