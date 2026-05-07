@@ -175,9 +175,8 @@
     <script src="js/bildirimler.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
-
-    <script>
-        let currentUser = null;
+<script>
+  let currentUser = null;
         let myTeamData = null;
         let isCaptain = false;
         let isRosterLocked = false;
@@ -285,8 +284,6 @@
             currentMainCount = 0;
 
             try {
-                const { data: captainProfile } = await window.supabaseClient.from('profiles').select('username, ign, avatar_url, matches_played').eq('id', myTeamData.captain_id).single();
-                
                 const { data: members } = await window.supabaseClient.from('team_members')
                     .select('id, user_id, role, status, profiles(username, ign, avatar_url, matches_played)')
                     .eq('team_id', myTeamData.id)
@@ -295,10 +292,6 @@
                 if (!members) return;
 
                 totalMembers = members.length;
-                
-                members.forEach(m => {
-                    if (m.role === 'main' && m.status === 'accepted') currentMainCount++;
-                });
 
                 members.sort((a, b) => {
                     if (a.user_id === myTeamData.captain_id) return -1;
@@ -310,7 +303,13 @@
                     const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
                     const isCap = m.user_id === myTeamData.captain_id;
                     
-                    grid.innerHTML += createPlayerCard(m.user_id, m.id, prof?.username, prof?.ign, m.status, prof?.avatar_url, prof?.matches_played, m.role, isCap);
+                    // KAPTAN İÇİN GÜVENLİK GEÇERSİZ KILMA (Daima Onaylı ve Asil görünür)
+                    let currentStatus = isCap ? 'accepted' : m.status;
+                    let currentRole = isCap ? 'main' : m.role;
+
+                    if (currentRole === 'main' && currentStatus === 'accepted') currentMainCount++;
+                    
+                    grid.innerHTML += createPlayerCard(m.user_id, m.id, prof?.username, prof?.ign, currentStatus, prof?.avatar_url, prof?.matches_played, currentRole, isCap);
                 });
 
                 if (isCaptain && !isRosterLocked && totalMembers < 10) {
@@ -427,11 +426,27 @@
                     captain_id: currentUser.id, name: name, tag: tag, logo_url: logoUrl
                 }]).select().single();
                 
-                if (error) throw error;
+                // İsim Çakışma Hatası Kontrolü (Önceki Sorunun Çözümü)
+                if (error) {
+                    if (error.code === '23505') throw new Error("Bu takım adı veya kısaltması zaten kullanımda.");
+                    throw error;
+                }
 
                 await window.supabaseClient.from('team_members').insert([{
                     team_id: newTeam.id, user_id: currentUser.id, role: 'main', status: 'accepted'
                 }]);
+
+                // Kaptanın durumu triggerlar tarafından bozulursa diye kesin ZORLAMA
+                await window.supabaseClient.from('team_members')
+                    .update({ status: 'accepted', role: 'main' })
+                    .eq('team_id', newTeam.id)
+                    .eq('user_id', currentUser.id);
+
+                // Eğer kaptana "Davet Edildin" bildirimi gittiyse anında sil
+                await window.supabaseClient.from('bildirimler')
+                    .delete()
+                    .eq('kullanici_id', currentUser.id)
+                    .ilike('mesaj', '%davet%');
 
                 showNotification("Takım başarıyla kuruldu!", "success");
                 setTimeout(() => location.reload(), 1500);
@@ -442,7 +457,7 @@
             }
         });
 
-        // --- DİNAMİK ARAMA VE ÇİFT DAVET ENGELİ MANTIĞI ---
+        // --- DİNAMİK ARAMA VE DAVET ---
         function attachDynamicSearchEvent(autoRole) {
             const input = document.getElementById('dynamicSearch');
             if (!input) return;
@@ -458,7 +473,6 @@
                 if (query.length < 2) return;
 
                 try {
-                    // 1. Yazılan kelimeye göre kullanıcıları bul
                     const { data: profiles } = await window.supabaseClient.from('profiles')
                         .select('id, username, ign')
                         .or(`ign.ilike.%${query}%,username.ilike.%${query}%`)
@@ -466,35 +480,21 @@
                     
                     if (!profiles || profiles.length === 0) return;
 
-                    const profileIds = profiles.map(p => p.id);
+                    const { data: existing } = await window.supabaseClient.from('team_members').select('user_id').eq('team_id', myTeamData.id);
+                    const existingIds = existing ? existing.map(e => e.user_id) : [];
 
-                    // 2. ZATEN BİR TAKIMDA OLANLARI (Kaptan Veya 'Accepted' Üye Olanları) Bul
-                    const [acceptedRes, captainsRes] = await Promise.all([
-                        window.supabaseClient.from('team_members').select('user_id').in('user_id', profileIds).eq('status', 'accepted'),
-                        window.supabaseClient.from('teams').select('captain_id').in('captain_id', profileIds)
-                    ]);
-
-                    const busyIds = new Set([
-                        ...(acceptedRes.data?.map(m => m.user_id) || []),
-                        ...(captainsRes.data?.map(c => c.captain_id) || []),
-                        myTeamData.captain_id // Mevcut takımın kaptanını da listeye ekle
-                    ]);
-
-                    // 3. Arama listesinden bu 'Dolu' kullanıcıları sil (Ekranda gözükmesinler)
-                    const filtered = profiles.filter(p => !busyIds.has(p.id));
+                    const filtered = profiles.filter(p => !existingIds.includes(p.id));
 
                     filtered.forEach(u => {
                         const div = document.createElement('div');
                         const disp = u.ign ? `${u.ign} (${u.username})` : u.username;
                         div.innerHTML = `<i class="fas fa-user-plus"></i> ${disp}`;
-                        
                         div.onclick = async () => {
                             input.value = "Davet Gönderiliyor...";
                             input.disabled = true;
                             list.innerHTML = '';
                             
                             try {
-                                // 4. SUPABASE RPC KULLANIMI: Eski davetleri silip yeni daveti atar
                                 const { error } = await window.supabaseClient.rpc('send_team_invite', {
                                     p_team_id: myTeamData.id,
                                     p_user_id: u.id,
@@ -505,7 +505,7 @@
 
                                 await window.supabaseClient.from('bildirimler').insert([{ 
                                     kullanici_id: u.id, baslik: "Yeni Takım Daveti!", 
-                                    mesaj: `${myTeamData.name} takımı sizi davet etti. Önceki bekleyen davetleriniz iptal edildi.`, tip: 'sistem' 
+                                    mesaj: `${myTeamData.name} takımı sizi davet etti. Önceki davetleriniz iptal edildi.`, tip: 'sistem' 
                                 }]);
                                 
                                 showNotification("Davet başarıyla gönderildi!", "success");
