@@ -13,18 +13,33 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        .apply-container { max-width: 800px; margin: 60px auto; padding: 20px; flex: 1; animation: fadeIn 0.4s ease; display: none; }
+        .apply-container { max-width: 850px; margin: 60px auto; padding: 20px; flex: 1; animation: fadeIn 0.4s ease; display: none; }
         
         .section-title { text-align: center; font-size: 32px; font-weight: 900; color: white; text-transform: uppercase; margin-bottom: 30px; letter-spacing: 1px; }
         .section-title span { color: var(--neon-mor); }
 
-        /* KAPTAN OLMAYANLAR İÇİN KART */
-        .not-captain-card { background: rgba(10, 10, 10, 0.95); border: 1px solid #333; border-top: 4px solid var(--kirmizi-iptal); border-radius: 20px; padding: 50px 30px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        .not-captain-card i { font-size: 60px; color: var(--kirmizi-iptal); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(255, 75, 75, 0.4)); }
-        .not-captain-card h3 { color: white; font-size: 24px; font-weight: 900; margin-bottom: 15px; text-transform: uppercase; }
-        .not-captain-card p { color: var(--gri-yazi); font-size: 14px; margin-bottom: 30px; line-height: 1.6; }
-        .btn-back { background: var(--neon-mor); color: white; padding: 12px 30px; border-radius: 8px; font-weight: bold; text-decoration: none; display: inline-block; transition: 0.3s; }
+        /* KARTLAR ORTAK */
+        .status-card { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 50px 30px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .status-card h3 { color: white; font-size: 24px; font-weight: 900; margin-bottom: 15px; text-transform: uppercase; }
+        .status-card p { color: var(--gri-yazi); font-size: 14px; margin-bottom: 30px; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+        /* KAPTAN OLMAYANLAR */
+        .not-captain-card { border-top: 4px solid var(--kirmizi-iptal); }
+        .not-captain-card i.main-icon { font-size: 60px; color: var(--kirmizi-iptal); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(255, 75, 75, 0.4)); }
+        
+        /* BEKLEYEN BAŞVURU */
+        .pending-card { border-top: 4px solid var(--mavi-onay); }
+        .pending-card i.main-icon { font-size: 60px; color: var(--mavi-onay); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.4)); }
+        
+        /* ONAYLANAN BAŞVURU */
+        .approved-card { border-top: 4px solid var(--yesil-guven); padding: 40px 20px; }
+        .approved-card i.main-icon { font-size: 60px; color: var(--yesil-guven); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(40, 167, 69, 0.4)); }
+
+        .btn-back { background: var(--neon-mor); color: white; padding: 12px 30px; border-radius: 8px; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
         .btn-back:hover { box-shadow: 0 0 15px var(--neon-mor); transform: translateY(-2px); }
+        
+        .btn-withdraw { background: transparent; border: 1px solid var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-withdraw:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 0 15px rgba(255, 75, 75, 0.4); }
 
         /* BAŞVURU FORMU KARTI */
         .apply-card { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
@@ -59,12 +74,29 @@
         .btn-submit:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(96, 29, 194, 0.4); }
         .btn-submit:disabled { background: #333; color: #777; cursor: not-allowed; box-shadow: none; transform: none; }
 
+        /* ONAYLI ROSTER GÖRÜNÜMÜ */
+        .roster-display { margin-top: 30px; text-align: left; }
+        .roster-display-title { color: white; font-size: 18px; font-weight: 900; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .roster-card { background: #050505; border: 1px solid #222; border-radius: 10px; padding: 15px; display: flex; align-items: center; gap: 15px; }
+        .roster-card img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #444; }
+        .roster-card.main-card { border-left: 3px solid #00d4ff; }
+        .roster-card.sub-card { border-left: 3px solid #aaa; }
+        .roster-card.cap-card { border-left: 3px solid gold; }
+        .rc-ign { color: white; font-weight: 900; font-size: 15px; margin-bottom: 2px; }
+        .rc-role { font-size: 10px; font-weight: bold; color: var(--gri-yazi); text-transform: uppercase; }
+
+        /* MODAL */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+        .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--kirmizi-iptal); border-radius: 15px; width: 90%; max-width: 400px; padding: 40px 20px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; }
+
         #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
         @media (max-width: 768px) {
             .apply-container { margin: 30px auto; padding: 15px; }
-            .apply-card, .not-captain-card { padding: 30px 20px; }
+            .apply-card, .status-card { padding: 30px 20px; }
             .section-title { font-size: 26px; }
         }
     </style>
@@ -80,11 +112,42 @@
     <div id="toast-container"></div>
 
     <main class="apply-container" id="notCaptainSection">
-        <div class="not-captain-card">
-            <i class="fas fa-user-shield"></i>
+        <div class="status-card not-captain-card">
+            <i class="fas fa-user-shield main-icon"></i>
             <h3>KAPTAN YETKİSİ GEREKLİ</h3>
             <p>Turnuvalara yalnızca takım kaptanları başvuru yapabilir. Eğer takımınızın turnuvaya katılmasını istiyorsanız, lütfen kaptanınızla iletişime geçin.</p>
             <a href="takimim.html" class="btn-back"><i class="fas fa-arrow-left"></i> Takımıma Dön</a>
+        </div>
+    </main>
+
+    <main class="apply-container" id="pendingSection">
+        <div class="status-card pending-card">
+            <i class="fas fa-hourglass-half main-icon fa-spin-pulse"></i>
+            <h3 style="color: var(--mavi-onay);">BAŞVURUNUZ DEĞERLENDİRİLİYOR</h3>
+            <p>Takımınızın turnuva başvurusu turnuva yöneticilerine ulaştı. Onay süreci tamamlandığında takım kadronuz kilitlenecek ve fikstüre dahil edileceksiniz.</p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="takimim.html" class="btn-back"><i class="fas fa-users"></i> Takımına Dön</a>
+                <button class="btn-withdraw" onclick="confirmWithdraw()"><i class="fas fa-times-circle"></i> Başvuruyu Geri Çek</button>
+            </div>
+            <p style="font-size: 11px; color: #555; margin-top: 15px; margin-bottom: 0;">* Başvuruyu geri çekerseniz takım ayarlarınızı tekrar değiştirebilirsiniz.</p>
+        </div>
+    </main>
+
+    <main class="apply-container" id="approvedSection">
+        <div class="status-card approved-card">
+            <i class="fas fa-check-circle main-icon"></i>
+            <h3 style="color: var(--yesil-guven);">BAŞVURUNUZ ONAYLANDI!</h3>
+            <p>Tebrikler! Takımınız turnuvaya başarıyla kabul edildi. Kadronuz (Roster Lock) turnuva sonuna kadar kilitlenmiştir. Sahada görüşmek üzere!</p>
+            
+            <div class="roster-display">
+                <div class="roster-display-title">ONAYLANAN KADRO <span id="appTourneyName" style="color:var(--neon-mor); font-size:12px; float:right; margin-top:5px;"></span></div>
+                <div class="roster-grid" id="approvedRosterList">
+                    </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <a href="fikstur.html" class="btn-back"><i class="fas fa-sitemap"></i> Fikstüre Git</a>
+            </div>
         </div>
     </main>
 
@@ -135,6 +198,18 @@
         </div>
     </main>
 
+    <div class="modal-overlay" id="customConfirmModal">
+        <div class="modal-content">
+            <i class="fas fa-exclamation-triangle" style="font-size: 50px; color: var(--kirmizi-iptal); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(255,75,75,0.4));"></i>
+            <h3 style="color: white; font-weight: 900; font-size: 22px; margin-bottom: 10px; text-transform: uppercase;">Emin Misiniz?</h3>
+            <p style="color: var(--gri-yazi); font-size: 14px; margin-bottom: 30px;">Başvuruyu geri çekerseniz takımınız inceleme sırasından çıkarılacaktır. İşleme devam edilsin mi?</p>
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button onclick="closeConfirmModal()" style="flex: 1; background: transparent; border: 1px solid #555; color: #aaa; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">İptal</button>
+                <button onclick="executeWithdraw()" style="flex: 1; background: var(--kirmizi-iptal); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px rgba(255,75,75,0.3);">Evet, Geri Çek</button>
+            </div>
+        </div>
+    </div>
+
     <div id="footer-alani"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -147,6 +222,10 @@
         let currentUser = null;
         let myTeamData = null;
         let isEligible = false;
+        let currentAppId = null;
+
+        function closeConfirmModal() { document.getElementById('customConfirmModal').classList.remove('active'); }
+        function confirmWithdraw() { document.getElementById('customConfirmModal').classList.add('active'); }
 
         async function initPage() {
             try {
@@ -158,12 +237,12 @@
                 }
                 currentUser = user;
 
-                // 2. TAKIM KONTROLÜ
+                // 2. TAKIM VE KAPTANLIK KONTROLÜ
                 let { data: teamAsCaptain } = await window.supabaseClient.from('teams').select('*, team_members(user_id, role, status)').eq('captain_id', currentUser.id).maybeSingle();
                 
                 if (teamAsCaptain) {
                     myTeamData = teamAsCaptain;
-                    await setupApplicationForm();
+                    await checkApplicationStatus();
                 } else {
                     const { data: membership } = await window.supabaseClient.from('team_members').select('team_id').eq('user_id', currentUser.id).eq('status', 'accepted').maybeSingle();
                     if (membership) {
@@ -181,6 +260,82 @@
             }
         }
 
+        async function checkApplicationStatus() {
+            // Takımın en güncel başvurusunu çek
+            const { data: appData } = await window.supabaseClient.from('tournament_applications')
+                .select('id, status, tournaments(name)')
+                .eq('team_id', myTeamData.id)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            if (appData) {
+                currentAppId = appData.id;
+
+                if (appData.status === 'pending') {
+                    document.getElementById('pendingSection').style.display = 'block';
+                    return;
+                } else if (appData.status === 'approved') {
+                    document.getElementById('approvedSection').style.display = 'block';
+                    document.getElementById('appTourneyName').innerText = `(${appData.tournaments.name})`;
+                    await fetchAndRenderLockedRoster();
+                    return;
+                } else if (appData.status === 'rejected') {
+                    // Reddedilmişse tekrar başvurabilsin diye formu aç, ama uyarı göster
+                    showNotification("Önceki başvurunuz reddedilmiş. Lütfen eksiklikleri giderip tekrar başvurun.", "error");
+                }
+            }
+
+            // Başvuru yoksa veya reddedilmişse formu göster
+            await setupApplicationForm();
+        }
+
+        async function fetchAndRenderLockedRoster() {
+            const grid = document.getElementById('approvedRosterList');
+            grid.innerHTML = '<span style="color:var(--gri-yazi);">Kadro Yükleniyor...</span>';
+
+            const { data: captainProfile } = await window.supabaseClient.from('profiles').select('username, ign, avatar_url').eq('id', myTeamData.captain_id).single();
+            const { data: members } = await window.supabaseClient.from('team_members').select('user_id, role, profiles(username, ign, avatar_url)').eq('team_id', myTeamData.id).eq('status', 'accepted');
+
+            if (!members) return;
+
+            grid.innerHTML = '';
+            
+            // Kaptanı ekle
+            grid.innerHTML += createMiniCard(captainProfile, 'main', true);
+
+            // Diğerlerini ekle
+            members.forEach(m => {
+                if (m.user_id !== myTeamData.captain_id) {
+                    const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
+                    grid.innerHTML += createMiniCard(prof, m.role, false);
+                }
+            });
+        }
+
+        function createMiniCard(prof, role, isCap) {
+            const ign = prof?.ign && prof.ign !== 'Belirlenmedi' ? prof.ign : (prof?.username || 'İsimsiz');
+            const avatar = prof?.avatar_url ? `<img src="${prof.avatar_url}">` : `<img src="img/unknown.webp">`;
+            
+            let cardClass = role === 'main' ? 'main-card' : 'sub-card';
+            let roleText = role === 'main' ? 'ASİL' : 'YEDEK';
+            
+            if (isCap) {
+                cardClass = 'cap-card';
+                roleText = 'KAPTAN';
+            }
+
+            return `
+                <div class="roster-card ${cardClass}">
+                    ${avatar}
+                    <div>
+                        <div class="rc-ign">${ign}</div>
+                        <div class="rc-role">${roleText}</div>
+                    </div>
+                </div>
+            `;
+        }
+
         async function setupApplicationForm() {
             document.getElementById('applySection').style.display = 'block';
 
@@ -194,7 +349,7 @@
                     if (m.role === 'main' && m.status === 'accepted') mainPlayersCount++;
                 });
             }
-            // Kaptanı da asil olarak sayıyoruz (Eğer team_members içinde yoksa)
+            
             const isCapInMembers = myTeamData.team_members?.some(m => m.user_id === myTeamData.captain_id);
             if (!isCapInMembers) mainPlayersCount++; 
 
@@ -223,7 +378,7 @@
                 });
             } else {
                 selectEl.innerHTML = '<option value="" disabled selected>Şu an aktif başvuruya açık turnuva yok.</option>';
-                isEligible = false; // Turnuva yoksa butonu kilitle
+                isEligible = false; 
             }
 
             checkFormStatus();
@@ -242,7 +397,6 @@
             }
         }
 
-        // Checkbox değiştikçe butonu kontrol et
         document.getElementById('rulesCheck').addEventListener('change', checkFormStatus);
 
         function checkFormStatus() {
@@ -268,41 +422,43 @@
             const btn = document.getElementById('btnSubmitApp');
             const tourneyId = document.getElementById('tourneySelect').value;
 
-            if (!tourneyId) {
-                showNotification("Lütfen bir turnuva seçin.", "error");
-                return;
-            }
+            if (!tourneyId) { showNotification("Lütfen bir turnuva seçin.", "error"); return; }
 
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İŞLENİYOR...';
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İŞLENİYOR...';
 
             try {
-                // Daha önce bu turnuvaya başvurdu mu kontrolü
-                const { data: existingApp } = await window.supabaseClient.from('tournament_applications')
-                    .select('id').eq('team_id', myTeamData.id).eq('tournament_id', tourneyId).maybeSingle();
+                // Eğer rejected bir başvuru varsa onu silelim (Temizlik)
+                await window.supabaseClient.from('tournament_applications').delete().eq('team_id', myTeamData.id).eq('tournament_id', tourneyId);
 
-                if (existingApp) {
-                    throw new Error("Takımınız bu turnuvaya zaten başvuru yapmış.");
-                }
-
-                // Başvuruyu Kaydet
                 const { error } = await window.supabaseClient.from('tournament_applications').insert([{
-                    team_id: myTeamData.id,
-                    tournament_id: tourneyId,
-                    status: 'pending'
+                    team_id: myTeamData.id, tournament_id: tourneyId, status: 'pending'
                 }]);
 
                 if (error) throw error;
 
                 showNotification("Başvurunuz başarıyla alındı! Yönetici onayı bekleniyor.", "success");
-                setTimeout(() => window.location.href = "takimim.html", 2000);
-
+                setTimeout(() => location.reload(), 1500);
             } catch (err) {
                 showNotification(err.message, "error");
-                btn.disabled = false;
-                checkFormStatus();
+                btn.disabled = false; checkFormStatus();
             }
         });
+
+        // BAŞVURU GERİ ÇEKME
+        async function executeWithdraw() {
+            closeConfirmModal();
+            if (!currentAppId) return;
+
+            try {
+                const { error } = await window.supabaseClient.from('tournament_applications').delete().eq('id', currentAppId);
+                if (error) throw error;
+                
+                showNotification("Başvurunuz başarıyla geri çekildi.", "success");
+                setTimeout(() => location.reload(), 1500);
+            } catch (err) {
+                showNotification("İşlem başarısız oldu.", "error");
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', initPage);
     </script>
