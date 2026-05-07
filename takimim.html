@@ -97,6 +97,7 @@
         .btn-kick { position: absolute; top: 15px; right: 15px; background: transparent; color: #444; border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 14px; display: flex; justify-content: center; align-items: center;}
         .btn-kick:hover { color: var(--kirmizi-iptal); background: rgba(255, 75, 75, 0.1); }
 
+        /* İSTATİSTİKLER */
         .player-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); background: rgba(0,0,0,0.3); padding: 18px 10px; text-align: center; border-top: 1px solid rgba(255,255,255,0.03); }
         .stat-box { display: flex; flex-direction: column; gap: 4px; border-right: 1px solid rgba(255,255,255,0.03); }
         .stat-box:last-child { border-right: none; }
@@ -111,6 +112,7 @@
         .btn-disband { background: rgba(255, 75, 75, 0.05); color: #ff6b6b; border: 1px solid rgba(255, 75, 75, 0.3); }
         .btn-disband:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 0 20px rgba(255, 75, 75, 0.3); }
 
+        /* EKLEME SLOTU */
         .add-slot-card { display:flex; flex-direction:column; justify-content:center; align-items:center; padding:40px; border:2px dashed rgba(96, 29, 194, 0.3); background:rgba(96, 29, 194, 0.03); border-radius: 16px; transition: 0.3s; cursor: pointer; }
         .add-slot-card:hover { border-color: var(--neon-mor); background: rgba(96, 29, 194, 0.07); }
         .add-icon { font-size: 40px; color: rgba(96, 29, 194, 0.4); margin-bottom: 15px; transition: 0.3s; }
@@ -120,7 +122,7 @@
         .autocomplete-items div { padding: 10px; cursor: pointer; border-bottom: 1px solid #222; font-size: 13px; }
         .autocomplete-items div:hover { background-color: var(--neon-mor); }
 
-        /* YENİ ZARİF YÜKLEME EKRANI */
+        /* YÜKLEME EKRANI */
         #loadingScreen { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 99999; }
         .loader-spinner { width: 50px; height: 50px; border: 4px solid rgba(157, 78, 221, 0.2); border-top-color: var(--neon-mor); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
         #loadingScreen p { color: white; font-weight: bold; letter-spacing: 2px; font-size: 14px; margin: 0;}
@@ -263,12 +265,13 @@
     <script>
         let currentUser = null;
         let myTeamData = null;
-        let currentApp = null; // Aktif Turnuva Başvurusu
+        let currentApp = null; 
         let isCaptain = false;
         let isRosterLocked = false;
         let currentMainCount = 0;
         let confirmCallback = null;
 
+        // --- MODAL YÖNETİMİ ---
         function openConfirmModal(message, callback) {
             document.getElementById('confirmMessage').innerHTML = message;
             confirmCallback = callback;
@@ -293,6 +296,7 @@
             document.getElementById('editTeamModal').classList.remove('active');
         }
 
+        // --- SAYFA BAŞLATMA ---
         async function initTeamPage() {
             try {
                 const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
@@ -309,6 +313,7 @@
             } catch (err) { console.error(err); } finally { document.getElementById('loadingScreen').style.display = 'none'; }
         }
 
+        // --- GELEN DAVETLERİ ÇEKME ---
         async function fetchPendingInvites() {
             try {
                 const { data: invites } = await window.supabaseClient.from('team_members')
@@ -380,7 +385,7 @@
                     return; 
                 }
 
-                // AKTİF TURNUVA DURUMUNU ÇEK (İÇ İÇE SORGULAMA İLE UPCOMING TURNUVALAR İÇİN)
+                // AKTİF TURNUVA DURUMUNU ÇEK
                 const { data: appData } = await window.supabaseClient.from('tournament_applications')
                     .select('status, tournaments!inner(name, status)')
                     .eq('team_id', myTeamData.id)
@@ -425,8 +430,11 @@
 
             document.getElementById('captainActionArea').style.display = 'none';
             document.getElementById('memberActionArea').style.display = 'none';
+            
+            // Eğer Roster Locked (Onaylanmış) ise Dağıt/Düzenle vs Gösterme
             if (isCaptain && !isRosterLocked) document.getElementById('captainActionArea').style.display = 'flex';
             else if (!isCaptain && !isRosterLocked) document.getElementById('memberActionArea').style.display = 'block';
+            
             if (isRosterLocked) document.getElementById('lockAlert').style.display = 'flex';
         }
 
@@ -440,7 +448,6 @@
                 members.forEach(m => { if (m.role === 'main' && m.status === 'accepted') currentMainCount++; });
                 members.sort((a, b) => a.user_id === myTeamData.captain_id ? -1 : 1);
 
-                // GERÇEK İSTATİSTİKLERİ ÇEK
                 const userIds = members.map(m => m.user_id);
                 let playerStats = {};
                 try {
@@ -499,7 +506,8 @@
             const subName = ign && ign !== 'Belirlenmedi' ? `@${username}` : '';
             const avatar = avatarUrl ? `<img src="${avatarUrl}" class="player-avatar" onerror="this.src='img/unknown.webp'">` : `<div class="player-avatar"><i class="fas fa-user"></i></div>`;
             
-            let kickBtn = (isCaptain && !isRosterLocked && userId !== currentUser.id) ? `<button class="btn-kick" onclick="kickPlayer('${memberId}', '${username}')"><i class="fas fa-times"></i></button>` : '';
+            // Atma İşlemi (Role verisini de geçiyoruz ki kontrol edebilelim)
+            let kickBtn = (isCaptain && !isRosterLocked && userId !== currentUser.id) ? `<button class="btn-kick" onclick="kickPlayer('${memberId}', '${username.replace(/'/g, "\\'")}', '${dbRole}')"><i class="fas fa-times"></i></button>` : '';
             
             let roleLabel = dbRole === 'main' ? 'ASİL' : 'YEDEK';
             if (status === 'pending') roleLabel = 'DAVET EDİLDİ';
@@ -516,7 +524,7 @@
                 }
             }
 
-            // GİZLİLİK: Eğer pending (davet bekliyor) ise istatistikleri gizle (?) göster.
+            // GİZLİLİK
             const isPending = status === 'pending';
             const displayMatches = isPending ? '?' : matches;
             const displayKd = isPending ? '?' : kd;
@@ -639,6 +647,7 @@
                         div.onclick = async () => {
                             try {
                                 await window.supabaseClient.rpc('send_team_invite', { p_team_id: myTeamData.id, p_user_id: u.id, p_role: autoRole });
+                                await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: u.id, baslik: "Yeni Takım Daveti", mesaj: `${myTeamData.name} takımı sizi davet etti.`, tip: 'sistem' }]);
                                 showNotification("Davet gönderildi!", "success"); fetchRoster();
                             } catch(e) { showNotification("Hata oluştu.", "error"); }
                         };
@@ -648,19 +657,64 @@
             });
         }
 
-        async function kickPlayer(mId, name) { openConfirmModal(`<b>${name}</b> çıkarılsın mı?`, async () => { try { await window.supabaseClient.from('team_members').delete().eq('id', mId); showNotification("Oyuncu çıkarıldı.", "info"); fetchRoster(); } catch(e){} }); }
+        // --- GÜVENLİK GÜNCELLEMELERİ (KICK VE ROL DEĞİŞTİRME) ---
+        async function kickPlayer(mId, name, role) { 
+            // Eğer başvuru bekliyorsa ve asil çıkarılıyorsa engelle
+            if (currentApp && currentApp.status === 'pending' && role === 'main' && currentMainCount <= 5) {
+                showNotification("Başvuru incelemedeyken asil sayısı 5'in altına düşürülemez!", "error");
+                return;
+            }
+            openConfirmModal(`<b>${name}</b> çıkarılsın mı?`, async () => { 
+                try { 
+                    await window.supabaseClient.from('team_members').delete().eq('id', mId); 
+                    showNotification("Oyuncu çıkarıldı.", "info"); 
+                    fetchRoster(); 
+                } catch(e){} 
+            }); 
+        }
         
         async function changeRole(mId, role) { 
+            // Asil limit kontrolü
             if(role === 'main' && currentMainCount >= 5){ 
                 showNotification("Asil kadro maksimum 5 kişi olabilir!", "error"); 
                 return; 
             } 
+            // Başvuru beklerken asil sayısını düşürme kontrolü
+            if (role === 'sub' && currentApp && currentApp.status === 'pending' && currentMainCount <= 5) {
+                showNotification("Başvuru incelemedeyken asil sayısı 5'in altına düşürülemez!", "error");
+                return;
+            }
             await window.supabaseClient.from('team_members').update({ role }).eq('id', mId); 
             fetchRoster(); 
         }
 
-        async function disbandTeam() { openConfirmModal("Takım dağıtılsın mı? Geri alınamaz!", async () => { await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id); await window.supabaseClient.from('teams').delete().eq('id', myTeamData.id); location.reload(); }); }
-        async function leaveTeam() { openConfirmModal("Takımdan ayrılmak istediğine emin misin?", async () => { await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id).eq('user_id', currentUser.id); location.reload(); }); }
+        // --- BAŞVURU İPTALİ VE DAĞITMA ---
+        async function disbandTeam() { 
+            openConfirmModal("Takım dağıtılsın mı? Bu işlem geri alınamaz!", async () => { 
+                try {
+                    // Eğer bekleyen başvuru varsa onu da sil
+                    if (currentApp && currentApp.status === 'pending') {
+                        await window.supabaseClient.from('tournament_applications').delete().eq('team_id', myTeamData.id);
+                    }
+                    await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id); 
+                    await window.supabaseClient.from('teams').delete().eq('id', myTeamData.id); 
+                    location.reload(); 
+                } catch (e) {
+                    showNotification("Dağıtma işlemi başarısız.", "error");
+                }
+            }); 
+        }
+
+        async function leaveTeam() { 
+            openConfirmModal("Takımdan ayrılmak istediğine emin misin?", async () => { 
+                try {
+                    await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id).eq('user_id', currentUser.id); 
+                    location.reload(); 
+                } catch (e) {
+                    showNotification("Ayrılma işlemi başarısız.", "error");
+                }
+            }); 
+        }
 
         document.addEventListener('DOMContentLoaded', initTeamPage);
     </script>
