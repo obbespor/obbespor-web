@@ -15,7 +15,7 @@
     <style>
         .team-page-container { max-width: 1100px; margin: 40px auto; padding: 20px; flex: 1; animation: fadeIn 0.4s ease; display: none; }
         
-        /* NO TEAM STATE (BASVURU BENZERİ) */
+        /* OLUŞTURMA & DÜZENLEME KARTI */
         .auth-card { background: rgba(10, 10, 10, 0.95); padding: 40px; border-radius: 20px; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); max-width: 800px; margin: 0 auto; }
         .input-group { margin-bottom: 20px; position: relative; }
         .input-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--gri-yazi); font-weight: bold; }
@@ -29,15 +29,13 @@
         .save-btn { padding: 15px; width: 100%; background: var(--neon-mor); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.3s; font-size: 16px; margin-top: 20px;}
         .save-btn:hover { box-shadow: 0 0 15px var(--neon-mor); transform: translateY(-2px); }
         
-        /* TEAM PROFILE STATE */
+        /* TAKIM PROFİL BAŞLIĞI */
         .team-profile-header { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 40px 20px; position: relative; margin-bottom: 30px; }
         .team-profile-header::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 100vw; height: 100%; background: radial-gradient(circle at center, rgba(96, 29, 194, 0.15) 0%, rgba(5, 5, 5, 0) 70%); z-index: -1; pointer-events: none; }
         .team-profile-logo { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; background: #0a0a0a; border: 4px solid var(--neon-mor); padding: 5px; box-shadow: 0 0 30px rgba(96, 29, 194, 0.4); margin-bottom: 20px; transition: 0.3s; }
         .team-profile-name { font-size: 36px; font-weight: 900; color: white; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
         .team-profile-tag { font-size: 16px; background: var(--neon-mor); color: white; padding: 4px 12px; border-radius: 8px; font-weight: bold; letter-spacing: 2px; }
         .team-profile-meta { color: var(--gri-yazi); font-size: 13px; margin-top: 10px; }
-        .team-role-badge { display: inline-block; border: 1px solid #555; color: #aaa; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-left: 10px; vertical-align: middle; }
-        .team-role-badge.captain { border-color: gold; color: gold; background: rgba(255, 215, 0, 0.1); }
 
         .lock-alert { background: rgba(255, 75, 75, 0.1); border-left: 4px solid var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 15px 20px; border-radius: 8px; font-size: 13px; font-weight: bold; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }
         
@@ -59,8 +57,6 @@
         
         .role-badges-area { margin-top: 5px; display: flex; gap: 5px; align-items: center; }
         .player-role { font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: 0.3s;}
-        .player-role:hover { opacity: 0.8; }
-        .role-cap { background: rgba(255, 215, 0, 0.1); color: gold; border: 1px solid gold; cursor: default;}
         .role-main { background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid #00d4ff; }
         .role-sub { background: rgba(255, 255, 255, 0.05); color: #aaa; border: 1px solid #555; }
         .role-pending { background: rgba(255, 152, 0, 0.1); color: #ff9800; border: 1px solid #ff9800; cursor: default;}
@@ -76,16 +72,19 @@
         .stat-label { font-size: 10px; color: var(--gri-yazi); font-weight: bold; }
 
         .action-btn { padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; border: none; font-size: 13px; display: flex; align-items: center; gap: 8px; justify-content: center;}
-        .btn-disband { background: rgba(255, 75, 75, 0.1); color: var(--kirmizi-iptal); border: 1px solid var(--kirmizi-iptal); width: max-content; margin: 0 auto; }
+        .btn-edit-team { background: rgba(0, 210, 255, 0.15); color: #00d2ff; border: 1px solid #00d2ff; }
+        .btn-edit-team:hover { background: #00d2ff; color: #000; box-shadow: 0 0 15px rgba(0, 210, 255, 0.4); }
+        .btn-disband { background: rgba(255, 75, 75, 0.1); color: var(--kirmizi-iptal); border: 1px solid var(--kirmizi-iptal); }
         .btn-disband:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 0 15px rgba(255, 75, 75, 0.4); }
 
         .dynamic-slot { animation: slideInUp 0.3s ease; }
         @keyframes slideInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ÖZEL ONAY MODALI EKLENTİSİ */
+        /* MODAL SİSTEMİ */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
-        .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--kirmizi-iptal); border-radius: 15px; width: 90%; max-width: 400px; padding: 40px 20px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; }
+        .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 90%; max-width: 450px; padding: 35px 25px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; }
+        .modal-content.danger { border-top-color: var(--kirmizi-iptal); }
 
         #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
@@ -93,6 +92,7 @@
         @media (max-width: 768px) {
             .team-profile-name { font-size: 28px; }
             .team-profile-logo { width: 120px; height: 120px; }
+            .captain-btns { flex-direction: column; width: 100%; }
         }
     </style>
 </head>
@@ -100,7 +100,7 @@
 
     <div id="loadingScreen">
         <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
-        <h2>Takım Verileri Çekiliyor...</h2>
+        <h2>Veriler Çekiliyor...</h2>
     </div>
 
     <div id="header-alani"></div>
@@ -123,7 +123,6 @@
                 <div class="input-group">
                     <label>Takım Logosu (PNG, JPG, WEBP, Max 2MB)</label>
                     <input type="file" id="newTeamLogo" accept="image/png, image/jpeg, image/jpg, image/webp">
-                    <span style="font-size:11px; color:#555;">Logo zorunlu değildir, sonradan ekleyebilirsiniz.</span>
                 </div>
                 <button type="submit" class="save-btn" id="btnCreateTeam">TAKIMI OLUŞTUR</button>
             </form>
@@ -141,32 +140,53 @@
             <i class="fas fa-lock"></i>
             <div>
                 <strong>KADRO KİLİTLİ!</strong><br>
-                Takımınız aktif bir turnuvada onay aldığı için turnuva bitene kadar kadro değişikliği yapamazsınız.
+                Aktif bir turnuvada olduğunuz için takım ayarları ve kadro değişikliği yapılamaz.
             </div>
         </div>
 
         <h3 class="roster-title">TAKIM KADROSU</h3>
-        
-        <div class="roster-grid" id="rosterList">
-            </div>
+        <div class="roster-grid" id="rosterList"></div>
 
-        <div id="memberActionArea" style="display:none;">
+        <div id="memberActionArea" style="display:none; text-align: center;">
             <button class="action-btn btn-disband" onclick="leaveTeam()"><i class="fas fa-sign-out-alt"></i> Takımdan Ayrıl</button>
         </div>
         
-        <div id="captainActionArea" style="display:none; margin-top:40px;">
-            <button class="action-btn btn-disband" onclick="disbandTeam()"><i class="fas fa-bomb"></i> Takımı Tamamen Dağıt</button>
+        <div id="captainActionArea" style="display:none; margin-top:40px; display: flex; gap:15px; justify-content: center; flex-wrap: wrap;">
+            <button class="action-btn btn-edit-team" id="btnOpenEdit" onclick="openEditTeamModal()"><i class="fas fa-cog"></i> Takım Ayarlarını Düzenle</button>
+            <button class="action-btn btn-disband" onclick="disbandTeam()"><i class="fas fa-bomb"></i> Takımı Dağıt</button>
         </div>
     </main>
 
-    <div class="modal-overlay" id="customConfirmModal">
+    <div class="modal-overlay" id="editTeamModal">
         <div class="modal-content">
+            <h3 style="color: white; font-weight: 900; margin-bottom: 25px; text-transform: uppercase;">Takım Ayarlarını Güncelle</h3>
+            <div class="input-group" style="text-align: left;">
+                <label>Yeni Takım Adı</label>
+                <input type="text" id="editTeamName" placeholder="Yeni Ad">
+            </div>
+            <div class="input-group" style="text-align: left;">
+                <label>Yeni Takım Kısaltması</label>
+                <input type="text" id="editTeamTag" maxlength="5" placeholder="Yeni Tag">
+            </div>
+            <div class="input-group" style="text-align: left;">
+                <label>Yeni Logo Seç</label>
+                <input type="file" id="editTeamLogo" accept="image/*">
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="closeEditTeamModal()" style="flex:1; background: transparent; border: 1px solid #444; color: #888; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">İptal</button>
+                <button onclick="updateTeamSettings()" id="btnSaveSettings" style="flex:2; background: var(--neon-mor); border: none; color: white; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">Değişiklikleri Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="customConfirmModal">
+        <div class="modal-content danger">
             <i class="fas fa-exclamation-triangle" style="font-size: 50px; color: var(--kirmizi-iptal); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(255,75,75,0.4));"></i>
             <h3 style="color: white; font-weight: 900; font-size: 22px; margin-bottom: 10px; text-transform: uppercase;">Emin Misiniz?</h3>
             <p id="confirmMessage" style="color: var(--gri-yazi); font-size: 14px; margin-bottom: 30px;"></p>
             <div style="display: flex; gap: 15px; justify-content: center;">
-                <button onclick="closeConfirmModal()" style="flex: 1; background: transparent; border: 1px solid #555; color: #aaa; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;">İptal Et</button>
-                <button id="confirmActionBtn" style="flex: 1; background: var(--kirmizi-iptal); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 0 15px rgba(255,75,75,0.3);">Evet, Onaylıyorum</button>
+                <button onclick="closeConfirmModal()" style="flex: 1; background: transparent; border: 1px solid #555; color: #aaa; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">İptal</button>
+                <button id="confirmActionBtn" style="flex: 1; background: var(--kirmizi-iptal); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">Onaylıyorum</button>
             </div>
         </div>
     </div>
@@ -184,230 +204,197 @@
         let myTeamData = null;
         let isCaptain = false;
         let isRosterLocked = false;
-        let totalMembers = 0; 
-        let currentMainCount = 0; 
-
+        let currentMainCount = 0;
         let confirmCallback = null;
 
+        // --- MODAL YÖNETİMİ ---
         function openConfirmModal(message, callback) {
             document.getElementById('confirmMessage').innerHTML = message;
             confirmCallback = callback;
             document.getElementById('customConfirmModal').classList.add('active');
         }
-
         function closeConfirmModal() {
             document.getElementById('customConfirmModal').classList.remove('active');
             confirmCallback = null;
         }
-
         document.getElementById('confirmActionBtn').addEventListener('click', () => {
             if (confirmCallback) confirmCallback();
             closeConfirmModal();
         });
 
+        function openEditTeamModal() {
+            if(isRosterLocked) return;
+            document.getElementById('editTeamName').value = myTeamData.name;
+            document.getElementById('editTeamTag').value = myTeamData.tag;
+            document.getElementById('editTeamModal').classList.add('active');
+        }
+        function closeEditTeamModal() {
+            document.getElementById('editTeamModal').classList.remove('active');
+        }
+
+        // --- SAYFA BAŞLATMA ---
         async function initTeamPage() {
             try {
                 const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
-                if (authErr || !user) {
-                    window.location.href = "kayit.html";
-                    return;
-                }
+                if (authErr || !user) { window.location.href = "kayit.html"; return; }
                 currentUser = user;
                 
                 const { data: profile } = await window.supabaseClient.from('profiles').select('username, ign').eq('id', currentUser.id).single();
                 if (!profile?.username) {
-                    showNotification("Devam etmeden önce profilinizi tamamlamalısınız.", "error");
+                    showNotification("Önce profilinizi tamamlayın.", "error");
                     setTimeout(() => window.location.href = 'profil.html', 2000);
                     return;
                 }
-
                 await fetchMyTeam();
-            } catch (err) {
-                console.error("Başlatma hatası:", err);
-            } finally {
-                document.getElementById('loadingScreen').style.display = 'none';
-            }
+            } catch (err) { console.error(err); } finally { document.getElementById('loadingScreen').style.display = 'none'; }
         }
 
         async function fetchMyTeam() {
             try {
                 let { data: teamAsCaptain } = await window.supabaseClient.from('teams').select('*').eq('captain_id', currentUser.id).maybeSingle();
-                
-                if (teamAsCaptain) {
-                    myTeamData = teamAsCaptain;
-                    isCaptain = true;
-                } else {
+                if (teamAsCaptain) { myTeamData = teamAsCaptain; isCaptain = true; } 
+                else {
                     const { data: membership } = await window.supabaseClient.from('team_members').select('team_id').eq('user_id', currentUser.id).eq('status', 'accepted').maybeSingle();
                     if (membership) {
                         const { data: teamData } = await window.supabaseClient.from('teams').select('*').eq('id', membership.team_id).single();
-                        myTeamData = teamData;
-                        isCaptain = false;
+                        myTeamData = teamData; isCaptain = false;
                     }
                 }
+                if (!myTeamData) { document.getElementById('createTeamSection').style.display = 'block'; return; }
 
-                if (!myTeamData) {
-                    document.getElementById('createTeamSection').style.display = 'block';
-                    return;
-                }
-
-                const { data: appData } = await window.supabaseClient.from('tournament_applications')
-                    .select('status').eq('team_id', myTeamData.id).eq('status', 'approved').limit(1).maybeSingle();
-                
-                if (appData) { isRosterLocked = true; }
+                const { data: appData } = await window.supabaseClient.from('tournament_applications').select('status').eq('team_id', myTeamData.id).eq('status', 'approved').limit(1).maybeSingle();
+                if (appData) isRosterLocked = true;
 
                 renderTeamUI();
                 await fetchRoster();
-
-            } catch (err) {
-                console.error("Takım bilgisi çekilemedi:", err);
-                showNotification("Sistem hatası.", "error");
-            }
+            } catch (err) { showNotification("Sistem hatası.", "error"); }
         }
 
         function renderTeamUI() {
             document.getElementById('myTeamSection').style.display = 'block';
             document.getElementById('tName').innerText = myTeamData.name;
             document.getElementById('tTag').innerText = `[${myTeamData.tag}]`;
-            if(myTeamData.logo_url) document.getElementById('tLogo').src = myTeamData.logo_url;
-            
-            const dateObj = new Date(myTeamData.created_at);
-            document.getElementById('tDate').innerText = dateObj.toLocaleDateString('tr-TR');
+            document.getElementById('tLogo').src = myTeamData.logo_url || 'img/unknown.webp';
+            document.getElementById('tDate').innerText = new Date(myTeamData.created_at).toLocaleDateString('tr-TR');
 
-            if (isCaptain && !isRosterLocked) {
-                document.getElementById('captainActionArea').style.display = 'block';
-            } else if (!isCaptain && !isRosterLocked) {
-                document.getElementById('memberActionArea').style.display = 'block';
+            if (isCaptain && !isRosterLocked) document.getElementById('captainActionArea').style.display = 'flex';
+            else if (!isCaptain && !isRosterLocked) document.getElementById('memberActionArea').style.display = 'block';
+
+            if (isRosterLocked) {
+                document.getElementById('lockAlert').style.display = 'flex';
+                if(isCaptain) document.getElementById('btnOpenEdit').style.display = 'none';
             }
-
-            if (isRosterLocked) { document.getElementById('lockAlert').style.display = 'flex'; }
         }
 
         async function fetchRoster() {
             const grid = document.getElementById('rosterList');
-            grid.innerHTML = '';
-            currentMainCount = 0;
-
+            grid.innerHTML = ''; currentMainCount = 0;
             try {
-                const { data: members } = await window.supabaseClient.from('team_members')
-                    .select('id, user_id, role, status, profiles(username, ign, avatar_url, matches_played)')
-                    .eq('team_id', myTeamData.id)
-                    .order('created_at', { ascending: true });
-
+                const { data: members } = await window.supabaseClient.from('team_members').select('id, user_id, role, status, profiles(username, ign, avatar_url, matches_played)').eq('team_id', myTeamData.id).order('created_at', { ascending: true });
                 if (!members) return;
-
-                totalMembers = members.length;
-
-                members.sort((a, b) => {
-                    if (a.user_id === myTeamData.captain_id) return -1;
-                    if (b.user_id === myTeamData.captain_id) return 1;
-                    return 0;
-                });
+                
+                members.forEach(m => { if (m.role === 'main' && m.status === 'accepted') currentMainCount++; });
+                members.sort((a, b) => a.user_id === myTeamData.captain_id ? -1 : 1);
 
                 members.forEach(m => {
                     const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
                     const isCap = m.user_id === myTeamData.captain_id;
-                    
-                    let currentStatus = isCap ? 'accepted' : m.status;
-                    let currentRole = m.role;
-
-                    if (currentRole === 'main' && currentStatus === 'accepted') currentMainCount++;
-                    
-                    grid.innerHTML += createPlayerCard(m.user_id, m.id, prof?.username, prof?.ign, currentStatus, prof?.avatar_url, prof?.matches_played, currentRole, isCap);
+                    grid.innerHTML += createPlayerCard(m.user_id, m.id, prof?.username, prof?.ign, isCap ? 'accepted' : m.status, prof?.avatar_url, prof?.matches_played, m.role, isCap);
                 });
 
-                if (isCaptain && !isRosterLocked && totalMembers < 10) {
-                    const nextRole = currentMainCount < 5 ? 'main' : 'sub'; 
-                    const nextRoleText = nextRole === 'main' ? 'Asil Oyuncu Ekle' : 'Yedek Oyuncu Ekle';
-                    
+                if (isCaptain && !isRosterLocked && members.length < 10) {
+                    const nextRole = currentMainCount < 5 ? 'main' : 'sub';
                     grid.innerHTML += `
                         <div class="player-card dynamic-slot" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding:30px; border:1px dashed var(--neon-mor); background:rgba(96,29,194,0.05);">
                             <div style="width:100%; position:relative;">
-                                <input type="text" id="dynamicSearch" class="player-search" autocomplete="off" placeholder="Kullanıcı Adı veya IGN Ara..." style="width:100%; padding:10px; background:#000; border:1px solid #333; border-radius:8px; color:white; outline:none; text-align:center;">
+                                <input type="text" id="dynamicSearch" class="player-search" autocomplete="off" placeholder="Oyuncu Ara..." style="width:100%; padding:10px; background:#000; border:1px solid #333; border-radius:8px; color:white; text-align:center; outline:none;">
                                 <div id="dynamicSearch-list" class="autocomplete-items"></div>
                             </div>
-                            <span style="font-size:12px; color:var(--gri-yazi); margin-top:10px;"><i class="fas fa-plus"></i> ${nextRoleText}</span>
-                        </div>
-                    `;
+                            <span style="font-size:12px; color:var(--gri-yazi); margin-top:10px;"><i class="fas fa-plus"></i> ${nextRole === 'main' ? 'Asil' : 'Yedek'} Ekle</span>
+                        </div>`;
                     attachDynamicSearchEvent(nextRole);
                 }
-
-            } catch (err) {
-                console.error("Kadro hatası:", err);
-                grid.innerHTML = '<div style="color:red; grid-column:1/-1; text-align:center;">Kadro yüklenirken hata oluştu.</div>';
-            }
+            } catch (err) { grid.innerHTML = '<div style="color:red; text-align:center; width:100%;">Kadro hatası.</div>'; }
         }
 
         function createPlayerCard(userId, memberId, username, ign, status, avatarUrl, matchesPlayed, dbRole, isCap) {
             const displayName = ign && ign !== 'Belirlenmedi' ? ign : (username || 'İsimsiz');
             const subName = ign && ign !== 'Belirlenmedi' ? `@${username}` : '';
-            const finalAvatar = avatarUrl || ''; 
+            const avatar = avatarUrl ? `<img src="${avatarUrl}" class="player-avatar" onerror="this.src='img/unknown.webp'">` : `<div class="player-avatar"><i class="fas fa-user"></i></div>`;
             
-            let avatarHTML = `<div class="player-avatar"><i class="fas fa-user"></i></div>`;
-            if (finalAvatar) {
-                avatarHTML = `<img src="${finalAvatar}" class="player-avatar" onerror="this.outerHTML='<div class=\\'player-avatar\\'><i class=\\'fas fa-user\\'></i></div>'">`;
-            }
+            let kickBtn = (isCaptain && !isRosterLocked && userId !== currentUser.id) ? `<button class="btn-kick" onclick="kickPlayer('${memberId}', '${username}')"><i class="fas fa-times"></i></button>` : '';
+            let roleLabel = dbRole === 'main' ? 'ASİL' : 'YEDEK';
+            if (status === 'pending') roleLabel = 'DAVET EDİLDİ';
 
-            let roleText = dbRole === 'main' ? 'ASİL' : 'YEDEK';
-            let roleClass = dbRole === 'main' ? 'role-main' : 'role-sub';
-
-            if (status === 'pending') {
-                roleText = 'DAVET EDİLDİ';
-                roleClass = 'role-pending';
-            }
-
-            let crownHTML = isCap ? `<span class="captain-crown"><i class="fas fa-crown"></i> KAPTAN</span>` : '';
-
-            let kickBtnHTML = '';
-            // Kaptan KENDİSİNİ atamaz.
-            if (isCaptain && !isRosterLocked && userId !== currentUser.id) {
-                kickBtnHTML = `<button class="btn-kick" onclick="kickPlayer('${memberId}', '${username}')" title="Takımdan Çıkar / Daveti İptal Et"><i class="fas fa-times"></i></button>`;
-            }
-            
-            // Kaptan KENDİSİ DAHİL herkesin rolünü değiştirebilir (kilitli değilse)
             if (isCaptain && !isRosterLocked && status === 'accepted') {
-                if (dbRole === 'main') {
-                    roleText = `<span onclick="changeRole('${memberId}', 'sub')" title="Yedek Yap (Tıkla)" style="cursor:pointer;"><i class="fas fa-exchange-alt"></i> ASİL</span>`;
-                } else if (dbRole === 'sub') {
-                    if (currentMainCount < 5) {
-                        roleText = `<span onclick="changeRole('${memberId}', 'main')" title="Asil Yap (Tıkla)" style="cursor:pointer;"><i class="fas fa-exchange-alt"></i> YEDEK</span>`;
-                    } else {
-                        roleText = `<span title="Asil kadro dolu (En fazla 5 kişi)" style="opacity:0.5; cursor:not-allowed;">YEDEK (Dolu)</span>`;
-                    }
-                }
+                if (dbRole === 'main') roleLabel = `<span onclick="changeRole('${memberId}', 'sub')" style="cursor:pointer;"><i class="fas fa-exchange-alt"></i> ASİL</span>`;
+                else if (dbRole === 'sub' && currentMainCount < 5) roleLabel = `<span onclick="changeRole('${memberId}', 'main')" style="cursor:pointer;"><i class="fas fa-exchange-alt"></i> YEDEK</span>`;
             }
-            
-            const cardClass = status === 'pending' ? 'player-card pending' : (isCap ? 'player-card captain-card' : 'player-card');
 
             return `
-                <div class="${cardClass}">
+                <div class="player-card ${status === 'pending' ? 'pending' : ''} ${isCap ? 'captain-card' : ''}">
                     <div class="player-card-header">
-                        ${avatarHTML}
+                        ${avatar}
                         <div class="player-names">
                             <div class="player-ign">${displayName}</div>
                             <span class="player-username">${subName}</span>
                             <div class="role-badges-area">
-                                <span class="player-role ${roleClass}">${roleText}</span>
-                                ${crownHTML}
+                                <span class="player-role ${status === 'pending' ? 'role-pending' : (dbRole === 'main' ? 'role-main' : 'role-sub')}">${roleLabel}</span>
+                                ${isCap ? '<span class="captain-crown"><i class="fas fa-crown"></i> KAPTAN</span>' : ''}
                             </div>
                         </div>
-                        ${kickBtnHTML}
+                        ${kickBtn}
                     </div>
                     <div class="player-stats-row">
-                        <div class="stat-box"><span class="stat-value" style="color:var(--neon-mor);">${matchesPlayed || 0}</span><span class="stat-label">MAÇ</span></div>
+                        <div class="stat-box"><span class="stat-value">${matchesPlayed || 0}</span><span class="stat-label">MAÇ</span></div>
                         <div class="stat-box"><span class="stat-value">0</span><span class="stat-label">K</span></div>
                         <div class="stat-box"><span class="stat-value">0</span><span class="stat-label">D</span></div>
                         <div class="stat-box"><span class="stat-value">0</span><span class="stat-label">A</span></div>
                     </div>
-                </div>
-            `;
+                </div>`;
         }
 
-        // --- TAKIM KURMA FORMU ---
+        // --- TAKIM GÜNCELLEME (YENİ) ---
+        async function updateTeamSettings() {
+            if(isRosterLocked) return;
+            const btn = document.getElementById('btnSaveSettings');
+            const originalText = btn.innerHTML;
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            try {
+                const newName = document.getElementById('editTeamName').value.trim();
+                const newTag = document.getElementById('editTeamTag').value.trim().toUpperCase();
+                const logoFile = document.getElementById('editTeamLogo').files[0];
+                let logoUrl = myTeamData.logo_url;
+
+                if (logoFile) {
+                    const ext = logoFile.name.split('.').pop().toLowerCase();
+                    const fileName = `logo_${myTeamData.id}_${Date.now()}.${ext}`; 
+                    const { error: upErr } = await window.supabaseClient.storage.from('team-logos').upload(fileName, logoFile, { upsert: true });
+                    if (upErr) throw upErr;
+                    const { data } = window.supabaseClient.storage.from('team-logos').getPublicUrl(fileName);
+                    logoUrl = data.publicUrl;
+                }
+
+                const { error } = await window.supabaseClient.from('teams').update({
+                    name: newName, tag: newTag, logo_url: logoUrl
+                }).eq('id', myTeamData.id);
+
+                if (error) {
+                    if (error.code === '23505') throw new Error("Bu isim veya kısaltma zaten alınmış.");
+                    throw error;
+                }
+
+                showNotification("Takım ayarları güncellendi!", "success");
+                setTimeout(() => location.reload(), 1200);
+            } catch (err) { showNotification(err.message, "error"); btn.disabled = false; btn.innerHTML = originalText; }
+        }
+
+        // --- TAKIM KURMA ---
         document.getElementById('teamForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnCreateTeam');
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> OLUŞTURULUYOR...';
-
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             try {
                 const name = document.getElementById('newTeamName').value.trim();
                 const tag = document.getElementById('newTeamTag').value.trim().toUpperCase();
@@ -416,114 +403,44 @@
 
                 if (logoFile) {
                     const ext = logoFile.name.split('.').pop().toLowerCase();
-                    if (!['png', 'jpg', 'jpeg', 'webp'].includes(ext)) throw new Error("Sadece PNG, JPG, WEBP yükleyebilirsiniz.");
-                    if (logoFile.size > 2 * 1024 * 1024) throw new Error("Logo 2MB'dan küçük olmalıdır.");
-                    
                     const fileName = `logo_${currentUser.id}_${Date.now()}.${ext}`; 
-                    const { error: uploadErr } = await window.supabaseClient.storage.from('team-logos').upload(fileName, logoFile, { cacheControl: '3600', upsert: true });
-                    if (uploadErr) throw uploadErr;
-                    
-                    const { data } = window.supabaseClient.storage.from('team-logos').getPublicUrl(fileName);
-                    logoUrl = data.publicUrl;
+                    await window.supabaseClient.storage.from('team-logos').upload(fileName, logoFile);
+                    logoUrl = (window.supabaseClient.storage.from('team-logos').getPublicUrl(fileName)).data.publicUrl;
                 }
 
-                const { data: newTeam, error } = await window.supabaseClient.from('teams').insert([{
-                    captain_id: currentUser.id, name: name, tag: tag, logo_url: logoUrl
-                }]).select().single();
-                
-                if (error) {
-                    if (error.code === '23505') throw new Error("Bu takım adı veya kısaltması zaten kullanımda.");
-                    throw error;
-                }
+                const { data: newTeam, error } = await window.supabaseClient.from('teams').insert([{ captain_id: currentUser.id, name, tag, logo_url: logoUrl }]).select().single();
+                if (error) { if (error.code === '23505') throw new Error("Bu isim zaten alınmış."); throw error; }
 
-                await window.supabaseClient.from('team_members').insert([{
-                    team_id: newTeam.id, user_id: currentUser.id, role: 'main', status: 'accepted'
-                }]);
-
-                showNotification("Takım başarıyla kuruldu!", "success");
+                await window.supabaseClient.from('team_members').insert([{ team_id: newTeam.id, user_id: currentUser.id, role: 'main', status: 'accepted' }]);
+                showNotification("Takım kuruldu!", "success");
                 setTimeout(() => location.reload(), 1500);
-
-            } catch (err) {
-                showNotification("Takım kurulamadı: " + err.message, "error");
-                btn.disabled = false; btn.innerHTML = 'TAKIMI OLUŞTUR';
-            }
+            } catch (err) { showNotification(err.message, "error"); btn.disabled = false; btn.innerHTML = 'TAKIMI OLUŞTUR'; }
         });
 
-        // --- DİNAMİK ARAMA VE DAVET ---
+        // --- DİNAMİK ARAMA ---
         function attachDynamicSearchEvent(autoRole) {
             const input = document.getElementById('dynamicSearch');
             if (!input) return;
-
-            input.addEventListener('blur', function() {
-                setTimeout(() => { document.getElementById('dynamicSearch-list').innerHTML = ''; }, 200);
-            });
-
             input.addEventListener('input', async function() {
                 const query = this.value;
                 const list = document.getElementById('dynamicSearch-list');
-                list.innerHTML = '';
-                if (query.length < 2) return;
-
+                list.innerHTML = ''; if (query.length < 2) return;
                 try {
-                    const { data: profiles } = await window.supabaseClient.from('profiles')
-                        .select('id, username, ign')
-                        .or(`ign.ilike.%${query}%,username.ilike.%${query}%`)
-                        .limit(10);
+                    const { data: profiles } = await window.supabaseClient.from('profiles').select('id, username, ign').or(`ign.ilike.%${query}%,username.ilike.%${query}%`).limit(8);
+                    if (!profiles) return;
+                    const { data: bCap } = await window.supabaseClient.from('teams').select('captain_id');
+                    const { data: bMem } = await window.supabaseClient.from('team_members').select('user_id').eq('status', 'accepted');
+                    const busyIds = new Set([...(bCap?.map(c => c.captain_id) || []), ...(bMem?.map(m => m.user_id) || [])]);
                     
-                    if (!profiles || profiles.length === 0) return;
-                    
-                    const profileIds = profiles.map(p => p.id);
-
-                    // 1. Herhangi bir takımda KAPTAN olanları bul
-                    const { data: busyCaptains } = await window.supabaseClient.from('teams')
-                        .select('captain_id')
-                        .in('captain_id', profileIds);
-
-                    // 2. Herhangi bir takımda ONAYLI ÜYE olanları bul
-                    const { data: busyMembers } = await window.supabaseClient.from('team_members')
-                        .select('user_id')
-                        .in('user_id', profileIds)
-                        .eq('status', 'accepted');
-
-                    // Hepsini birleştir (Mevcut takımdakileri de dahil et)
-                    const busyIds = new Set([
-                        ...(busyCaptains?.map(c => c.captain_id) || []),
-                        ...(busyMembers?.map(m => m.user_id) || [])
-                    ]);
-
-                    const filtered = profiles.filter(p => !busyIds.has(p.id));
-
-                    filtered.forEach(u => {
+                    profiles.filter(p => !busyIds.has(p.id)).forEach(u => {
                         const div = document.createElement('div');
-                        const disp = u.ign ? `${u.ign} (${u.username})` : u.username;
-                        div.innerHTML = `<i class="fas fa-user-plus"></i> ${disp}`;
+                        div.innerHTML = `<i class="fas fa-user-plus"></i> ${u.ign ? u.ign : u.username}`;
                         div.onclick = async () => {
-                            input.value = "Davet Gönderiliyor...";
-                            input.disabled = true;
-                            list.innerHTML = '';
-                            
                             try {
-                                const { error } = await window.supabaseClient.rpc('send_team_invite', {
-                                    p_team_id: myTeamData.id,
-                                    p_user_id: u.id,
-                                    p_role: autoRole
-                                });
-
-                                if (error) throw error;
-
-                                await window.supabaseClient.from('bildirimler').insert([{ 
-                                    kullanici_id: u.id, baslik: "Yeni Takım Daveti!", 
-                                    mesaj: `${myTeamData.name} takımı sizi davet etti. Profilinizden kabul edebilirsiniz.`, tip: 'sistem' 
-                                }]);
-                                
-                                showNotification("Davet başarıyla gönderildi!", "success");
-                                fetchRoster(); 
-
-                            } catch(e) {
-                                console.error(e);
-                                showNotification("Davet gönderilemedi: " + e.message, "error");
-                                input.value = ''; input.disabled = false;
-                            }
+                                await window.supabaseClient.rpc('send_team_invite', { p_team_id: myTeamData.id, p_user_id: u.id, p_role: autoRole });
+                                await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: u.id, baslik: "Takım Daveti!", mesaj: `${myTeamData.name} takımı sizi davet etti.`, tip: 'sistem' }]);
+                                showNotification("Davet gönderildi!", "success"); fetchRoster();
+                            } catch(e) { showNotification("Hata oluştu.", "error"); }
                         };
                         list.appendChild(div);
                     });
@@ -531,57 +448,10 @@
             });
         }
 
-        async function kickPlayer(memberId, username) {
-            openConfirmModal(`<b>${username}</b> adlı oyuncuyu takımdan çıkarmak (veya davetini iptal etmek) istediğinize emin misiniz?`, async () => {
-                try {
-                    const { error } = await window.supabaseClient.from('team_members').delete().eq('id', memberId);
-                    if (error) throw error;
-                    fetchRoster(); 
-                    showNotification("İşlem başarılı.", "success");
-                } catch (err) { showNotification("İşlem başarısız.", "error"); }
-            });
-        }
-
-        async function changeRole(memberId, newRole) {
-            try {
-                if (newRole === 'main' && currentMainCount >= 5) {
-                    showNotification("Takımda en fazla 5 asil oyuncu olabilir.", "error");
-                    return;
-                }
-                const { error } = await window.supabaseClient.from('team_members').update({ role: newRole }).eq('id', memberId);
-                if (error) throw error;
-                fetchRoster();
-            } catch (err) { showNotification("Rol değiştirilemedi.", "error"); }
-        }
-
-        async function disbandTeam() {
-            openConfirmModal("<span style='color:var(--kirmizi-iptal);'>DİKKAT:</span> Takımı tamamen dağıtmak istediğinize emin misiniz? Bu işlem geri alınamaz!", async () => {
-                try {
-                    await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id);
-                    const { error } = await window.supabaseClient.from('teams').delete().eq('id', myTeamData.id);
-                    if (error) throw error;
-                    showNotification("Takım dağıtıldı.", "success");
-                    setTimeout(() => window.location.reload(), 1500);
-                } catch (err) { showNotification("Takım silinirken hata oluştu.", "error"); }
-            });
-        }
-
-        async function leaveTeam() {
-            openConfirmModal("Takımdan ayrılmak istediğinize emin misiniz?", async () => {
-                try {
-                    const { error } = await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id).eq('user_id', currentUser.id);
-                    if (error) throw error;
-                    showNotification("Takımdan ayrıldınız.", "success");
-                    setTimeout(() => window.location.reload(), 1500);
-                } catch (err) { showNotification("Ayrılma işlemi başarısız.", "error"); }
-            });
-        }
-
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'teamInviteSignal' && myTeamData) {
-                fetchRoster(); 
-            }
-        });
+        async function kickPlayer(mId, name) { openConfirmModal(`<b>${name}</b> çıkarılsın mı?`, async () => { try { await window.supabaseClient.from('team_members').delete().eq('id', mId); fetchRoster(); } catch(e){} }); }
+        async function changeRole(mId, role) { if(role==='main' && currentMainCount>=5){ showNotification("Asil kadro dolu!", "error"); return; } await window.supabaseClient.from('team_members').update({ role }).eq('id', mId); fetchRoster(); }
+        async function disbandTeam() { openConfirmModal("Takım dağıtılsın mı? Geri alınamaz!", async () => { await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id); await window.supabaseClient.from('teams').delete().eq('id', myTeamData.id); location.reload(); }); }
+        async function leaveTeam() { openConfirmModal("Ayrılmak istediğine emin misin?", async () => { await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id).eq('user_id', currentUser.id); location.reload(); }); }
 
         document.addEventListener('DOMContentLoaded', initTeamPage);
     </script>
