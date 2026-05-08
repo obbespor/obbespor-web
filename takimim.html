@@ -382,6 +382,7 @@
                     return; 
                 }
 
+                // AKTİF TURNUVA DURUMUNU ÇEK
                 const { data: appData } = await window.supabaseClient.from('tournament_applications')
                     .select('status, tournaments!inner(name, status)')
                     .eq('team_id', myTeamData.id)
@@ -439,7 +440,15 @@
                 const { data: members } = await window.supabaseClient.from('team_members').select('id, user_id, role, status, profiles(username, ign, avatar_url, matches_played)').eq('team_id', myTeamData.id).order('created_at', { ascending: true });
                 if (!members) return;
                 
-                members.forEach(m => { if (m.role === 'main' && m.status === 'accepted') currentMainCount++; });
+                // ASİL SAYISINI (KAPTAN DAHİL) HESAPLA
+                members.forEach(m => { 
+                    const isCap = m.user_id === myTeamData.captain_id;
+                    const actualStatus = isCap ? 'accepted' : m.status;
+                    if ((m.role === 'main' || m.role === 'captain') && actualStatus === 'accepted') {
+                        currentMainCount++; 
+                    }
+                });
+
                 members.sort((a, b) => a.user_id === myTeamData.captain_id ? -1 : 1);
 
                 const userIds = members.map(m => m.user_id);
@@ -502,13 +511,15 @@
             
             let kickBtn = (isCaptain && !isRosterLocked && userId !== currentUser.id) ? `<button class="btn-kick" onclick="kickPlayer('${memberId}', '${username.replace(/'/g, "\\'")}', '${dbRole}')"><i class="fas fa-times"></i></button>` : '';
             
-            let roleLabel = dbRole === 'main' ? 'ASİL' : 'YEDEK';
+            // KAPTAN MANTIĞI DÜZELTİLDİ: DB'de 'captain' kalmışsa onu 'main' say.
+            const isMain = (dbRole === 'main' || dbRole === 'captain');
+            let roleLabel = isMain ? 'ASİL' : 'YEDEK';
             if (status === 'pending') roleLabel = 'DAVET EDİLDİ';
 
             if (isCaptain && !isRosterLocked && status === 'accepted') {
-                if (dbRole === 'main') {
+                if (isMain) {
                     roleLabel = `<span onclick="changeRole('${memberId}', 'sub')" style="cursor:pointer;" title="Yedeğe Çek"><i class="fas fa-exchange-alt"></i> ASİL</span>`;
-                } else if (dbRole === 'sub') {
+                } else {
                     if (currentMainCount < 5) {
                         roleLabel = `<span onclick="changeRole('${memberId}', 'main')" style="cursor:pointer;" title="Asile Al"><i class="fas fa-exchange-alt"></i> YEDEK</span>`;
                     } else {
@@ -524,6 +535,8 @@
             const displayAssists = isPending ? '?' : assists;
             const kdClass = (!isPending && parseFloat(kd) >= 1.2) ? 'kd-high' : '';
 
+            const roleClassBadge = isPending ? 'role-pending' : (isMain ? 'role-main' : 'role-sub');
+
             return `
                 <div class="player-card ${isPending ? 'pending' : ''} ${isCap ? 'captain-card' : ''} ${isMe ? 'current-user-card' : ''}">
                     <div class="player-card-header">
@@ -534,7 +547,7 @@
                             <div class="player-ign">${displayName}</div>
                             <span class="player-username">${subName}</span>
                             <div class="role-badges-area">
-                                <span class="player-role ${isPending ? 'role-pending' : (dbRole === 'main' ? 'role-main' : 'role-sub')}">${roleLabel}</span>
+                                <span class="player-role ${roleClassBadge}">${roleLabel}</span>
                                 ${isCap ? '<span class="captain-crown"><i class="fas fa-crown"></i> KAPTAN</span>' : ''}
                             </div>
                         </div>
@@ -636,7 +649,6 @@
                     profiles.filter(p => !busyIds.has(p.id)).forEach(u => {
                         const div = document.createElement('div');
                         
-                        // KULLANICI ADINI BÜYÜK YAZDIR, IGN VARSA YANINA EKLE
                         const ignDisplay = (u.ign && u.ign !== 'Belirlenmedi') ? `<span style="color:var(--neon-mor); font-size:11px; margin-left:5px;">(${u.ign})</span>` : '';
                         div.innerHTML = `<i class="fas fa-user-plus"></i> <b>${u.username}</b> ${ignDisplay}`;
                         
@@ -653,9 +665,8 @@
             });
         }
 
-        // --- GÜVENLİK GÜNCELLEMELERİ ---
         async function kickPlayer(mId, name, role) { 
-            if (currentApp && currentApp.status === 'pending' && role === 'main' && currentMainCount <= 5) {
+            if (currentApp && currentApp.status === 'pending' && (role === 'main' || role === 'captain') && currentMainCount <= 5) {
                 showNotification("Başvuru incelemedeyken asil sayısı 5'in altına düşürülemez!", "error");
                 return;
             }
@@ -670,15 +681,20 @@
         
         async function changeRole(mId, role) { 
             if(role === 'main' && currentMainCount >= 5){ 
-                showNotification("Asil kadro maksimum 5 kişi olabilir!", "error"); 
+                showNotification("Asil kadro maksimum 5 kişi olabilir! Lütfen önce birini yedeğe çekin.", "error"); 
                 return; 
             } 
             if (role === 'sub' && currentApp && currentApp.status === 'pending' && currentMainCount <= 5) {
                 showNotification("Başvuru incelemedeyken asil sayısı 5'in altına düşürülemez!", "error");
                 return;
             }
-            await window.supabaseClient.from('team_members').update({ role }).eq('id', mId); 
-            fetchRoster(); 
+            try {
+                const { error } = await window.supabaseClient.from('team_members').update({ role }).eq('id', mId); 
+                if (error) throw error;
+                fetchRoster(); 
+            } catch (e) {
+                showNotification("İşlem başarısız.", "error");
+            }
         }
 
         async function disbandTeam() { 
