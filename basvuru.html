@@ -13,6 +13,12 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
+        /* ANADOLU KIRMIZISI DEĞİŞKENLERİ */
+        :root {
+            --anadolu-kirmizi: #b81525; 
+            --anadolu-rgb: 184, 21, 37;
+        }
+
         .apply-container { max-width: 850px; margin: 60px auto; padding: 20px; flex: 1; animation: fadeIn 0.4s ease; display: none; }
         
         .section-title { text-align: center; font-size: 32px; font-weight: 900; color: white; text-transform: uppercase; margin-bottom: 30px; letter-spacing: 1px; }
@@ -27,9 +33,9 @@
         .not-captain-card { border-top: 4px solid var(--kirmizi-iptal); }
         .not-captain-card i.main-icon { font-size: 60px; color: var(--kirmizi-iptal); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(255, 75, 75, 0.4)); }
         
-        /* BEKLEYEN BAŞVURU */
-        .pending-card { border-top: 4px solid var(--mavi-onay); }
-        .pending-card i.main-icon { font-size: 60px; color: var(--mavi-onay); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.4)); }
+        /* BEKLEYEN BAŞVURU (Turkuaz yerine Anadolu Kırmızısı kullanıldı) */
+        .pending-card { border-top: 4px solid var(--anadolu-kirmizi); }
+        .pending-card i.main-icon { font-size: 60px; color: var(--anadolu-kirmizi); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(var(--anadolu-rgb), 0.4)); }
         
         /* ONAYLANAN BAŞVURU */
         .approved-card { border-top: 4px solid var(--yesil-guven); padding: 40px 20px; }
@@ -80,7 +86,10 @@
         .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
         .roster-card { background: #050505; border: 1px solid #222; border-radius: 10px; padding: 15px; display: flex; align-items: center; gap: 15px; }
         .roster-card img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #444; }
-        .roster-card.main-card { border-left: 3px solid #00d4ff; }
+        
+        /* Asil oyuncu turkuazı Anadolu Kırmızısı oldu */
+        .roster-card.main-card { border-left: 3px solid var(--anadolu-kirmizi); }
+        
         .roster-card.sub-card { border-left: 3px solid #aaa; }
         .roster-card.cap-card { border-left: 3px solid gold; }
         .rc-ign { color: white; font-weight: 900; font-size: 15px; margin-bottom: 2px; }
@@ -123,7 +132,7 @@
     <main class="apply-container" id="pendingSection">
         <div class="status-card pending-card">
             <i class="fas fa-hourglass-half main-icon fa-spin-pulse"></i>
-            <h3 style="color: var(--mavi-onay);">BAŞVURUNUZ DEĞERLENDİRİLİYOR</h3>
+            <h3 style="color: var(--anadolu-kirmizi);">BAŞVURUNUZ DEĞERLENDİRİLİYOR</h3>
             <p>Takımınızın turnuva başvurusu turnuva yöneticilerine ulaştı. Onay süreci tamamlandığında takım kadronuz kilitlenecek ve fikstüre dahil edileceksiniz.</p>
             <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
                 <a href="takimim.html" class="btn-back"><i class="fas fa-users"></i> Takımına Dön</a>
@@ -164,15 +173,16 @@
                 </ul>
             </div>
 
-            <div style="background: rgba(0, 212, 255, 0.1); border-left: 4px solid #00d4ff; padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; display: flex; align-items: flex-start; gap: 15px;">
-                <i class="fas fa-info-circle" style="color: #00d4ff; font-size: 24px; margin-top: 2px; filter: drop-shadow(0 0 5px rgba(0,212,255,0.5));"></i>
+            <div style="background: rgba(var(--anadolu-rgb), 0.1); border-left: 4px solid var(--anadolu-kirmizi); padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; display: flex; align-items: flex-start; gap: 15px;">
+                <i class="fas fa-info-circle" style="color: var(--anadolu-kirmizi); font-size: 24px; margin-top: 2px; filter: drop-shadow(0 0 5px rgba(var(--anadolu-rgb), 0.5));"></i>
                 <div>
-                    <strong style="color: #00d4ff; font-size: 14px; display: block; margin-bottom: 5px;">ÖNEMLİ HATIRLATMA</strong>
+                    <strong style="color: var(--anadolu-kirmizi); font-size: 14px; display: block; margin-bottom: 5px;">ÖNEMLİ HATIRLATMA</strong>
                     <p style="color: var(--gri-yazi); font-size: 12px; margin: 0; line-height: 1.5;">
                         Lütfen tüm takım oyuncularınızın profil ayarlarından <b>Oyun İçi Nick (IGN)</b> alanlarını doğru ve eksiksiz doldurduğundan emin olunuz. Aksi halde başvurunuz onaylansa dahi eksik bilgiler nedeniyle oyuncularınız maç lobilerine alınmayabilir.
                     </p>
                 </div>
             </div>
+            
             <form id="applyForm">
                 <div class="input-group">
                     <label>Katılmak İstediğiniz Turnuva</label>
