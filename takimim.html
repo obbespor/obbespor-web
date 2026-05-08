@@ -56,7 +56,7 @@
         .team-profile-tag { font-size: 18px; background: rgba(96, 29, 194, 0.2); color: #c69eff; padding: 5px 15px; border-radius: 8px; font-weight: bold; letter-spacing: 2px; border: 1px solid rgba(96, 29, 194, 0.4); }
         .team-profile-meta { color: var(--gri-yazi); font-size: 13px; margin-top: 15px; background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 20px; }
 
-        /* YENİ: TURNUVA DURUM ROZETİ */
+        /* TURNUVA DURUM ROZETİ */
         .tourney-badge { display: inline-block; padding: 6px 15px; border-radius: 8px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-top: 15px; text-transform: uppercase; }
         .tourney-badge.approved { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; box-shadow: 0 0 10px rgba(0,255,136,0.2); }
         .tourney-badge.pending { background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid #00d4ff; box-shadow: 0 0 10px rgba(0,212,255,0.2); }
@@ -271,7 +271,6 @@
         let currentMainCount = 0;
         let confirmCallback = null;
 
-        // --- MODAL YÖNETİMİ ---
         function openConfirmModal(message, callback) {
             document.getElementById('confirmMessage').innerHTML = message;
             confirmCallback = callback;
@@ -296,7 +295,6 @@
             document.getElementById('editTeamModal').classList.remove('active');
         }
 
-        // --- SAYFA BAŞLATMA ---
         async function initTeamPage() {
             try {
                 const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
@@ -313,7 +311,6 @@
             } catch (err) { console.error(err); } finally { document.getElementById('loadingScreen').style.display = 'none'; }
         }
 
-        // --- GELEN DAVETLERİ ÇEKME ---
         async function fetchPendingInvites() {
             try {
                 const { data: invites } = await window.supabaseClient.from('team_members')
@@ -385,7 +382,6 @@
                     return; 
                 }
 
-                // AKTİF TURNUVA DURUMUNU ÇEK
                 const { data: appData } = await window.supabaseClient.from('tournament_applications')
                     .select('status, tournaments!inner(name, status)')
                     .eq('team_id', myTeamData.id)
@@ -415,7 +411,6 @@
             else logoEl.src = 'img/unknown.webp';
             document.getElementById('tDate').innerText = new Date(myTeamData.created_at).toLocaleDateString('tr-TR');
 
-            // TURNUVA ROZETİNİ (BADGE) YERLEŞTİR
             let badgeHTML = '';
             if (currentApp) {
                 if (currentApp.status === 'approved') {
@@ -431,7 +426,6 @@
             document.getElementById('captainActionArea').style.display = 'none';
             document.getElementById('memberActionArea').style.display = 'none';
             
-            // Eğer Roster Locked (Onaylanmış) ise Dağıt/Düzenle vs Gösterme
             if (isCaptain && !isRosterLocked) document.getElementById('captainActionArea').style.display = 'flex';
             else if (!isCaptain && !isRosterLocked) document.getElementById('memberActionArea').style.display = 'block';
             
@@ -465,7 +459,7 @@
                 } catch(e) {}
 
                 members.forEach(m => {
-                    if (m.status === 'pending' && !isCaptain) return; // Bekleyenleri sadece kaptan görür
+                    if (m.status === 'pending' && !isCaptain) return; 
 
                     const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
                     const isCap = m.user_id === myTeamData.captain_id;
@@ -506,7 +500,6 @@
             const subName = ign && ign !== 'Belirlenmedi' ? `@${username}` : '';
             const avatar = avatarUrl ? `<img src="${avatarUrl}" class="player-avatar" onerror="this.src='img/unknown.webp'">` : `<div class="player-avatar"><i class="fas fa-user"></i></div>`;
             
-            // Atma İşlemi (Role verisini de geçiyoruz ki kontrol edebilelim)
             let kickBtn = (isCaptain && !isRosterLocked && userId !== currentUser.id) ? `<button class="btn-kick" onclick="kickPlayer('${memberId}', '${username.replace(/'/g, "\\'")}', '${dbRole}')"><i class="fas fa-times"></i></button>` : '';
             
             let roleLabel = dbRole === 'main' ? 'ASİL' : 'YEDEK';
@@ -524,7 +517,6 @@
                 }
             }
 
-            // GİZLİLİK
             const isPending = status === 'pending';
             const displayMatches = isPending ? '?' : matches;
             const displayKd = isPending ? '?' : kd;
@@ -643,7 +635,11 @@
 
                     profiles.filter(p => !busyIds.has(p.id)).forEach(u => {
                         const div = document.createElement('div');
-                        div.innerHTML = `<i class="fas fa-user-plus"></i> ${u.ign ? u.ign : u.username}`;
+                        
+                        // KULLANICI ADINI BÜYÜK YAZDIR, IGN VARSA YANINA EKLE
+                        const ignDisplay = (u.ign && u.ign !== 'Belirlenmedi') ? `<span style="color:var(--neon-mor); font-size:11px; margin-left:5px;">(${u.ign})</span>` : '';
+                        div.innerHTML = `<i class="fas fa-user-plus"></i> <b>${u.username}</b> ${ignDisplay}`;
+                        
                         div.onclick = async () => {
                             try {
                                 await window.supabaseClient.rpc('send_team_invite', { p_team_id: myTeamData.id, p_user_id: u.id, p_role: autoRole });
@@ -657,9 +653,8 @@
             });
         }
 
-        // --- GÜVENLİK GÜNCELLEMELERİ (KICK VE ROL DEĞİŞTİRME) ---
+        // --- GÜVENLİK GÜNCELLEMELERİ ---
         async function kickPlayer(mId, name, role) { 
-            // Eğer başvuru bekliyorsa ve asil çıkarılıyorsa engelle
             if (currentApp && currentApp.status === 'pending' && role === 'main' && currentMainCount <= 5) {
                 showNotification("Başvuru incelemedeyken asil sayısı 5'in altına düşürülemez!", "error");
                 return;
@@ -674,12 +669,10 @@
         }
         
         async function changeRole(mId, role) { 
-            // Asil limit kontrolü
             if(role === 'main' && currentMainCount >= 5){ 
                 showNotification("Asil kadro maksimum 5 kişi olabilir!", "error"); 
                 return; 
             } 
-            // Başvuru beklerken asil sayısını düşürme kontrolü
             if (role === 'sub' && currentApp && currentApp.status === 'pending' && currentMainCount <= 5) {
                 showNotification("Başvuru incelemedeyken asil sayısı 5'in altına düşürülemez!", "error");
                 return;
@@ -688,11 +681,9 @@
             fetchRoster(); 
         }
 
-        // --- BAŞVURU İPTALİ VE DAĞITMA ---
         async function disbandTeam() { 
             openConfirmModal("Takım dağıtılsın mı? Bu işlem geri alınamaz!", async () => { 
                 try {
-                    // Eğer bekleyen başvuru varsa onu da sil
                     if (currentApp && currentApp.status === 'pending') {
                         await window.supabaseClient.from('tournament_applications').delete().eq('team_id', myTeamData.id);
                     }
