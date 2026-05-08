@@ -8,6 +8,10 @@
     --yesil-guven: #00e676;
     --kirmizi-iptal: #ff4b4b;
     --card-bg: #0a0a0a;
+    
+    /* YENİ EKLENEN ANADOLU KIRMIZISI DEĞİŞKENLERİ */
+    --anadolu-kirmizi: #b81525; 
+    --anadolu-rgb: 184, 21, 37;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
