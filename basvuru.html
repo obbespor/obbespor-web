@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+-<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
@@ -361,7 +361,7 @@
 
             grid.innerHTML = '';
             
-            let capRole = 'main';
+            let capRole = 'sub';
             const capMemRecord = members?.find(m => m.user_id === myTeamData.captain_id);
             if (capMemRecord) capRole = capMemRecord.role;
             
@@ -458,8 +458,7 @@
             members.forEach(m => {
                 const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
                 const name = (prof?.ign && prof.ign !== 'Belirlenmedi') ? `${prof.username} (${prof.ign})` : (prof?.username || 'İsimsiz');
-                const isCap = m.user_id === myTeamData.captain_id;
-                optionsHTML += `<option value="${m.user_id}">${name} ${isCap ? '(Kaptan)' : ''}</option>`;
+                optionsHTML += `<option value="${m.user_id}">${name}</option>`;
             });
 
             selects.forEach(select => {
