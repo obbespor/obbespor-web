@@ -13,6 +13,11 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
+        :root {
+            --anadolu-kirmizi: #b81525;
+            --anadolu-rgb: 184, 21, 37;
+        }
+
         /* GENEL TASARIM VE ARKA PLAN */
         body {
             background-color: #050505;
@@ -56,7 +61,6 @@
         .team-profile-tag { font-size: 18px; background: rgba(96, 29, 194, 0.2); color: #c69eff; padding: 5px 15px; border-radius: 8px; font-weight: bold; letter-spacing: 2px; border: 1px solid rgba(96, 29, 194, 0.4); }
         .team-profile-meta { color: var(--gri-yazi); font-size: 13px; margin-top: 15px; background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 20px; }
 
-        /* TURNUVA DURUM ROZETİ */
         .tourney-badge { display: inline-block; padding: 6px 15px; border-radius: 8px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-top: 15px; text-transform: uppercase; }
         .tourney-badge.approved { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; box-shadow: 0 0 10px rgba(0,255,136,0.2); }
         .tourney-badge.pending { background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid #00d4ff; box-shadow: 0 0 10px rgba(0,212,255,0.2); }
@@ -64,8 +68,20 @@
 
         .lock-alert { background: rgba(255, 75, 75, 0.1); border: 1px solid rgba(255, 75, 75, 0.3); color: #ff6b6b; padding: 15px 20px; border-radius: 12px; font-size: 13px; font-weight: bold; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; box-shadow: 0 0 15px rgba(255, 75, 75, 0.1); }
         
-        .roster-title { text-align: center; font-size: 26px; font-weight: 900; color: white; margin-bottom: 35px; text-transform: uppercase; letter-spacing: 2px; position: relative; }
-        .roster-title::after { content: ''; display: block; width: 80px; height: 3px; background: var(--neon-mor); margin: 12px auto 0; border-radius: 2px; box-shadow: 0 0 10px var(--neon-mor); }
+        .roster-title-container { display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 35px; }
+        .roster-title { font-size: 26px; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+        
+        /* MEVCUT SAYACI */
+        .roster-count { 
+            background: rgba(var(--anadolu-rgb), 0.15); 
+            color: var(--anadolu-kirmizi); 
+            padding: 5px 15px; 
+            border-radius: 20px; 
+            font-weight: 900; 
+            font-size: 16px; 
+            border: 1px solid var(--anadolu-kirmizi);
+            box-shadow: 0 0 10px rgba(var(--anadolu-rgb), 0.3);
+        }
 
         /* OYUNCU KARTLARI */
         .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 30px; margin-bottom: 50px; }
@@ -73,8 +89,10 @@
         .player-card:hover { transform: translateY(-5px); border-color: rgba(96, 29, 194, 0.5); box-shadow: 0 15px 40px rgba(96, 29, 194, 0.2); }
         .player-card.captain-card { border-color: rgba(255, 215, 0, 0.4); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.1); }
         .player-card.captain-card:hover { border-color: gold; box-shadow: 0 15px 40px rgba(255, 215, 0, 0.2); }
+        
         .player-card.current-user-card { border-color: rgba(0, 255, 136, 0.5) !important; box-shadow: 0 0 25px rgba(0, 255, 136, 0.2) !important; }
         .player-card.current-user-card:hover { border-color: #00ff88 !important; box-shadow: 0 0 35px rgba(0, 255, 136, 0.3) !important; }
+        
         .player-card.pending { opacity: 0.5; border: 1px dashed #444; }
         
         .player-card-header { padding: 25px; display: flex; align-items: center; gap: 20px; position: relative; background: rgba(255,255,255,0.01); }
@@ -88,11 +106,10 @@
         .player-username { font-size: 12px; color: var(--gri-yazi); display: block; margin-top: 2px; opacity: 0.8; }
         
         .role-badges-area { margin-top: 8px; display: flex; gap: 6px; align-items: center; }
-        .player-role { font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 4px; cursor: pointer; transition: 0.2s; text-transform: uppercase;}
-        .role-main { background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); }
-        .role-sub { background: rgba(255, 255, 255, 0.05); color: #aaa; border: 1px solid rgba(255, 255, 255, 0.1); }
-        .role-pending { background: rgba(255, 152, 0, 0.1); color: #ff9800; border: 1px solid rgba(255, 152, 0, 0.3); cursor: default;}
-        .captain-crown { background: rgba(255, 215, 0, 0.1); color: gold; border: 1px solid rgba(255, 215, 0, 0.3); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; cursor: default; }
+        .player-role { font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; cursor: default; }
+        .role-standard { background: rgba(255, 255, 255, 0.05); color: #aaa; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .role-pending { background: rgba(255, 152, 0, 0.1); color: #ff9800; border: 1px solid rgba(255, 152, 0, 0.3); }
+        .captain-crown { background: rgba(255, 215, 0, 0.1); color: gold; border: 1px solid rgba(255, 215, 0, 0.3); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; }
 
         .btn-kick { position: absolute; top: 15px; right: 15px; background: transparent; color: #444; border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 14px; display: flex; justify-content: center; align-items: center;}
         .btn-kick:hover { color: var(--kirmizi-iptal); background: rgba(255, 75, 75, 0.1); }
@@ -207,7 +224,11 @@
             </div>
         </div>
 
-        <h3 class="roster-title">TAKIM KADROSU</h3>
+        <div class="roster-title-container">
+            <h3 class="roster-title">TAKIM KADROSU</h3>
+            <span class="roster-count" id="memberCounter">0 / 7</span>
+        </div>
+        
         <div class="roster-grid" id="rosterList"></div>
 
         <div id="memberActionArea" style="display:none; text-align: center; margin-top:40px;">
@@ -268,7 +289,6 @@
         let currentApp = null; 
         let isCaptain = false;
         let isRosterLocked = false;
-        let currentMainCount = 0;
         let confirmCallback = null;
 
         function openConfirmModal(message, callback) {
@@ -323,16 +343,14 @@
                     let html = '';
                     invites.forEach(inv => {
                         const t = inv.teams;
-                        const roleText = inv.role === 'main' ? 'ASİL' : 'YEDEK';
                         const tLogo = t.logo_url || 'img/unknown.webp';
-                        
                         html += `
                         <div class="invite-card">
                             <div class="invite-team-info">
                                 <img src="${tLogo}" class="invite-team-logo" onerror="this.src='img/unknown.webp'">
                                 <div>
                                     <div style="color:white; font-weight:bold;">[${t.tag}] ${t.name}</div>
-                                    <div style="color:var(--neon-mor); font-size:11px; font-weight:bold;">${roleText} OYUNCU DAVETİ</div>
+                                    <div style="color:var(--neon-mor); font-size:11px; font-weight:bold;">OYUNCU DAVETİ</div>
                                 </div>
                             </div>
                             <div class="invite-buttons">
@@ -353,7 +371,7 @@
                 if (action === 'accepted') {
                     await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', memberId);
                     await window.supabaseClient.from('team_members').delete().eq('user_id', currentUser.id).eq('status', 'pending');
-                    showNotification("Daveti kabul ettiniz! Yönlendiriliyorsunuz...", "success");
+                    showNotification("Daveti kabul ettiniz!", "success");
                     setTimeout(() => location.reload(), 1500);
                 } else {
                     await window.supabaseClient.from('team_members').delete().eq('id', memberId);
@@ -382,7 +400,6 @@
                     return; 
                 }
 
-                // AKTİF TURNUVA DURUMUNU ÇEK
                 const { data: appData } = await window.supabaseClient.from('tournament_applications')
                     .select('status, tournaments!inner(name, status)')
                     .eq('team_id', myTeamData.id)
@@ -435,19 +452,14 @@
 
         async function fetchRoster() {
             const grid = document.getElementById('rosterList');
-            grid.innerHTML = ''; currentMainCount = 0;
+            grid.innerHTML = ''; 
             try {
                 const { data: members } = await window.supabaseClient.from('team_members').select('id, user_id, role, status, profiles(username, ign, avatar_url, matches_played)').eq('team_id', myTeamData.id).order('created_at', { ascending: true });
                 if (!members) return;
                 
-                // ASİL SAYISINI (KAPTAN DAHİL) HESAPLA
-                members.forEach(m => { 
-                    const isCap = m.user_id === myTeamData.captain_id;
-                    const actualStatus = isCap ? 'accepted' : m.status;
-                    if ((m.role === 'main' || m.role === 'captain') && actualStatus === 'accepted') {
-                        currentMainCount++; 
-                    }
-                });
+                // Onaylanmış (Accepted) olanları say
+                const acceptedCount = members.filter(m => m.status === 'accepted' || m.user_id === myTeamData.captain_id).length;
+                document.getElementById('memberCounter').innerText = `${acceptedCount} / 7`;
 
                 members.sort((a, b) => a.user_id === myTeamData.captain_id ? -1 : 1);
 
@@ -486,8 +498,8 @@
                     grid.innerHTML += createPlayerCard(m.user_id, m.id, prof?.username, prof?.ign, isCap ? 'accepted' : m.status, prof?.avatar_url, matches, kd, acs, assists, m.role, isCap, isMe);
                 });
 
-                if (isCaptain && !isRosterLocked && members.length < 10) {
-                    const nextRole = currentMainCount < 5 ? 'main' : 'sub';
+                // LİMİT 7 OYUNCU
+                if (isCaptain && !isRosterLocked && members.length < 7) {
                     grid.innerHTML += `
                         <div class="add-slot-card dynamic-slot" onclick="focusSearch()">
                             <i class="fas fa-user-plus add-icon"></i>
@@ -495,9 +507,9 @@
                                 <input type="text" id="dynamicSearch" class="player-search" autocomplete="off" placeholder="Oyuncu Ara..." style="width:100%; padding:10px; background:rgba(0,0,0,0.5); border:1px solid #333; border-radius:8px; color:white; text-align:center; outline:none;">
                                 <div id="dynamicSearch-list" class="autocomplete-items"></div>
                             </div>
-                            <span style="font-size:12px; color:var(--gri-yazi); margin-top:10px;"><i class="fas fa-plus"></i> ${nextRole === 'main' ? 'Asil' : 'Yedek'} Ekle</span>
+                            <span style="font-size:12px; color:var(--gri-yazi); margin-top:10px;"><i class="fas fa-plus"></i> Oyuncu Ekle</span>
                         </div>`;
-                    attachDynamicSearchEvent(nextRole);
+                    attachDynamicSearchEvent();
                 }
             } catch (err) { grid.innerHTML = '<div style="color:red; text-align:center; width:100%;">Kadro hatası.</div>'; }
         }
@@ -505,28 +517,14 @@
         function focusSearch() { document.getElementById('dynamicSearch').focus(); }
 
         function createPlayerCard(userId, memberId, username, ign, status, avatarUrl, matches, kd, acs, assists, dbRole, isCap, isMe) {
-            const displayName = ign && ign !== 'Belirlenmedi' ? ign : (username || 'İsimsiz');
-            const subName = ign && ign !== 'Belirlenmedi' ? `@${username}` : '';
+            const displayName = (ign && ign !== 'Belirlenmedi') ? ign : (username || 'İsimsiz');
+            const subName = (ign && ign !== 'Belirlenmedi') ? `@${username}` : '';
             const avatar = avatarUrl ? `<img src="${avatarUrl}" class="player-avatar" onerror="this.src='img/unknown.webp'">` : `<div class="player-avatar"><i class="fas fa-user"></i></div>`;
             
             let kickBtn = (isCaptain && !isRosterLocked && userId !== currentUser.id) ? `<button class="btn-kick" onclick="kickPlayer('${memberId}', '${username.replace(/'/g, "\\'")}', '${dbRole}')"><i class="fas fa-times"></i></button>` : '';
             
-            // KAPTAN MANTIĞI DÜZELTİLDİ: DB'de 'captain' kalmışsa onu 'main' say.
-            const isMain = (dbRole === 'main' || dbRole === 'captain');
-            let roleLabel = isMain ? 'ASİL' : 'YEDEK';
+            let roleLabel = 'ÜYE';
             if (status === 'pending') roleLabel = 'DAVET EDİLDİ';
-
-            if (isCaptain && !isRosterLocked && status === 'accepted') {
-                if (isMain) {
-                    roleLabel = `<span onclick="changeRole('${memberId}', 'sub')" style="cursor:pointer;" title="Yedeğe Çek"><i class="fas fa-exchange-alt"></i> ASİL</span>`;
-                } else {
-                    if (currentMainCount < 5) {
-                        roleLabel = `<span onclick="changeRole('${memberId}', 'main')" style="cursor:pointer;" title="Asile Al"><i class="fas fa-exchange-alt"></i> YEDEK</span>`;
-                    } else {
-                        roleLabel = `<span onclick="changeRole('${memberId}', 'main')" style="cursor:pointer; opacity:0.5;" title="Asil kadro dolu, uyarıyı gör"><i class="fas fa-exchange-alt"></i> YEDEK (Dolu)</span>`;
-                    }
-                }
-            }
 
             const isPending = status === 'pending';
             const displayMatches = isPending ? '?' : matches;
@@ -535,7 +533,7 @@
             const displayAssists = isPending ? '?' : assists;
             const kdClass = (!isPending && parseFloat(kd) >= 1.2) ? 'kd-high' : '';
 
-            const roleClassBadge = isPending ? 'role-pending' : (isMain ? 'role-main' : 'role-sub');
+            const roleClassBadge = isPending ? 'role-pending' : 'role-standard';
 
             return `
                 <div class="player-card ${isPending ? 'pending' : ''} ${isCap ? 'captain-card' : ''} ${isMe ? 'current-user-card' : ''}">
@@ -576,23 +574,18 @@
             try {
                 const logoFile = document.getElementById('editTeamLogo').files[0];
                 let logoUrl = myTeamData.logo_url;
-
                 if (logoFile) {
                     if (logoFile.size > 2 * 1024 * 1024) throw new Error("Logo 2MB'dan büyük olamaz.");
-                    const ext = logoFile.name.split('.').pop().toLowerCase();
                     const fileName = `logo_${myTeamData.id}`; 
                     await window.supabaseClient.storage.from('team-logos').upload(fileName, logoFile, { upsert: true });
                     const { data } = window.supabaseClient.storage.from('team-logos').getPublicUrl(fileName);
                     logoUrl = `${data.publicUrl}?t=${Date.now()}`; 
                 }
-
                 const updates = { logo_url: logoUrl };
                 if(newName) updates.name = newName;
                 if(newTag) updates.tag = newTag;
-
                 const { error } = await window.supabaseClient.from('teams').update(updates).eq('id', myTeamData.id);
-                if (error) { if (error.code === '23505') throw new Error("İsim veya tag zaten alınmış."); throw error; }
-
+                if (error) throw error;
                 showNotification("Değişiklikler kaydedildi!", "success");
                 setTimeout(() => location.reload(), 1200);
             } catch (err) { showNotification(err.message, "error"); btn.disabled = false; btn.innerHTML = originalText; }
@@ -602,35 +595,18 @@
             e.preventDefault();
             const name = document.getElementById('newTeamName').value.trim();
             const tag = document.getElementById('newTeamTag').value.trim().toUpperCase();
-            if (name.length < 3 || name.length > 20) { showNotification("Takım adı 3-20 karakter.", "error"); return; }
-            if (tag.length < 2 || tag.length > 4) { showNotification("Tag 2-4 karakter.", "error"); return; }
-
             const btn = document.getElementById('btnCreateTeam');
             btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             try {
-                const logoFile = document.getElementById('newTeamLogo').files[0];
-                let logoUrl = "";
-                if (logoFile && logoFile.size > 2 * 1024 * 1024) throw new Error("Logo 2MB'dan büyük olamaz.");
-
-                await window.supabaseClient.from('team_members').delete().eq('user_id', currentUser.id).eq('status', 'pending');
-
                 const { data: newTeam, error } = await window.supabaseClient.from('teams').insert([{ captain_id: currentUser.id, name, tag }]).select().single();
-                if (error) { if (error.code === '23505') throw new Error("İsim veya tag zaten alınmış."); throw error; }
-
-                if (logoFile) {
-                    const fileName = `logo_${newTeam.id}`; 
-                    await window.supabaseClient.storage.from('team-logos').upload(fileName, logoFile, { upsert: true });
-                    logoUrl = `${(window.supabaseClient.storage.from('team-logos').getPublicUrl(fileName)).data.publicUrl}?t=${Date.now()}`;
-                    await window.supabaseClient.from('teams').update({ logo_url: logoUrl }).eq('id', newTeam.id);
-                }
-
-                await window.supabaseClient.from('team_members').insert([{ team_id: newTeam.id, user_id: currentUser.id, role: 'main', status: 'accepted' }]);
+                if (error) throw error;
+                await window.supabaseClient.from('team_members').insert([{ team_id: newTeam.id, user_id: currentUser.id, role: 'captain', status: 'accepted' }]);
                 showNotification("Takım kuruldu!", "success");
                 setTimeout(() => location.reload(), 1500);
             } catch (err) { showNotification(err.message, "error"); btn.disabled = false; btn.innerHTML = 'TAKIMI OLUŞTUR'; }
         });
 
-        function attachDynamicSearchEvent(autoRole) {
+        function attachDynamicSearchEvent() {
             const input = document.getElementById('dynamicSearch');
             if (!input) return;
             input.addEventListener('input', async function() {
@@ -640,7 +616,6 @@
                 try {
                     const { data: profiles } = await window.supabaseClient.from('profiles').select('id, username, ign').or(`ign.ilike.%${query}%,username.ilike.%${query}%`).limit(8);
                     if (!profiles) return;
-                    
                     const { data: bMem } = await window.supabaseClient.from('team_members').select('user_id').eq('status', 'accepted');
                     const busyIds = new Set(bMem?.map(m => m.user_id) || []);
                     const { data: bCap } = await window.supabaseClient.from('teams').select('captain_id');
@@ -648,13 +623,11 @@
 
                     profiles.filter(p => !busyIds.has(p.id)).forEach(u => {
                         const div = document.createElement('div');
-                        
                         const ignDisplay = (u.ign && u.ign !== 'Belirlenmedi') ? `<span style="color:var(--neon-mor); font-size:11px; margin-left:5px;">(${u.ign})</span>` : '';
                         div.innerHTML = `<i class="fas fa-user-plus"></i> <b>${u.username}</b> ${ignDisplay}`;
-                        
                         div.onclick = async () => {
                             try {
-                                await window.supabaseClient.rpc('send_team_invite', { p_team_id: myTeamData.id, p_user_id: u.id, p_role: autoRole });
+                                await window.supabaseClient.rpc('send_team_invite', { p_team_id: myTeamData.id, p_user_id: u.id, p_role: 'member' });
                                 await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: u.id, baslik: "Yeni Takım Daveti", mesaj: `${myTeamData.name} takımı sizi davet etti.`, tip: 'sistem' }]);
                                 showNotification("Davet gönderildi!", "success"); fetchRoster();
                             } catch(e) { showNotification("Hata oluştu.", "error"); }
@@ -666,35 +639,17 @@
         }
 
         async function kickPlayer(mId, name, role) { 
-            if (currentApp && currentApp.status === 'pending' && (role === 'main' || role === 'captain') && currentMainCount <= 5) {
-                showNotification("Başvuru incelemedeyken asil sayısı 5'in altına düşürülemez!", "error");
+            if (currentApp && currentApp.status === 'pending' && (role === 'main' || role === 'captain')) {
+                showNotification("Başvuru incelemedeyken kadroyu değiştiremezsiniz!", "error");
                 return;
             }
-            openConfirmModal(`<b>${name}</b> çıkarılsın mı?`, async () => { 
+            openConfirmModal(`<b>${name}</b> takımdan çıkarılsın mı?`, async () => { 
                 try { 
                     await window.supabaseClient.from('team_members').delete().eq('id', mId); 
                     showNotification("Oyuncu çıkarıldı.", "info"); 
                     fetchRoster(); 
                 } catch(e){} 
             }); 
-        }
-        
-        async function changeRole(mId, role) { 
-            if(role === 'main' && currentMainCount >= 5){ 
-                showNotification("Asil kadro maksimum 5 kişi olabilir! Lütfen önce birini yedeğe çekin.", "error"); 
-                return; 
-            } 
-            if (role === 'sub' && currentApp && currentApp.status === 'pending' && currentMainCount <= 5) {
-                showNotification("Başvuru incelemedeyken asil sayısı 5'in altına düşürülemez!", "error");
-                return;
-            }
-            try {
-                const { error } = await window.supabaseClient.from('team_members').update({ role }).eq('id', mId); 
-                if (error) throw error;
-                fetchRoster(); 
-            } catch (e) {
-                showNotification("İşlem başarısız.", "error");
-            }
         }
 
         async function disbandTeam() { 
@@ -706,9 +661,7 @@
                     await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id); 
                     await window.supabaseClient.from('teams').delete().eq('id', myTeamData.id); 
                     location.reload(); 
-                } catch (e) {
-                    showNotification("Dağıtma işlemi başarısız.", "error");
-                }
+                } catch (e) { showNotification("Hata oluştu.", "error"); }
             }); 
         }
 
@@ -717,9 +670,7 @@
                 try {
                     await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id).eq('user_id', currentUser.id); 
                     location.reload(); 
-                } catch (e) {
-                    showNotification("Ayrılma işlemi başarısız.", "error");
-                }
+                } catch (e) { showNotification("Hata oluştu.", "error"); }
             }); 
         }
 
