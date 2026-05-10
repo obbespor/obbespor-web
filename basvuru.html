@@ -198,7 +198,7 @@
 
                 <div class="roster-selection-box">
                     <h4><i class="fas fa-users"></i> Turnuva Kadrosunu Belirle</h4>
-                    <p style="font-size: 12px; color: var(--gri-yazi); margin-bottom: 20px;">Sadece takımınızda üyeliği onaylanmış oyuncular listelenir. Aynı oyuncu birden fazla slota eklenemez.</p>
+                    <p style="font-size: 12px; color: var(--gri-yazi); margin-bottom: 20px;">Sadece takımınızda üyeliği onaylanmış oyuncular listelenir. Kaptan dahil tüm oyuncuları ilgili slotlara yerleştiriniz.</p>
                     
                     <div class="slot-row">
                         <div class="slot-label main-label"><i class="fas fa-star"></i> 1. Asil Oyuncu</div>
@@ -290,6 +290,7 @@
 
         async function initPage() {
             try {
+                // 1. OTURUM KONTROLÜ
                 const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
                 if (authErr || !user) {
                     window.location.href = "kayit.html";
@@ -297,7 +298,7 @@
                 }
                 currentUser = user;
 
-                // TAKIM VE KAPTANLIK KONTROLÜ (Profiles da çekiliyor ki isimler gelsin)
+                // 2. TAKIM VE KAPTANLIK KONTROLÜ
                 let { data: teamAsCaptain } = await window.supabaseClient.from('teams')
                     .select('*, team_members(id, user_id, role, status, profiles(username, ign, avatar_url))')
                     .eq('captain_id', currentUser.id).maybeSingle();
@@ -308,8 +309,10 @@
                 } else {
                     const { data: membership } = await window.supabaseClient.from('team_members').select('team_id').eq('user_id', currentUser.id).eq('status', 'accepted').maybeSingle();
                     if (membership) {
+                        // Takımı var ama KAPTAN DEĞİL
                         document.getElementById('notCaptainSection').style.display = 'block';
                     } else {
+                        // TAKIMI YOK
                         window.location.href = "takimim.html";
                     }
                 }
@@ -357,7 +360,12 @@
             if (!members) return;
 
             grid.innerHTML = '';
-            grid.innerHTML += createMiniCard(captainProfile, 'main', true);
+            
+            let capRole = 'main';
+            const capMemRecord = members?.find(m => m.user_id === myTeamData.captain_id);
+            if (capMemRecord) capRole = capMemRecord.role;
+            
+            grid.innerHTML += createMiniCard(captainProfile, capRole, true);
 
             members.forEach(m => {
                 if (m.user_id !== myTeamData.captain_id) {
@@ -376,7 +384,7 @@
             
             if (isCap) {
                 cardClass = 'cap-card';
-                roleText = 'KAPTAN';
+                roleText += ' / KAPTAN';
             }
 
             return `
@@ -396,8 +404,21 @@
             const hasNameAndTag = myTeamData.name && myTeamData.tag;
             const hasLogo = myTeamData.logo_url && myTeamData.logo_url.trim() !== '';
             
-            // Onaylı tüm üyeleri al (Kaptan da dahil çünkü o da listede)
-            const acceptedMembers = myTeamData.team_members ? myTeamData.team_members.filter(m => m.status === 'accepted') : [];
+            // Onaylı tüm üyeleri al (Kaptan listeye eksikse onu da ekle)
+            let acceptedMembers = myTeamData.team_members ? myTeamData.team_members.filter(m => m.status === 'accepted') : [];
+            
+            // Kaptan team_members tablosunda yoksa zorla listeye ekle
+            const isCapInMembers = acceptedMembers.some(m => m.user_id === myTeamData.captain_id);
+            if (!isCapInMembers) {
+                const { data: capProfile } = await window.supabaseClient.from('profiles').select('username, ign, avatar_url').eq('id', myTeamData.captain_id).single();
+                acceptedMembers.unshift({
+                    user_id: myTeamData.captain_id,
+                    role: 'captain',
+                    status: 'accepted',
+                    profiles: capProfile
+                });
+            }
+
             const has5Members = acceptedMembers.length >= 5;
 
             updateReqUI('reqName', hasNameAndTag);
@@ -437,7 +458,8 @@
             members.forEach(m => {
                 const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
                 const name = (prof?.ign && prof.ign !== 'Belirlenmedi') ? `${prof.username} (${prof.ign})` : (prof?.username || 'İsimsiz');
-                optionsHTML += `<option value="${m.id}">${name}</option>`;
+                const isCap = m.user_id === myTeamData.captain_id;
+                optionsHTML += `<option value="${m.user_id}">${name} ${isCap ? '(Kaptan)' : ''}</option>`;
             });
 
             selects.forEach(select => {
@@ -455,7 +477,6 @@
                 Array.from(select.options).forEach(option => {
                     if (option.value === "") return;
                     
-                    // Eğer seçenek seçilenler listesindeyse ve bu select'in kendi değeri değilse engelle
                     if (selectedValues.includes(option.value) && option.value !== currentValue) {
                         option.disabled = true;
                     } else {
@@ -505,7 +526,6 @@
 
             if (!tourneyId) { showNotification("Lütfen bir turnuva seçin.", "error"); return; }
 
-            // 5 Asil oyuncu seçildiğinden emin ol
             const mainSelects = document.querySelectorAll('.main-select');
             const subSelects = document.querySelectorAll('.sub-select');
             
@@ -529,14 +549,23 @@
                     .eq('team_id', myTeamData.id)
                     .eq('status', 'accepted');
                 
-                // 2. Sadece seçilen 5 kişiyi 'main' (asil) yap
-                for(let mId of selectedMains) {
-                    await window.supabaseClient.from('team_members')
-                        .update({ role: 'main' })
-                        .eq('id', mId);
+                // 2. Asil Seçilenleri Main yap (DB'de yoksalar Insert yap)
+                for(let uId of selectedMains) {
+                    const { data: exist } = await window.supabaseClient.from('team_members').select('id').eq('user_id', uId).eq('team_id', myTeamData.id).maybeSingle();
+                    if (exist) {
+                        await window.supabaseClient.from('team_members').update({ role: 'main' }).eq('id', exist.id);
+                    } else {
+                        await window.supabaseClient.from('team_members').insert([{ team_id: myTeamData.id, user_id: uId, role: 'main', status: 'accepted' }]);
+                    }
                 }
                 
-                // Yedek seçilenler zaten 'sub' olarak kaldı. Seçilmeyenler de 'sub' olarak kaldı ama oynamayacaklar.
+                // 3. Yedek Seçilenleri DB'de yoksa Insert yap (Varsa zaten sub oldular)
+                for(let uId of selectedSubs) {
+                    const { data: exist } = await window.supabaseClient.from('team_members').select('id').eq('user_id', uId).eq('team_id', myTeamData.id).maybeSingle();
+                    if (!exist) {
+                        await window.supabaseClient.from('team_members').insert([{ team_id: myTeamData.id, user_id: uId, role: 'sub', status: 'accepted' }]);
+                    }
+                }
 
                 await window.supabaseClient.from('tournament_applications').delete().eq('team_id', myTeamData.id).eq('tournament_id', tourneyId);
 
