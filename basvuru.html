@@ -13,9 +13,8 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        /* ANADOLU KIRMIZISI DEĞİŞKENLERİ */
         :root {
-            --anadolu-kirmizi: #b81525; 
+            --anadolu-kirmizi: #b81525;
             --anadolu-rgb: 184, 21, 37;
         }
 
@@ -24,20 +23,16 @@
         .section-title { text-align: center; font-size: 32px; font-weight: 900; color: white; text-transform: uppercase; margin-bottom: 30px; letter-spacing: 1px; }
         .section-title span { color: var(--neon-mor); }
 
-        /* KARTLAR ORTAK */
         .status-card { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 50px 30px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         .status-card h3 { color: white; font-size: 24px; font-weight: 900; margin-bottom: 15px; text-transform: uppercase; }
         .status-card p { color: var(--gri-yazi); font-size: 14px; margin-bottom: 30px; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto; }
 
-        /* KAPTAN OLMAYANLAR */
         .not-captain-card { border-top: 4px solid var(--kirmizi-iptal); }
         .not-captain-card i.main-icon { font-size: 60px; color: var(--kirmizi-iptal); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(255, 75, 75, 0.4)); }
         
-        /* BEKLEYEN BAŞVURU (Turkuaz yerine Anadolu Kırmızısı kullanıldı) */
         .pending-card { border-top: 4px solid var(--anadolu-kirmizi); }
         .pending-card i.main-icon { font-size: 60px; color: var(--anadolu-kirmizi); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(var(--anadolu-rgb), 0.4)); }
         
-        /* ONAYLANAN BAŞVURU */
         .approved-card { border-top: 4px solid var(--yesil-guven); padding: 40px 20px; }
         .approved-card i.main-icon { font-size: 60px; color: var(--yesil-guven); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(40, 167, 69, 0.4)); }
 
@@ -47,7 +42,6 @@
         .btn-withdraw { background: transparent; border: 1px solid var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
         .btn-withdraw:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 0 15px rgba(255, 75, 75, 0.4); }
 
-        /* BAŞVURU FORMU KARTI */
         .apply-card { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         
         .req-box { background: rgba(96, 29, 194, 0.05); border: 1px dashed var(--neon-mor); border-radius: 12px; padding: 20px; margin-bottom: 30px; }
@@ -63,6 +57,16 @@
         .form-control { width: 100%; padding: 15px; background: #000; border: 1px solid #333; border-radius: 10px; color: white; outline: none; font-family: 'Poppins', sans-serif; font-size: 14px; transition: 0.3s; appearance: none;}
         .form-control:focus { border-color: var(--neon-mor); }
         
+        /* ROSTER SELECTION BOX STYLES */
+        .roster-selection-box { background: rgba(0,0,0,0.5); border: 1px solid #333; border-radius: 12px; padding: 25px; margin-bottom: 30px; }
+        .roster-selection-box h4 { color: white; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; font-size: 16px; text-transform: uppercase; }
+        .slot-row { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .slot-label { width: 120px; font-weight: bold; font-size: 13px; color: var(--gri-yazi); flex-shrink: 0; }
+        .slot-label.main-label { color: var(--anadolu-kirmizi); }
+        .slot-select { flex: 1; padding: 12px; background: #111; border: 1px solid #333; border-radius: 8px; color: white; outline: none; font-family: 'Poppins', sans-serif; font-size: 14px; transition: 0.3s; }
+        .slot-select:focus { border-color: var(--neon-mor); }
+        .slot-select option:disabled { color: #555; font-style: italic; }
+
         .rules-box { background: #000; border: 1px solid #333; border-radius: 10px; padding: 15px; height: 150px; overflow-y: auto; color: var(--gri-yazi); font-size: 12px; line-height: 1.6; margin-bottom: 15px; }
         .rules-box::-webkit-scrollbar { width: 6px; }
         .rules-box::-webkit-scrollbar-track { background: #111; border-radius: 10px; }
@@ -87,15 +91,12 @@
         .roster-card { background: #050505; border: 1px solid #222; border-radius: 10px; padding: 15px; display: flex; align-items: center; gap: 15px; }
         .roster-card img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #444; }
         
-        /* Asil oyuncu turkuazı Anadolu Kırmızısı oldu */
         .roster-card.main-card { border-left: 3px solid var(--anadolu-kirmizi); }
-        
         .roster-card.sub-card { border-left: 3px solid #aaa; }
         .roster-card.cap-card { border-left: 3px solid gold; }
         .rc-ign { color: white; font-weight: 900; font-size: 15px; margin-bottom: 2px; }
         .rc-role { font-size: 10px; font-weight: bold; color: var(--gri-yazi); text-transform: uppercase; }
 
-        /* MODAL */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--kirmizi-iptal); border-radius: 15px; width: 90%; max-width: 400px; padding: 40px 20px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; }
@@ -107,6 +108,9 @@
             .apply-container { margin: 30px auto; padding: 15px; }
             .apply-card, .status-card { padding: 30px 20px; }
             .section-title { font-size: 26px; }
+            .slot-row { flex-direction: column; align-items: flex-start; gap: 5px; }
+            .slot-label { width: 100%; font-size: 12px; margin-bottom: 5px;}
+            .slot-select { width: 100%; }
         }
     </style>
 </head>
@@ -169,7 +173,7 @@
                 <ul class="req-list" id="reqList">
                     <li id="reqName"><i class="fas fa-times-circle"></i> Takım Adı ve Kısaltması Belirlenmiş Olmalı</li>
                     <li id="reqLogo"><i class="fas fa-times-circle"></i> Takım Logosu Yüklenmiş Olmalı</li>
-                    <li id="reqRoster"><i class="fas fa-times-circle"></i> Kadroda 5 Asil Oyuncu Bulunmalı</li>
+                    <li id="reqRoster"><i class="fas fa-times-circle"></i> Takımda En Az 5 Onaylı Oyuncu Bulunmalı</li>
                 </ul>
             </div>
 
@@ -184,11 +188,49 @@
             </div>
             
             <form id="applyForm">
+                
                 <div class="input-group">
                     <label>Katılmak İstediğiniz Turnuva</label>
                     <select id="tourneySelect" class="form-control" required>
                         <option value="">Yükleniyor...</option>
                     </select>
+                </div>
+
+                <div class="roster-selection-box">
+                    <h4><i class="fas fa-users"></i> Turnuva Kadrosunu Belirle</h4>
+                    <p style="font-size: 12px; color: var(--gri-yazi); margin-bottom: 20px;">Sadece takımınızda üyeliği onaylanmış oyuncular listelenir. Aynı oyuncu birden fazla slota eklenemez.</p>
+                    
+                    <div class="slot-row">
+                        <div class="slot-label main-label"><i class="fas fa-star"></i> 1. Asil Oyuncu</div>
+                        <select class="slot-select roster-select main-select" required></select>
+                    </div>
+                    <div class="slot-row">
+                        <div class="slot-label main-label"><i class="fas fa-star"></i> 2. Asil Oyuncu</div>
+                        <select class="slot-select roster-select main-select" required></select>
+                    </div>
+                    <div class="slot-row">
+                        <div class="slot-label main-label"><i class="fas fa-star"></i> 3. Asil Oyuncu</div>
+                        <select class="slot-select roster-select main-select" required></select>
+                    </div>
+                    <div class="slot-row">
+                        <div class="slot-label main-label"><i class="fas fa-star"></i> 4. Asil Oyuncu</div>
+                        <select class="slot-select roster-select main-select" required></select>
+                    </div>
+                    <div class="slot-row">
+                        <div class="slot-label main-label"><i class="fas fa-star"></i> 5. Asil Oyuncu</div>
+                        <select class="slot-select roster-select main-select" required></select>
+                    </div>
+                    
+                    <hr style="border: 0; border-top: 1px dashed #333; margin: 20px 0;">
+                    
+                    <div class="slot-row">
+                        <div class="slot-label"><i class="fas fa-user-plus"></i> 1. Yedek Oyuncu</div>
+                        <select class="slot-select roster-select sub-select"></select>
+                    </div>
+                    <div class="slot-row">
+                        <div class="slot-label"><i class="fas fa-user-plus"></i> 2. Yedek Oyuncu</div>
+                        <select class="slot-select roster-select sub-select"></select>
+                    </div>
                 </div>
 
                 <label style="display: block; margin-bottom: 10px; font-size: 14px; color: white; font-weight: bold;">Turnuva Katılım Kuralları</label>
@@ -248,7 +290,6 @@
 
         async function initPage() {
             try {
-                // 1. OTURUM KONTROLÜ
                 const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
                 if (authErr || !user) {
                     window.location.href = "kayit.html";
@@ -256,8 +297,10 @@
                 }
                 currentUser = user;
 
-                // 2. TAKIM VE KAPTANLIK KONTROLÜ
-                let { data: teamAsCaptain } = await window.supabaseClient.from('teams').select('*, team_members(user_id, role, status)').eq('captain_id', currentUser.id).maybeSingle();
+                // TAKIM VE KAPTANLIK KONTROLÜ (Profiles da çekiliyor ki isimler gelsin)
+                let { data: teamAsCaptain } = await window.supabaseClient.from('teams')
+                    .select('*, team_members(id, user_id, role, status, profiles(username, ign, avatar_url))')
+                    .eq('captain_id', currentUser.id).maybeSingle();
                 
                 if (teamAsCaptain) {
                     myTeamData = teamAsCaptain;
@@ -265,10 +308,8 @@
                 } else {
                     const { data: membership } = await window.supabaseClient.from('team_members').select('team_id').eq('user_id', currentUser.id).eq('status', 'accepted').maybeSingle();
                     if (membership) {
-                        // Takımı var ama KAPTAN DEĞİL
                         document.getElementById('notCaptainSection').style.display = 'block';
                     } else {
-                        // TAKIMI YOK
                         window.location.href = "takimim.html";
                     }
                 }
@@ -280,7 +321,6 @@
         }
 
         async function checkApplicationStatus() {
-            // Takımın en güncel başvurusunu çek
             const { data: appData } = await window.supabaseClient.from('tournament_applications')
                 .select('id, status, tournaments(name)')
                 .eq('team_id', myTeamData.id)
@@ -300,12 +340,10 @@
                     await fetchAndRenderLockedRoster();
                     return;
                 } else if (appData.status === 'rejected') {
-                    // Reddedilmişse tekrar başvurabilsin diye formu aç, ama uyarı göster
                     showNotification("Önceki başvurunuz reddedilmiş. Lütfen eksiklikleri giderip tekrar başvurun.", "error");
                 }
             }
 
-            // Başvuru yoksa veya reddedilmişse formu göster
             await setupApplicationForm();
         }
 
@@ -319,11 +357,8 @@
             if (!members) return;
 
             grid.innerHTML = '';
-            
-            // Kaptanı ekle
             grid.innerHTML += createMiniCard(captainProfile, 'main', true);
 
-            // Diğerlerini ekle
             members.forEach(m => {
                 if (m.user_id !== myTeamData.captain_id) {
                     const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
@@ -358,30 +393,22 @@
         async function setupApplicationForm() {
             document.getElementById('applySection').style.display = 'block';
 
-            // ŞARTLARI KONTROL ET
             const hasNameAndTag = myTeamData.name && myTeamData.tag;
             const hasLogo = myTeamData.logo_url && myTeamData.logo_url.trim() !== '';
             
-            let mainPlayersCount = 0;
-            if(myTeamData.team_members) {
-                myTeamData.team_members.forEach(m => {
-                    if (m.role === 'main' && m.status === 'accepted') mainPlayersCount++;
-                });
-            }
-            
-            const isCapInMembers = myTeamData.team_members?.some(m => m.user_id === myTeamData.captain_id);
-            if (!isCapInMembers) mainPlayersCount++; 
+            // Onaylı tüm üyeleri al (Kaptan da dahil çünkü o da listede)
+            const acceptedMembers = myTeamData.team_members ? myTeamData.team_members.filter(m => m.status === 'accepted') : [];
+            const has5Members = acceptedMembers.length >= 5;
 
-            const has5Mains = mainPlayersCount >= 5;
-
-            // UI GÜNCELLEMESİ (Checklist)
             updateReqUI('reqName', hasNameAndTag);
             updateReqUI('reqLogo', hasLogo);
-            updateReqUI('reqRoster', has5Mains, `Kadroda En Az 5 Asil Oyuncu Bulunmalı (${mainPlayersCount}/5)`);
+            updateReqUI('reqRoster', has5Members, `Takımda En Az 5 Onaylı Oyuncu Bulunmalı (${acceptedMembers.length}/5)`);
 
-            isEligible = hasNameAndTag && hasLogo && has5Mains;
+            isEligible = hasNameAndTag && hasLogo && has5Members;
 
-            // TURNUVALARI ÇEK
+            // KADRO SEÇİM KUTULARINI DOLDUR
+            populateRosterSelects(acceptedMembers);
+
             const { data: tournaments } = await window.supabaseClient.from('tournaments')
                 .select('id, name')
                 .eq('status', 'upcoming')
@@ -401,6 +428,41 @@
             }
 
             checkFormStatus();
+        }
+
+        function populateRosterSelects(members) {
+            const selects = document.querySelectorAll('.roster-select');
+            
+            let optionsHTML = '<option value="">Oyuncu Seçiniz...</option>';
+            members.forEach(m => {
+                const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
+                const name = (prof?.ign && prof.ign !== 'Belirlenmedi') ? `${prof.username} (${prof.ign})` : (prof?.username || 'İsimsiz');
+                optionsHTML += `<option value="${m.id}">${name}</option>`;
+            });
+
+            selects.forEach(select => {
+                select.innerHTML = optionsHTML;
+                select.addEventListener('change', updateSelectOptions);
+            });
+        }
+
+        function updateSelectOptions() {
+            const selects = document.querySelectorAll('.roster-select');
+            const selectedValues = Array.from(selects).map(s => s.value).filter(v => v !== "");
+            
+            selects.forEach(select => {
+                const currentValue = select.value;
+                Array.from(select.options).forEach(option => {
+                    if (option.value === "") return;
+                    
+                    // Eğer seçenek seçilenler listesindeyse ve bu select'in kendi değeri değilse engelle
+                    if (selectedValues.includes(option.value) && option.value !== currentValue) {
+                        option.disabled = true;
+                    } else {
+                        option.disabled = false;
+                    }
+                });
+            });
         }
 
         function updateReqUI(elementId, isMet, customText = null) {
@@ -435,7 +497,7 @@
             }
         }
 
-        // BAŞVURU GÖNDERME
+        // BAŞVURU GÖNDERME VE OYUNCU ROLLERİNİ GÜNCELLEME
         document.getElementById('applyForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSubmitApp');
@@ -443,10 +505,39 @@
 
             if (!tourneyId) { showNotification("Lütfen bir turnuva seçin.", "error"); return; }
 
+            // 5 Asil oyuncu seçildiğinden emin ol
+            const mainSelects = document.querySelectorAll('.main-select');
+            const subSelects = document.querySelectorAll('.sub-select');
+            
+            let selectedMains = [];
+            let selectedSubs = [];
+            
+            mainSelects.forEach(s => { if(s.value) selectedMains.push(s.value); });
+            subSelects.forEach(s => { if(s.value) selectedSubs.push(s.value); });
+            
+            if (new Set(selectedMains).size !== 5) {
+                showNotification("Lütfen 5 farklı Asil Oyuncu seçtiğinizden emin olun.", "error");
+                return;
+            }
+
             btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İŞLENİYOR...';
 
             try {
-                // Eğer rejected bir başvuru varsa onu silelim (Temizlik)
+                // 1. Önce takımdaki herkesin rolünü 'sub' (yedek) yap (Temizlik)
+                await window.supabaseClient.from('team_members')
+                    .update({ role: 'sub' })
+                    .eq('team_id', myTeamData.id)
+                    .eq('status', 'accepted');
+                
+                // 2. Sadece seçilen 5 kişiyi 'main' (asil) yap
+                for(let mId of selectedMains) {
+                    await window.supabaseClient.from('team_members')
+                        .update({ role: 'main' })
+                        .eq('id', mId);
+                }
+                
+                // Yedek seçilenler zaten 'sub' olarak kaldı. Seçilmeyenler de 'sub' olarak kaldı ama oynamayacaklar.
+
                 await window.supabaseClient.from('tournament_applications').delete().eq('team_id', myTeamData.id).eq('tournament_id', tourneyId);
 
                 const { error } = await window.supabaseClient.from('tournament_applications').insert([{
@@ -455,7 +546,7 @@
 
                 if (error) throw error;
 
-                showNotification("Başvurunuz başarıyla alındı! Yönetici onayı bekleniyor.", "success");
+                showNotification("Kadro ayarlandı ve başvuru başarıyla iletildi!", "success");
                 setTimeout(() => location.reload(), 1500);
             } catch (err) {
                 showNotification(err.message, "error");
@@ -463,7 +554,6 @@
             }
         });
 
-        // BAŞVURU GERİ ÇEKME
         async function executeWithdraw() {
             closeConfirmModal();
             if (!currentAppId) return;
