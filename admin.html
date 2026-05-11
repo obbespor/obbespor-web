@@ -95,8 +95,8 @@
                 <li><a href="onay.html">ONAY</a></li>
                 <li><a href="onayli.html">ONAYLI</a></li>
                 <li><a href="takvim.html">TAKVİM <i style="font-size: 10px; margin-left: 3px;"></i></a></li>
-                <li><a href="fikstur.html" class="active-admin-tab">FİKSTÜR <i style="font-size: 10px; margin-left: 5px;"></i></a></li>
-                <li><a href="mac-yonetim.html">DÜZENLE <i  style="font-size: 10px; margin-left: 3px;"></i></a></li>
+                <li><a href="fikstur.html">FİKSTÜR <i style="font-size: 10px; margin-left: 5px;"></i></a></li>
+                <li><a href="mac-yonetim.html" class="active-admin-tab">DÜZENLE <i  style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
             </ul>
         </nav>
@@ -132,14 +132,10 @@
                             <option value="">Turnuva Yükleniyor...</option>
                         </select>
                         <select id="stageSelect" class="form-control" onchange="updateDynamicSelectors()">
-                            <option value="GRUP A">A GRUBU (BO1)</option>
-                            <option value="GRUP B">B GRUBU (BO1)</option>
-                            <option value="SON 64">SON 64 (BO1)</option>
-                            <option value="SON 32">SON 32 (BO1)</option>
-                            <option value="SON 16">SON 16 (BO3)</option>
-                            <option value="ÇEYREK FİNAL">ÇEYREK FİNAL (BO3)</option>
-                            <option value="YARI FİNAL">YARI FİNAL (BO3)</option>
-                            <option value="FİNAL">BÜYÜK FİNAL (BO5)</option>
+                            <option value="A Grubu">A GRUBU (BO1)</option>
+                            <option value="B Grubu">B GRUBU (BO1)</option>
+                            <option value="Yarı Final">YARI FİNAL (BO3)</option>
+                            <option value="Final">BÜYÜK FİNAL (BO5)</option>
                         </select>
                         <select id="matchOrderSelect" class="form-control"></select>
                         <select id="mapOrderSelect" class="form-control"></select>
@@ -322,20 +318,18 @@
             matchOrder.innerHTML = '';
             let maxMatch = 1;
             
-            // YENİ EKLENEN GRUP MANTIĞI
-            if(stage.includes('GRUP')) maxMatch = 3; // Gruplarda 3'er maç var
-            if(stage.includes('SON 64')) maxMatch = 32;
-            if(stage.includes('SON 32')) maxMatch = 16;
-            if(stage.includes('SON 16')) maxMatch = 8;
-            if(stage.includes('ÇEYREK')) maxMatch = 4;
-            if(stage.includes('YARI')) maxMatch = 2;
+            // GRUP VE YENİ SİSTEM İÇİN OTO SEÇİCİ SAYILARI
+            if(stage.includes('A Grubu') || stage.includes('B Grubu')) maxMatch = 6; // Bir grupta toplam 6 maç çıkar
+            if(stage.includes('Yarı Final')) maxMatch = 2; // Çapraz eşleşmede 2 yarı final olur
+            if(stage.includes('Final')) maxMatch = 1; // 1 büyük final olur
 
             for(let i=1; i<=maxMatch; i++) matchOrder.innerHTML += `<option value="${i}">${i}. MAÇ</option>`;
 
             mapOrder.innerHTML = '';
             let maxMap = 1;
-            if (stage.includes('SON 16') || stage.includes('ÇEYREK') || stage.includes('YARI')) maxMap = 3;
-            if (stage.includes('FİNAL')) maxMap = 5;
+            // Gruplar BO1. Yarı Finaller BO3. Final BO5.
+            if (stage.includes('Yarı Final')) maxMap = 3;
+            if (stage.includes('Final')) maxMap = 5;
 
             for(let i=1; i<=maxMap; i++) mapOrder.innerHTML += `<option value="${i}">${i}. HARİTA</option>`;
         }
@@ -414,7 +408,7 @@
 
                 const stageSelect = document.getElementById('stageSelect');
                 for (let i = 0; i < stageSelect.options.length; i++) {
-                    if (stageSelect.options[i].value.includes(match.round_name)) { stageSelect.selectedIndex = i; break; }
+                    if (stageSelect.options[i].value === match.round_name) { stageSelect.selectedIndex = i; break; }
                 }
                 updateDynamicSelectors();
                 document.getElementById('matchOrderSelect').value = match.round_order;
@@ -602,17 +596,17 @@ LÜTFEN SADECE aşağıdaki gibi saf bir JSON döndür, kod bloğu (\`\`\`) veya
             
             if(!tourneyId) return showNotification("Lütfen bir turnuva seçin.", "error");
 
-            const sNameRaw = document.getElementById('stageSelect').value;
-            const sName = sNameRaw.split(' (')[0]; 
+            const sNameRaw = document.getElementById('stageSelect').value; // Örn: 'A Grubu'
             const matchO = document.getElementById('matchOrderSelect').value;
             const mapO = document.getElementById('mapOrderSelect').value;
             const scoreA = document.getElementById('scoreA').value;
             const scoreB = document.getElementById('scoreB').value;
             const mapName = document.getElementById('mapNameInput').value;
 
+            // Grup Maçları her zaman BO1 (En iyi 1 Maç) mantığındadır.
             let formatStr = 'BO1';
-            if (sNameRaw.includes('BO3')) formatStr = 'BO3';
-            if (sNameRaw.includes('BO5')) formatStr = 'BO5';
+            if (sNameRaw.includes('Yarı Final')) formatStr = 'BO3';
+            if (sNameRaw.includes('Final')) formatStr = 'BO5';
 
             if(!teamAId_memory || !teamBId_memory) return showNotification("HATA: Takım(lar) onaylı listede bulunamadı!", "error");
 
@@ -623,44 +617,70 @@ LÜTFEN SADECE aşağıdaki gibi saf bir JSON döndür, kod bloğu (\`\`\`) veya
 
             try {
                 if(currentMode === 'zarflar') {
+                    // Ana Tabloya Maçı Yaz ve Skoru Düş
                     const { data: existingMatch } = await window.supabaseClient.from('bracket_matches')
-                        .select('id').eq('tournament_id', tourneyId).eq('round_name', sName).eq('round_order', matchO).maybeSingle();
+                        .select('id').eq('tournament_id', tourneyId).eq('round_name', sNameRaw).eq('round_order', matchO).maybeSingle();
                     
                     let matchId;
                     if(existingMatch) {
                         matchId = existingMatch.id;
                         const { error: updErr } = await window.supabaseClient.from('bracket_matches')
-                            .update({ team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live' }).eq('id', matchId);
+                            .update({ 
+                                team_a_id: teamAId_memory, 
+                                team_b_id: teamBId_memory, 
+                                status: 'completed', // GRUP İÇİN completed olmalı ki puan gelsin
+                                series_score_a: scoreA, 
+                                series_score_b: scoreB 
+                            }).eq('id', matchId);
                         if(updErr) throw updErr;
                     } else {
                         const { data: newMatch, error: insMatchErr } = await window.supabaseClient.from('bracket_matches').insert([{
-                            tournament_id: tourneyId, tournament_name: tourneyName, round_name: sName, round_order: matchO, 
-                            team_a_id: teamAId_memory, team_b_id: teamBId_memory, status: 'live', match_format: formatStr
+                            tournament_id: tourneyId, 
+                            tournament_name: tourneyName, 
+                            round_name: sNameRaw, 
+                            round_order: matchO, 
+                            team_a_id: teamAId_memory, 
+                            team_b_id: teamBId_memory, 
+                            status: 'completed', // GRUP İÇİN completed
+                            match_format: formatStr,
+                            series_score_a: scoreA, 
+                            series_score_b: scoreB
                         }]).select().single();
                         if(insMatchErr) throw insMatchErr;
                         matchId = newMatch.id;
                     }
 
+                    // Alt Tabloya Haritayı Yaz
                     const { data: mapData, error: mapErr } = await window.supabaseClient.from('match_maps').insert([{
                         match_id: matchId, map_order: mapO, map_name: mapName, score_a: scoreA, score_b: scoreB
                     }]).select().single();
                     if(mapErr) throw mapErr;
 
+                    // Oyuncu İstatistiklerini Yaz
                     const insertData = [ ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, mapData.id)), ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, mapData.id)) ];
                     if(insertData.length > 0) {
                         const { error: statsErr } = await window.supabaseClient.from('match_player_stats').insert(insertData);
                         if (statsErr) throw statsErr;
                     }
 
+                    // Zarfı İşlenmiş Yap
                     await window.supabaseClient.from('bekleyen_zarflar').update({ durum: 'processed' }).eq('id', activeRecordId);
                     
                     showNotification("Başarıyla Fikstüre İğnelendi!", "success");
                     setTimeout(() => switchSidebarTab('zarflar'), 1500);
 
                 } else {
+                    // Mevcut Maçı/Haritayı Düzenleme Senaryosu
                     const mapId = activeRecordId.mapId;
                     const { error: mapUpdateErr } = await window.supabaseClient.from('match_maps').update({ map_name: mapName, score_a: scoreA, score_b: scoreB }).eq('id', mapId);
                     if(mapUpdateErr) throw mapUpdateErr;
+
+                    // Ana tablodaki genel skoru da eşitleyelim (Özellikle BO1 gruplar için kritik)
+                    await window.supabaseClient.from('bracket_matches').update({ 
+                        series_score_a: scoreA, 
+                        series_score_b: scoreB,
+                        status: 'completed'
+                    }).eq('id', activeRecordId.matchId);
 
                     await window.supabaseClient.from('match_player_stats').delete().eq('map_id', mapId);
                     const insertData = [ ...(await collectDataAndUpdateIGN('teamAPlayersInputs', teamAId_memory, mapId)), ...(await collectDataAndUpdateIGN('teamBPlayersInputs', teamBId_memory, mapId)) ];
