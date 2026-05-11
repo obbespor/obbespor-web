@@ -63,6 +63,10 @@ window.fetchRealNotifications = async function() {
         let harmanlanmisList = [];
         if (kisiselData) {
             kisiselData.forEach(item => {
+                // ÇİFT BİLDİRİMİ ÖNLEME: Manuel "bildirimler" tablosuna yazılan "Davet" mesajlarını tamamen yoksayıyoruz.
+                // Davetleri sadece "team_members" tablosundan okuyacağız ki iki kere çalmasın.
+                if (item.baslik && item.baslik.toLowerCase().includes("davet")) return;
+
                 harmanlanmisList.push({
                     id: item.id, tablo: 'bildirimler', tip: item.tip,
                     title: item.baslik, text: item.mesaj, created_at: item.created_at
@@ -82,6 +86,10 @@ window.listenRealtimeNotifications = async function() {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bildirimler', filter: `kullanici_id=eq.${user.id}` },
         (payload) => {
             const yeni = payload.new;
+            
+            // ÇİFT BİLDİRİMİ ÖNLEME: Realtime (Canlı) gelen "Davet" konulu mesajları da engelliyoruz.
+            if (yeni.baslik && yeni.baslik.toLowerCase().includes("davet")) return;
+
             const styleObj = getIconForType(yeni.tip);
             window.myNotifications.unshift({
                 id: yeni.id, tablo: 'bildirimler', tip: yeni.tip, icon: styleObj.icon, color: styleObj.color,
@@ -148,7 +156,7 @@ window.clearNotifications = async function(event) {
     } catch (err) { console.error("Temizleme hatası:", err); }
 };
 
-// --- GLOBAL DAVET SİSTEMİ ---
+// --- GLOBAL DAVET SİSTEMİ (Tek Kaynak) ---
 window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = []) {
     const { data: pendingInvites } = await window.supabaseClient
         .from('team_members')
@@ -163,7 +171,7 @@ window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = 
         pendingInvites.forEach(invite => {
             const teamName = invite.teams?.name || "Bir takım";
             if (!alertedInvites.includes(invite.id)) {
-                showNotification(`🔔 ${teamName} takımından davet aldın!`, "info");
+                showNotification(`🔔 ${teamName} seni takıma çağırıyor!`, "info");
                 alertedInvites.push(invite.id);
                 newAlertsFound = true;
             }
@@ -187,27 +195,40 @@ window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = 
         window.supabaseClient.removeChannel(window.globalInviteChannel);
     }
 
+    // TAKIM ÜYELERİ CANLI DİNLEYİCİSİ
     window.globalInviteChannel = window.supabaseClient.channel('global-invite-' + userId);
     window.globalInviteChannel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'team_members', filter: `user_id=eq.${userId}` }, 
         async (payload) => {
-            // EKLENEN FİLTRE: Eğer eklenen kayıt "bekleyen" (pending) bir davet değilse işlemi anında durdur (Kaptan kendi kurduğu takımdan bildirim almaz).
-            if (payload.new.status !== 'pending') return;
-
             const tId = payload.new.team_id;
+            const status = payload.new.status; // pending mi accepted mi kontrol et
+            
             const { data: teamData } = await window.supabaseClient.from('teams').select('name').eq('id', tId).single();
             const teamName = teamData ? teamData.name : "Bir takım";
             
-            showNotification(`🔔 YENİ DAVET: ${teamName} seni bekliyor!`, "success");
+            if (status === 'pending') {
+                // Eğer üye davet edildiyse "Çağırıyor" bildirimi gönder
+                showNotification(`🔔 YENİ DAVET: ${teamName} seni takıma çağırıyor!`, "info");
 
-            let alerted = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
-            alerted.push(payload.new.id);
-            sessionStorage.setItem('alertedInvites', JSON.stringify(alerted));
-            
-            window.myNotifications.unshift({ 
-                id: payload.new.id, tablo: 'team_members', tip: 'davet', icon: 'fa-envelope-open-text', color: '#f39c12', 
-                title: 'Yeni Davet!', text: `${teamName} seni çağırıyor.`,
-                created_at: payload.new.created_at || new Date().toISOString()
-            });
+                let alerted = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
+                alerted.push(payload.new.id);
+                sessionStorage.setItem('alertedInvites', JSON.stringify(alerted));
+                
+                window.myNotifications.unshift({ 
+                    id: payload.new.id, tablo: 'team_members', tip: 'davet', icon: 'fa-envelope-open-text', color: '#f39c12', 
+                    title: 'Yeni Davet!', text: `${teamName} seni takıma çağırıyor.`,
+                    created_at: payload.new.created_at || new Date().toISOString()
+                });
+            } else if (status === 'accepted') {
+                // Eğer takım kurucusuysa (kaptan) ve doğrudan kabul edildiyse "Takımınız kuruldu" bildirimi gönder
+                showNotification(`✅ BAŞARILI: ${teamName} takımınız kuruldu!`, "success");
+                
+                window.myNotifications.unshift({ 
+                    id: payload.new.id, tablo: 'team_members', tip: 'onay', icon: 'fa-check-circle', color: '#00e676', 
+                    title: 'Takım Kuruldu!', text: `${teamName} takımınız başarıyla oluşturuldu.`,
+                    created_at: payload.new.created_at || new Date().toISOString()
+                });
+            }
+
             window.myNotifications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             window.renderNotifications();
         }).subscribe();
