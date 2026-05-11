@@ -95,15 +95,16 @@
         .player-card.pending { opacity: 0.5; border: 1px dashed #444; }
         
         .player-card-header { padding: 25px; display: flex; align-items: center; gap: 20px; position: relative; background: rgba(255,255,255,0.01); }
-        .avatar-container { position: relative; }
+        .avatar-container { position: relative; margin-right: 5px; }
         .player-avatar { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #333; background: #111; display:flex; justify-content:center; align-items:center; color:#444; font-size: 24px;}
         .player-card.current-user-card .player-avatar { border-color: #00ff88; }
         
-        .player-names { flex: 1; overflow: hidden; }
-        .player-ign { font-size: 20px; font-weight: 900; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px; text-shadow: 0 0 10px rgba(255,255,255,0.1); }
+        /* Flex ve taşma kuralları mobilde uzun nickleri gizlemek için önemlidir */
+        .player-names { flex: 1; overflow: hidden; min-width: 0; }
+        .player-ign { font-size: 20px; font-weight: 900; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; text-shadow: 0 0 10px rgba(255,255,255,0.1); }
         .player-username { font-size: 12px; color: var(--gri-yazi); display: block; margin-top: 2px; opacity: 0.8; }
         
-        .role-badges-area { margin-top: 8px; display: flex; gap: 6px; align-items: center; }
+        .role-badges-area { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
         .player-role { font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; cursor: default; }
         .role-standard { background: rgba(255, 255, 255, 0.05); color: #aaa; border: 1px solid rgba(255, 255, 255, 0.1); }
         .role-pending { background: rgba(255, 152, 0, 0.1); color: #ff9800; border: 1px solid rgba(255, 152, 0, 0.3); }
@@ -150,12 +151,33 @@
         .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 90%; max-width: 450px; padding: 35px 25px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.7); text-align: center; }
         .modal-content.danger { border-top-color: var(--kirmizi-iptal); }
 
+        /* MOBİL DÜZENLEMELERİ (İsim taşmaları, sıkışmalar ve kart boyutları düzeltildi) */
         @media (max-width: 768px) {
-            .team-profile-header { padding: 40px 15px 30px; }
-            .team-profile-name { font-size: 30px; }
-            .team-profile-logo { width: 120px; height: 120px; }
-            .roster-grid { grid-template-columns: 1fr; }
-            .player-card-header { padding: 20px; }
+            .team-profile-header { padding: 30px 15px 20px; }
+            .team-profile-name { font-size: 24px; flex-direction: column; gap: 5px; text-align: center;}
+            .team-profile-logo { width: 90px; height: 90px; margin-bottom: 15px; }
+            
+            .roster-title-container { flex-direction: column; gap: 10px; margin-bottom: 20px; }
+            .roster-title { font-size: 22px; text-align: center; }
+            .roster-count { font-size: 14px; padding: 4px 12px; }
+
+            .roster-grid { grid-template-columns: 1fr; gap: 15px; margin-bottom: 30px; }
+            
+            /* Mobilde kart içi boşluklar ve ikon boyutları optimize edildi */
+            .player-card-header { padding: 15px; padding-right: 40px; gap: 12px;}
+            .player-avatar { width: 50px; height: 50px; font-size: 20px; }
+            .player-ign { font-size: 16px; }
+            
+            .role-badges-area { margin-top: 5px; }
+            .player-role, .captain-crown { font-size: 9px; padding: 2px 6px; }
+            
+            /* Atma butonu yeri ve boyutu mobilde daha düzgün hale getirildi */
+            .btn-kick { top: 12px; right: 10px; width: 26px; height: 26px; font-size: 12px; }
+            
+            .player-stats-row { padding: 12px 5px; }
+            .stat-value { font-size: 16px; }
+            .stat-label { font-size: 9px; }
+            
             .invite-card { flex-direction: column; align-items: flex-start; gap: 15px; }
             .invite-buttons { width: 100%; justify-content: stretch; }
             .invite-buttons button { flex: 1; }
@@ -601,8 +623,7 @@
 
             const roleClassBadge = isPending ? 'role-pending' : 'role-standard';
 
-            // DİKKAT: ÇİFT BİLDİRİM - ÇİFT LOG ENGELİ!
-            // Kendi takımımı ararken davet gitmesini engelleyen ve arama sorununu çözen kod.
+            // DİKKAT: .captain-card stili KALDIRILDI. Kaptansa standart görünür, isMe ise yeşil görünür.
             return `
                 <div class="player-card ${isPending ? 'pending' : ''} ${isMe ? 'current-user-card' : ''}">
                     <div class="player-card-header">
@@ -668,8 +689,21 @@
             try {
                 const { data: newTeam, error } = await window.supabaseClient.from('teams').insert([{ captain_id: currentUser.id, name, tag }]).select().single();
                 if (error) throw error;
+                
                 // Yeni kayıt mantığında Kaptan varsayılan olarak member olarak ekleniyor.
-                await window.supabaseClient.from('team_members').insert([{ team_id: newTeam.id, user_id: currentUser.id, role: 'member', status: 'accepted' }]);
+                const { data: newMem } = await window.supabaseClient.from('team_members')
+                    .insert([{ team_id: newTeam.id, user_id: currentUser.id, role: 'member', status: 'accepted' }])
+                    .select().single();
+
+                // GİZLİ VERİTABANI TETİKLEYİCİSİ (TRIGGER) YAMASI:
+                // Supabase'deki bir trigger (enforce_status vs.) araya girip kaptanı zorla "pending" yapmışsa:
+                if (newMem && newMem.status === 'pending') {
+                    // 1. Durumu hemen "accepted" olarak düzelt
+                    await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', newMem.id);
+                    // 2. Trigger'ın yanlışlıkla attığı o "seni takıma çağırıyor" bildirimini veritabanından sil
+                    await window.supabaseClient.from('bildirimler').delete().eq('kullanici_id', currentUser.id).ilike('mesaj', '%çağırıyor%');
+                }
+
                 showNotification("Takım kuruldu!", "success");
                 setTimeout(() => location.reload(), 1500);
             } catch (err) { showNotification(err.message, "error"); btn.disabled = false; btn.innerHTML = 'TAKIMI OLUŞTUR'; }
