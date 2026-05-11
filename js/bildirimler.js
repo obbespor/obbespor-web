@@ -63,8 +63,6 @@ window.fetchRealNotifications = async function() {
         let harmanlanmisList = [];
         if (kisiselData) {
             kisiselData.forEach(item => {
-                // ÇİFT BİLDİRİMİ ÖNLEME: Manuel "bildirimler" tablosuna yazılan "Davet" mesajlarını tamamen yoksayıyoruz.
-                // Davetleri sadece "team_members" tablosundan okuyacağız ki iki kere çalmasın.
                 if (item.baslik && item.baslik.toLowerCase().includes("davet")) return;
 
                 harmanlanmisList.push({
@@ -87,7 +85,6 @@ window.listenRealtimeNotifications = async function() {
         (payload) => {
             const yeni = payload.new;
             
-            // ÇİFT BİLDİRİMİ ÖNLEME: Realtime (Canlı) gelen "Davet" konulu mesajları da engelliyoruz.
             if (yeni.baslik && yeni.baslik.toLowerCase().includes("davet")) return;
 
             const styleObj = getIconForType(yeni.tip);
@@ -111,7 +108,8 @@ window.renderNotifications = function() {
     let htmlContent = window.myNotifications.length === 0 ? `<div class="notif-empty">Şu an yeni bir bildiriminiz yok.</div>` : "";
 
     window.myNotifications.forEach(notif => {
-        let targetUrl = notif.tip === 'davet' ? "profil.html#davetler" : (notif.tip === 'onay' || notif.tip === 'red' ? "profil.html" : "javascript:void(0)");
+        // HEDEF URL DÜZELTİLDİ: Davet, Onay veya Red gelirse doğrudan takimim.html'e yönlendirir.
+        let targetUrl = (notif.tip === 'davet' || notif.tip === 'onay' || notif.tip === 'red') ? "takimim.html" : "javascript:void(0)";
         let onClickAttr = targetUrl !== "javascript:void(0)" ? `onclick="window.location.href='${targetUrl}'"` : "";
 
         htmlContent += `
@@ -200,13 +198,12 @@ window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = 
     window.globalInviteChannel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'team_members', filter: `user_id=eq.${userId}` }, 
         async (payload) => {
             const tId = payload.new.team_id;
-            const status = payload.new.status; // pending mi accepted mi kontrol et
+            const status = payload.new.status; 
             
             const { data: teamData } = await window.supabaseClient.from('teams').select('name').eq('id', tId).single();
             const teamName = teamData ? teamData.name : "Bir takım";
             
             if (status === 'pending') {
-                // Eğer üye davet edildiyse "Çağırıyor" bildirimi gönder
                 showNotification(`🔔 YENİ DAVET: ${teamName} seni takıma çağırıyor!`, "info");
 
                 let alerted = JSON.parse(sessionStorage.getItem('alertedInvites') || '[]');
@@ -219,7 +216,6 @@ window.initGlobalInviteSystem = async function(userId, mevcutHarmanlanmisList = 
                     created_at: payload.new.created_at || new Date().toISOString()
                 });
             } else if (status === 'accepted') {
-                // Eğer takım kurucusuysa (kaptan) ve doğrudan kabul edildiyse "Takımınız kuruldu" bildirimi gönder
                 showNotification(`✅ BAŞARILI: ${teamName} takımınız kuruldu!`, "success");
                 
                 window.myNotifications.unshift({ 
