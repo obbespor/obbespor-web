@@ -45,11 +45,13 @@
         .form-control { background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: bold; width: 100%; outline: none; transition: 0.3s; }
         .form-control:focus { border-color: var(--neon-mor); }
 
+        /* REFERANS BÖLÜMÜ */
         .envelope-reference { display: none; background: rgba(255, 152, 0, 0.1); border: 1px dashed #ff9800; color: #ff9800; padding: 12px; border-radius: 8px; text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 14px; }
 
         .match-score-header { display: flex; align-items: center; justify-content: center; gap: 30px; margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid #222;}
         .team-score-input { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 35%; }
         
+        /* TAKIM SEÇİMİ İÇİN DROPDOWN TASARIMI */
         .team-select-dropdown { width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px dashed #555; color: white; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: bold; text-align: center; text-transform: uppercase; outline: none; transition: 0.3s; cursor: pointer; }
         .team-select-dropdown:focus, .team-select-dropdown:hover { border-color: var(--neon-mor); background: rgba(96, 29, 194, 0.1); }
         .team-select-dropdown option { background: #111; color: white; }
@@ -57,10 +59,6 @@
         .big-score-input { background: #000; border: 2px solid #444; color: white; width: 80px; height: 80px; text-align: center; font-size: 35px; font-weight: 900; border-radius: 15px; outline: none; transition: 0.3s; }
         .vs-text { text-align: center; font-size: 20px; font-weight: 900; color: var(--gri-yazi); display: flex; flex-direction: column; gap: 10px; width: 30%; }
         .map-input { background: #111; border: 1px solid #444; color: var(--neon-mor); padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold; text-align: center; text-transform: uppercase; outline: none; width: 100%; }
-        
-        .date-picker-group { display: flex; flex-direction: column; align-items: center; margin-top: 15px; }
-        .date-picker-group label { font-size: 10px; color: var(--gri-yazi); font-weight: bold; margin-bottom: 5px; }
-        .date-input { background: #111; border: 1px solid #333; color: white; padding: 10px; border-radius: 8px; outline: none; font-family: 'Poppins', sans-serif; }
 
         .stats-grid-container { display: flex; flex-direction: column; gap: 20px; }
         .team-stats-box h4 { font-size: 14px; margin-bottom: 10px; text-transform: uppercase; border-left: 4px solid; padding-left: 10px; }
@@ -173,10 +171,6 @@
                     <div class="vs-text">
                         VS
                         <input type="text" id="mapNameInput" class="map-input" placeholder="HARİTA YAZIN">
-                        <div class="date-picker-group">
-                            <label>MAÇ TARİHİ VE SAATİ</label>
-                            <input type="datetime-local" id="matchDateInput" class="date-input">
-                        </div>
                     </div>
                     <div class="team-score-input">
                         <span style="font-size:10px; color:var(--gri-yazi);">SAĞ TAKIM (KIRMIZI)</span>
@@ -357,7 +351,6 @@
                 document.getElementById('scoreA').value = "0";
                 document.getElementById('scoreB').value = "0";
                 document.getElementById('mapNameInput').value = "";
-                document.getElementById('matchDateInput').value = "";
                 syncTeamName('A', null); syncTeamName('B', null);
                 generateEmptyRows('teamAPlayersInputs');
                 generateEmptyRows('teamBPlayersInputs');
@@ -409,12 +402,10 @@
                         const nameB = globalTeamMap[m.team_b_id] || "TBD";
                         const isCompleted = m.status === 'completed';
                         const scoreDisplay = isCompleted ? ` (${m.series_score_a} - ${m.series_score_b})` : ' (VS)';
-                        const dateStr = m.match_date ? new Date(m.match_date).toLocaleDateString('tr-TR', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}) : '';
 
                         listContainer.innerHTML += `
                             <div class="list-item" onclick="openExistingMatch('${m.id}')">
                                 <span class="list-item-badge badge-fikstur"><i class="fas fa-calendar-check"></i> ${m.round_name}</span>
-                                <span style="font-size:11px; float:right; color:#888;">${dateStr}</span>
                                 <div class="list-item-title">${nameA} ${scoreDisplay} ${nameB}</div>
                                 <div class="list-item-desc">${isCompleted ? 'Tamamlandı' : 'Tarih Bekleniyor / Oynanmadı'}</div>
                             </div>`;
@@ -482,14 +473,14 @@
             } catch(e) { console.error(e); }
         }
 
-        // YAPAY ZEKA VERİLERİNİ KUTULARA YERLEŞTİRİR (Vurgu Animasyonuyla Birlikte)
+        // YAPAY ZEKA VERİLERİNİ KUTULARA YERLEŞTİRİR
         function fillOCRData(containerId, playersData) {
             if (!playersData || !Array.isArray(playersData)) return;
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             
             for(let i=0; i<Math.min(playersData.length, 5); i++) {
                 const p = playersData[i]; 
-                const row = rows[i+1]; // İlk satır başlık olduğu için i+1
+                const row = rows[i+1]; 
                 if (!row) continue;
                 
                 if(p.agent) { const agentInput = row.querySelector('.agent-name-input'); agentInput.value = p.agent; updateAgentIcon(agentInput, `${containerId}_icon_${i}`); agentInput.classList.add('input-highlight'); }
@@ -499,7 +490,6 @@
                 if(p.a !== undefined) { const aInput = row.querySelector('.a-input'); aInput.value = p.a; aInput.classList.add('input-highlight'); }
                 if(p.acs !== undefined) { const acsInput = row.querySelector('.acs-input'); acsInput.value = p.acs; acsInput.classList.add('input-highlight'); }
 
-                // Efektin 1.5 saniye sonra silinmesi için
                 setTimeout(() => {
                     row.querySelectorAll('input').forEach(input => input.classList.remove('input-highlight'));
                 }, 1500);
@@ -535,14 +525,6 @@
 
                 document.getElementById('scoreA').value = match.series_score_a || 0;
                 document.getElementById('scoreB').value = match.series_score_b || 0;
-                
-                if (match.match_date) {
-                    const d = new Date(match.match_date);
-                    const localISO = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().slice(0,16);
-                    document.getElementById('matchDateInput').value = localISO;
-                } else {
-                    document.getElementById('matchDateInput').value = "";
-                }
 
                 const { data: maps } = await window.supabaseClient.from('match_maps').select('*').eq('match_id', matchId).limit(1);
                 if (maps && maps.length > 0) {
@@ -624,7 +606,6 @@
                 
                 selects.forEach((sel) => { 
                     sel.innerHTML = optionsHtml; 
-                    // Önceden OCR ile yazılmış bir nick varsa eşleştir
                     const row = sel.closest('.player-stat-row'); 
                     const currentIgn = row.querySelector('.ign-input').value.trim().toLowerCase();
                     if (currentIgn) {
@@ -682,7 +663,6 @@ SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA Bİ
                 const data = await response.json(); if (!data.candidates || data.candidates.length === 0) throw new Error("Yanıt üretemedi.");
 
                 let aiText = data.candidates[0].content.parts[0].text; 
-                console.log("Yapay Zeka Yanıtı:", aiText); // Hata anında konsoldan görebilmen için eklendi
 
                 // Katı JSON Cımbızlayıcı
                 const firstBrace = aiText.indexOf('{');
@@ -755,9 +735,6 @@ SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA Bİ
             const scoreA = document.getElementById('scoreA').value;
             const scoreB = document.getElementById('scoreB').value;
             const mapName = document.getElementById('mapNameInput').value;
-            const rawDate = document.getElementById('matchDateInput').value;
-            
-            const matchDate = rawDate ? new Date(rawDate).toISOString() : null;
 
             let formatStr = 'BO1';
             if (sNameRaw.includes('Yarı Final')) formatStr = 'BO3';
@@ -791,14 +768,12 @@ SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA Bİ
                                 team_b_id: teamBId, 
                                 status: calculatedStatus, 
                                 series_score_a: scoreA, 
-                                series_score_b: scoreB,
-                                match_date: matchDate
+                                series_score_b: scoreB
                             }).eq('id', matchId);
                         if(updErr) throw updErr;
                     } else {
                         const { data: newMatch, error: insMatchErr } = await window.supabaseClient.from('bracket_matches').insert([{
                             tournament_id: tourneyId, 
-                            tournament_name: tourneyName, 
                             round_name: sNameRaw, 
                             round_order: matchO, 
                             team_a_id: teamAId, 
@@ -806,8 +781,7 @@ SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA Bİ
                             status: calculatedStatus, 
                             match_format: formatStr,
                             series_score_a: scoreA, 
-                            series_score_b: scoreB,
-                            match_date: matchDate
+                            series_score_b: scoreB
                         }]).select().single();
                         if(insMatchErr) throw insMatchErr;
                         matchId = newMatch.id;
@@ -834,7 +808,6 @@ SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA Bİ
                     if (!activeRecordId) {
                         const { data: newMatch, error: insMatchErr } = await window.supabaseClient.from('bracket_matches').insert([{
                             tournament_id: tourneyId, 
-                            tournament_name: tourneyName, 
                             round_name: sNameRaw, 
                             round_order: matchO, 
                             team_a_id: teamAId, 
@@ -842,8 +815,7 @@ SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA Bİ
                             status: calculatedStatus, 
                             match_format: formatStr,
                             series_score_a: scoreA, 
-                            series_score_b: scoreB,
-                            match_date: matchDate
+                            series_score_b: scoreB
                         }]).select().single();
                         
                         if(insMatchErr) throw insMatchErr;
@@ -865,8 +837,7 @@ SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA Bİ
                             team_b_id: teamBId, 
                             status: calculatedStatus, 
                             series_score_a: scoreA, 
-                            series_score_b: scoreB,
-                            match_date: matchDate
+                            series_score_b: scoreB
                         }).eq('id', activeRecordId.matchId);
 
                         if (activeRecordId.mapId) {
