@@ -45,13 +45,11 @@
         .form-control { background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: bold; width: 100%; outline: none; transition: 0.3s; }
         .form-control:focus { border-color: var(--neon-mor); }
 
-        /* REFERANS BÖLÜMÜ */
         .envelope-reference { display: none; background: rgba(255, 152, 0, 0.1); border: 1px dashed #ff9800; color: #ff9800; padding: 12px; border-radius: 8px; text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 14px; }
 
         .match-score-header { display: flex; align-items: center; justify-content: center; gap: 30px; margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid #222;}
         .team-score-input { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 35%; }
         
-        /* TAKIM SEÇİMİ İÇİN DROPDOWN TASARIMI */
         .team-select-dropdown { width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px dashed #555; color: white; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: bold; text-align: center; text-transform: uppercase; outline: none; transition: 0.3s; cursor: pointer; }
         .team-select-dropdown:focus, .team-select-dropdown:hover { border-color: var(--neon-mor); background: rgba(96, 29, 194, 0.1); }
         .team-select-dropdown option { background: #111; color: white; }
@@ -450,12 +448,11 @@
 
                 const mData = zarf.match_data || {};
                 
-                // REFERANS KUTUSUNU AKTİF ET (Kullanıcı isme bakıp manuel seçecek)
+                // REFERANS KUTUSUNU AKTİF ET
                 document.getElementById('envelopeReference').style.display = 'block';
                 document.getElementById('envRefTeamA').innerText = mData.teamA || "Belirtilmemiş";
                 document.getElementById('envRefTeamB').innerText = mData.teamB || "Belirtilmemiş";
 
-                // Dropdown menüleri ve başlıkları boş bırak, oyuncu listelerini temizle
                 document.getElementById('teamASelect').value = "";
                 document.getElementById('teamBSelect').value = "";
                 syncTeamName('A', null); 
