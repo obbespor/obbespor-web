@@ -3,22 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OBB 1. TOPLULUK TURNUVASI Fikstürü | OBB E-SPORTS</title>
-    
-    <meta name="description" content="Ordu'dan yükselen e-spor topluluğu OBB E-SPORTS'a katıl! Rekabete ortak ol, takımını kur, turnuvalarda yeteneğini göster ve zafere ulaş.">
-    <meta name="keywords" content="e-spor, ordu e-spor, obb esports, valorant turnuvası, cs2 turnuvası, takım bul, e-spor kayıt, obb">
-    <meta name="author" content="OBB E-SPORTS">
-    <meta name="theme-color" content="#601dc2"> 
-    
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="OBB E-SPORTS">
-    <meta property="og:title" content="OBB 1. TOPLULUK TURNUVASI Fikstürü | OBB E-SPORTS">
-    <meta property="og:description" content="Ordu'dan yükselen e-spor topluluğu OBB E-SPORTS'a katıl! Turnuvalarda rekabet et ve zafere ulaş.">
-    <meta property="og:url" content="https://obbesports.com">
-    <meta property="og:image" content="https://obbesports.com/img/obbmorlogo.png">
-    
+    <title>Fikstür ve Puan Durumu | OBB E-SPORTS</title>
     <link rel="icon" type="image/png" href="img/obblogo.png">
-    <link rel="apple-touch-icon" href="img/obblogo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -27,595 +13,339 @@
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        body { background-color: #050505; color: white; overflow-x: hidden; }
-        
-        /* --- SAYFA BAŞLIĞI VE DÜZEN --- */
-        .page-header { text-align: center; padding: 40px 20px 20px; background: radial-gradient(circle at top, #110522 0%, #050505 100%); border-bottom: 1px solid #222; }
-        .page-title { font-size: 36px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; }
-        .page-title span { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
-        .page-subtitle { color: var(--gri-yazi); font-size: 14px; font-weight: 500; margin-bottom: 30px; }
-
-        .stage-content { padding: 40px 5%; animation: fadeIn 0.4s ease; min-height: 60vh; }
-
-        /* ==========================================================
-           GRUP AŞAMASI (YENİ SİSTEM)
-           ========================================================== */
-        .group-stage-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-bottom: 60px; }
-        .group-box { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .group-header { background: var(--neon-mor); color: white; padding: 15px; text-align: center; font-size: 18px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
-        .group-match-list { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-
-        /* ==========================================================
-           PLAY-OFF AĞACI (YARI FİNAL -> FİNAL)
-           ========================================================== */
-        .playoff-title { text-align: center; font-size: 24px; font-weight: 900; color: white; margin-bottom: 10px; border-top: 2px dashed #222; padding-top: 40px;}
-        
-        .bracket-scroll-area { width: 100%; overflow-x: auto; padding-top: 60px; padding-bottom: 60px; scrollbar-width: thin; scrollbar-color: var(--neon-mor) #111; -webkit-overflow-scrolling: touch; }
-        .bracket-container { display: flex; align-items: stretch; justify-content: center; min-width: max-content; min-height: 400px; padding-left: 20px; padding-right: 20px; gap: 60px; }
-        .bracket-column { display: flex; flex-direction: column; width: 300px; position: relative; }
-        
-        .round-header { position: absolute; top: -50px; left: 10px; right: 10px; text-align: center; color: var(--neon-mor); font-weight: 900; text-transform: uppercase; font-size: 18px; letter-spacing: 1px; border-bottom: 2px solid #222; padding-bottom: 10px; z-index: 10; }
-
-        .match-wrapper { 
-            flex: 1 1 0%; 
-            display: flex; flex-direction: column; justify-content: center; 
-            position: relative; padding: 0; margin: 0; 
+        :root {
+            --grup-a-renk: #00d2ff;
+            --grup-b-renk: #ff4b4b;
         }
 
-        /* --- ORTAK MAÇ KARTI TASARIMI --- */
-        .match-card { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; position: relative; z-index: 5; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); margin: 0; width: 100%; }
-        .match-card:hover { border-color: var(--neon-mor); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(96, 29, 194, 0.3); z-index: 10; }
-        
-        .match-info-bar { background: #111; padding: 6px 12px; font-size: 11px; color: var(--gri-yazi); font-weight: bold; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; border-radius: 7px 7px 0 0; }
-        .team { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid #1a1a1a; }
-        .team:last-child { border-bottom: none; border-radius: 0 0 7px 7px; }
-        
-        .team-info { display: flex; align-items: center; gap: 8px; width: 80%; }
-        .team-logo { width: 24px; height: 24px; object-fit: contain; background: #000; border-radius: 4px; flex-shrink: 0; }
-        .team-name { font-size: 13px; font-weight: 700; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .score { font-size: 16px; font-weight: 900; color: white; width: 20%; text-align: right; }
-        
-        .team.winner { background: rgba(96, 29, 194, 0.1); border-left: 3px solid var(--neon-mor); padding-left: 9px; }
-        .team.winner .team-name, .team.winner .score { color: var(--neon-mor); text-shadow: 0 0 10px rgba(96, 29, 194, 0.4); }
-        .team.loser { opacity: 0.5; }
-
-        .match-card.empty-slot { border: 1px dashed #333; cursor: default; }
-        .match-card.empty-slot:hover { border-color: #555; transform: none; box-shadow: none; }
-        .match-card.empty-slot .team-name { color: #555; font-style: italic; }
-        .match-card.empty-slot .score { color: #333; }
-
-        .final-match { border-color: gold; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
-        .final-match .team.winner { background: rgba(255, 215, 0, 0.1); border-left-color: gold; }
-        .final-match .team.winner .team-name, .final-match .team.winner .score { color: gold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-
-        .match-card.scheduled-slot { cursor: default; border-color: #1a1a1a; }
-        .match-card.scheduled-slot:hover { border-color: #00d2ff; transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 210, 255, 0.15); }
-        .match-card.scheduled-slot .team-name { color: #ccc; }
-
-        /* ==========================================================
-           ÇİZGİLER (Sadece 2 Sütun İçin Ayarlandı)
-           ========================================================== */
-        .bracket-column:first-child .match-card::after { 
-            content: ''; position: absolute; top: 50%; right: -30px; width: 30px; 
-            border-top: 2px solid #444; z-index: 1; 
-        }
-        
-        .bracket-column:last-child .match-card::before { 
-            content: ''; position: absolute; top: 50%; left: -30px; width: 30px; 
-            border-top: 2px solid #444; z-index: 1; 
+        body {
+            background-color: #050505;
+            background-image: radial-gradient(circle at 50% 0%, rgba(96, 29, 194, 0.1) 0%, transparent 60%);
         }
 
-        .bracket-column:last-child .match-wrapper::before { 
-            content: ''; position: absolute; left: -30px; 
-            top: 25%; bottom: 25%; 
-            border-left: 2px solid #444; z-index: 0; 
+        .fixture-container { max-width: 1300px; margin: 50px auto; padding: 0 20px; flex: 1; animation: fadeIn 0.5s ease; }
+        
+        .page-title { text-align: center; color: white; font-size: 36px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 40px; }
+        .page-title span { color: var(--neon-mor); }
+
+        /* GRUP KONTEYNERLARI (YAN YANA) */
+        .groups-wrapper { display: flex; gap: 30px; margin-bottom: 50px; }
+        .group-col { flex: 1; display: flex; flex-direction: column; gap: 30px; }
+
+        /* PUAN DURUMU TABLOSU */
+        .standings-card { background: rgba(15,15,15,0.8); border: 1px solid #222; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        .group-a .standings-card { border-top: 4px solid var(--grup-a-renk); }
+        .group-b .standings-card { border-top: 4px solid var(--grup-b-renk); }
+        
+        .card-header { padding: 20px; background: rgba(0,0,0,0.4); text-align: center; font-size: 20px; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #333; }
+        .group-a .card-header { color: var(--grup-a-renk); }
+        .group-b .card-header { color: var(--grup-b-renk); }
+
+        table { width: 100%; border-collapse: collapse; text-align: center; color: white; font-size: 13px; }
+        th { padding: 15px 10px; color: var(--gri-yazi); font-weight: bold; background: rgba(255,255,255,0.02); text-transform: uppercase; font-size: 11px; }
+        td { padding: 15px 10px; border-bottom: 1px solid #222; font-weight: 500; }
+        tr:last-child td { border-bottom: none; }
+        
+        /* İLK 2 TAKIM VURGUSU */
+        tr.qualified { background: rgba(0, 255, 136, 0.05); }
+        tr.qualified td:first-child { border-left: 3px solid #00ff88; }
+        
+        .team-cell { display: flex; align-items: center; gap: 10px; text-align: left; padding-left: 15px !important; font-weight: bold; font-size: 14px;}
+        .team-cell img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #444; }
+        .pts-col { font-weight: 900; color: var(--neon-mor); font-size: 15px; }
+
+        /* MAÇ KARTLARI (FİKSTÜR) */
+        .matches-list { display: flex; flex-direction: column; gap: 15px; }
+        .match-card { background: #0a0a0a; border: 1px solid #333; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; transition: 0.3s; }
+        .match-card:hover { border-color: #555; transform: translateY(-3px); }
+        
+        .match-date { text-align: center; font-size: 11px; color: var(--gri-yazi); font-weight: bold; margin-bottom: 15px; border-bottom: 1px dashed #333; padding-bottom: 10px; text-transform: uppercase;}
+        .match-date i { margin-right: 5px; color: var(--neon-mor); }
+        
+        .match-teams { display: flex; justify-content: space-between; align-items: center; }
+        .m-team { display: flex; align-items: center; gap: 10px; flex: 1; font-size: 14px; font-weight: bold; color: white; }
+        .m-team.right { flex-direction: row-reverse; text-align: right; }
+        .m-team img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #222; }
+        
+        .m-score-box { background: #111; border: 1px solid #333; padding: 5px 15px; border-radius: 8px; font-size: 18px; font-weight: 900; color: white; display: flex; align-items: center; gap: 10px; margin: 0 15px;}
+        .m-score-box span { min-width: 20px; text-align: center; }
+        .m-score-box .winner { color: #00ff88; }
+        .m-score-box .loser { color: #ff4b4b; }
+        .m-vs { font-size: 12px; color: #555; }
+        
+        .match-pending .m-score-box { background: transparent; border: none; font-size: 14px; color: #777; }
+
+        /* MOBİL UYUM */
+        @media (max-width: 992px) {
+            .groups-wrapper { flex-direction: column; }
+            .m-team span { display: none; /* Mobilde sadece logolar kalsın, yer dar */ }
+            .m-team.m-mobile-name span { display: block; font-size: 12px;}
         }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        /* --- DETAY MODALI VE HARİTA SEKMELER --- (Aynı Kaldı) */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(8px); padding: 10px; }
-        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
-        .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 100%; max-width: 900px; max-height: 95vh; overflow-y: auto; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
-        .modal-content::-webkit-scrollbar { width: 6px; height: 6px; }
-        .modal-content::-webkit-scrollbar-track { background: #111; border-radius: 10px; }
-        .modal-content::-webkit-scrollbar-thumb { background: var(--neon-mor); border-radius: 10px; }
-
-        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 28px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; z-index: 10; line-height: 1; }
-        .close-btn:hover { color: var(--kirmizi-iptal); }
-
-        .modal-header { padding: 30px 15px; background: radial-gradient(circle at center, #1a0a2e 0%, #0a0a0a 100%); text-align: center; border-bottom: 1px solid #222; }
-        .scoreboard { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 15px;}
-        .modal-team { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
-        .modal-team img { width: 50px; height: 50px; object-fit: contain; border-radius: 8px; }
-        .modal-team-name { font-size: 16px; font-weight: 900; color: white; text-transform: uppercase; text-align: center; word-break: break-word; }
-        .modal-score { font-size: 40px; font-weight: 900; color: white; line-height: 1; }
-        .modal-score.winner { color: var(--neon-mor); text-shadow: 0 0 20px rgba(96, 29, 194, 0.5); }
-        .modal-vs { font-size: 16px; color: #555; font-weight: bold; }
-
-        .map-tabs-container { display: flex; justify-content: center; gap: 8px; margin: 15px 15px 0; flex-wrap: wrap; }
-        .map-tab-btn { background: #111; border: 1px solid #333; color: var(--gri-yazi); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 900; transition: 0.3s; font-family: 'Poppins', sans-serif; letter-spacing: 1px; flex: 1 1 auto; max-width: max-content; }
-        .map-tab-btn:hover { background: #222; color: white; }
-        .map-tab-btn.active { background: var(--neon-mor); color: white; border-color: var(--neon-mor); box-shadow: 0 0 15px rgba(96, 29, 194, 0.4); }
-
-        .map-stats-block { margin: 15px; background: #111; border-radius: 12px; border: 1px solid #222; overflow: hidden; animation: fadeIn 0.4s ease; }
-        .map-name-header { background: var(--neon-mor); color: white; padding: 10px; margin: 0; font-size: 14px; font-weight: 900; text-align: center; letter-spacing: 1px; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .map-score-display { background: rgba(0,0,0,0.3); padding: 3px 10px; border-radius: 20px; font-size: 16px; color: gold; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
-        
-        .stats-tables-container { display: flex; flex-direction: column; gap: 0; }
-        .table-half { width: 100%; border-bottom: 1px solid #222; }
-        .table-half:last-child { border-bottom: none; }
-        
-        .team-header-bar { padding: 8px 15px; font-size: 13px; font-weight: 900; color: white; text-align: center; }
-        .team-a-bar { background: rgba(0, 210, 255, 0.1); border-bottom: 2px solid #00d2ff; color: #00d2ff; }
-        .team-b-bar { background: rgba(255, 75, 75, 0.1); border-bottom: 2px solid #ff4b4b; color: #ff4b4b; }
-
-        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .stats-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; min-width: 320px; }
-        .stats-table th { color: var(--gri-yazi); padding: 8px 5px; border-bottom: 1px solid #333; font-size: 10px; text-transform: uppercase; }
-        .stats-table td { padding: 8px 5px; border-bottom: 1px solid #222; color: white; vertical-align: middle; }
-        .stats-table tr:hover td { background: #1a1a1a; }
-        .stats-table tr:last-child td { border-bottom: none; }
-        
-        .stat-ign-cell { text-align: left; font-weight: bold; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .stat-agent-img { width: 30px; height: 30px; border-radius: 4px; object-fit: cover; border: 1px solid #444; }
-
-        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050505; display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
-
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-
-        @media (max-width: 768px) {
-            .page-title { font-size: 24px; }
-            .bracket-column { width: 260px; } 
-            .match-wrapper { padding: 0; } 
-            .bracket-column:first-child .match-card::after { right: -20px; width: 20px; }
-            .bracket-column:last-child .match-card::before { left: -20px; width: 20px; }
-            .bracket-column:last-child .match-wrapper::before { left: -20px; }
-            
-            .modal-overlay { padding: 5px; } 
-            .modal-content { max-width: 95vw; max-height: 90vh; }
-            
-            .stats-tables-container { display: block; width: 100%; }
-            .table-half { width: 100%; border-right: none; margin-bottom: 20px; }
-            .table-responsive { width: 100%; overflow-x: auto !important; -webkit-overflow-scrolling: touch; display: block; }
-            .stats-table { min-width: 340px; } 
-            
-            .modal-team-name { font-size: 14px; }
-            .modal-team img { width: 40px; height: 40px; }
-            .modal-score { font-size: 32px; }
-            .stat-agent-img { width: 25px; height: 25px; }
-            .stats-table td { padding: 6px; font-size: 11px; }
-            .map-tab-btn { padding: 8px 12px; font-size: 11px; flex: 1 1 40%; text-align: center; }
-        }
+        #loadingScreen { position: fixed; top:0; left:0; width:100%; height:100%; background: #050505; display:flex; justify-content:center; align-items:center; z-index: 9999; color: var(--neon-mor); flex-direction: column; }
     </style>
 </head>
 <body>
 
     <div id="loadingScreen">
-        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
-        <h2>Fikstür Verileri Çekiliyor...</h2>
+        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 15px;"></i>
+        <h2>Fikstür Yükleniyor...</h2>
     </div>
 
     <div id="header-alani"></div>
 
-    <div class="page-header">
-        <h1 class="page-title">OBB 1. TOPLULUK TURNUVASI <span>FİKSTÜRÜ</span></h1>
-        <p class="page-subtitle">Toplam Ödül Havuzu: 30.000 TL | 6 Takım</p>
-    </div>
+    <main class="fixture-container">
+        <h1 class="page-title">TURNUVA <span>FİKSTÜRÜ</span></h1>
 
-    <div class="stage-content">
-        
-        <div class="group-stage-container">
-            <div class="group-box">
-                <div class="group-header">A GRUBU MAÇLARI</div>
-                <div class="group-match-list" id="groupA_List">
-                    </div>
-            </div>
-
-            <div class="group-box">
-                <div class="group-header" style="background:#00d2ff;">B GRUBU MAÇLARI</div>
-                <div class="group-match-list" id="groupB_List">
-                    </div>
-            </div>
-        </div>
-
-        <h2 class="playoff-title">PLAY-OFF EŞLEŞMELERİ</h2>
-        <div class="bracket-scroll-area">
-            <div class="bracket-container" id="bracketContainer">
-                </div>
-        </div>
-
-    </div>
-
-    <div class="modal-overlay" id="matchModal" onclick="this.classList.remove('active'); document.body.style.overflow = 'auto';">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <span class="close-btn" onclick="document.getElementById('matchModal').classList.remove('active'); document.body.style.overflow = 'auto';">&times;</span>
-            <div class="modal-header">
-                <span style="font-size: 11px; font-weight: 900; color: var(--gri-yazi); letter-spacing: 2px;">SERİ SKORU</span>
-                <div class="scoreboard">
-                    <div class="modal-team">
-                        <img src="img/unknown.webp" id="mLogoA" alt="Takım A" onerror="this.src='img/unknown.webp'">
-                        <span class="modal-team-name" id="mTeamA">TAKIM A</span>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span class="modal-score" id="mScoreA">0</span>
-                        <span class="modal-vs">-</span>
-                        <span class="modal-score" id="mScoreB">0</span>
-                    </div>
-                    <div class="modal-team">
-                        <img src="img/unknown.webp" id="mLogoB" alt="Takım B" onerror="this.src='img/unknown.webp'">
-                        <span class="modal-team-name" id="mTeamB">TAKIM B</span>
-                    </div>
-                </div>
-            </div>
+        <div class="groups-wrapper">
             
-            <div id="modalDetailsContent"></div>
+            <div class="group-col group-a">
+                <div class="standings-card">
+                    <div class="card-header"><i class="fas fa-trophy"></i> A GRUBU</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="text-align:left; padding-left:20px;">Takım</th>
+                                <th>O</th><th>G</th><th>M</th><th>AV</th><th>P</th>
+                            </tr>
+                        </thead>
+                        <tbody id="groupA-table">
+                            </tbody>
+                    </table>
+                </div>
+                
+                <div class="matches-list" id="groupA-matches">
+                    <h3 style="color:white; font-size:16px; margin: 10px 0 5px; border-left: 3px solid var(--grup-a-renk); padding-left: 10px;">Grup Maçları</h3>
+                    </div>
+            </div>
+
+            <div class="group-col group-b">
+                <div class="standings-card">
+                    <div class="card-header"><i class="fas fa-trophy"></i> B GRUBU</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="text-align:left; padding-left:20px;">Takım</th>
+                                <th>O</th><th>G</th><th>M</th><th>AV</th><th>P</th>
+                            </tr>
+                        </thead>
+                        <tbody id="groupB-table">
+                             </tbody>
+                    </table>
+                </div>
+                
+                <div class="matches-list" id="groupB-matches">
+                    <h3 style="color:white; font-size:16px; margin: 10px 0 5px; border-left: 3px solid var(--grup-b-renk); padding-left: 10px;">Grup Maçları</h3>
+                    </div>
+            </div>
+
         </div>
-    </div>
+    </main>
 
     <div id="footer-alani"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
-    <script src="js/auth.js"></script> 
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
 
     <script>
-        async function loadComponents() {
+        // TURNUVA İD'NİZİ BURAYA GİRİN (VEYA DİNAMİK ÇEKİN)
+        // Şimdilik en son yaklaşan/aktif turnuvayı otomatik bulacak şekilde kodluyoruz.
+        
+        let activeTournamentId = null;
+
+        async function initFixture() {
             try {
-                const headerRes = await fetch("components/header.html");
-                if(headerRes.ok) document.getElementById('header-alani').innerHTML = await headerRes.text();
-                
-                const footerRes = await fetch("components/footer.html");
-                if(footerRes.ok) document.getElementById('footer-alani').innerHTML = await footerRes.text();
-            } catch(e) { console.error("Komponent yüklenemedi", e); }
-        }
-
-        // YENİ FORMAT: GRUPLAR + YARI FİNAL + FİNAL
-        const TOURNAMENT_STRUCTURE = {
-            playoff: [
-                { id: 'YARI FİNAL', count: 2, format: 'BO3', dbName: 'YARI FİNAL' },
-                { id: 'BÜYÜK FİNAL', count: 1, format: 'BO5', dbName: 'FİNAL' }
-            ]
-        };
-
-        function createMatchCardHTML(matchData, format, isFinal = false) {
-            if (!matchData || matchData.isDummy) {
-                return `
-                    <div class="match-card empty-slot ${isFinal ? 'final-match' : ''}">
-                        <div class="match-info-bar"><span>${format}</span><span style="color:#555;">EŞLEŞME BEKLENİYOR</span></div>
-                        <div class="team"><div class="team-info"><img src="img/unknown.webp" class="team-logo"><span class="team-name">Belirlenmedi</span></div><span class="score">-</span></div>
-                        <div class="team"><div class="team-info"><img src="img/unknown.webp" class="team-logo"><span class="team-name">Belirlenmedi</span></div><span class="score">-</span></div>
-                    </div>
-                `;
-            }
-
-            const tA = matchData.teamA || 'Bilinmeyen Takım';
-            const tB = matchData.teamB || 'Bilinmeyen Takım';
-            
-            const sA = matchData.scoreA !== null ? matchData.scoreA : '-';
-            const sB = matchData.scoreB !== null ? matchData.scoreB : '-';
-            
-            const logoA = matchData.logoA || 'img/unknown.webp';
-            const logoB = matchData.logoB || 'img/unknown.webp';
-
-            let classA = '', classB = '';
-            let statusText = 'BEKLİYOR';
-            let scheduledClass = ''; 
-
-            if (matchData.status === 'finished') {
-                classA = matchData.winnerId === matchData.teamAId ? 'winner' : 'loser';
-                classB = matchData.winnerId === matchData.teamBId ? 'winner' : 'loser';
-                if(!matchData.winnerId) { 
-                    if (sA > sB) { classA = 'winner'; classB = 'loser'; }
-                    else if (sB > sA) { classB = 'winner'; classA = 'loser'; }
-                }
-                statusText = '<span style="color:var(--neon-mor);">TAMAMLANDI</span>';
-            } else if (matchData.status === 'live') {
-                statusText = '<span style="color:var(--kirmizi-iptal); animation: pulse 1.5s infinite;">CANLI</span>';
-            } else if (matchData.matchDate) {
-                statusText = `<span style="color:#00d2ff;"><i class="far fa-calendar-alt"></i> ${matchData.matchDate}</span>`;
-                scheduledClass = 'scheduled-slot';
-            }
-
-            const finalClass = isFinal ? 'final-match' : '';
-            const safeTA = tA.replace(/'/g, "&apos;"); 
-            const safeTB = tB.replace(/'/g, "&apos;");
-
-            return `
-                <div class="match-card ${finalClass} ${scheduledClass}" onclick="openModal('${matchData.id}', '${matchData.teamAId}', '${matchData.teamBId}', '${safeTA}', '${safeTB}', '${sA}', '${sB}', '${matchData.status}', '${logoA}', '${logoB}')">
-                    <div class="match-info-bar"><span>${format}</span>${statusText}</div>
-                    <div class="team ${classA}">
-                        <div class="team-info"><img src="${logoA}" onerror="this.src='img/unknown.webp'" class="team-logo"><span class="team-name" title="${tA}">${tA}</span></div>
-                        <span class="score">${sA}</span>
-                    </div>
-                    <div class="team ${classB}">
-                        <div class="team-info"><img src="${logoB}" onerror="this.src='img/unknown.webp'" class="team-logo"><span class="team-name" title="${tB}">${tB}</span></div>
-                        <span class="score">${sB}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        async function fetchAndRenderBracket() {
-            try {
-                const { data: tourney, error: tourneyErr } = await window.supabaseClient
-                    .from('tournaments')
-                    .select('id')
-                    .order('created_at', { ascending: false })
-                    .limit(1)
-                    .maybeSingle();
-
-                if (tourneyErr) throw tourneyErr;
+                // 1. Aktif Turnuvayı Bul
+                const { data: tourney } = await window.supabaseClient.from('tournaments')
+                    .select('id').in('status', ['upcoming', 'ongoing']).order('created_at', { ascending: false }).limit(1).maybeSingle();
                 
                 if (!tourney) {
-                    console.warn("Aktif turnuva bulunamadı.");
-                    document.querySelector('.stage-content').innerHTML = '<p style="text-align:center; padding: 50px; color: var(--gri-yazi);">Şu an fikstürü çizilmiş aktif bir turnuva bulunmuyor.</p>';
+                    document.querySelector('.groups-wrapper').innerHTML = '<h3 style="color:white; text-align:center; width:100%;">Şu an aktif bir turnuva bulunmuyor.</h3>';
                     return;
                 }
+                activeTournamentId = tourney.id;
 
-                const { data: teamsData, error: teamsErr } = await window.supabaseClient.from('teams').select('id, name, logo_url');
-                if (teamsErr) throw teamsErr;
-                
-                const teamMap = {};
-                if (teamsData) {
-                    teamsData.forEach(t => {
-                        teamMap[t.id] = {
-                            name: t.name,
-                            logo: t.logo_url || 'img/unknown.webp'
-                        };
-                    });
-                }
-
-                const { data: matchesData, error: matchesErr } = await window.supabaseClient
-                    .from('bracket_matches')
-                    .select('*')
-                    .eq('tournament_id', tourney.id)
-                    .order('round_order', { ascending: true });
-                if (matchesErr) throw matchesErr;
-
-                const { data: mapsData, error: mapsErr } = await window.supabaseClient.from('match_maps').select('match_id, score_a, score_b');
-                if (mapsErr) throw mapsErr;
-
-                const mapsByMatch = {};
-                if (mapsData) {
-                    mapsData.forEach(m => {
-                        if (!mapsByMatch[m.match_id]) mapsByMatch[m.match_id] = [];
-                        mapsByMatch[m.match_id].push(m);
-                    });
-                }
-
-                const roundsData = {};
-                // Yeni Grup Maçları İçin Diziler
-                const groupA_Matches = [];
-                const groupB_Matches = [];
-
-                if (matchesData) {
-                    matchesData.forEach(m => {
-                        if (!roundsData[m.round_name]) roundsData[m.round_name] = [];
-                        
-                        let sA = 0; let sB = 0;
-                        let calcStatus = 'pending'; let calcWinner = null;
-                        
-                        let winsNeeded = 1; 
-                        if (["SON 16", "ÇEYREK FİNAL", "YARI FİNAL"].includes(m.round_name)) winsNeeded = 2; // BO3
-                        if (m.round_name === "FİNAL") winsNeeded = 3; // BO5
-
-                        const matchMaps = mapsByMatch[m.id] || [];
-                        
-                        if (matchMaps.length > 0) {
-                            matchMaps.forEach(map => {
-                                if (map.score_a > map.score_b) sA++;
-                                else if (map.score_b > map.score_a) sB++;
-                            });
-
-                            if (sA > winsNeeded) sA = winsNeeded;
-                            if (sB > winsNeeded) sB = winsNeeded;
-
-                            if (sA >= winsNeeded) { calcStatus = 'finished'; calcWinner = m.team_a_id; }
-                            else if (sB >= winsNeeded) { calcStatus = 'finished'; calcWinner = m.team_b_id; }
-                            else { calcStatus = 'live'; } 
-                        } else {
-                            sA = '-'; sB = '-'; calcStatus = 'pending'; 
-                        }
-
-                        const matchObj = {
-                            id: m.id,
-                            teamAId: m.team_a_id, teamBId: m.team_b_id,
-                            teamA: teamMap[m.team_a_id]?.name || 'Belirlenmedi',
-                            teamB: teamMap[m.team_b_id]?.name || 'Belirlenmedi',
-                            logoA: teamMap[m.team_a_id]?.logo || 'img/unknown.webp',
-                            logoB: teamMap[m.team_b_id]?.logo || 'img/unknown.webp',
-                            scoreA: sA, scoreB: sB, 
-                            status: calcStatus, winnerId: calcWinner,
-                            format: m.match_format, matchDate: m.match_date || null
-                        };
-
-                        roundsData[m.round_name].push(matchObj);
-
-                        // Grupları Ayırıyoruz (Admin panelindeki isme göre)
-                        if(m.round_name === "GRUP A") groupA_Matches.push(matchObj);
-                        if(m.round_name === "GRUP B") groupB_Matches.push(matchObj);
-                    });
-                }
-
-                // --- 1. GRUP MAÇLARINI RENDER ET ---
-                const groupADiv = document.getElementById('groupA_List');
-                const groupBDiv = document.getElementById('groupB_List');
-                
-                groupADiv.innerHTML = groupA_Matches.length > 0 
-                    ? groupA_Matches.map(match => createMatchCardHTML(match, 'BO1')).join('') 
-                    : '<p style="text-align:center; color:#555; padding: 20px;">Maç Planlanmadı</p>';
-
-                groupBDiv.innerHTML = groupB_Matches.length > 0 
-                    ? groupB_Matches.map(match => createMatchCardHTML(match, 'BO1')).join('') 
-                    : '<p style="text-align:center; color:#555; padding: 20px;">Maç Planlanmadı</p>';
-
-
-                // --- 2. PLAYOFF (AĞAÇ) RENDER ET ---
-                const playoffDiv = document.getElementById('bracketContainer');
-                let playoffHtml = '';
-                
-                TOURNAMENT_STRUCTURE.playoff.forEach((round, roundIndex) => {
-                    const isFinal = roundIndex === TOURNAMENT_STRUCTURE.playoff.length - 1;
-                    const finalColClass = isFinal ? 'col-final' : '';
-                    
-                    playoffHtml += `<div class="bracket-column ${finalColClass}"><div class="round-header" ${isFinal?'style="color:gold; border-bottom-color:gold;"':''}>${round.id}</div>`;
-                    
-                    const dbMatches = roundsData[round.dbName] || [];
-                    
-                    for (let i = 0; i < round.count; i++) {
-                        playoffHtml += `<div class="match-wrapper">`;
-                        if (dbMatches[i]) {
-                            playoffHtml += createMatchCardHTML(dbMatches[i], round.format, isFinal);
-                        } else {
-                            playoffHtml += createMatchCardHTML({ isDummy: true }, round.format, isFinal);
-                        }
-                        playoffHtml += `</div>`;
-                    }
-                    playoffHtml += `</div>`; 
-                });
-                
-                playoffDiv.innerHTML = playoffHtml;
+                // 2. Takımları ve Maçları Çek
+                await fetchDataAndCalculate();
 
             } catch (err) {
-                console.error("Fikstür yüklenirken hata oluştu:", err);
+                console.error("Fikstür yükleme hatası:", err);
             } finally {
                 document.getElementById('loadingScreen').style.display = 'none';
             }
         }
 
-        window.currentModalData = null;
+        async function fetchDataAndCalculate() {
+            // Onaylı Takımları ve Gruplarını Çek
+            const { data: applications } = await window.supabaseClient.from('tournament_applications')
+                .select('group_name, teams(id, name, logo_url)')
+                .eq('tournament_id', activeTournamentId)
+                .eq('status', 'approved');
 
-        async function openModal(matchId, teamAId, teamBId, tA, tB, sA, sB, status, logoA, logoB) {
-            if(status === 'undefined' || status === 'pending' || sA === '-') return; 
+            // Maçları Çek
+            const { data: matches } = await window.supabaseClient.from('bracket_matches')
+                .select('id, round_name, match_date, status, team_a_id, team_b_id, series_score_a, series_score_b, teams_a:team_a_id(name, logo_url), teams_b:team_b_id(name, logo_url)')
+                .eq('tournament_id', activeTournamentId)
+                .order('match_date', { ascending: true });
+
+            if(!applications) return;
+
+            // Puan Durumu Objeleri Oluştur
+            let standings = { 'A': {}, 'B': {} };
             
-            document.getElementById('mTeamA').innerText = tA;
-            document.getElementById('mTeamB').innerText = tB;
-            
-            const scoreAEl = document.getElementById('mScoreA');
-            const scoreBEl = document.getElementById('mScoreB');
-            scoreAEl.innerText = sA;
-            scoreBEl.innerText = sB;
-            
-            scoreAEl.className = parseInt(sA) > parseInt(sB) ? 'modal-score winner' : 'modal-score';
-            scoreBEl.className = parseInt(sB) > parseInt(sA) ? 'modal-score winner' : 'modal-score';
-
-            const logoAEl = document.getElementById('mLogoA');
-            const logoBEl = document.getElementById('mLogoB');
-            logoAEl.src = logoA;
-            logoBEl.src = logoB;
-
-            document.getElementById('matchModal').classList.add('active');
-            document.body.style.overflow = 'hidden'; 
-
-            const detailsBox = document.getElementById('modalDetailsContent');
-            detailsBox.innerHTML = `
-                <div style="padding: 50px; text-align: center;">
-                    <i class="fas fa-circle-notch fa-spin fa-3x" style="color:var(--neon-mor); margin-bottom: 20px;"></i>
-                    <p style="color: var(--gri-yazi); font-weight: bold; font-size: 14px;">İstatistikler Yükleniyor...</p>
-                </div>`;
-
-            try {
-                const { data: maps, error: mapsErr } = await window.supabaseClient.from('match_maps').select('*').eq('match_id', matchId).order('map_order', { ascending: true });
-                if (mapsErr) throw mapsErr;
-
-                if (!maps || maps.length === 0) {
-                    detailsBox.innerHTML = '<p style="padding:40px; text-align:center; color:#555; font-size:14px;">Bu maça ait harita istatistiği henüz girilmemiş.</p>';
-                    return;
+            applications.forEach(app => {
+                const grp = app.group_name; // 'A' veya 'B'
+                const tId = app.teams.id;
+                if (grp === 'A' || grp === 'B') {
+                    standings[grp][tId] = {
+                        id: tId,
+                        name: app.teams.name,
+                        logo: app.teams.logo_url || 'img/unknown.webp',
+                        played: 0, wins: 0, losses: 0, average: 0, points: 0
+                    };
                 }
+            });
 
-                const mapIds = maps.map(m => m.id);
-                const { data: stats, error: statsErr } = await window.supabaseClient.from('match_player_stats').select('*').in('map_id', mapIds);
-                if (statsErr) throw statsErr;
+            // Maç Skorlarına Göre Puanları Hesapla
+            if (matches) {
+                matches.forEach(m => {
+                    const grp = m.round_name === 'A Grubu' ? 'A' : (m.round_name === 'B Grubu' ? 'B' : null);
+                    if (grp && m.status === 'completed') {
+                        const tA = standings[grp][m.team_a_id];
+                        const tB = standings[grp][m.team_b_id];
+                        
+                        if (tA && tB) {
+                            tA.played++; tB.played++;
+                            
+                            // Averaj Ekle/Çıkar
+                            tA.average += (m.series_score_a - m.series_score_b);
+                            tB.average += (m.series_score_b - m.series_score_a);
 
-                window.currentModalData = { maps, stats, teamAId, teamBId, tA, tB };
+                            // Puan ve Galibiyet
+                            if (m.series_score_a > m.series_score_b) {
+                                tA.wins++; tA.points += 3;
+                                tB.losses++;
+                            } else if (m.series_score_b > m.series_score_a) {
+                                tB.wins++; tB.points += 3;
+                                tA.losses++;
+                            }
+                        }
+                    }
+                });
+            }
 
-                let tabsHtml = '';
-                if (maps.length > 1) {
-                    tabsHtml += `<div class="map-tabs-container">`;
-                    maps.forEach((m, index) => {
-                        const orderText = m.map_order ? `${m.map_order}. HARİTA` : `HARİTA ${index + 1}`;
-                        tabsHtml += `<button class="map-tab-btn ${index === 0 ? 'active' : ''}" onclick="renderMapStatsUI('${m.id}', this)">${orderText}: ${m.map_name.toUpperCase()}</button>`;
-                    });
-                    tabsHtml += `</div>`;
-                }
-                
-                tabsHtml += `<div id="mapStatsArea"></div>`;
-                detailsBox.innerHTML = tabsHtml;
+            // Tabloları Ekrana Çizdir
+            renderTable('A', standings['A']);
+            renderTable('B', standings['B']);
 
-                renderMapStatsUI(maps[0].id, document.querySelector('.map-tab-btn'));
-
-            } catch (err) {
-                console.error("Hata:", err);
-                detailsBox.innerHTML = '<p style="padding:40px; text-align:center; color:red;">Veri çekilemedi. Lütfen daha sonra tekrar deneyin.</p>';
+            // Maç Kartlarını Ekrana Çizdir
+            if(matches) {
+                renderMatches('A', matches.filter(m => m.round_name === 'A Grubu'));
+                renderMatches('B', matches.filter(m => m.round_name === 'B Grubu'));
             }
         }
 
-        window.renderMapStatsUI = function(mapId, btnElement) {
-            if (btnElement) {
-                document.querySelectorAll('.map-tab-btn').forEach(btn => btn.classList.remove('active'));
-                btnElement.classList.add('active');
+        function renderTable(groupName, teamsObj) {
+            const tbody = document.getElementById(`group${groupName}-table`);
+            if(!tbody) return;
+
+            // Objeyi Diziye Çevir ve Sırala (Önce Puan, Sonra Averaj)
+            const teamsArray = Object.values(teamsObj);
+            teamsArray.sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                return b.average - a.average;
+            });
+
+            let html = '';
+            if (teamsArray.length === 0) {
+                html = '<tr><td colspan="6" style="color:#777;">Bu grupta henüz onaylı takım yok.</td></tr>';
+            } else {
+                teamsArray.forEach((team, index) => {
+                    // İlk 2 Takımı Yeşil Yap
+                    const rowClass = index < 2 ? 'qualified' : '';
+                    const avgDisplay = team.average > 0 ? `+${team.average}` : team.average;
+                    
+                    html += `
+                        <tr class="${rowClass}">
+                            <td class="team-cell">
+                                <img src="${team.logo}" onerror="this.src='img/unknown.webp'"> 
+                                ${team.name}
+                            </td>
+                            <td>${team.played}</td>
+                            <td>${team.wins}</td>
+                            <td>${team.losses}</td>
+                            <td>${avgDisplay}</td>
+                            <td class="pts-col">${team.points}</td>
+                        </tr>
+                    `;
+                });
+            }
+            tbody.innerHTML = html;
+        }
+
+        function renderMatches(groupName, groupMatches) {
+            const container = document.getElementById(`group${groupName}-matches`);
+            if(!container) return;
+
+            let html = container.innerHTML; // Başlığı (<h3>) koru
+            
+            if (groupMatches.length === 0) {
+                container.innerHTML += '<div class="match-card" style="text-align:center; color:#777;">Fikstür henüz çekilmedi.</div>';
+                return;
             }
 
-            const data = window.currentModalData;
-            const map = data.maps.find(m => m.id === mapId);
-            const mapStats = data.stats.filter(s => s.map_id === mapId);
-
-            const teamAStats = mapStats.filter(s => s.team_id === data.teamAId).sort((a,b) => b.kills - a.kills);
-            const teamBStats = mapStats.filter(s => s.team_id === data.teamBId).sort((a,b) => b.kills - a.kills);
-
-            const renderRow = (stat) => {
-                const rawAgentName = stat.agent_name || "unknown"; 
-                let cleanName = rawAgentName.replace(/[^a-zA-Z0-9]/g, ''); 
-                let formattedAgentName = cleanName ? (cleanName.charAt(0).toUpperCase() + cleanName.slice(1).toLowerCase()) : 'unknown';
-                if(formattedAgentName.toLowerCase() === 'kayo') formattedAgentName = 'Kayo';
+            groupMatches.forEach(m => {
+                const dateStr = m.match_date ? new Date(m.match_date).toLocaleString('tr-TR', { day:'numeric', month:'long', hour:'2-digit', minute:'2-digit' }) : 'TARİH BELİRSİZ';
                 
-                return `
-                <tr>
-                    <td><img src="img/imgagents/${formattedAgentName}.webp" class="stat-agent-img" title="${rawAgentName.toUpperCase()}" alt="${rawAgentName}" onerror="this.src='img/imgagents/unknown.png'"></td>
-                    <td class="stat-ign-cell" title="${stat.in_game_name || "-"}">${stat.in_game_name || "-"}</td>
-                    <td style="font-weight:900; color:#00d2ff;">${stat.kills !== null ? stat.kills : 0}</td>
-                    <td style="font-weight:900; color:#ff4b4b;">${stat.deaths !== null ? stat.deaths : 0}</td>
-                    <td style="font-weight:900; color:#888;">${stat.assists !== null ? stat.assists : 0}</td>
-                </tr>`;
-            };
+                const logoA = m.teams_a?.logo_url || 'img/unknown.webp';
+                const nameA = m.teams_a?.name || 'TBD';
+                const logoB = m.teams_b?.logo_url || 'img/unknown.webp';
+                const nameB = m.teams_b?.name || 'TBD';
 
-            const mapOrderText = map.map_order ? `${map.map_order}. HARİTA:` : `HARİTA:`;
+                let scoreArea = '';
+                let statusClass = '';
 
-            document.getElementById('mapStatsArea').innerHTML = `
-                <div class="map-stats-block">
-                    <div class="map-name-header">
-                        <span>${mapOrderText} ${map.map_name.toUpperCase()}</span>
-                        <span class="map-score-display">${map.score_a} - ${map.score_b}</span>
-                    </div>
-                    <div class="stats-tables-container">
-                        <div class="table-half">
-                            <div class="team-header-bar team-a-bar">${data.tA}</div>
-                            <div class="table-responsive">
-                                <table class="stats-table">
-                                    <thead><tr><th>AJAN</th><th class="stat-ign-cell">OYUNCU</th><th>K</th><th>D</th><th>A</th></tr></thead>
-                                    <tbody>${teamAStats.map(renderRow).join('')}</tbody>
-                                </table>
+                if (m.status === 'completed') {
+                    const classA = m.series_score_a > m.series_score_b ? 'winner' : 'loser';
+                    const classB = m.series_score_b > m.series_score_a ? 'winner' : 'loser';
+                    scoreArea = `
+                        <div class="m-score-box">
+                            <span class="${classA}">${m.series_score_a}</span>
+                            <span class="m-vs">-</span>
+                            <span class="${classB}">${m.series_score_b}</span>
+                        </div>
+                    `;
+                } else {
+                    statusClass = 'match-pending';
+                    scoreArea = `<div class="m-score-box">VS</div>`;
+                }
+
+                html += `
+                    <div class="match-card ${statusClass}">
+                        <div class="match-date"><i class="far fa-calendar-alt"></i> ${dateStr}</div>
+                        <div class="match-teams">
+                            <div class="m-team">
+                                <img src="${logoA}" onerror="this.src='img/unknown.webp'">
+                                <span>${nameA}</span>
+                            </div>
+                            
+                            ${scoreArea}
+                            
+                            <div class="m-team right">
+                                <img src="${logoB}" onerror="this.src='img/unknown.webp'">
+                                <span>${nameB}</span>
                             </div>
                         </div>
-                        <div class="table-half">
-                            <div class="team-header-bar team-b-bar">${data.tB}</div>
-                            <div class="table-responsive">
-                                <table class="stats-table">
-                                    <thead><tr><th>AJAN</th><th class="stat-ign-cell">OYUNCU</th><th>K</th><th>D</th><th>A</th></tr></thead>
-                                    <tbody>${teamBStats.map(renderRow).join('')}</tbody>
-                                </table>
-                            </div>
-                        </div>
                     </div>
-                </div>`;
-        };
+                `;
+            });
 
-        window.addEventListener('DOMContentLoaded', async () => {
-            await loadComponents();
-            if (typeof checkUserStatus === 'function') { checkUserStatus(); }
-            fetchAndRenderBracket();
-        });
+            container.innerHTML = html;
+        }
+
+        document.addEventListener('DOMContentLoaded', initFixture);
     </script>
 </body>
 </html>
