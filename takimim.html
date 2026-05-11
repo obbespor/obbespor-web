@@ -398,6 +398,7 @@
                     return; 
                 }
 
+                // AKTİF TURNUVA DURUMUNU ÇEK
                 const { data: appData } = await window.supabaseClient.from('tournament_applications')
                     .select('status, tournaments!inner(name, status)')
                     .eq('team_id', myTeamData.id)
@@ -452,30 +453,60 @@
             const grid = document.getElementById('rosterList');
             grid.innerHTML = ''; 
             try {
-                const { data: members } = await window.supabaseClient.from('team_members')
-                    .select('id, user_id, status, profiles(username, ign, avatar_url, matches_played)')
+                // Burada "role" sütununu da güvenliğe almak için ekliyoruz ki undefined hatası atmasın
+                const { data: members, error: memErr } = await window.supabaseClient.from('team_members')
+                    .select('id, user_id, role, status, profiles(username, ign, avatar_url, matches_played)')
                     .eq('team_id', myTeamData.id)
                     .order('created_at', { ascending: true });
                     
-                if (!members) return;
+                if (memErr) throw memErr;
 
-                // Kaptanı zorunlu olarak listeye ekle (eğer team_members'da yoksa)
-                let allMembers = [...members];
-                const isCapInList = allMembers.some(m => m.user_id === myTeamData.captain_id);
-                if (!isCapInList) {
+                let allMembers = members ? [...members] : [];
+
+                // 1. KAPTAN KONTROLÜ VE EKSİKSE OTOMATİK EKLEME
+                const capIndex = allMembers.findIndex(m => m.user_id === myTeamData.captain_id);
+                if (capIndex === -1) {
+                    // Kaptan DB'de eksikse hemen arka planda tamamla (Eski veriler için hayat kurtarıcı)
+                    await window.supabaseClient.from('team_members').insert([{
+                        team_id: myTeamData.id,
+                        user_id: myTeamData.captain_id,
+                        role: 'member',
+                        status: 'accepted'
+                    }]);
+                    
                     const { data: capProfile } = await window.supabaseClient.from('profiles').select('username, ign, avatar_url, matches_played').eq('id', myTeamData.captain_id).maybeSingle();
                     allMembers.push({
                         user_id: myTeamData.captain_id,
+                        role: 'member',
                         status: 'accepted',
                         profiles: capProfile || {}
                     });
+                } else {
+                    // Eğer kaptan var ama status'u pending kalmışsa zorla kabul yap (Güvenlik)
+                    if (allMembers[capIndex].status !== 'accepted') {
+                        await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', allMembers[capIndex].id);
+                        allMembers[capIndex].status = 'accepted';
+                    }
                 }
 
-                // SIRALAMA MANTIĞI:
-                // 1. Kullanıcının Kendisi
-                // 2. Kaptan (Kullanıcı kendisi değilse)
-                // 3. Diğer onaylı üyeler
-                // 4. Bekleyen davetler
+                // 2. DEDUPLICATION (Mükerrer Üyeleri Sil - Pending vs Accepted çakışmaları için)
+                const uniqueMap = new Map();
+                allMembers.forEach(m => {
+                    if (uniqueMap.has(m.user_id)) {
+                        // Accepted her zaman Pending'i ezer
+                        if (m.status === 'accepted') uniqueMap.set(m.user_id, m);
+                    } else {
+                        uniqueMap.set(m.user_id, m);
+                    }
+                });
+                allMembers = Array.from(uniqueMap.values());
+
+                // 3. ONAYLI ÜYE SAYACI
+                const acceptedCount = allMembers.filter(m => m.status === 'accepted').length;
+                document.getElementById('memberCounter').innerText = `${acceptedCount} / 7`;
+
+                // 4. SIRALAMA MANTIĞI:
+                // Kendisi > Kaptan > Kabul Edilmişler > Bekleyenler
                 allMembers.sort((a, b) => {
                     if (a.user_id === currentUser.id && b.user_id !== currentUser.id) return -1;
                     if (b.user_id === currentUser.id && a.user_id !== currentUser.id) return 1;
@@ -489,10 +520,7 @@
                     return 0; 
                 });
 
-                // Onaylı üye sayacı
-                const acceptedCount = allMembers.filter(m => m.status === 'accepted').length;
-                document.getElementById('memberCounter').innerText = `${acceptedCount} / 7`;
-
+                // 5. İSTATİSTİKLERİ ÇEK
                 const userIds = allMembers.map(m => m.user_id);
                 let playerStats = {};
                 try {
@@ -509,7 +537,9 @@
                     }
                 } catch(e) {}
 
+                // 6. EKRANA YAZDIR
                 allMembers.forEach(m => {
+                    // Normal üye pending olanları göremez
                     if (m.status === 'pending' && !isCaptain) return; 
 
                     const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
@@ -525,9 +555,13 @@
                     const acs = matches > 0 ? Math.round(pStat.acsTotal / matches) : 0;
                     const assists = pStat.assists || 0;
 
-                    grid.innerHTML += createPlayerCard(m.user_id, m.id, prof?.username, prof?.ign, m.status, prof?.avatar_url, matches, kd, acs, assists, isCap, isMe);
+                    grid.innerHTML += createPlayerCard(
+                        m.user_id, m.id, prof?.username, prof?.ign, m.status, prof?.avatar_url, 
+                        matches, kd, acs, assists, m.role, isCap, isMe
+                    );
                 });
 
+                // LİMİT 7 OYUNCU (Eğer 7'den azsa ekleme slotunu göster)
                 if (isCaptain && !isRosterLocked && acceptedCount < 7) {
                     grid.innerHTML += `
                         <div class="add-slot-card dynamic-slot" onclick="focusSearch()">
@@ -540,17 +574,20 @@
                         </div>`;
                     attachDynamicSearchEvent();
                 }
-            } catch (err) { grid.innerHTML = '<div style="color:red; text-align:center; width:100%;">Kadro hatası.</div>'; }
+            } catch (err) { 
+                console.error(err);
+                grid.innerHTML = '<div style="color:red; text-align:center; width:100%;">Kadro hatası.</div>'; 
+            }
         }
 
         function focusSearch() { document.getElementById('dynamicSearch').focus(); }
 
-        function createPlayerCard(userId, memberId, username, ign, status, avatarUrl, matches, kd, acs, assists, isCap, isMe) {
+        function createPlayerCard(userId, memberId, username, ign, status, avatarUrl, matches, kd, acs, assists, dbRole, isCap, isMe) {
             const displayName = (ign && ign !== 'Belirlenmedi') ? ign : (username || 'İsimsiz');
             const subName = (ign && ign !== 'Belirlenmedi') ? `@${username}` : '';
             const avatar = avatarUrl ? `<img src="${avatarUrl}" class="player-avatar" onerror="this.src='img/unknown.webp'">` : `<div class="player-avatar"><i class="fas fa-user"></i></div>`;
             
-            let kickBtn = (isCaptain && !isRosterLocked && userId !== currentUser.id) ? `<button class="btn-kick" onclick="kickPlayer('${memberId}', '${username.replace(/'/g, "\\'")}')"><i class="fas fa-times"></i></button>` : '';
+            let kickBtn = (isCaptain && !isRosterLocked && userId !== currentUser.id) ? `<button class="btn-kick" onclick="kickPlayer('${memberId}', '${username.replace(/'/g, "\\'")}', '${dbRole}')"><i class="fas fa-times"></i></button>` : '';
             
             let roleLabel = 'ÜYE';
             if (status === 'pending') roleLabel = 'DAVET EDİLDİ';
@@ -564,6 +601,7 @@
 
             const roleClassBadge = isPending ? 'role-pending' : 'role-standard';
 
+            // DİKKAT: .captain-card stili KALDIRILDI. Kaptansa standart görünür, isMe ise yeşil görünür.
             return `
                 <div class="player-card ${isPending ? 'pending' : ''} ${isMe ? 'current-user-card' : ''}">
                     <div class="player-card-header">
@@ -629,7 +667,7 @@
             try {
                 const { data: newTeam, error } = await window.supabaseClient.from('teams').insert([{ captain_id: currentUser.id, name, tag }]).select().single();
                 if (error) throw error;
-                // Kaptan artık varsayılan olarak member olarak ekleniyor. Sadece "Captain" badge'i UI'da gösterilecek.
+                // Yeni kayıt mantığında Kaptan varsayılan olarak member olarak ekleniyor.
                 await window.supabaseClient.from('team_members').insert([{ team_id: newTeam.id, user_id: currentUser.id, role: 'member', status: 'accepted' }]);
                 showNotification("Takım kuruldu!", "success");
                 setTimeout(() => location.reload(), 1500);
@@ -668,8 +706,8 @@
             });
         }
 
-        async function kickPlayer(mId, name) { 
-            if (currentApp && currentApp.status === 'pending') {
+        async function kickPlayer(mId, name, role) { 
+            if (currentApp && currentApp.status === 'pending' && (role === 'main' || role === 'captain')) {
                 showNotification("Başvuru incelemedeyken kadroyu değiştiremezsiniz!", "error");
                 return;
             }
