@@ -16,7 +16,7 @@
         :root {
             --grup-a-renk: #00d2ff;
             --grup-b-renk: #ff4b4b;
-            --playoff-renk: #9d4edd; /* Daha ciddi, neon mor tema */
+            --playoff-renk: #9d4edd;
         }
 
         body {
@@ -100,7 +100,7 @@
         .round-semis .bracket-match { width: 320px; position: relative; }
         .round-final .bracket-match { width: 380px; position: relative; }
 
-        /* AĞAÇ ÇİZGİLERİ (Sadeleştirilmiş Gri Çizgiler) */
+        /* AĞAÇ ÇİZGİLERİ (Masaüstü için) */
         @media (min-width: 993px) {
             .round-semis .bracket-match::after {
                 content: "";
@@ -115,8 +115,8 @@
                 content: "";
                 position: absolute;
                 right: -30px;
-                top: calc(25% + 15px); /* İlk maçın ortası */
-                bottom: calc(25% + 15px); /* İkinci maçın ortası */
+                top: calc(25% + 15px);
+                bottom: calc(25% + 15px);
                 border-right: 2px solid #333;
                 z-index: 1;
             }
@@ -237,6 +237,7 @@
 
     <script>
         let activeTournamentId = null;
+        let globalTeamMap = {}; // Takım logolarını ve isimlerini güvenle saklayacağımız depo
 
         async function initFixture() {
             try {
@@ -250,6 +251,12 @@
                 }
                 activeTournamentId = tourney.id;
 
+                // 2. Tüm takımları hata vermeden güvenli bir şekilde belleğe al (Anahtar hamle)
+                const { data: allTeams } = await window.supabaseClient.from('teams').select('id, name, logo_url');
+                if (allTeams) {
+                    allTeams.forEach(t => globalTeamMap[t.id] = t);
+                }
+
                 await fetchDataAndCalculate();
 
             } catch (err) {
@@ -262,46 +269,56 @@
         async function fetchDataAndCalculate() {
             // Başvuruları Çek
             const { data: applications } = await window.supabaseClient.from('tournament_applications')
-                .select('group_name, teams(id, name, logo_url)')
+                .select('group_name, team_id')
                 .eq('tournament_id', activeTournamentId)
                 .eq('status', 'approved');
 
-            // Maçları Çek
-            const { data: matches } = await window.supabaseClient.from('bracket_matches')
-                .select('id, round_name, match_date, status, team_a_id, team_b_id, series_score_a, series_score_b, teams_a:team_a_id(name, logo_url), teams_b:team_b_id(name, logo_url)')
+            // Maçları DÜMDÜZ Çekiyoruz (Karmaşık bağlamalar olmadan, hatasız)
+            const { data: matches, error: matchesError } = await window.supabaseClient.from('bracket_matches')
+                .select('id, round_name, match_date, status, team_a_id, team_b_id, series_score_a, series_score_b')
                 .eq('tournament_id', activeTournamentId)
-                .order('created_at', { ascending: true }); // Oluşturulma sırasına göre diz
+                .order('created_at', { ascending: true });
 
-            if(!applications) return;
+            if (matchesError) {
+                console.error("Maç çekme hatası:", matchesError);
+                return;
+            }
 
             // Puan Durumu Objeleri
             let standings = { 'A': {}, 'B': {} };
             
             // 1. Önce Başvurulardaki Takımları Tabloya Ekle
-            applications.forEach(app => {
-                let grp = app.group_name; 
-                // Güvenlik: Admin belki küçük harf girmiştir
-                if (grp) grp = grp.toUpperCase();
-                
-                const tId = app.teams.id;
-                if (grp === 'A' || grp === 'B') {
-                    standings[grp][tId] = {
-                        id: tId, name: app.teams.name, logo: app.teams.logo_url || 'img/unknown.webp',
-                        played: 0, wins: 0, losses: 0, average: 0, points: 0
-                    };
-                }
-            });
+            if (applications) {
+                applications.forEach(app => {
+                    let grp = app.group_name; 
+                    if (grp) grp = grp.toUpperCase();
+                    
+                    const tId = app.team_id;
+                    const teamInfo = globalTeamMap[tId] || {};
+                    
+                    if (grp === 'A' || grp === 'B') {
+                        standings[grp][tId] = {
+                            id: tId, 
+                            name: teamInfo.name || 'Bilinmiyor', 
+                            logo: teamInfo.logo_url || 'img/unknown.webp',
+                            played: 0, wins: 0, losses: 0, average: 0, points: 0
+                        };
+                    }
+                });
+            }
 
-            // 2. Eksik Takımları Koru (Eğer maç oynanmış ama listede yoksa zorla ekle)
+            // 2. Eksik Takımları Koru (Eğer maç oynanmış ama başvurusu görünmüyorsa zorla ekle)
             if (matches) {
                 matches.forEach(m => {
                     let grp = getMatchGroup(m.round_name);
-                    if (grp) {
+                    if (grp && (grp === 'A' || grp === 'B')) {
                         if (m.team_a_id && !standings[grp][m.team_a_id]) {
-                            standings[grp][m.team_a_id] = { id: m.team_a_id, name: m.teams_a?.name || 'Bilinmiyor', logo: m.teams_a?.logo_url || 'img/unknown.webp', played: 0, wins: 0, losses: 0, average: 0, points: 0 };
+                            const teamAInfo = globalTeamMap[m.team_a_id] || {};
+                            standings[grp][m.team_a_id] = { id: m.team_a_id, name: teamAInfo.name || 'Bilinmiyor', logo: teamAInfo.logo_url || 'img/unknown.webp', played: 0, wins: 0, losses: 0, average: 0, points: 0 };
                         }
                         if (m.team_b_id && !standings[grp][m.team_b_id]) {
-                            standings[grp][m.team_b_id] = { id: m.team_b_id, name: m.teams_b?.name || 'Bilinmiyor', logo: m.teams_b?.logo_url || 'img/unknown.webp', played: 0, wins: 0, losses: 0, average: 0, points: 0 };
+                            const teamBInfo = globalTeamMap[m.team_b_id] || {};
+                            standings[grp][m.team_b_id] = { id: m.team_b_id, name: teamBInfo.name || 'Bilinmiyor', logo: teamBInfo.logo_url || 'img/unknown.webp', played: 0, wins: 0, losses: 0, average: 0, points: 0 };
                         }
                     }
                 });
@@ -313,7 +330,7 @@
                     const grp = getMatchGroup(m.round_name);
                     
                     // Sadece Gruplardaki Puanları Hesapla (Yarı final / final tablolara etki etmez)
-                    if (grp && m.status === 'completed') {
+                    if ((grp === 'A' || grp === 'B') && m.status === 'completed') {
                         const tA = standings[grp][m.team_a_id];
                         const tB = standings[grp][m.team_b_id];
                         
@@ -396,21 +413,17 @@
             tbody.innerHTML = html;
         }
 
-        // MAÇLARI VE BOŞ SLOTLARI KUSURSUZ ÇİZDİRİR
         function renderMatchesWithPadding(containerId, matchArray, maxSlots, isBracket) {
             const container = document.getElementById(containerId);
             if(!container) return;
 
-            // Varsa başlığı koru
             const titleEl = container.querySelector('h3');
             let html = titleEl ? titleEl.outerHTML : '';
 
-            // Var olan maçları yazdır
             for (let i = 0; i < maxSlots; i++) {
                 if (matchArray[i]) {
                     html += `<div class="${isBracket ? 'bracket-match' : ''}">${createMatchCardHtml(matchArray[i])}</div>`;
                 } else {
-                    // Maç yoksa Boş Slot Çizdir
                     html += `<div class="${isBracket ? 'bracket-match' : ''}"><div class="empty-bracket-card">Eşleşme Bekleniyor</div></div>`;
                 }
             }
@@ -421,10 +434,14 @@
         function createMatchCardHtml(m) {
             const dateStr = m.match_date ? new Date(m.match_date).toLocaleString('tr-TR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
             
-            const logoA = m.teams_a?.logo_url || 'img/unknown.webp';
-            const nameA = m.teams_a?.name || 'Belirlenmedi';
-            const logoB = m.teams_b?.logo_url || 'img/unknown.webp';
-            const nameB = m.teams_b?.name || 'Belirlenmedi';
+            // globalTeamMap kullanarak isimleri ve logoları güvenli bir şekilde çeker
+            const teamAInfo = globalTeamMap[m.team_a_id] || {};
+            const teamBInfo = globalTeamMap[m.team_b_id] || {};
+
+            const logoA = teamAInfo.logo_url || 'img/unknown.webp';
+            const nameA = teamAInfo.name || 'Belirlenmedi';
+            const logoB = teamBInfo.logo_url || 'img/unknown.webp';
+            const nameB = teamBInfo.name || 'Belirlenmedi';
 
             let scoreArea = '';
             let statusClass = ''; 
@@ -444,7 +461,6 @@
                 scoreArea = `<div class="m-score-box">VS</div>`;
             }
 
-            // Tarih varsa göster, yoksa boşluk bırakma daha sade durur
             const dateHtml = dateStr ? `<div class="match-date">${dateStr}</div>` : '';
 
             return `
