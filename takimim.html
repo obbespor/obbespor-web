@@ -151,7 +151,7 @@
         .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 90%; max-width: 450px; padding: 35px 25px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.7); text-align: center; }
         .modal-content.danger { border-top-color: var(--kirmizi-iptal); }
 
-        /* MOBİL DÜZENLEMELERİ (İsim taşmaları, sıkışmalar ve kart boyutları düzeltildi) */
+        /* MOBİL DÜZENLEMELERİ */
         @media (max-width: 768px) {
             .team-profile-header { padding: 30px 15px 20px; }
             .team-profile-name { font-size: 24px; flex-direction: column; gap: 5px; text-align: center;}
@@ -163,7 +163,6 @@
 
             .roster-grid { grid-template-columns: 1fr; gap: 15px; margin-bottom: 30px; }
             
-            /* Mobilde kart içi boşluklar ve ikon boyutları optimize edildi */
             .player-card-header { padding: 15px; padding-right: 40px; gap: 12px;}
             .player-avatar { width: 50px; height: 50px; font-size: 20px; }
             .player-ign { font-size: 16px; }
@@ -171,7 +170,6 @@
             .role-badges-area { margin-top: 5px; }
             .player-role, .captain-crown { font-size: 9px; padding: 2px 6px; }
             
-            /* Atma butonu yeri ve boyutu mobilde daha düzgün hale getirildi */
             .btn-kick { top: 12px; right: 10px; width: 26px; height: 26px; font-size: 12px; }
             
             .player-stats-row { padding: 12px 5px; }
@@ -623,7 +621,8 @@
 
             const roleClassBadge = isPending ? 'role-pending' : 'role-standard';
 
-            // DİKKAT: .captain-card stili KALDIRILDI. Kaptansa standart görünür, isMe ise yeşil görünür.
+            // DİKKAT: ÇİFT BİLDİRİM - ÇİFT LOG ENGELİ!
+            // Kendi takımımı ararken davet gitmesini engelleyen ve arama sorununu çözen kod.
             return `
                 <div class="player-card ${isPending ? 'pending' : ''} ${isMe ? 'current-user-card' : ''}">
                     <div class="player-card-header">
@@ -661,6 +660,7 @@
             btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
             try {
+                // LOGO YÜKLEMESİ ARTIK AŞAĞIDA DA ÇALIŞIYOR (Oluşturma kısmına taşındı)
                 const logoFile = document.getElementById('editTeamLogo').files[0];
                 let logoUrl = myTeamData.logo_url;
                 if (logoFile) {
@@ -680,33 +680,53 @@
             } catch (err) { showNotification(err.message, "error"); btn.disabled = false; btn.innerHTML = originalText; }
         }
 
+        // İŞTE BURASI DÜZELTİLDİ: İLK OLUŞTURURKEN LOGOYU (PP) KAYDETME
         document.getElementById('teamForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('newTeamName').value.trim();
             const tag = document.getElementById('newTeamTag').value.trim().toUpperCase();
+            const logoFile = document.getElementById('newTeamLogo').files[0]; // Dosyayı yakala
             const btn = document.getElementById('btnCreateTeam');
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
+            btn.disabled = true; 
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
             try {
+                // 1. Önce takımı ismen oluştur ve ID'sini al
                 const { data: newTeam, error } = await window.supabaseClient.from('teams').insert([{ captain_id: currentUser.id, name, tag }]).select().single();
                 if (error) throw error;
                 
-                // Yeni kayıt mantığında Kaptan varsayılan olarak member olarak ekleniyor.
+                // 2. Eğer logo seçilmişse, şimdi takımın ID'si ile logoyu yükle ve URL'i takıma yaz
+                if (logoFile) {
+                    if (logoFile.size > 2 * 1024 * 1024) {
+                        showNotification("Logo 2MB'dan büyük olamaz. Takım logosuz kuruldu.", "info");
+                    } else {
+                        const fileName = `logo_${newTeam.id}`; 
+                        await window.supabaseClient.storage.from('team-logos').upload(fileName, logoFile, { upsert: true });
+                        const { data: urlData } = window.supabaseClient.storage.from('team-logos').getPublicUrl(fileName);
+                        const logoUrl = `${urlData.publicUrl}?t=${Date.now()}`; 
+                        // Takımı logoyla güncelle
+                        await window.supabaseClient.from('teams').update({ logo_url: logoUrl }).eq('id', newTeam.id);
+                    }
+                }
+
+                // 3. Kaptanı listeye ekle ve (varsa) sahte bildirim bugunu temizle
                 const { data: newMem } = await window.supabaseClient.from('team_members')
                     .insert([{ team_id: newTeam.id, user_id: currentUser.id, role: 'member', status: 'accepted' }])
                     .select().single();
 
-                // GİZLİ VERİTABANI TETİKLEYİCİSİ (TRIGGER) YAMASI:
-                // Supabase'deki bir trigger (enforce_status vs.) araya girip kaptanı zorla "pending" yapmışsa:
                 if (newMem && newMem.status === 'pending') {
-                    // 1. Durumu hemen "accepted" olarak düzelt
                     await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', newMem.id);
-                    // 2. Trigger'ın yanlışlıkla attığı o "seni takıma çağırıyor" bildirimini veritabanından sil
                     await window.supabaseClient.from('bildirimler').delete().eq('kullanici_id', currentUser.id).ilike('mesaj', '%çağırıyor%');
                 }
 
-                showNotification("Takım kuruldu!", "success");
+                showNotification("Takım başarıyla kuruldu!", "success");
                 setTimeout(() => location.reload(), 1500);
-            } catch (err) { showNotification(err.message, "error"); btn.disabled = false; btn.innerHTML = 'TAKIMI OLUŞTUR'; }
+            } catch (err) { 
+                showNotification(err.message, "error"); 
+                btn.disabled = false; 
+                btn.innerHTML = 'TAKIMI OLUŞTUR'; 
+            }
         });
 
         function attachDynamicSearchEvent() {
