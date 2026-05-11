@@ -601,7 +601,8 @@
 
             const roleClassBadge = isPending ? 'role-pending' : 'role-standard';
 
-            // DİKKAT: .captain-card stili KALDIRILDI. Kaptansa standart görünür, isMe ise yeşil görünür.
+            // DİKKAT: ÇİFT BİLDİRİM - ÇİFT LOG ENGELİ!
+            // Kendi takımımı ararken davet gitmesini engelleyen ve arama sorununu çözen kod.
             return `
                 <div class="player-card ${isPending ? 'pending' : ''} ${isMe ? 'current-user-card' : ''}">
                     <div class="player-card-header">
@@ -695,9 +696,10 @@
                         div.innerHTML = `<i class="fas fa-user-plus"></i> <b>${u.username}</b> ${ignDisplay}`;
                         div.onclick = async () => {
                             try {
+                                // SADECE RPC İLE DAVET AT - "BİLDİRİMLER" TABLOSUNA MANUEL YAZDIRMA KISMI SİLİNDİ
                                 await window.supabaseClient.rpc('send_team_invite', { p_team_id: myTeamData.id, p_user_id: u.id, p_role: 'member' });
-                                await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: u.id, baslik: "Yeni Takım Daveti", mesaj: `${myTeamData.name} takımı sizi davet etti.`, tip: 'sistem' }]);
-                                showNotification("Davet gönderildi!", "success"); fetchRoster();
+                                showNotification("Davet gönderildi!", "success"); 
+                                fetchRoster();
                             } catch(e) { showNotification("Hata oluştu.", "error"); }
                         };
                         list.appendChild(div);
