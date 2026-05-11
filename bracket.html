@@ -16,12 +16,12 @@
         :root {
             --grup-a-renk: #00d2ff;
             --grup-b-renk: #ff4b4b;
-            --playoff-renk: #ffd700;
+            --playoff-renk: #9d4edd; /* Daha ciddi, neon mor tema */
         }
 
         body {
             background-color: #050505;
-            background-image: radial-gradient(circle at 50% 0%, rgba(96, 29, 194, 0.1) 0%, transparent 60%);
+            background-image: radial-gradient(circle at 50% 0%, rgba(96, 29, 194, 0.08) 0%, transparent 60%);
         }
 
         .fixture-container { max-width: 1300px; margin: 50px auto; padding: 0 20px; flex: 1; animation: fadeIn 0.5s ease; }
@@ -34,118 +34,108 @@
         .group-col { flex: 1; display: flex; flex-direction: column; gap: 30px; }
 
         /* PUAN DURUMU TABLOSU */
-        .standings-card { background: rgba(15,15,15,0.8); border: 1px solid #222; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
-        .group-a .standings-card { border-top: 4px solid var(--grup-a-renk); }
-        .group-b .standings-card { border-top: 4px solid var(--grup-b-renk); }
+        .standings-card { background: rgba(15,15,15,0.8); border: 1px solid #222; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        .group-a .standings-card { border-top: 3px solid var(--grup-a-renk); }
+        .group-b .standings-card { border-top: 3px solid var(--grup-b-renk); }
         
-        .card-header { padding: 20px; background: rgba(0,0,0,0.4); text-align: center; font-size: 20px; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #333; }
+        .card-header { padding: 15px; background: rgba(0,0,0,0.6); text-align: center; font-size: 18px; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #222; }
         .group-a .card-header { color: var(--grup-a-renk); }
         .group-b .card-header { color: var(--grup-b-renk); }
 
         table { width: 100%; border-collapse: collapse; text-align: center; color: white; font-size: 13px; }
-        th { padding: 15px 10px; color: var(--gri-yazi); font-weight: bold; background: rgba(255,255,255,0.02); text-transform: uppercase; font-size: 11px; }
-        td { padding: 15px 10px; border-bottom: 1px solid #222; font-weight: 500; }
+        th { padding: 12px 10px; color: var(--gri-yazi); font-weight: bold; background: rgba(255,255,255,0.03); text-transform: uppercase; font-size: 11px; border-bottom: 1px solid #333;}
+        td { padding: 12px 10px; border-bottom: 1px solid #222; font-weight: 500; }
         tr:last-child td { border-bottom: none; }
         
         /* İLK 2 TAKIM VURGUSU */
-        tr.qualified { background: rgba(0, 255, 136, 0.05); }
-        tr.qualified td:first-child { border-left: 3px solid #00ff88; }
+        tr.qualified { background: rgba(255, 255, 255, 0.03); }
+        tr.qualified td:first-child { border-left: 3px solid #fff; }
         
-        .team-cell { display: flex; align-items: center; gap: 10px; text-align: left; padding-left: 15px !important; font-weight: bold; font-size: 14px;}
-        .team-cell img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #444; }
-        .pts-col { font-weight: 900; color: var(--neon-mor); font-size: 15px; }
+        .team-cell { display: flex; align-items: center; gap: 10px; text-align: left; padding-left: 15px !important; font-weight: bold; font-size: 13px;}
+        .team-cell img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #444; }
+        .pts-col { font-weight: 900; color: white; font-size: 15px; }
 
         /* MAÇ KARTLARI (FİKSTÜR) */
         .matches-list { display: flex; flex-direction: column; gap: 15px; }
-        .match-card { background: #0a0a0a; border: 1px solid #333; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; transition: 0.3s; position: relative; z-index: 2;}
-        .match-card:hover { border-color: #555; transform: translateY(-3px); }
+        .match-card { background: #0a0a0a; border: 1px solid #333; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; transition: 0.2s; position: relative; z-index: 2;}
+        .match-card:hover { border-color: #666; background: #0d0d0d;}
         
-        .match-date { text-align: center; font-size: 11px; color: var(--gri-yazi); font-weight: bold; margin-bottom: 15px; border-bottom: 1px dashed #333; padding-bottom: 10px; text-transform: uppercase;}
-        .match-date i { margin-right: 5px; color: var(--neon-mor); }
+        .match-date { text-align: center; font-size: 10px; color: var(--gri-yazi); font-weight: bold; margin-bottom: 10px; border-bottom: 1px dashed #333; padding-bottom: 8px; text-transform: uppercase;}
         
         .match-teams { display: flex; justify-content: space-between; align-items: center; }
-        .m-team { display: flex; align-items: center; gap: 10px; flex: 1; font-size: 14px; font-weight: bold; color: white; }
+        .m-team { display: flex; align-items: center; gap: 10px; flex: 1; font-size: 13px; font-weight: bold; color: #ddd; }
         .m-team.right { flex-direction: row-reverse; text-align: right; }
-        .m-team img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #222; }
+        .m-team img { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #333; }
         
-        .m-score-box { background: #111; border: 1px solid #333; padding: 5px 15px; border-radius: 8px; font-size: 18px; font-weight: 900; color: white; display: flex; align-items: center; gap: 10px; margin: 0 15px;}
-        .m-score-box span { min-width: 20px; text-align: center; }
-        .m-score-box .winner { color: #00ff88; }
-        .m-score-box .loser { color: #ff4b4b; }
-        .m-vs { font-size: 12px; color: #555; }
+        .m-score-box { background: #111; border: 1px solid #444; padding: 4px 12px; border-radius: 6px; font-size: 16px; font-weight: 900; color: white; display: flex; align-items: center; gap: 10px; margin: 0 10px;}
+        .m-score-box span { min-width: 15px; text-align: center; }
+        .m-score-box .winner { color: #fff; }
+        .m-score-box .loser { color: #666; }
+        .m-vs { font-size: 12px; color: #444; font-weight: normal;}
         
-        .match-pending .m-score-box { background: transparent; border: none; font-size: 14px; color: #777; }
+        .match-pending .m-score-box { background: transparent; border: none; font-size: 12px; color: #666; }
+        .match-pending .m-team { color: #888; }
 
-        /* --- KUSURSUZ TURNUVA AĞACI (BRACKET) TASARIMI --- */
-        .playoff-wrapper { margin-top: 60px; padding-top: 40px; border-top: 2px dashed #222; }
-        .playoff-title { text-align: center; color: white; font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 60px; }
-        .playoff-title span { color: var(--playoff-renk); text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);}
+        /* BOŞ SLOT TASARIMI */
+        .empty-bracket-card { background: #050505; border: 1px dashed #333; border-radius: 8px; padding: 25px; text-align: center; color: #444; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; position: relative; z-index: 2;}
+
+        /* --- STANDART VE CİDDİ TURNUVA AĞACI (BRACKET) TASARIMI --- */
+        .playoff-wrapper { margin-top: 60px; padding-top: 40px; border-top: 1px solid #222; }
+        .playoff-title { text-align: center; color: white; font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 50px; }
         
         .tournament-bracket {
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Ağaç dallarının genişliğini ayarlıyoruz */
+            gap: 60px;
         }
 
-        .round-semis {
+        .bracket-round {
             display: flex;
             flex-direction: column;
-            gap: 60px; /* Yarı final maçları arasındaki boşluk */
+            gap: 40px;
             position: relative;
         }
 
-        .round-final {
-            margin-left: 60px; /* Final maçının yarı finallere uzaklığı */
-            position: relative;
-        }
+        .round-semis .bracket-match { width: 320px; position: relative; }
+        .round-final .bracket-match { width: 380px; position: relative; }
 
-        .round-semis .bracket-match { width: 350px; position: relative; }
-        .round-final .bracket-match { width: 450px; position: relative; }
-
-        /* AĞAÇ ÇİZGİLERİ (Masaüstü için) */
+        /* AĞAÇ ÇİZGİLERİ (Sadeleştirilmiş Gri Çizgiler) */
         @media (min-width: 993px) {
-            /* Yarı finallerden sağa çıkan yatay çizgiler */
             .round-semis .bracket-match::after {
                 content: "";
                 position: absolute;
                 right: -30px;
                 top: 50%;
                 width: 30px;
-                border-top: 2px solid #555;
+                border-top: 2px solid #333;
                 z-index: 1;
             }
-            /* İki yarı finali bağlayan dikey çizgi */
             .round-semis::after {
                 content: "";
                 position: absolute;
                 right: -30px;
-                top: 25%; /* Üst maçın ortasından başlar */
-                bottom: 25%; /* Alt maçın ortasında biter */
-                border-right: 2px solid #555;
+                top: calc(25% + 15px); /* İlk maçın ortası */
+                bottom: calc(25% + 15px); /* İkinci maçın ortası */
+                border-right: 2px solid #333;
                 z-index: 1;
             }
-            /* Final maçına giren sol yatay çizgi */
             .round-final .bracket-match::before {
                 content: "";
                 position: absolute;
                 left: -30px;
                 top: 50%;
                 width: 30px;
-                border-top: 2px solid #555;
+                border-top: 2px solid #333;
                 z-index: 1;
             }
         }
 
-        .bracket-round-title { text-align: center; color: var(--gri-yazi); font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+        .bracket-round-title { text-align: center; color: #666; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
 
-        /* BÜYÜK FİNAL KARTI ÖZEL TASARIM */
-        .round-final .match-card { border-color: var(--playoff-renk); box-shadow: 0 0 30px rgba(255, 215, 0, 0.1); background: linear-gradient(180deg, #111 0%, #050505 100%); padding: 25px; transform: scale(1.05); }
-        .round-final .match-card:hover { box-shadow: 0 0 40px rgba(255, 215, 0, 0.2); transform: scale(1.08); }
-        .round-final .match-date i { color: var(--playoff-renk); }
-        .round-final .m-score-box { background: rgba(255, 215, 0, 0.1); border-color: rgba(255, 215, 0, 0.3); }
-
-        .empty-bracket-card { background: #0a0a0a; border: 1px dashed #333; border-radius: 12px; padding: 30px; text-align: center; color: #555; font-size: 13px; font-weight: bold; position: relative; z-index: 2;}
+        /* FİNAL KARTI (Ciddi Vurgu) */
+        .round-final .match-card { border-color: var(--playoff-renk); background: #0a0a0a; box-shadow: 0 0 15px rgba(157, 78, 221, 0.1); padding: 20px;}
+        .round-final .m-score-box { background: rgba(157, 78, 221, 0.1); border-color: rgba(157, 78, 221, 0.3); }
 
         /* MOBİL UYUM */
         @media (max-width: 992px) {
@@ -153,12 +143,10 @@
             .m-team span { display: none; }
             .m-team.m-mobile-name span { display: block; font-size: 12px;}
             
-            /* Mobilde Ağaç Yapısı Alt Alta Liste Olur ve Çizgiler Gizlenir */
-            .tournament-bracket { flex-direction: column; gap: 40px; }
-            .round-semis, .round-final { width: 100%; max-width: 500px; margin-left: 0; gap: 20px;}
+            .tournament-bracket { flex-direction: column; gap: 30px; }
+            .bracket-round { width: 100%; max-width: 500px; gap: 15px; }
             .round-semis .bracket-match, .round-final .bracket-match { width: 100%; }
-            .round-final .match-card { transform: scale(1); }
-            .round-final .match-card:hover { transform: translateY(-3px); }
+            .bracket-match::before, .bracket-match::after, .round-semis::after { display: none !important; }
         }
 
         #loadingScreen { position: fixed; top:0; left:0; width:100%; height:100%; background: #050505; display:flex; justify-content:center; align-items:center; z-index: 9999; color: var(--neon-mor); flex-direction: column; }
@@ -179,7 +167,7 @@
         <div class="groups-wrapper">
             <div class="group-col group-a">
                 <div class="standings-card">
-                    <div class="card-header"><i class="fas fa-trophy"></i> A GRUBU</div>
+                    <div class="card-header">A GRUBU</div>
                     <table>
                         <thead>
                             <tr>
@@ -193,13 +181,13 @@
                 </div>
                 
                 <div class="matches-list" id="groupA-matches">
-                    <h3 style="color:white; font-size:16px; margin: 10px 0 5px; border-left: 3px solid var(--grup-a-renk); padding-left: 10px;">Grup Maçları</h3>
+                    <h3 style="color:white; font-size:14px; margin: 10px 0 5px; border-left: 3px solid var(--grup-a-renk); padding-left: 10px; text-transform: uppercase;">A Grubu Eşleşmeleri</h3>
                     </div>
             </div>
 
             <div class="group-col group-b">
                 <div class="standings-card">
-                    <div class="card-header"><i class="fas fa-trophy"></i> B GRUBU</div>
+                    <div class="card-header">B GRUBU</div>
                     <table>
                         <thead>
                             <tr>
@@ -213,24 +201,24 @@
                 </div>
                 
                 <div class="matches-list" id="groupB-matches">
-                    <h3 style="color:white; font-size:16px; margin: 10px 0 5px; border-left: 3px solid var(--grup-b-renk); padding-left: 10px;">Grup Maçları</h3>
+                    <h3 style="color:white; font-size:14px; margin: 10px 0 5px; border-left: 3px solid var(--grup-b-renk); padding-left: 10px; text-transform: uppercase;">B Grubu Eşleşmeleri</h3>
                     </div>
             </div>
         </div>
 
         <div class="playoff-wrapper">
-            <h2 class="playoff-title">PLAYOFF <span>AŞAMASI</span></h2>
+            <h2 class="playoff-title">PLAYOFF AŞAMASI</h2>
             
             <div class="tournament-bracket">
                 
-                <div class="round-semis">
-                    <div class="bracket-round-title">YARI FİNALLER</div>
-                    <div id="semi-finals-list" style="display: flex; flex-direction: column; gap: 60px;">
+                <div class="bracket-round round-semis">
+                    <div class="bracket-round-title">Yarı Final</div>
+                    <div id="semi-finals-list" style="display: flex; flex-direction: column; gap: 40px;">
                         </div>
                 </div>
 
-                <div class="round-final">
-                    <div class="bracket-round-title" style="color: var(--playoff-renk);"><i class="fas fa-crown"></i> BÜYÜK FİNAL <i class="fas fa-crown"></i></div>
+                <div class="bracket-round round-final">
+                    <div class="bracket-round-title">Büyük Final</div>
                     <div id="final-match">
                         </div>
                 </div>
@@ -257,12 +245,11 @@
                     .select('id').in('status', ['upcoming', 'ongoing']).order('created_at', { ascending: false }).limit(1).maybeSingle();
                 
                 if (!tourney) {
-                    document.querySelector('.fixture-container').innerHTML = '<h3 style="color:white; text-align:center; margin-top:50px;">Şu an aktif bir turnuva bulunmuyor.</h3>';
+                    document.querySelector('.fixture-container').innerHTML = '<h3 style="color:#555; text-align:center; margin-top:50px;">Şu an aktif bir turnuva bulunmuyor.</h3>';
                     return;
                 }
                 activeTournamentId = tourney.id;
 
-                // 2. Takımları ve Maçları Çek
                 await fetchDataAndCalculate();
 
             } catch (err) {
@@ -273,7 +260,7 @@
         }
 
         async function fetchDataAndCalculate() {
-            // Onaylı Takımları ve Gruplarını Çek
+            // Başvuruları Çek
             const { data: applications } = await window.supabaseClient.from('tournament_applications')
                 .select('group_name, teams(id, name, logo_url)')
                 .eq('tournament_id', activeTournamentId)
@@ -283,31 +270,49 @@
             const { data: matches } = await window.supabaseClient.from('bracket_matches')
                 .select('id, round_name, match_date, status, team_a_id, team_b_id, series_score_a, series_score_b, teams_a:team_a_id(name, logo_url), teams_b:team_b_id(name, logo_url)')
                 .eq('tournament_id', activeTournamentId)
-                .order('match_date', { ascending: true });
+                .order('created_at', { ascending: true }); // Oluşturulma sırasına göre diz
 
             if(!applications) return;
 
-            // Puan Durumu Objeleri Oluştur
+            // Puan Durumu Objeleri
             let standings = { 'A': {}, 'B': {} };
             
+            // 1. Önce Başvurulardaki Takımları Tabloya Ekle
             applications.forEach(app => {
-                const grp = app.group_name; // 'A' veya 'B'
+                let grp = app.group_name; 
+                // Güvenlik: Admin belki küçük harf girmiştir
+                if (grp) grp = grp.toUpperCase();
+                
                 const tId = app.teams.id;
                 if (grp === 'A' || grp === 'B') {
                     standings[grp][tId] = {
-                        id: tId,
-                        name: app.teams.name,
-                        logo: app.teams.logo_url || 'img/unknown.webp',
+                        id: tId, name: app.teams.name, logo: app.teams.logo_url || 'img/unknown.webp',
                         played: 0, wins: 0, losses: 0, average: 0, points: 0
                     };
                 }
             });
 
-            // Maç Skorlarına Göre Puanları Hesapla (Sadece Grup Maçları İçin)
+            // 2. Eksik Takımları Koru (Eğer maç oynanmış ama listede yoksa zorla ekle)
             if (matches) {
                 matches.forEach(m => {
-                    const grp = m.round_name === 'A Grubu' ? 'A' : (m.round_name === 'B Grubu' ? 'B' : null);
-                    // Puanlar sadece Grup aşamasında hesaplanır
+                    let grp = getMatchGroup(m.round_name);
+                    if (grp) {
+                        if (m.team_a_id && !standings[grp][m.team_a_id]) {
+                            standings[grp][m.team_a_id] = { id: m.team_a_id, name: m.teams_a?.name || 'Bilinmiyor', logo: m.teams_a?.logo_url || 'img/unknown.webp', played: 0, wins: 0, losses: 0, average: 0, points: 0 };
+                        }
+                        if (m.team_b_id && !standings[grp][m.team_b_id]) {
+                            standings[grp][m.team_b_id] = { id: m.team_b_id, name: m.teams_b?.name || 'Bilinmiyor', logo: m.teams_b?.logo_url || 'img/unknown.webp', played: 0, wins: 0, losses: 0, average: 0, points: 0 };
+                        }
+                    }
+                });
+            }
+
+            // 3. Maç Skorlarına Göre Puanları Hesapla
+            if (matches) {
+                matches.forEach(m => {
+                    const grp = getMatchGroup(m.round_name);
+                    
+                    // Sadece Gruplardaki Puanları Hesapla (Yarı final / final tablolara etki etmez)
                     if (grp && m.status === 'completed') {
                         const tA = standings[grp][m.team_a_id];
                         const tB = standings[grp][m.team_b_id];
@@ -315,56 +320,61 @@
                         if (tA && tB) {
                             tA.played++; tB.played++;
                             
-                            // Averaj Ekle/Çıkar
                             tA.average += (m.series_score_a - m.series_score_b);
                             tB.average += (m.series_score_b - m.series_score_a);
 
-                            // Puan ve Galibiyet
                             if (m.series_score_a > m.series_score_b) {
-                                tA.wins++; tA.points += 3;
-                                tB.losses++;
+                                tA.wins++; tA.points += 3; tB.losses++;
                             } else if (m.series_score_b > m.series_score_a) {
-                                tB.wins++; tB.points += 3;
-                                tA.losses++;
+                                tB.wins++; tB.points += 3; tA.losses++;
                             }
                         }
                     }
                 });
             }
 
-            // GRUP Tablolarını Ekrana Çizdir
+            // Tabloları Ekrana Çizdir
             renderTable('A', standings['A']);
             renderTable('B', standings['B']);
 
-            // FİKSTÜR VE MAÇ KARTLARINI EKRANA ÇİZ
-            if(matches) {
-                // 1. Grup Maçları (Eski Stilde Yan Yana Alt Alta)
-                renderGroupMatches('groupA-matches', matches.filter(m => m.round_name === 'A Grubu'));
-                renderGroupMatches('groupB-matches', matches.filter(m => m.round_name === 'B Grubu'));
-                
-                // 2. Bracket (Ağaç) Maçları
-                renderBracketMatches('semi-finals-list', matches.filter(m => m.round_name === 'Yarı Final'), 2); // Yarı finalde 2 maç beklenir
-                renderBracketMatches('final-match', matches.filter(m => m.round_name === 'Final'), 1); // Finalde 1 maç beklenir
-            }
+            // Maçları Kategorize Et ve Tam Yuvalara Çizdir
+            const groupAMatches = matches ? matches.filter(m => getMatchGroup(m.round_name) === 'A') : [];
+            const groupBMatches = matches ? matches.filter(m => getMatchGroup(m.round_name) === 'B') : [];
+            const semiMatches = matches ? matches.filter(m => getMatchGroup(m.round_name) === 'SEMI') : [];
+            const finalMatches = matches ? matches.filter(m => getMatchGroup(m.round_name) === 'FINAL') : [];
+
+            renderMatchesWithPadding('groupA-matches', groupAMatches, 3, false);
+            renderMatchesWithPadding('groupB-matches', groupBMatches, 3, false);
+            renderMatchesWithPadding('semi-finals-list', semiMatches, 2, true);
+            renderMatchesWithPadding('final-match', finalMatches, 1, true);
+        }
+
+        // İsim Uyuşmazlıklarına Karşı Güçlü Filtre
+        function getMatchGroup(rawName) {
+            if (!rawName) return null;
+            const name = rawName.toUpperCase();
+            if (name.includes('A GRUBU') || name.includes('GRUP A')) return 'A';
+            if (name.includes('B GRUBU') || name.includes('GRUP B')) return 'B';
+            if (name.includes('YARI') || name.includes('SEMI')) return 'SEMI';
+            if (name.includes('FİNAL') || name.includes('FINAL')) return 'FINAL';
+            return null;
         }
 
         function renderTable(groupName, teamsObj) {
             const tbody = document.getElementById(`group${groupName}-table`);
             if(!tbody) return;
 
-            // Objeyi Diziye Çevir ve Sırala (Önce Puan, Sonra Averaj)
             const teamsArray = Object.values(teamsObj);
             teamsArray.sort((a, b) => {
                 if (b.points !== a.points) return b.points - a.points;
-                return b.average - a.average; // Puan eşitse averaja bak
+                return b.average - a.average; 
             });
 
             let html = '';
             if (teamsArray.length === 0) {
-                html = '<tr><td colspan="6" style="color:#777;">Bu grupta henüz onaylı takım yok.</td></tr>';
+                html = '<tr><td colspan="6" style="color:#555;">Bu grupta takım yok.</td></tr>';
             } else {
                 teamsArray.forEach((team, index) => {
-                    // İlk 2 Takımı Yeşil Yap
                     const rowClass = index < 2 ? 'qualified' : '';
                     const avgDisplay = team.average > 0 ? `+${team.average}` : team.average;
                     
@@ -386,65 +396,35 @@
             tbody.innerHTML = html;
         }
 
-        // GRUP MAÇLARINI ÇİZDİRME
-        function renderGroupMatches(containerId, matchArray) {
+        // MAÇLARI VE BOŞ SLOTLARI KUSURSUZ ÇİZDİRİR
+        function renderMatchesWithPadding(containerId, matchArray, maxSlots, isBracket) {
             const container = document.getElementById(containerId);
             if(!container) return;
 
-            const borderColor = containerId.includes('A') ? 'var(--grup-a-renk)' : 'var(--grup-b-renk)';
-            let html = `<h3 style="color:white; font-size:16px; margin: 10px 0 5px; border-left: 3px solid ${borderColor}; padding-left: 10px;">Grup Maçları</h3>`;
-            
-            if (matchArray.length === 0) {
-                html += `<div class="empty-bracket-card" style="padding:15px; margin-top:10px;">Henüz maç eklenmedi.</div>`;
-                container.innerHTML = html;
-                return;
-            }
+            // Varsa başlığı koru
+            const titleEl = container.querySelector('h3');
+            let html = titleEl ? titleEl.outerHTML : '';
 
-            matchArray.forEach(m => {
-                html += createMatchCardHtml(m);
-            });
-
-            container.innerHTML = html;
-        }
-
-        // BRACKET (AĞAÇ) MAÇLARINI ÇİZDİRME (Yarı Final ve Final İçin)
-        function renderBracketMatches(containerId, matchArray, expectedCount) {
-            const container = document.getElementById(containerId);
-            if(!container) return;
-
-            let html = '';
-            
-            // Eğer maçlar henüz hiç oluşturulmadıysa boş kutular (placeholder) göster
-            if (matchArray.length === 0) {
-                for(let i=0; i<expectedCount; i++) {
-                    html += `<div class="bracket-match"><div class="empty-bracket-card">Eşleşme Bekleniyor...</div></div>`;
+            // Var olan maçları yazdır
+            for (let i = 0; i < maxSlots; i++) {
+                if (matchArray[i]) {
+                    html += `<div class="${isBracket ? 'bracket-match' : ''}">${createMatchCardHtml(matchArray[i])}</div>`;
+                } else {
+                    // Maç yoksa Boş Slot Çizdir
+                    html += `<div class="${isBracket ? 'bracket-match' : ''}"><div class="empty-bracket-card">Eşleşme Bekleniyor</div></div>`;
                 }
-                container.innerHTML = html;
-                return;
-            }
-
-            // Oluşturulan maçları çiz
-            matchArray.forEach(m => {
-                html += `<div class="bracket-match">${createMatchCardHtml(m)}</div>`;
-            });
-            
-            // Eğer eksik maç varsa (örneğin sadece 1 yarı final girildiyse), kalanını boş kutu ile tamamla ki ağaç bozulmasın
-            const missingCount = expectedCount - matchArray.length;
-            for(let i=0; i<missingCount; i++) {
-                html += `<div class="bracket-match"><div class="empty-bracket-card">Eşleşme Bekleniyor...</div></div>`;
             }
 
             container.innerHTML = html;
         }
 
-        // TEKİL MAÇ KARTI OLUŞTURUCU (HTML Döndürür)
         function createMatchCardHtml(m) {
-            const dateStr = m.match_date ? new Date(m.match_date).toLocaleString('tr-TR', { day:'numeric', month:'long', hour:'2-digit', minute:'2-digit' }) : 'TARİH BELİRSİZ';
+            const dateStr = m.match_date ? new Date(m.match_date).toLocaleString('tr-TR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
             
             const logoA = m.teams_a?.logo_url || 'img/unknown.webp';
-            const nameA = m.teams_a?.name || 'TBD (Belli Değil)';
+            const nameA = m.teams_a?.name || 'Belirlenmedi';
             const logoB = m.teams_b?.logo_url || 'img/unknown.webp';
-            const nameB = m.teams_b?.name || 'TBD (Belli Değil)';
+            const nameB = m.teams_b?.name || 'Belirlenmedi';
 
             let scoreArea = '';
             let statusClass = ''; 
@@ -464,9 +444,12 @@
                 scoreArea = `<div class="m-score-box">VS</div>`;
             }
 
+            // Tarih varsa göster, yoksa boşluk bırakma daha sade durur
+            const dateHtml = dateStr ? `<div class="match-date">${dateStr}</div>` : '';
+
             return `
                 <div class="match-card ${statusClass}">
-                    <div class="match-date"><i class="far fa-calendar-alt"></i> ${dateStr}</div>
+                    ${dateHtml}
                     <div class="match-teams">
                         <div class="m-team">
                             <img src="${logoA}" onerror="this.src='img/unknown.webp'">
