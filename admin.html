@@ -45,13 +45,11 @@
         .form-control { background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: bold; width: 100%; outline: none; transition: 0.3s; }
         .form-control:focus { border-color: var(--neon-mor); }
 
-        /* YENİ EKLENEN REFERANS BÖLÜMÜ */
         .envelope-reference { display: none; background: rgba(255, 152, 0, 0.1); border: 1px dashed #ff9800; color: #ff9800; padding: 12px; border-radius: 8px; text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 14px; }
 
         .match-score-header { display: flex; align-items: center; justify-content: center; gap: 30px; margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid #222;}
         .team-score-input { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 35%; }
         
-        /* TAKIM SEÇİMİ İÇİN DROPDOWN TASARIMI */
         .team-select-dropdown { width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px dashed #555; color: white; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: bold; text-align: center; text-transform: uppercase; outline: none; transition: 0.3s; cursor: pointer; }
         .team-select-dropdown:focus, .team-select-dropdown:hover { border-color: var(--neon-mor); background: rgba(96, 29, 194, 0.1); }
         .team-select-dropdown option { background: #111; color: white; }
@@ -60,7 +58,6 @@
         .vs-text { text-align: center; font-size: 20px; font-weight: 900; color: var(--gri-yazi); display: flex; flex-direction: column; gap: 10px; width: 30%; }
         .map-input { background: #111; border: 1px solid #444; color: var(--neon-mor); padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold; text-align: center; text-transform: uppercase; outline: none; width: 100%; }
         
-        /* TARİH SEÇİCİ */
         .date-picker-group { display: flex; flex-direction: column; align-items: center; margin-top: 15px; }
         .date-picker-group label { font-size: 10px; color: var(--gri-yazi); font-weight: bold; margin-bottom: 5px; }
         .date-input { background: #111; border: 1px solid #333; color: white; padding: 10px; border-radius: 8px; outline: none; font-family: 'Poppins', sans-serif; }
@@ -305,7 +302,6 @@
             allApprovedTeams.forEach(app => {
                 if (stage === 'A Grubu' && app.group_name !== 'A') return;
                 if (stage === 'B Grubu' && app.group_name !== 'B') return;
-                
                 optionsHTML += `<option value="${app.teams.id}">${app.teams.name} ${app.group_name ? `(${app.group_name})` : ''}</option>`;
             });
 
@@ -343,7 +339,7 @@
             document.getElementById('tabZarflar').classList.toggle('active', mode === 'zarflar');
             document.getElementById('tabFikstur').classList.toggle('active', mode === 'fikstur');
             activeRecordId = null;
-            document.getElementById('envelopeReference').style.display = 'none'; // Referans kutusunu gizle
+            document.getElementById('envelopeReference').style.display = 'none'; 
             
             if (mode === 'fikstur') {
                 document.getElementById('editorPanel').style.display = 'block';
@@ -445,7 +441,6 @@
             for(let i=1; i<=maxMap; i++) mapOrder.innerHTML += `<option value="${i}">${i}. HARİTA</option>`;
         }
 
-        // ZARFI AÇ VE SADECE REFERANS GÖSTER
         async function openEnvelope(envId) {
             activeRecordId = envId;
             document.getElementById('editorPanel').style.display = 'block';
@@ -457,15 +452,13 @@
                 if(error || !zarf) throw new Error("Zarf verisi okunamadı.");
 
                 const mData = zarf.match_data || {};
-                const tA = mData.teamA || "Belirtilmemiş";
-                const tB = mData.teamB || "Belirtilmemiş";
                 
-                // REFERANS KUTUSUNU AKTİF ET
+                // REFERANS KUTUSUNU AKTİF ET (Kullanıcı manuel seçecek)
                 document.getElementById('envelopeReference').style.display = 'block';
-                document.getElementById('envRefTeamA').innerText = tA;
-                document.getElementById('envRefTeamB').innerText = tB;
+                document.getElementById('envRefTeamA').innerText = mData.teamA || "Belirtilmemiş";
+                document.getElementById('envRefTeamB').innerText = mData.teamB || "Belirtilmemiş";
 
-                // Dropdown menülerini ve başlıkları boş bırak
+                // Dropdown menüleri ve başlıkları boş bırak
                 document.getElementById('teamASelect').value = "";
                 document.getElementById('teamBSelect').value = "";
                 syncTeamName('A', null); 
@@ -478,7 +471,7 @@
                 generateEmptyRows('teamAPlayersInputs');
                 generateEmptyRows('teamBPlayersInputs');
                 
-                // Varsa manuel eklenen verileri yerleştir (Yapay zekaya göndermeden önceki ham veriler)
+                // Varsa manuel eklenen OCR verileri yerleşir (Yapay zeka basmadan önceki ham veriler)
                 fillOCRData('teamAPlayersInputs', mData.playersA);
                 fillOCRData('teamBPlayersInputs', mData.playersB);
 
@@ -492,7 +485,11 @@
             if (!playersData || !Array.isArray(playersData)) return;
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
             for(let i=0; i<Math.min(playersData.length, 5); i++) {
-                const p = playersData[i]; const row = rows[i+1]; if (!row) continue;
+                const p = playersData[i]; 
+                const row = rows[i+1]; 
+                if (!row) continue;
+                
+                // Sadece metin kutularını doldur (Eşleşme umursamadan)
                 if(p.agent) { const agentInput = row.querySelector('.agent-name-input'); agentInput.value = p.agent; updateAgentIcon(agentInput, `${containerId}_icon_${i}`); }
                 if(p.ign) row.querySelector('.ign-input').value = p.ign;
                 if(p.k !== undefined) row.querySelector('.k-input').value = p.k;
@@ -505,7 +502,7 @@
         async function openExistingMatch(matchId) {
             activeRecordId = { matchId: matchId };
             document.getElementById('editorPanel').style.display = 'block';
-            document.getElementById('envelopeReference').style.display = 'none'; // Referansı gizle
+            document.getElementById('envelopeReference').style.display = 'none'; 
             document.getElementById('btnSaveToBracket').innerHTML = '<i class="fas fa-sync-alt"></i> EŞLEŞMEYİ / SKORU GÜNCELLE';
             document.getElementById('btnDeleteOrReject').innerHTML = '<i class="fas fa-trash"></i> BU EŞLEŞMEYİ SİL';
             document.getElementById('btnAiScan').style.display = 'none';
@@ -620,7 +617,7 @@
                 
                 selects.forEach((sel) => { 
                     sel.innerHTML = optionsHtml; 
-                    // Önceden OCR ile yazılmış bir nick varsa eşleştir
+                    // Kutudaki mevcut yazıyı baz alıp manuel seçiciyi ayarla
                     const row = sel.closest('.player-stat-row'); 
                     const currentIgn = row.querySelector('.ign-input').value.trim().toLowerCase();
                     if (currentIgn) {
@@ -668,27 +665,22 @@ SADECE VE SADECE JSON FORMATINDA YANIT VER. AŞAĞIDAKİ GİBİ BİR YAPI KULLAN
 
                 let aiText = data.candidates[0].content.parts[0].text; 
                 
-                // JSON Cımbızlayıcı
-                const jsonMatch = aiText.match(/\{[\s\S]*\}/);
-                if (jsonMatch) {
-                    aiText = jsonMatch[0];
+                // Mükemmel JSON Cımbızlayıcı (Hatalı karakter ve açıklamaları çöpe atar)
+                const firstBrace = aiText.indexOf('{');
+                const lastBrace = aiText.lastIndexOf('}');
+                if (firstBrace !== -1 && lastBrace !== -1) {
+                    aiText = aiText.substring(firstBrace, lastBrace + 1);
                 } else {
                     aiText = aiText.replace(/```json/gi, '').replace(/```/g, '').trim();
                 }
 
                 const extractedData = JSON.parse(aiText);
 
-                // AI KDA'ları satırlara dizecek
+                // Gelen AI KDA'ları satırlara GÜÇLÜ bir şekilde doldur
                 if(extractedData.playersA) fillOCRData('teamAPlayersInputs', extractedData.playersA);
                 if(extractedData.playersB) fillOCRData('teamBPlayersInputs', extractedData.playersB);
 
-                // Eğer admin çoktan dropdown'dan takımları seçtiyse, KDA'lar dolar dolmaz eşleşmeyi tetikle
-                const teamAId = document.getElementById('teamASelect').value;
-                if(teamAId) await fetchProfilesForTeam('A', teamAId);
-                const teamBId = document.getElementById('teamBSelect').value;
-                if(teamBId) await fetchProfilesForTeam('B', teamBId);
-
-                showNotification("Sihir gerçekleşti! Veriler renklere göre ayrıldı.", "success");
+                showNotification("Sihir gerçekleşti! Veriler kutulara yazıldı.", "success");
             } catch (err) { 
                 console.error("Yapay Zeka Hatası: ", err); 
                 showNotification("JSON Ayrıştırma Hatası: AI metin formatı hatalı döndü.", "error"); 
@@ -812,6 +804,7 @@ SADECE VE SADECE JSON FORMATINDA YANIT VER. AŞAĞIDAKİ GİBİ BİR YAPI KULLAN
                         if (statsErr) throw statsErr;
                     }
 
+                    // Zarfı İşlenmiş Yap
                     if (activeRecordId && typeof activeRecordId === 'string') {
                         await window.supabaseClient.from('bekleyen_zarflar').update({ durum: 'processed' }).eq('id', activeRecordId);
                     }
