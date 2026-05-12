@@ -40,7 +40,10 @@
         }
 
         .profile-container { max-width: 1000px; margin: 40px auto; padding: 20px; flex: 1; }
-        .profile-banner { height: 250px; background: url('img/banner+.jpg') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
+        
+        /* Eski banner+.jpg silindi, varsayılan olarak banner1001.webp ayarlandı */
+        .profile-banner { height: 250px; background: url('img/banner1001.webp') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
+        
         .edit-banner-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 15px; border-radius: 5px; border: 1px solid var(--neon-mor); cursor: pointer; font-size: 12px; transition: 0.3s; z-index: 1000;}
         .edit-banner-btn:hover { background: var(--neon-mor); }
 
@@ -56,7 +59,7 @@
         
         .ign-container { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; background: rgba(0,0,0,0.3); display: inline-flex; padding: 6px 15px; border-radius: 30px; border: 1px solid #333; }
         .ign-label { font-size: 11px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase; }
-        .ign-value { font-size: 14px; font-weight: 900; color: white; } /* Anadolu kırmızısı iptal edildi, beyaz yapıldı */
+        .ign-value { font-size: 14px; font-weight: 900; color: white; } 
         .ign-actions { display: flex; gap: 8px; margin-left: 5px; border-left: 1px solid #444; padding-left: 8px; }
         .ign-actions i { cursor: pointer; transition: 0.3s; font-size: 14px; }
         .ign-actions .fa-pencil-alt { color: var(--neon-mor); }
@@ -66,7 +69,6 @@
         .username-edit-icon { color: var(--neon-mor); cursor: pointer; transition: 0.3s; font-size: 16px; margin-left: 10px; vertical-align: middle; }
         .username-edit-icon:hover { color: white; transform: scale(1.2); }
 
-        /* IGN Hatırlatma Kutusu */
         .ign-reminder-box {
             background: rgba(var(--anadolu-rgb), 0.1);
             border: 1px dashed var(--anadolu-kirmizi);
@@ -126,7 +128,6 @@
         .legal-status.approved { color: var(--yesil-guven); font-weight: bold; display: flex; align-items: center; gap: 5px; }
         .legal-status.approved i { font-size: 16px; }
         
-        /* Sözleşme Metinleri İçin Beyaz Renk */
         .clickable-doc { color: white; text-decoration: underline; cursor: pointer; transition: 0.3s; font-weight: bold; }
         .clickable-doc:hover { color: var(--yesil-guven); text-shadow: 0 0 10px var(--yesil-guven); }
 
@@ -135,7 +136,6 @@
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 24px; }
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        /* Switch Rengi Turkuazdan Yeşile Geçirildi */
         input:checked + .slider { background-color: var(--yesil-guven); }
         input:checked + .slider:before { transform: translateX(20px); }
 
@@ -497,7 +497,7 @@
         }
 
         const documentContents = {
-           kvkk: {
+            kvkk: {
                 title: "KİŞİSEL VERİLERİN İŞLENMESİNE İLİŞKİN AYDINLATMA METNİ",
                 body: `
                     <h4>1. Veri Sorumlusunun Kimliği ve Temsilcisi</h4>
@@ -674,6 +674,10 @@
         async function initProfile() {
             const cacheKey = 'obb_profile_cache';
             const cachedProfile = localStorage.getItem(cacheKey);
+            
+            // Varsayılan banner ayarı (eğer cache'te veya veritabanında yoksa)
+            let defaultBanner = 'img/banner1001.webp';
+
             if (cachedProfile) {
                 try {
                     const p = JSON.parse(cachedProfile);
@@ -682,14 +686,20 @@
                     if (p.ign) {
                         const ignDisplay = document.getElementById('userIgnDisplay');
                         ignDisplay.innerText = p.ign;
-                        ignDisplay.style.color = "white"; // Update JS color logic too!
+                        ignDisplay.style.color = "white";
                         document.getElementById('ignReminderBox').style.display = 'none';
                     } else {
                         document.getElementById('ignReminderBox').style.display = 'flex';
                     }
-                    if (p.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${p.banner_url}')`;
+                    if (p.banner_url) {
+                        document.getElementById('currentBanner').style.backgroundImage = `url('${p.banner_url}')`;
+                    } else {
+                        document.getElementById('currentBanner').style.backgroundImage = `url('${defaultBanner}')`;
+                    }
                     if (p.avatar_url) document.getElementById('userAvatar').src = p.avatar_url;
                 } catch(e) {}
+            } else {
+                 document.getElementById('currentBanner').style.backgroundImage = `url('${defaultBanner}')`;
             }
 
             const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
@@ -729,13 +739,18 @@
                     if (data.ign && data.ign !== "Belirlenmedi") {
                         currentIgn = data.ign;
                         ignDisplay.innerText = data.ign;
-                        ignDisplay.style.color = "white"; // Update JS color logic too!
+                        ignDisplay.style.color = "white"; 
                         document.getElementById('ignReminderBox').style.display = 'none';
                     } else {
                         document.getElementById('ignReminderBox').style.display = 'flex';
                     }
                     
-                    if(data.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
+                    if(data.banner_url) {
+                        document.getElementById('currentBanner').style.backgroundImage = `url('${data.banner_url}')`;
+                    } else {
+                        document.getElementById('currentBanner').style.backgroundImage = `url('${defaultBanner}')`;
+                    }
+                    
                     if(data.avatar_url) document.getElementById('userAvatar').src = data.avatar_url + "?t=" + Date.now();
 
                     if (data.marketing_consent) {
@@ -749,7 +764,7 @@
                         username: data.username,
                         bio: data.bio,
                         ign: data.ign,
-                        banner_url: data.banner_url,
+                        banner_url: data.banner_url || defaultBanner,
                         avatar_url: data.avatar_url
                     }));
                 }
@@ -855,7 +870,7 @@
 
                 const ignDisplay = document.getElementById('userIgnDisplay');
                 ignDisplay.innerText = trimmedIgn;
-                ignDisplay.style.color = "white"; // Update JS color logic too!
+                ignDisplay.style.color = "white"; 
                 document.getElementById('ignReminderBox').style.display = 'none';
                 closeCustomModal('ignEditModal');
 
@@ -976,13 +991,11 @@
 
         async function loadInvitationsAndTeam() {
             try {
-                // 1. Kullanıcının Kaptan Olduğu Takımı Doğrudan Kontrol Et
                 const { data: captainTeam } = await window.supabaseClient.from('teams')
                     .select('id, name, tag, captain_id')
                     .eq('captain_id', currentUser.id)
                     .maybeSingle();
 
-                // 2. Kullanıcının Üyesi Olduğu Takım ve Davetleri Çek
                 const { data: memberships, error } = await window.supabaseClient.from('team_members')
                     .select('id, team_id, status, role, teams(id, name, tag, captain_id)')
                     .eq('user_id', currentUser.id)
@@ -1015,7 +1028,6 @@
                 let validPendingInvites = [];
                 let teamIdsToCheck = [];
 
-                // Kullanıcı kaptansa, kendi takımı birincil önceliklidir
                 if (captainTeam) {
                     realTeamData = captainTeam;
                     teamIdsToCheck.push(captainTeam.id);
@@ -1026,7 +1038,6 @@
                         const team = Array.isArray(m.teams) ? m.teams[0] : m.teams;
                         if (!team) continue;
 
-                        // Kaptan değilse ve accepted bir üyelik bulursa, o onun takımıdır
                         if (!realTeamData && m.status === 'accepted') {
                             realTeamData = team;
                         }
@@ -1039,7 +1050,6 @@
                     }
                 }
 
-                // Ne takımı var, ne de daveti var
                 if (!realTeamData && validPendingInvites.length === 0) {
                     showEmptyState();
                     return;
@@ -1055,7 +1065,6 @@
                     if (fetchedApps) apps = fetchedApps;
                 }
 
-                // EĞER OYUNCUNUN BİR TAKIMI VARSA (Kaptan veya Onaylı Üye)
                 if (realTeamData) {
                     const app = apps.find(a => a.team_id === realTeamData.id);
                     let realAppStatus = app ? app.status : 'draft'; 
@@ -1094,7 +1103,6 @@
                     return; 
                 }
 
-                // OYUNCUNUN TAKIMI YOKSA VE DAVETLERİ VARSA
                 let contentHTML = "";
 
                 if (validPendingInvites.length > 0) {
@@ -1342,24 +1350,42 @@
             reader.readAsDataURL(file);
         });
 
+        // KULLANICININ YENİ BANNER SEÇİM EKRANI
         function openBannerModal() {
-            const grid = document.getElementById('bannerOptions'); grid.innerHTML = ""; 
-            for(let i=1; i<=4; i++) {
+            const grid = document.getElementById('bannerOptions'); 
+            grid.innerHTML = ""; 
+            
+            // Kullanıcının talep ettiği yeni dosya yolları
+            const banners = [
+                'img/banner1001.webp', 
+                'img/banner1002.webp', 
+                'img/banner1003.webp', 
+                'img/banner1004.webp'
+            ];
+            
+            banners.forEach(src => {
                 const img = document.createElement('img'); 
-                img.src = `img/banner${i}.jpg`; 
+                img.src = src; 
                 img.className = 'banner-option';
+                
                 img.onclick = async function() { 
                     document.getElementById('currentBanner').style.backgroundImage = `url('${this.src}')`;
                     closeCustomModal('bannerModal');
+                    
+                    // Veritabanına kaydet
                     await window.supabaseClient.from('profiles').update({ banner_url: this.src }).eq('id', currentUser.id);
                     
+                    // Tarayıcı önbelleğine (Local Storage/Çerez) kaydet ki sonraki girişlerde sabit kalsın
                     const cacheKey = 'obb_profile_cache';
                     const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
                     cachedProfile.banner_url = this.src;
                     localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+                    
+                    showNotification("Kapak fotoğrafınız başarıyla güncellendi!", "success");
                 };
                 grid.appendChild(img);
-            }
+            });
+            
             openCustomModal('bannerModal');
         }
 
