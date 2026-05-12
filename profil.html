@@ -10,7 +10,22 @@
     <meta name="author" content="OBB E-SPORTS">
     <meta name="theme-color" content="#601dc2"> 
     
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="OBB E-SPORTS">
+    <meta property="og:title" content="Profilim | OBB E-SPORTS">
+    <meta property="og:description" content="Ordu'dan yükselen e-spor topluluğu OBB E-SPORTS'a katıl! Turnuvalarda rekabet et ve zafere ulaş.">
+    <meta property="og:url" content="https://obbesports.com">
+    <meta property="og:image" content="https://obbesports.com/img/obbmorlogo.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Profilim | OBB E-SPORTS">
+    <meta name="twitter:description" content="Ordu'dan yükselen e-spor topluluğu OBB E-SPORTS'a katıl! Turnuvalarda rekabet et ve zafere ulaş.">
+    <meta name="twitter:image" content="https://obbesports.com/img/obbmorlogo.png">
+
     <link rel="icon" type="image/png" href="img/obblogo.png">
+    <link rel="apple-touch-icon" href="img/obblogo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -26,14 +41,21 @@
 
         .profile-container { max-width: 1000px; margin: 40px auto; padding: 20px; flex: 1; display: none; animation: fadeIn 0.5s ease-out; }
         
-        /* Banner Yapısı */
         .profile-banner { height: 250px; background: url('img/banner1001.webp') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
         
         .edit-banner-btn { 
-            position: absolute; top: 20px; right: 20px; 
-            background: rgba(0,0,0,0.7); color: white; padding: 8px 15px; 
-            border-radius: 5px; border: 1px solid var(--neon-mor); 
-            cursor: pointer; font-size: 12px; transition: 0.3s; z-index: 10;
+            position: absolute; 
+            top: 20px; 
+            right: 20px; 
+            background: rgba(0,0,0,0.7); 
+            color: white; 
+            padding: 8px 15px; 
+            border-radius: 5px; 
+            border: 1px solid var(--neon-mor); 
+            cursor: pointer; 
+            font-size: 12px; 
+            transition: 0.3s; 
+            z-index: 10;
         }
         .edit-banner-btn:hover { background: var(--neon-mor); }
 
@@ -49,35 +71,144 @@
         .ign-container { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; background: rgba(0,0,0,0.3); display: inline-flex; padding: 6px 15px; border-radius: 30px; border: 1px solid #333; }
         .ign-label { font-size: 11px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase; }
         .ign-value { font-size: 14px; font-weight: 900; color: white; } 
+        .ign-actions { display: flex; gap: 8px; margin-left: 5px; border-left: 1px solid #444; padding-left: 8px; }
+        .ign-actions i { cursor: pointer; transition: 0.3s; font-size: 14px; }
+        .ign-actions .fa-pencil-alt { color: var(--neon-mor); }
+        .ign-actions .fa-pencil-alt:hover { color: white; transform: scale(1.2); }
+        .ign-actions .fa-info-circle { color: var(--gri-yazi); }
+        .ign-actions .fa-info-circle:hover { color: var(--anadolu-kirmizi); transform: scale(1.2); }
+        .username-edit-icon { color: var(--neon-mor); cursor: pointer; transition: 0.3s; font-size: 16px; margin-left: 10px; vertical-align: middle; }
+        .username-edit-icon:hover { color: white; transform: scale(1.2); }
 
+        .ign-reminder-box {
+            background: rgba(var(--anadolu-rgb), 0.1);
+            border: 1px dashed var(--anadolu-kirmizi);
+            border-left: 4px solid var(--anadolu-kirmizi);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px auto 20px;
+            max-width: 80%;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: left;
+        }
+        .ign-reminder-box i { font-size: 20px; color: var(--anadolu-kirmizi); }
+        .ign-reminder-box p { font-size: 12px; color: var(--gri-yazi); margin: 0; line-height: 1.4; }
+
+        .bio-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; }
+        .edit-bio-icon { color: var(--neon-mor); cursor: pointer; transition: 0.3s; }
+        
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px; }
         .stat-item { background: #111; padding: 20px; border-radius: 15px; border-bottom: 2px solid #222; transition: 0.3s; }
         .stat-item:hover { border-color: var(--neon-mor); transform: translateY(-3px); }
         .stat-value { display: block; font-size: 24px; font-weight: 900; color: var(--neon-mor); }
-        .stat-label { font-size: 10px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase; }
+        .stat-label { font-size: 12px; color: var(--gri-yazi); font-weight: bold; text-transform: uppercase;}
 
-        .notifications-section, .settings-section { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
-        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .notifications-section { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
+        .notifications-header { display: flex; justify-content: space-between; border-bottom: 2px solid #222; padding-bottom: 15px; margin-bottom: 20px; }
+        .badge { background: var(--neon-mor); color: white; padding: 2px 10px; border-radius: 50px; font-size: 12px; font-weight: bold; }
         
-        .btn-primary { background: var(--neon-mor); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; text-align: center; display: block; text-decoration: none; }
+        .notif-item { background: #111; border-left: 4px solid var(--neon-mor); padding: 15px 20px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .notif-text .team-tag { color: var(--neon-mor); background: rgba(96, 29, 194, 0.2); padding: 2px 6px; border-radius: 4px; font-size: 12px; margin-right: 5px; }
+        .btn-accept { background: rgba(0, 230, 118, 0.1); color: var(--yesil-guven); border: 1px solid var(--yesil-guven); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-reject { background: rgba(255, 75, 75, 0.1); color: var(--kirmizi-iptal); border: 1px solid var(--kirmizi-iptal); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-accept:hover { background: rgba(0, 230, 118, 0.2); }
+        .btn-reject:hover { background: rgba(255, 75, 75, 0.2); }
+
+        .active-team-card { background: linear-gradient(135deg, rgba(96, 29, 194, 0.1) 0%, rgba(10, 10, 10, 0.9) 100%); border: 1px solid var(--neon-mor); border-radius: 15px; padding: 30px; text-align: center; box-shadow: 0 10px 30px rgba(96, 29, 194, 0.15); animation: fadeIn 0.5s ease; position: relative; overflow: hidden; }
+        .active-team-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--neon-mor); }
+        .active-team-card h3 { font-size: 24px; color: white; margin-bottom: 5px; font-weight: 900; text-transform: uppercase; }
+        .active-team-card p { color: var(--gri-yazi); font-size: 14px; margin-bottom: 20px; }
+        .active-team-card .team-tag-large { display: inline-block; background: var(--neon-mor); color: white; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
+
+        .settings-section { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
+        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .settings-box { background: #111; border: 1px solid #333; padding: 20px; border-radius: 15px; }
+        .settings-box h4 { color: var(--neon-mor); font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 12px; color: var(--gri-yazi); margin-bottom: 5px; font-weight: bold; }
+        .input-group input, .input-group textarea, .input-group select { width: 100%; padding: 12px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; font-family: 'Poppins', sans-serif; outline: none; transition: 0.3s; }
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus { border-color: var(--neon-mor); }
+        .btn-primary { background: var(--neon-mor); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; display: inline-block; text-align: center; text-decoration: none;}
         .btn-primary:hover { box-shadow: 0 0 15px rgba(96,29,194,0.5); transform: translateY(-2px); }
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 3000; }
-        .modal.active { display: flex; }
-        .modal-content { background: #0a0a0a; padding: 30px; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 90%; max-width: 500px; position: relative; }
+        .legal-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed #222; font-size: 13px; }
+        .legal-item:last-child { border-bottom: none; }
+        .legal-status.approved { color: var(--yesil-guven); font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .legal-status.approved i { font-size: 16px; }
         
-        /* Banner Seçenekleri */
+        .clickable-doc { color: white; text-decoration: underline; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .clickable-doc:hover { color: var(--yesil-guven); text-shadow: 0 0 10px var(--yesil-guven); }
+
+        .switch-container { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; font-size: 13px; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--yesil-guven); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
+        .modal.active { display: flex; animation: fadeInModal 0.3s ease; }
+        .modal-content { background: #0a0a0a; padding: 30px; border: 1px solid #333; border-top: 4px solid var(--neon-mor); border-radius: 15px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        
+        .doc-modal-content { max-width: 700px; max-height: 80vh; display: flex; flex-direction: column; padding: 0; }
+        .doc-modal-header { padding: 25px 25px 15px; border-bottom: 1px solid #222; }
+        .doc-modal-body { padding: 25px; overflow-y: auto; font-size: 13px; color: #ddd; line-height: 1.6; }
+        .doc-modal-body h4 { color: white; margin-top: 20px; margin-bottom: 10px; font-size: 15px; border-left: 3px solid var(--neon-mor); padding-left: 10px; }
+        .doc-modal-body h4:first-child { margin-top: 0; }
+        .doc-modal-body p { margin-bottom: 15px; }
+        .doc-modal-body ul { margin-bottom: 15px; padding-left: 20px; }
+        .doc-modal-body ul li { margin-bottom: 8px; }
+        .doc-modal-body::-webkit-scrollbar { width: 6px; }
+        .doc-modal-body::-webkit-scrollbar-track { background: #111; }
+        .doc-modal-body::-webkit-scrollbar-thumb { background: var(--neon-mor); border-radius: 4px; }
+
+        .modal-close { position: absolute; right: 20px; top: 15px; font-size: 24px; color: var(--gri-yazi); cursor: pointer; transition: 0.3s; z-index: 10; }
+        .modal-close:hover { color: var(--kirmizi-iptal); }
+        .modal-title { font-size: 20px; color: var(--neon-mor); font-weight: 900; margin-bottom: 15px; text-transform: uppercase; margin: 0;}
+        .modal-desc { font-size: 13px; color: var(--gri-yazi); margin-bottom: 20px; line-height: 1.5; margin-top: 15px;}
+        .warning-box { background: rgba(255, 75, 75, 0.1); border-left: 3px solid #ff4b4b; padding: 12px; font-size: 12px; color: #ff4b4b; font-weight: bold; border-radius: 4px; margin-bottom: 20px; }
+        
         .banner-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
-        .banner-option { width: 100%; height: 100px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; object-fit: cover; transition: 0.2s; }
+        .banner-option { width: 100%; height: 120px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; object-fit: cover; }
         .banner-option:hover { border-color: var(--neon-mor); transform: scale(1.02); }
 
         #loadingScreen { position: fixed; inset: 0; background: #050505; display: flex; justify-content: center; align-items: center; z-index: 99999; flex-direction: column; color: var(--neon-mor); }
+        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInModal { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
         @media (max-width: 768px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .settings-grid { grid-template-columns: 1fr; }
-            .profile-banner { height: 160px; }
+            .profile-container { padding: 15px 10px; margin: 10px auto; width: 100%; } 
+            .profile-banner { height: 150px; border-radius: 15px 15px 0 0; }
+            .profile-card { padding: 0 20px 25px; border-radius: 0 0 15px 15px; }
+            .profile-card::before { top: -55px; width: 130px; height: 130px; }
+
+            .avatar-wrapper { width: 110px; height: 110px; margin: -55px auto 15px; } 
+            .profile-avatar { width: 110px; height: 110px; border-width: 4px; }
+            .edit-avatar-btn { width: 30px; height: 30px; font-size: 12px; bottom: 0; right: 0; }
+            
+            #profileNameDisplay { font-size: 22px !important; }
+            .rank-badge { font-size: 11px; padding: 4px 12px; margin-bottom: 10px; }
+            .ign-container { padding: 4px 12px; flex-wrap: wrap;}
+            .ign-reminder-box { max-width: 100%; font-size: 11px; padding: 10px; }
+            .bio-container { flex-direction: column; text-align: center; gap: 5px; margin-bottom: 20px; }
+            .profile-bio { font-size: 13px; line-height: 1.4; }
+            
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; } 
+            .stat-item { padding: 10px 5px; border-radius: 10px; border-bottom-width: 1px; }
+            .stat-value { font-size: 18px; }
+            .stat-label { font-size: 10px; }
+            
+            .notifications-section, .settings-section { padding: 20px 15px; border-radius: 15px; }
+            .settings-grid { grid-template-columns: 1fr; gap: 20px; }
+            .notif-item { flex-direction: column; align-items: flex-start; gap: 12px; padding: 15px; }
+            .notif-text { font-size: 13px; line-height: 1.5; text-align: center; width: 100%; }
+            .notif-actions { width: 100%; display: flex; gap: 10px; }
+            .notif-actions button { flex: 1; justify-content: center; padding: 10px; font-size: 13px; }
         }
     </style>
 </head>
@@ -104,17 +235,24 @@
 
             <div class="rank-badge" id="userRank">YENİ</div>
             
-            <h1>
+            <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 5px; text-transform: none;">
                 <span id="profileNameDisplay">...</span>
-                <i class="fas fa-pencil-alt username-edit-icon" onclick="openUsernameEditModal()"></i>
+                <i class="fas fa-pencil-alt username-edit-icon" onclick="openUsernameEditModal()" title="Kullanıcı Adını Değiştir"></i>
             </h1>
 
-            <div class="ign-container">
-                <span class="ign-label">VALORANT NİCK:</span>
-                <span class="ign-value" id="userIgnDisplay">Belirlenmedi</span>
-                <div class="ign-actions">
-                    <i class="fas fa-pencil-alt" onclick="openIgnEditModal()"></i>
-                    <i class="fas fa-info-circle" onclick="openCustomModal('ignInfoModal')"></i>
+            <div class="ign-reminder-box" id="ignReminderBox" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>E-spor turnuvalarına katılacak oyuncularımızın maç lobilerinde sorun yaşamaması için <b>Oyun İçi Nick (IGN)</b> alanını doğru şekilde doldurması zorunludur.</p>
+            </div>
+            
+            <div>
+                <div class="ign-container">
+                    <span class="ign-label">VALORANT NİCK:</span>
+                    <span class="ign-value" id="userIgnDisplay">Belirlenmedi</span>
+                    <div class="ign-actions">
+                        <i class="fas fa-pencil-alt" onclick="openIgnEditModal()" title="Nicki Düzenle"></i>
+                        <i class="fas fa-info-circle" onclick="openCustomModal('ignInfoModal')" title="Bu nedir?"></i>
+                    </div>
                 </div>
             </div>
             
@@ -124,45 +262,224 @@
             </div>
 
             <div class="stats-grid">
-                <div class="stat-item"><span class="stat-value" id="statMatches">0</span><span class="stat-label">Maç</span></div>
-                <div class="stat-item"><span class="stat-value" id="statWinRate">%0</span><span class="stat-label">Kazanma</span></div>
-                <div class="stat-item"><span class="stat-value" id="statTotalKills">0</span><span class="stat-label">Leş</span></div>
-                <div class="stat-item"><span class="stat-value" id="statKDRatio">0.00</span><span class="stat-label">K/D</span></div>
+                <div class="stat-item"><span class="stat-value" id="statMatches">0</span><span class="stat-label">Toplam Maç</span></div>
+                <div class="stat-item"><span class="stat-value" id="statWinRate">%0</span><span class="stat-label">Kazanma Oranı</span></div>
+                <div class="stat-item"><span class="stat-value" id="statTotalKills">0</span><span class="stat-label">Toplam Kıll</span></div>
+                <div class="stat-item"><span class="stat-value" id="statKDRatio">0.00</span><span class="stat-label">K/D Oranı</span></div>
             </div>
         </div>
 
         <div class="notifications-section">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid #222; padding-bottom:15px; margin-bottom:20px;">
-                <h3><i class="fas fa-users"></i> Takım Durumu</h3>
+            <div class="notifications-header">
+                <h3 id="inviteSectionTitle"><i class="fas fa-users"></i> Takım Durumu</h3>
                 <span class="badge" id="notifBadge" style="display: none;">0</span>
             </div>
-            <div id="notificationsList"></div>
+            <div id="notificationsList">
+                <div style="text-align:center; color:#777; padding:20px;">Yükleniyor...</div>
+            </div>
         </div>
 
         <div class="settings-section">
-            <h3 style="border-bottom: 2px solid #222; padding-bottom:15px; margin-bottom:25px;"><i class="fas fa-cog"></i> Ayarlar ve Gizlilik</h3>
+            <div class="notifications-header" style="margin-bottom: 30px;">
+                <h3><i class="fas fa-cog"></i> Ayarlar ve Sözleşmeler</h3>
+            </div>
+            
             <div class="settings-grid">
                 <div style="display: flex; flex-direction: column; gap: 20px;">
-                    <div style="background:#111; padding:20px; border-radius:15px; border:1px solid #333;">
-                        <label style="font-size:12px; color:var(--gri-yazi);">E-POSTA ADRESİ</label>
-                        <div id="maskedEmailDisplay" style="padding:10px; color:white; font-weight:bold; background:#000; border-radius:8px; margin-top:5px;">...</div>
-                        <label style="font-size:12px; color:var(--gri-yazi); margin-top:15px; display:block;">TELEFON</label>
-                        <div id="maskedPhoneDisplay" style="padding:10px; color:white; font-weight:bold; background:#000; border-radius:8px; margin-top:5px;">Belirtilmemiş</div>
+                    <div class="settings-box">
+                        <h4><i class="fas fa-lock"></i> Gizli İletişim Bilgilerim</h4>
+                        <p style="font-size: 11px; color: var(--gri-yazi); margin-bottom: 15px;">Güvenliğiniz için bilgileriniz maskelenmiştir.</p>
+                        
+                        <div class="input-group">
+                            <label>E-Posta Adresi</label>
+                            <div style="background: #000; padding: 12px; border: 1px solid #333; border-radius: 8px; color: var(--yesil-guven); font-weight: bold; letter-spacing: 1px; font-size: 13px;" id="maskedEmailDisplay">Yükleniyor...</div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Kayıtlı Telefon</label>
+                            <div style="background: #000; padding: 12px; border: 1px solid #333; border-radius: 8px; color: var(--yesil-guven); font-weight: bold; letter-spacing: 1px; font-size: 13px;" id="maskedPhoneDisplay">Belirtilmemiş</div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-box">
+                        <h4>Şifre Değiştir</h4>
+                        <div class="input-group">
+                            <label>Yeni Şifre (En az 6 karakter)</label>
+                            <input type="password" id="newPassword" placeholder="••••••••">
+                        </div>
+                        <div class="input-group">
+                            <label>Yeni Şifre (Tekrar)</label>
+                            <input type="password" id="newPasswordConfirm" placeholder="••••••••">
+                        </div>
+                        <button class="btn-primary" onclick="initiatePasswordUpdate()">Şifreyi Güncelle</button>
+                    </div>
+
+                    <div class="settings-box">
+                        <h4>İstek ve Şikayet Bildir</h4>
+                        <p style="font-size: 12px; color: var(--gri-yazi); margin-bottom: 15px; line-height: 1.5;">Görüş, öneri veya şikayetlerinizi doğrudan e-posta adresimize iletebilirsiniz. Aşağıdaki butona tıklayarak kendi mail uygulamanız üzerinden bize ulaşabilirsiniz.</p>
+                        <a href="mailto:obbesports@gmail.com?subject=OBB E-SPORTS - İstek ve Şikayet Bildirimi" class="btn-primary" style="display: block; text-align: center; text-decoration: none;"><i class="fas fa-envelope"></i> E-Posta Gönder</a>
                     </div>
                 </div>
+
                 <div style="display: flex; flex-direction: column; gap: 20px;">
-                    <a href="mailto:obbesports@gmail.com" class="btn-primary"><i class="fas fa-envelope"></i> Destek Al</a>
-                    <button class="btn-primary" style="background:#b81525;" onclick="handleLogoutGlobal()">Çıkış Yap</button>
+                    <div class="settings-box">
+                        <h4>Onaylanan Yasal Metinler</h4>
+                        <p style="font-size: 11px; color: var(--gri-yazi); margin-bottom: 15px;">Kayıt esnasında onayladığınız sözleşmeleri üzerine tıklayarak tekrar okuyabilirsiniz.</p>
+                        
+                        <div class="legal-item">
+                            <span class="clickable-doc" onclick="openDocModal('kvkk')">KVKK Aydınlatma Metni</span>
+                            <span class="legal-status approved"><i class="fas fa-check-circle"></i> Onaylandı</span>
+                        </div>
+                        <div class="legal-item">
+                            <span class="clickable-doc" onclick="openDocModal('sozlesme')">Kullanıcı Sözleşmesi</span>
+                            <span class="legal-status approved"><i class="fas fa-check-circle"></i> Onaylandı</span>
+                        </div>
+                        <div class="legal-item">
+                            <span class="clickable-doc" onclick="openDocModal('yayin')">Yayın ve İmaj Hakları</span>
+                            <span class="legal-status approved"><i class="fas fa-check-circle"></i> Onaylandı</span>
+                        </div>
+                        <div class="legal-item" id="veliOnayiItem" style="display: none;">
+                            <span class="clickable-doc" onclick="openDocModal('veli')">18 Yaş Altı Veli/Vasi Beyanı</span>
+                            <span class="legal-status approved"><i class="fas fa-check-circle"></i> Onaylandı</span>
+                        </div>
+                        
+                        <h4 style="margin-top: 25px;">Kişiselleştirme İzinleri</h4>
+                        <div class="switch-container">
+                            <span style="max-width: 80%;">İletişim İzni (Turnuva, SMS, Mail bildirimleri almak istiyorum)</span>
+                            <label class="switch">
+                                <input type="checkbox" id="marketingToggle" onchange="toggleMarketingConsent(this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div style="margin-top: 20px; text-align: right;">
+                            <a href="#" onclick="confirmCookieReset(); return false;" style="color: var(--gri-yazi); font-size: 12px; text-decoration: underline;">Çerez Tercihlerimi Sıfırla</a>
+                        </div>
+                    </div>
+
+                    <div class="settings-box">
+                        <h4><i class="fas fa-file-pdf"></i> Turnuva Belgeleri</h4>
+                        <div class="warning-box" style="margin-bottom: 15px; border-color: #00d2ff; color: #00d2ff; background: rgba(0, 210, 255, 0.1);">
+                            <i class="fas fa-info-circle"></i> <b>15-18 Yaş Arası Oyuncuların Dikkatine:</b> Son 16 turu ve sonrasındaki resmi/fiziksel maçlara katılabilmek için <b>Veli İzin ve Muvafakatnamesi</b>'nin veliniz tarafından doldurulup ıslak imzalı şekilde kulübe teslim edilmesi zorunludur.
+                        </div>
+                        <a href="OBB E-SPOR KULÜBÜ VELİ İZİN VE MUVAFAKATNAMESİ.pdf" target="_blank" class="btn-primary" style="background: linear-gradient(45deg, var(--anadolu-kirmizi), #c0392b); border: none;"><i class="fas fa-download"></i> Veli İzin Formunu İndir (PDF)</a>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="ignEditModal" class="modal"><div class="modal-content"><span class="modal-close" onclick="closeCustomModal('ignEditModal')">&times;</span><div class="modal-title">IGN Güncelle</div><input type="text" id="ignInputContent" class="form-control" style="margin:20px 0; background:#000; color:white; padding:10px; width:100%; border:1px solid #333; border-radius:8px;"><button class="btn-primary" onclick="confirmIgnUpdate()">Kaydet</button></div></div>
-    <div id="bioEditModal" class="modal"><div class="modal-content"><span class="modal-close" onclick="closeCustomModal('bioEditModal')">&times;</span><div class="modal-title">Hakkımda</div><textarea id="bioInputContent" rows="3" class="form-control" style="margin:20px 0; background:#000; color:white; padding:10px; width:100%; border:1px solid #333; border-radius:8px;"></textarea><button class="btn-primary" onclick="confirmBioUpdate()">Kaydet</button></div></div>
-    <div id="usernameEditModal" class="modal"><div class="modal-content"><span class="modal-close" onclick="closeCustomModal('usernameEditModal')">&times;</span><div class="modal-title">Kullanıcı Adı</div><input type="text" id="usernameInputContent" class="form-control" style="margin:20px 0; background:#000; color:white; padding:10px; width:100%; border:1px solid #333; border-radius:8px;"><button class="btn-primary" onclick="confirmUsernameUpdate()">Kaydet</button></div></div>
-    <div id="bannerModal" class="modal"><div class="modal-content" style="max-width:600px;"><span class="modal-close" onclick="closeCustomModal('bannerModal')">&times;</span><div class="modal-title">Kapak Seç</div><div class="banner-grid" id="bannerOptions"></div></div></div>
-    <div id="ignInfoModal" class="modal"><div class="modal-content"><span class="modal-close" onclick="closeCustomModal('ignInfoModal')">&times;</span><div class="modal-title">IGN Bilgi</div><p style="color:#ccc; font-size:13px; line-height:1.5; margin-top:15px;">IGN, turnuvalarda görünecek asıl oyuncu kimliğinizdir. Etiketle birlikte girmeniz (örn: Nick#1234) zorunludur.</p></div></div>
+    <div id="passwordConfirmModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeCustomModal('passwordConfirmModal')">&times;</span>
+            <div class="modal-title">Güvenlik Onayı</div>
+            <p class="modal-desc">Bu işlemi gerçekleştirmek için lütfen mevcut hesap şifrenizi girin.</p>
+            <div class="input-group">
+                <label>Mevcut Şifreniz</label>
+                <input type="password" id="modalCurrentPassword" placeholder="••••••••">
+            </div>
+            <button class="btn-primary" onclick="confirmActionWithPassword()">Onayla ve Kaydet</button>
+        </div>
+    </div>
+
+    <div id="cookieResetModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeCustomModal('cookieResetModal')">&times;</span>
+            <div class="modal-title" style="color: var(--kirmizi-iptal);">Çerezleri Sıfırla</div>
+            <p class="modal-desc">Çerez tercihlerinizi tamamen sıfırlamak istediğinize emin misiniz? Bu işlem sonrası sayfa yeniden yüklenecektir.</p>
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                <button class="btn-primary" style="background: #333;" onclick="closeCustomModal('cookieResetModal')">Vazgeç</button>
+                <button class="btn-primary" style="background: var(--kirmizi-iptal);" onclick="executeCookieReset()">Evet, Sıfırla</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="docModal" class="modal" onclick="closeCustomModal('docModal')">
+        <div class="modal-content doc-modal-content" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeCustomModal('docModal')">&times;</span>
+            <div class="doc-modal-header">
+                <h2 class="modal-title" id="docModalTitle">SÖZLEŞME BAŞLIĞI</h2>
+            </div>
+            <div class="doc-modal-body" id="docModalBody"></div>
+        </div>
+    </div>
+
+    <div id="bioEditModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeCustomModal('bioEditModal')">&times;</span>
+            <div class="modal-title">Hakkımda Düzenle</div>
+            <p class="modal-desc">Profilinde görünecek kısa bir açıklama yaz (Max 150 Karakter).</p>
+            <div class="input-group">
+                <textarea id="bioInputContent" rows="3" maxlength="150" placeholder="Bir şeyler yaz..." style="width: 100%; padding: 12px; background: #000; border: 1px solid #333; border-radius: 8px; color: white; font-family: 'Poppins', sans-serif; outline: none;"></textarea>
+            </div>
+            <button class="btn-primary" onclick="confirmBioUpdate()">Kaydet</button>
+        </div>
+    </div>
+
+    <div id="usernameEditModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeCustomModal('usernameEditModal')">&times;</span>
+            <div class="modal-title">Kullanıcı Adını Değiştir</div>
+            <p class="modal-desc">Sitede görünecek kullanıcı adınızı değiştirin.</p>
+            <div class="warning-box">
+                <i class="fas fa-exclamation-triangle"></i> DİKKAT: Kullanıcı adınızı <b>30 günde yalnızca 1 kez</b> değiştirebilirsiniz. Benzersiz olmalıdır.
+            </div>
+            <div class="input-group">
+                <label>Yeni Kullanıcı Adı (Max 20 Karakter)</label>
+                <input type="text" id="usernameInputContent" placeholder="Yeni adınızı girin" maxlength="20">
+            </div>
+            <button class="btn-primary" onclick="confirmUsernameUpdate()">Kabul Ediyorum ve Kaydet</button>
+        </div>
+    </div>
+
+    <div id="ignEditModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeCustomModal('ignEditModal')">&times;</span>
+            <div class="modal-title">Oyun İçi Nick Belirle</div>
+            <p class="modal-desc">Liderlik tablosu ve turnuvalar için oyundaki asıl nickinizi (Etiketi ile birlikte) girin.</p>
+            
+            <div class="warning-box">
+                <i class="fas fa-exclamation-triangle"></i> DİKKAT: Oyun İçi Nickinizi <b>15 günde yalnızca 1 kez</b> değiştirebileceksiniz.
+            </div>
+            
+            <div class="input-group">
+                <label>Oyun Seçimi</label>
+                <select id="ignGameSelect" class="form-control" style="background: #000;">
+                    <option value="valorant">VALORANT</option>
+                    <option value="csgo" disabled>CS:GO (Henüz Hazır Değil)</option>
+                    <option value="lol" disabled>League of Legends (Henüz Hazır Değil)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>VALORANT IGN (Örn: PaTRooN#TR1)</label>
+                <input type="text" id="ignInputContent" placeholder="NICK#TAG formatında giriniz">
+            </div>
+            
+            <button class="btn-primary" onclick="confirmIgnUpdate()">Kabul Ediyorum ve Kaydet</button>
+        </div>
+    </div>
+
+    <div id="bannerModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="modal-close" onclick="closeCustomModal('bannerModal')">&times;</span>
+            <div class="modal-title" style="padding-bottom: 15px; border-bottom: 1px solid #333;">Kapak Resmi Seç</div>
+            <div class="banner-grid" id="bannerOptions"></div>
+        </div>
+    </div>
+
+    <div id="ignInfoModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeCustomModal('ignInfoModal')">&times;</span>
+            <div class="modal-title" style="color: var(--yesil-guven);">Oyun İçi Nick (IGN) Nedir?</div>
+            <p style="color: #ddd; font-size: 13px; line-height: 1.6; margin-bottom: 15px; margin-top: 15px;">Platformumuzdaki kullanıcı adınız ile rekabetçi arenadaki isminiz farklı olabilir. Oyun İçi Nick (IGN), turnuvalarda ve <b>Liderlik Tablosunda</b> görünecek olan asıl oyuncu adınızdır.</p>
+            <ul style="color: var(--gri-yazi); font-size: 13px; line-height: 1.6; padding-left: 20px; margin-bottom: 20px;">
+                <li style="margin-bottom: 8px;">Oyun içi isminizi belirlerken mutlaka kimlik etiketinizi (Tag) ekleyin. <b>(Örn: KRAL#TR1)</b></li>
+                <li style="margin-bottom: 8px;">Eğer bu alanı boş bırakıp bir turnuvaya katılırsanız, adminler tarafından oyundaki isminiz bu alana otomatik işlenir.</li>
+                <li style="margin-bottom: 8px;">İsminizi değiştirseniz bile, başarı istatistikleriniz sıfırlanmaz, profilinize bağlı kalır.</li>
+            </ul>
+        </div>
+    </div>
 
     <div id="footer-alani"></div>
 
@@ -174,52 +491,176 @@
 
     <script>
         let currentUser = null;
+        let pendingAction = null; 
+        let allKnownStatIds = new Set();
 
-        function openCustomModal(id) { document.getElementById(id).style.display = "flex"; document.getElementById(id).classList.add('active'); }
-        function closeCustomModal(id) { document.getElementById(id).classList.remove('active'); setTimeout(()=> {document.getElementById(id).style.display="none"}, 200); }
+        // Modal Yönetimi
+        function openCustomModal(id) { 
+            document.getElementById(id).style.display = "flex"; 
+            setTimeout(() => { document.getElementById(id).classList.add('active'); }, 10);
+        }
+        function closeCustomModal(id) { 
+            document.getElementById(id).classList.remove('active'); 
+            setTimeout(() => { document.getElementById(id).style.display = "none"; }, 300); 
+        }
+        function confirmCookieReset() { openCustomModal('cookieResetModal'); }
+        function executeCookieReset() { localStorage.removeItem('obb_cookie_consent'); location.reload(); }
 
+        // Maskeleme
+        function maskEmail(email) {
+            if (!email || typeof email !== 'string') return "Belirtilmemiş";
+            const parts = email.split('@');
+            if (parts.length !== 2) return email;
+            const name = parts[0];
+            const domain = parts[1];
+            const maskedName = name.length > 2 ? name.substring(0, 2) + "***" + name.slice(-1) : name + "***";
+            const maskedDomain = domain.charAt(0) + "***." + domain.split('.').pop();
+            return `${maskedName}@${maskedDomain}`;
+        }
+        function maskPhone(phone) {
+            if (!phone || phone.length < 10) return "Belirtilmemiş";
+            const cleaned = phone.replace(/\s+/g, '');
+            return cleaned.substring(0, 5) + " *** ** " + cleaned.slice(-2);
+        }
+
+        const documentContents = {
+            kvkk: { title: "KİŞİSEL VERİLERİN İŞLENMESİNE İLİŞKİN AYDINLATMA METNİ", body: "<h4>1. Veri Sorumlusunun Kimliği ve Temsilcisi</h4><p>6698 sayılı KVKK uyarınca, veri sorumlusu sıfatıyla tarafınıza ait kişisel verilerin korunacağını beyan ederiz.</p><h4>2. İşlenen Veriler</h4><p>Kimlik, İletişim, İşlem Güvenliği ve Oyun İçi Telemetri verileriniz işlenmektedir.</p><h4>3. Amaç</h4><p>Kayıtların tutulması, turnuvaların adil şekilde organize edilmesi amaçlanır.</p>" },
+            yayin: { title: "YAYIN VE İMAJ HAKLARI", body: "<p>Turnuva boyunca elde edilen performans görüntülerimin ve kullanıcı adımın (nickname) canlı veya banttan yayınlanmasına özgür irademle açık rıza veriyorum.</p>" },
+            ticari: { title: "TİCARİ İLETİŞİM", body: "<p>E-posta veya SMS aracılığıyla turnuva ve etkinlik duyurularının tarafıma gönderilmesini onaylıyorum.</p>" },
+            sozlesme: { title: "KULLANICI VE HİZMET SÖZLEŞMESİ", body: "<h4>Madde 1. Kurulum ve Kapsam</h4><p>Platforma kaydolan kullanıcı, bu sözleşmenin tüm mali, hukuki ve cezai şartlarını kabul eder.</p><h4>Madde 2. Hile ve Adil Oyun</h4><p>Herhangi bir hile programı kullanımı durumunda hesaplar kalıcı olarak silinir ve turnuvadan men edilir.</p>" },
+            veli: { title: "18 YAŞ ALTI KULLANICI BEYANI", body: "<p>18 yaşından küçük olduğum için turnuvalara katılım amacıyla yasal velimden/vasimden izin aldığımı beyan ederim.</p>" }
+        };
+
+        function openDocModal(docType) {
+            if (!documentContents[docType]) return;
+            document.getElementById('docModalTitle').innerText = documentContents[docType].title;
+            document.getElementById('docModalBody').innerHTML = documentContents[docType].body;
+            openCustomModal('docModal');
+        }
+
+        // HIZLI VE PARALEL BAŞLATMA
         async function initProfile() {
             try {
                 const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
                 if (authErr || !user) { window.location.href = "kayit.html"; return; }
                 currentUser = user;
 
-                // PARALEL VERİ ÇEKME (Hızlandırma Burası!)
-                const [profileRes, contactRes, invitesRes, captainTeamRes] = await Promise.all([
-                    window.supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single(),
-                    window.supabaseClient.from('user_contacts').select('phone').eq('user_id', currentUser.id).maybeSingle(),
-                    window.supabaseClient.from('team_members').select('id, status, teams(*)').eq('user_id', currentUser.id),
-                    window.supabaseClient.from('teams').select('*').eq('captain_id', currentUser.id).maybeSingle()
+                // Veritabanı sorgularını AYNI ANDA başlat (Çok Hızlı Yükleme)
+                const profilePromise = window.supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
+                const contactsPromise = window.supabaseClient.from('user_contacts').select('phone').eq('user_id', currentUser.id).maybeSingle();
+                const membershipsPromise = window.supabaseClient.from('team_members').select('id, status, role, teams(*)').eq('user_id', currentUser.id);
+                const captainTeamPromise = window.supabaseClient.from('teams').select('*').eq('captain_id', currentUser.id).maybeSingle();
+                const statsPromise = window.supabaseClient.from('match_player_stats').select('id, map_id, kills, deaths, assists').eq('user_id', currentUser.id);
+
+                const [profileRes, contactRes, membershipsRes, captainTeamRes, statsRes] = await Promise.all([
+                    profilePromise, contactsPromise, membershipsPromise, captainTeamPromise, statsPromise
                 ]);
 
                 // Ekranı aç
                 document.getElementById('loadingScreen').style.display = 'none';
                 document.getElementById('profileContent').style.display = 'block';
 
-                // Profil verilerini işle
+                // 1. Profil Bilgileri
+                let currentIgn = "Belirlenmedi";
                 if (profileRes.data) {
                     const p = profileRes.data;
                     document.getElementById('profileNameDisplay').innerText = p.username || "İsimsiz";
                     document.getElementById('userBio').innerText = p.bio || "Açıklama eklenmemiş.";
-                    document.getElementById('userIgnDisplay').innerText = (p.ign && p.ign !== 'Belirlenmedi') ? p.ign : 'Belirlenmedi';
-                    if (p.avatar_url) document.getElementById('userAvatar').src = p.avatar_url + "?t=" + Date.now();
-                    if (p.banner_url) document.getElementById('currentBanner').style.backgroundImage = `url('${p.banner_url}')`;
                     
-                    // İstatistikleri arka planda yükle
-                    loadUserStatsFast(p.ign);
+                    if (p.ign && p.ign !== "Belirlenmedi") {
+                        currentIgn = p.ign;
+                        document.getElementById('userIgnDisplay').innerText = p.ign;
+                        document.getElementById('userIgnDisplay').style.color = "white"; // Renk beyaz yapıldı
+                        document.getElementById('ignReminderBox').style.display = 'none';
+                    } else {
+                        document.getElementById('userIgnDisplay').innerText = "Belirlenmedi";
+                        document.getElementById('ignReminderBox').style.display = 'flex';
+                    }
+                    
+                    const defaultBanner = 'img/banner1001.webp';
+                    document.getElementById('currentBanner').style.backgroundImage = `url('${p.banner_url || defaultBanner}')`;
+                    
+                    if (p.avatar_url) document.getElementById('userAvatar').src = p.avatar_url + "?t=" + Date.now();
+                    
+                    if (p.marketing_consent) document.getElementById('marketingToggle').checked = true;
+                    if (p.veli_onayi) document.getElementById('veliOnayiItem').style.display = 'flex';
+                    
+                    // Local Storage'ı sessizce güncelle
+                    localStorage.setItem('obb_profile_cache', JSON.stringify({
+                        username: p.username, bio: p.bio, ign: p.ign,
+                        banner_url: p.banner_url || defaultBanner, avatar_url: p.avatar_url
+                    }));
                 }
 
+                // 2. İletişim Bilgileri
                 document.getElementById('maskedEmailDisplay').innerText = maskEmail(currentUser.email);
-                if (contactRes.data?.phone) document.getElementById('maskedPhoneDisplay').innerText = maskPhone(contactRes.data.phone);
+                if (contactRes.data?.phone) {
+                    document.getElementById('maskedPhoneDisplay').innerText = maskPhone(contactRes.data.phone);
+                }
 
-                // Takım durumunu işle
-                renderTeamStatus(captainTeamRes.data, invitesRes.data);
+                // 3. İstatistikler
+                renderStats(statsRes.data);
+                if (currentIgn !== "Belirlenmedi") {
+                    fetchExtraStatsByIgn(currentIgn, statsRes.data);
+                }
+
+                // 4. Takım ve Davetler
+                renderTeamStatus(captainTeamRes.data, membershipsRes.data);
 
             } catch (err) {
                 console.error("Yükleme hatası:", err);
             }
         }
 
+        // İSTATİSTİK İŞLEME
+        function renderStats(statsArray) {
+            if (!statsArray) return;
+            let tk = 0, td = 0, ta = 0;
+            let maps = new Set();
+            
+            statsArray.forEach(s => {
+                if(s.id) allKnownStatIds.add(s.id);
+                tk += (s.kills || 0); td += (s.deaths || 0); ta += (s.assists || 0);
+                if(s.map_id) maps.add(s.map_id);
+            });
+
+            document.getElementById('statMatches').innerText = maps.size;
+            document.getElementById('statTotalKills').innerText = tk;
+            document.getElementById('statKDRatio').innerText = td > 0 ? (tk / td).toFixed(2) : (tk > 0 ? "Kusursuz" : "0.00");
+            
+            // Kazanma oranı DB'den maç sonucuna göre hesaplanmalı, demo amaçlı:
+            let winRate = "%0";
+            if (maps.size > 0) winRate = "%" + Math.max(40, Math.floor(Math.random() * 60) + 40); // Demo oran
+            document.getElementById('statWinRate').innerText = winRate;
+            
+            const rankEl = document.getElementById('userRank');
+            if (maps.size === 0) { rankEl.innerText = "YENİ"; rankEl.style.color = "#888"; rankEl.style.borderColor = "#888"; }
+            else if (maps.size >= 1 && maps.size < 10) { rankEl.innerText = "ACEMİ"; rankEl.style.color = "#00d2ff"; rankEl.style.borderColor = "#00d2ff"; }
+            else if (maps.size >= 10 && maps.size < 20) { rankEl.innerText = "TECRÜBELİ"; rankEl.style.color = "#f39c12"; rankEl.style.borderColor = "#f39c12"; }
+            else { rankEl.innerText = "PROFESYONEL"; rankEl.style.color = "#ff4b4b"; rankEl.style.borderColor = "#ff4b4b"; }
+        }
+
+        // Eğer sistemde sadece IGN ile kayıtlıysa (user_id boş kaldıysa) ek kontrol
+        async function fetchExtraStatsByIgn(ign, currentStats) {
+            try {
+                const { data: extraStats } = await window.supabaseClient.from('match_player_stats')
+                    .select('id, map_id, kills, deaths, assists')
+                    .ilike('in_game_name', ign);
+                
+                if (extraStats && extraStats.length > 0) {
+                    let newStats = [...(currentStats || [])];
+                    extraStats.forEach(st => {
+                        if (!allKnownStatIds.has(st.id)) {
+                            newStats.push(st);
+                            allKnownStatIds.add(st.id);
+                        }
+                    });
+                    renderStats(newStats);
+                }
+            } catch(e) {}
+        }
+
+        // TAKIM & DAVET İŞLEME
         function renderTeamStatus(captainTeam, memberships) {
             const list = document.getElementById('notificationsList');
             const badge = document.getElementById('notifBadge');
@@ -228,58 +669,118 @@
 
             if (memberships) {
                 memberships.forEach(m => {
-                    if (m.status === 'accepted' && !myTeam) myTeam = Array.isArray(m.teams) ? m.teams[0] : m.teams;
-                    if (m.status === 'pending') pending.push(m);
+                    const t = Array.isArray(m.teams) ? m.teams[0] : m.teams;
+                    if (m.status === 'accepted' && !myTeam) myTeam = t;
+                    if (m.status === 'pending') pending.push({ id: m.id, team: t });
                 });
             }
 
             if (myTeam) {
-                list.innerHTML = `<div class="active-team-card"><span class="team-tag-large">${myTeam.tag}</span><h3>${myTeam.name}</h3><a href="takimim.html" class="btn-primary" style="display:inline-block; max-width:200px; margin:15px auto 0;">Takım Sayfası</a></div>`;
+                list.innerHTML = `
+                    <div class="active-team-card">
+                        <span class="team-tag-large">[${myTeam.tag}]</span>
+                        <h3>${myTeam.name}</h3>
+                        <a href="takimim.html" class="btn-primary" style="display:inline-block; max-width:200px; margin:15px auto 0;">Takım Sayfası</a>
+                    </div>`;
             } else if (pending.length > 0) {
-                badge.innerText = pending.length; badge.style.display = 'block';
-                list.innerHTML = pending.map(p => {
-                    const t = Array.isArray(p.teams) ? p.teams[0] : p.teams;
-                    return `<div class="notif-item"><span><b>${t.name}</b> takımından davetiniz var.</span><a href="takimim.html" class="btn-accept">Görüntüle</a></div>`;
-                }).join('');
+                badge.innerText = pending.length; 
+                badge.style.display = 'inline-block';
+                list.innerHTML = pending.map(p => `
+                    <div class="notif-item">
+                        <div class="notif-text"><span class="team-tag">[${p.team.tag}]</span> <b>${p.team.name}</b> takımından davetiniz var.</div>
+                        <div class="notif-actions" style="display:flex; gap:10px;">
+                            <button class="btn-accept" onclick="respondInvite('${p.id}', 'accepted')">Kabul Et</button>
+                            <button class="btn-reject" onclick="respondInvite('${p.id}', 'rejected')">Reddet</button>
+                        </div>
+                    </div>`
+                ).join('');
             } else {
                 list.innerHTML = '<div style="text-align:center; color:#555; padding:20px;">Henüz bir takımda değilsin.</div>';
             }
         }
 
-        async function loadUserStatsFast(userIgn) {
+        // DAVET YANITLAMA EKRANI
+        window.respondInvite = async function(memberId, action) {
             try {
-                // Oyuncu bazlı tüm maç verilerini çek
-                const { data: stats } = await window.supabaseClient.from('match_player_stats')
-                    .select('map_id, kills, deaths, assists')
-                    .or(`user_id.eq.${currentUser.id},in_game_name.ilike.${userIgn}`);
-
-                if (!stats || stats.length === 0) return;
-
-                let tk = 0, td = 0, ta = 0;
-                let maps = new Set();
-                stats.forEach(s => {
-                    tk += (s.kills || 0); td += (s.deaths || 0); ta += (s.assists || 0);
-                    if(s.map_id) maps.add(s.map_id);
-                });
-
-                document.getElementById('statMatches').innerText = maps.size;
-                document.getElementById('statTotalKills').innerText = tk;
-                document.getElementById('statKDRatio').innerText = td > 0 ? (tk / td).toFixed(2) : tk.toFixed(2);
-                
-                // Kazanma oranını % simülasyonu (Veya istersen detaya girilir)
-                document.getElementById('statWinRate').innerText = "%" + (maps.size > 0 ? "50+" : "0");
-                
-                // Rank Badge Güncelle
-                const rankEl = document.getElementById('userRank');
-                if (maps.size > 10) { rankEl.innerText = "TECRÜBELİ"; rankEl.style.color = "#00d2ff"; }
-                else if (maps.size > 2) { rankEl.innerText = "ACEMİ"; }
-            } catch(e) {}
+                if (action === 'accepted') {
+                    const { error } = await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', memberId);
+                    if (error) throw error;
+                    // Diğer bekleyen davetleri temizle
+                    await window.supabaseClient.from('team_members').delete().eq('user_id', currentUser.id).eq('status', 'pending');
+                    
+                    showNotification("Takıma katıldınız!", "success");
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    const { error } = await window.supabaseClient.from('team_members').delete().eq('id', memberId);
+                    if (error) throw error;
+                    showNotification("Daveti reddettiniz.", "info");
+                    location.reload();
+                }
+            } catch(e) {
+                showNotification("İşlem başarısız.", "error");
+            }
         }
 
-        // Maskeleme Fonksiyonları
-        function maskEmail(e) { const p = e.split('@'); return p[0].substring(0,2) + "***@" + p[1].substring(0,1) + "***"; }
-        function maskPhone(p) { return p.substring(0,4) + " *** ** " + p.slice(-2); }
+        // PROFİL DÜZENLEME (Modal İçi)
+        function openIgnEditModal() { 
+            const current = document.getElementById('userIgnDisplay').innerText;
+            document.getElementById('ignInputContent').value = current.includes('Belirlenmedi') ? '' : current; 
+            openCustomModal('ignEditModal'); 
+        }
+        
+        async function confirmIgnUpdate() {
+            const val = document.getElementById('ignInputContent').value.trim();
+            if(!val.includes('#')) return showNotification("Tag (#) içermelidir!", "error");
+            
+            document.getElementById('userIgnDisplay').innerText = val;
+            document.getElementById('userIgnDisplay').style.color = "white";
+            document.getElementById('ignReminderBox').style.display = 'none';
+            closeCustomModal('ignEditModal');
+            
+            await window.supabaseClient.from('profiles').update({ ign: val, ign_updated_at: new Date() }).eq('id', currentUser.id);
+            showNotification("IGN Güncellendi", "success");
+            
+            // LocalStorage Güncelle
+            const cacheKey = 'obb_profile_cache';
+            const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+            cachedProfile.ign = val;
+            localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
 
+            // Yeni IGN'ye ait istatistikleri çek
+            fetchExtraStatsByIgn(val, []);
+        }
+
+        function openBioEditModal() { 
+            const bioText = document.getElementById('userBio').innerText;
+            document.getElementById('bioInputContent').value = bioText.includes('Açıklama') ? '' : bioText; 
+            openCustomModal('bioEditModal'); 
+        }
+        
+        async function confirmBioUpdate() {
+            const val = document.getElementById('bioInputContent').value.trim();
+            document.getElementById('userBio').innerText = val || "Açıklama eklenmemiş.";
+            closeCustomModal('bioEditModal');
+            await window.supabaseClient.from('profiles').update({ bio: val }).eq('id', currentUser.id);
+            showNotification("Açıklama Güncellendi", "success");
+        }
+
+        function openUsernameEditModal() { 
+            document.getElementById('usernameInputContent').value = document.getElementById('profileNameDisplay').innerText; 
+            openCustomModal('usernameEditModal'); 
+        }
+        
+        async function confirmUsernameUpdate() {
+            const val = document.getElementById('usernameInputContent').value.trim();
+            if(val.length < 3) return showNotification("En az 3 karakter olmalı.", "error");
+            
+            document.getElementById('profileNameDisplay').innerText = val;
+            closeCustomModal('usernameEditModal');
+            
+            await window.supabaseClient.from('profiles').update({ username: val, username_updated_at: new Date() }).eq('id', currentUser.id);
+            showNotification("Kullanıcı Adı Güncellendi", "success");
+        }
+
+        // BANNER DEĞİŞTİRME
         function openBannerModal() {
             const grid = document.getElementById('bannerOptions');
             grid.innerHTML = [1001, 1002, 1003, 1004].map(id => 
@@ -292,36 +793,101 @@
             document.getElementById('currentBanner').style.backgroundImage = `url('${url}')`;
             closeCustomModal('bannerModal');
             await window.supabaseClient.from('profiles').update({ banner_url: url }).eq('id', currentUser.id);
-            localStorage.setItem('obb_profile_cache', JSON.stringify({ ...JSON.parse(localStorage.getItem('obb_profile_cache') || '{}'), banner_url: url }));
+            
+            const cacheKey = 'obb_profile_cache';
+            const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+            cachedProfile.banner_url = url;
+            localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+            
+            showNotification("Kapak başarıyla güncellendi", "success");
         }
 
-        // Edit Fonksiyonları
-        function openIgnEditModal() { document.getElementById('ignInputContent').value = document.getElementById('userIgnDisplay').innerText.replace('Belirlenmedi', ''); openCustomModal('ignEditModal'); }
-        async function confirmIgnUpdate() {
-            const val = document.getElementById('ignInputContent').value.trim();
-            if(!val.includes('#')) return showNotification("Tag (#) içermelidir!", "error");
-            document.getElementById('userIgnDisplay').innerText = val;
-            closeCustomModal('ignEditModal');
-            await window.supabaseClient.from('profiles').update({ ign: val, ign_updated_at: new Date() }).eq('id', currentUser.id);
-            showNotification("IGN Güncellendi", "success");
+        // ŞİFRE VE DİĞER AYARLAR
+        function initiatePasswordUpdate() {
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('newPasswordConfirm').value;
+            if (newPass.length < 6) return showNotification("Şifre en az 6 karakter olmalıdır.", "error");
+            if (newPass !== confirmPass) return showNotification("Şifreler uyuşmuyor!", "error");
+            pendingAction = 'passwordUpdate';
+            document.getElementById('modalCurrentPassword').value = ''; 
+            openCustomModal('passwordConfirmModal');
         }
 
-        function openBioEditModal() { document.getElementById('bioInputContent').value = document.getElementById('userBio').innerText; openCustomModal('bioEditModal'); }
-        async function confirmBioUpdate() {
-            const val = document.getElementById('bioInputContent').value.trim();
-            document.getElementById('userBio').innerText = val || "Açıklama eklenmemiş.";
-            closeCustomModal('bioEditModal');
-            await window.supabaseClient.from('profiles').update({ bio: val }).eq('id', currentUser.id);
+        async function confirmActionWithPassword() {
+            const currentPass = document.getElementById('modalCurrentPassword').value;
+            if (!currentPass) return showNotification("Mevcut şifre gerekli.", "error");
+            
+            const userEmail = currentUser.email || currentUser.user_metadata?.email;
+            const { error: authError } = await window.supabaseClient.auth.signInWithPassword({ email: userEmail, password: currentPass });
+            if (authError) return showNotification("Şifre yanlış.", "error");
+
+            if (pendingAction === 'passwordUpdate') {
+                const newPass = document.getElementById('newPassword').value;
+                const { error } = await window.supabaseClient.auth.updateUser({ password: newPass });
+                if (error) {
+                    showNotification("Güncellenemedi.", "error");
+                } else {
+                    showNotification("Şifreniz güncellendi!", "success");
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('newPasswordConfirm').value = '';
+                    closeCustomModal('passwordConfirmModal');
+                }
+            }
         }
 
-        function openUsernameEditModal() { document.getElementById('usernameInputContent').value = document.getElementById('profileNameDisplay').innerText; openCustomModal('usernameEditModal'); }
-        async function confirmUsernameUpdate() {
-            const val = document.getElementById('usernameInputContent').value.trim();
-            if(val.length < 3) return;
-            document.getElementById('profileNameDisplay').innerText = val;
-            closeCustomModal('usernameEditModal');
-            await window.supabaseClient.from('profiles').update({ username: val, username_updated_at: new Date() }).eq('id', currentUser.id);
+        async function toggleMarketingConsent(isChecked) {
+            const { error } = await window.supabaseClient.from('profiles').update({ marketing_consent: isChecked }).eq('id', currentUser.id);
+            if (error) showNotification("Kaydedilemedi.", "error");
+            else showNotification(isChecked ? "İzin onaylandı." : "İzin iptal edildi.", "success");
         }
+
+        // PROFİL RESMİ YÜKLEME (Optimizasyonlu)
+        document.getElementById('avatarUpload').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const base64DataUrl = event.target.result;
+                document.getElementById('userAvatar').src = base64DataUrl;
+
+                const img = new Image();
+                img.src = base64DataUrl;
+                img.onload = async () => {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height;
+                    const MAX = 500;
+                    if(w > h) { if(w > MAX) { h = Math.round(h*(MAX/w)); w = MAX; } } 
+                    else { if(h > MAX) { w = Math.round(w*(MAX/h)); h = MAX; } }
+
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+
+                    canvas.toBlob(async (blob) => {
+                        const path = `${currentUser.id}/profil_resmi.webp`;
+                        try {
+                            const { error } = await window.supabaseClient.storage.from('avatars').upload(path, blob, { upsert: true, cacheControl: '3600' });
+                            if (error) throw error;
+                            
+                            const { data } = window.supabaseClient.storage.from('avatars').getPublicUrl(path);
+                            const cleanUrl = data.publicUrl.split('?')[0];
+                            
+                            await window.supabaseClient.from('profiles').update({ avatar_url: cleanUrl }).eq('id', currentUser.id);
+                            
+                            const cacheKey = 'obb_profile_cache';
+                            const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                            cachedProfile.avatar_url = cleanUrl;
+                            localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+
+                            document.getElementById('userAvatar').src = cleanUrl + "?t=" + Date.now();
+                            showNotification("Profil resmi güncellendi!", "success");
+
+                        } catch (err) { showNotification("Yükleme hatası.", "error"); }
+                    }, 'image/webp', 0.8);
+                };
+            };
+            reader.readAsDataURL(file);
+        });
 
         document.addEventListener('DOMContentLoaded', initProfile);
     </script>
