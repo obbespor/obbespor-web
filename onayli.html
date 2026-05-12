@@ -72,7 +72,7 @@
                 <li><a href="onay.html"  >ONAY</a></li>
                 <li><a href="onayli.html" class="active-admin-tab">ONAYLI</a></li>
                 <li><a href="takvim.html">TAKVİM <i style="font-size: 10px; margin-left: 3px;"></i></a></li>
-                <li><a href="onayli.html" >FİKSTÜR <i style="font-size: 10px; margin-left: 5px;"></i></a></li>
+                <li><a href="admin.html" >FİKSTÜR <i style="font-size: 10px; margin-left: 5px;"></i></a></li>
                 <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
             </ul>
         </nav>
@@ -88,7 +88,6 @@
         <div class="approved-list" id="approvedTeamsList"></div>
     </main>
 
-    <!-- Modal (Takım Detayı) -->
     <div class="modal-overlay" id="teamModal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal()">&times;</span>
@@ -122,6 +121,9 @@
     <script src="js/auth.js"></script>
     
     <script>
+        // Sayfa yüklendiğinde global olarak saklayalım ki Excel'e aktarırken tekrar sunucudan çekmeyelim
+        let globalApprovedTeams = [];
+
         async function initAdminPage() {
             try {
                 const response = await fetch("components/footer.html");
@@ -193,8 +195,10 @@
 
         async function loadApprovedTeams() {
             const teams = await fetchTeamsWithMembers('approved');
+            globalApprovedTeams = teams; // Excel için bellekte tut
             const list = document.getElementById('approvedTeamsList');
             list.innerHTML = '';
+            
             if (teams && teams.length > 0) {
                 teams.forEach((team, index) => {
                     list.innerHTML += `
@@ -250,8 +254,72 @@
             document.getElementById('teamModal').classList.remove('active'); 
         }
 
+        // EXCEL'E AKTARMA FONKSİYONU
         async function excelAktar() { 
-            showNotification("Excel'e aktarma işlemi başlatılıyor...", "info"); 
+            if (!globalApprovedTeams || globalApprovedTeams.length === 0) {
+                showNotification("Dışa aktarılacak takım bulunamadı.", "error");
+                return;
+            }
+
+            showNotification("Excel dosyası hazırlanıyor...", "info"); 
+
+            // Verileri Excel formatına uygun bir JSON dizisine dönüştür
+            const excelData = globalApprovedTeams.map((team, index) => {
+                // Kaptanı bul
+                const captData = (team.members || []).find(m => m.user_id === team.captain_id);
+                
+                // Kaptan, Asil ve Yedekleri ayırarak virgülle ayrılmış isim listeleri oluştur
+                const asilOyuncular = (team.members || [])
+                    .filter(m => m.role === 'main')
+                    .map(m => m.username)
+                    .join(", ");
+                
+                const yedekOyuncular = (team.members || [])
+                    .filter(m => m.role === 'sub')
+                    .map(m => m.username)
+                    .join(", ");
+
+                return {
+                    "No": index + 1,
+                    "Takım Adı": team.team_name.toUpperCase(),
+                    "Kısaltma (TAG)": team.team_tag,
+                    "Kaptan": captData ? captData.username : "Bilinmiyor",
+                    "Kaptan Telefon": captData ? captData.phone : "Belirtilmemiş",
+                    "Asil Oyuncular": asilOyuncular,
+                    "Yedek Oyuncular": yedekOyuncular
+                };
+            });
+
+            try {
+                // 1. Yeni bir çalışma kitabı (workbook) oluştur
+                const wb = XLSX.utils.book_new();
+                
+                // 2. JSON verisini bir çalışma sayfasına (worksheet) çevir
+                const ws = XLSX.utils.json_to_sheet(excelData);
+
+                // 3. Sütun genişliklerini ayarla (daha güzel görünmesi için)
+                const wscols = [
+                    {wch: 5},  // No
+                    {wch: 25}, // Takım Adı
+                    {wch: 15}, // Kısaltma (TAG)
+                    {wch: 20}, // Kaptan
+                    {wch: 15}, // Kaptan Telefon
+                    {wch: 40}, // Asil Oyuncular
+                    {wch: 30}  // Yedek Oyuncular
+                ];
+                ws['!cols'] = wscols;
+
+                // 4. Sayfayı kitaba ekle
+                XLSX.utils.book_append_sheet(wb, ws, "Onaylı Takımlar");
+
+                // 5. Dosyayı indir
+                XLSX.writeFile(wb, "obb_onayli_takimlar.xlsx");
+                
+                showNotification("Excel dosyası başarıyla indirildi.", "success");
+            } catch (error) {
+                console.error("Excel aktarım hatası:", error);
+                showNotification("Excel dosyası oluşturulurken bir hata meydana geldi.", "error");
+            }
         }
 
         document.addEventListener('DOMContentLoaded', initAdminPage);
