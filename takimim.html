@@ -28,7 +28,7 @@
             background-attachment: fixed;
         }
 
-        .team-page-container { max-width: 1200px; margin: 40px auto; padding: 20px; flex: 1; animation: fadeInPage 0.6s ease-out; display: none; }
+        .team-page-container { max-width: 1200px; margin: 40px auto; padding: 20px; flex: 1; animation: fadeInPage 0.4s ease-out; display: none; }
         @keyframes fadeInPage { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
         /* TAKIM KURMA KARTI */
@@ -66,7 +66,7 @@
         .tourney-badge.pending { background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid #00d4ff; box-shadow: 0 0 10px rgba(0,212,255,0.2); }
         .tourney-badge.rejected { background: rgba(255, 75, 75, 0.1); color: #ff6b6b; border: 1px solid #ff6b6b; box-shadow: 0 0 10px rgba(255,75,75,0.2); }
 
-        .lock-alert { background: rgba(255, 75, 75, 0.1); border: 1px solid rgba(255, 75, 75, 0.3); color: #ff6b6b; padding: 15px 20px; border-radius: 12px; font-size: 13px; font-weight: bold; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; box-shadow: 0 0 15px rgba(255, 75, 75, 0.1); }
+        .lock-alert { background: rgba(255, 75, 75, 0.1); border: 1px solid rgba(255, 75, 75, 0.3); color: #ff6b6b; padding: 15px 20px; border-radius: 12px; font-size: 13px; font-weight: bold; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; box-shadow: 0 0 15px rgba(255, 75, 75, 0.1); max-width: 600px; margin-left: auto; margin-right: auto; }
         
         .roster-title-container { display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 35px; }
         .roster-title { font-size: 26px; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
@@ -83,9 +83,9 @@
             box-shadow: 0 0 10px rgba(var(--anadolu-rgb), 0.3);
         }
 
-        /* OYUNCU KARTLARI */
-        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 30px; margin-bottom: 50px; }
-        .player-card { background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
+        /* OYUNCU KARTLARI - TEK SÜTUN MERKEZLENMİŞ DİZİLİM (DÜZELTİLDİ) */
+        .roster-grid { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: 50px; }
+        .player-card { width: 100%; max-width: 600px; background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
         .player-card:hover { transform: translateY(-5px); border-color: rgba(96, 29, 194, 0.5); box-shadow: 0 15px 40px rgba(96, 29, 194, 0.2); }
         
         /* BENİM KARTIM (Yeşil Çerçeve) */
@@ -128,7 +128,7 @@
         .btn-disband:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 0 20px rgba(255, 75, 75, 0.3); }
 
         /* EKLEME SLOTU */
-        .add-slot-card { display:flex; flex-direction:column; justify-content:center; align-items:center; padding:40px; border:2px dashed rgba(96, 29, 194, 0.3); background:rgba(96, 29, 194, 0.03); border-radius: 16px; transition: 0.3s; cursor: pointer; }
+        .add-slot-card { width: 100%; max-width: 600px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:40px; border:2px dashed rgba(96, 29, 194, 0.3); background:rgba(96, 29, 194, 0.03); border-radius: 16px; transition: 0.3s; cursor: pointer; }
         .add-slot-card:hover { border-color: var(--neon-mor); background: rgba(96, 29, 194, 0.07); }
         .add-icon { font-size: 40px; color: rgba(96, 29, 194, 0.4); margin-bottom: 15px; transition: 0.3s; }
         .add-slot-card:hover .add-icon { color: var(--neon-mor); transform: scale(1.1); }
@@ -160,7 +160,9 @@
             .roster-title { font-size: 22px; text-align: center; }
             .roster-count { font-size: 14px; padding: 4px 12px; }
 
-            .roster-grid { grid-template-columns: 1fr; gap: 15px; margin-bottom: 30px; }
+            .roster-grid { gap: 15px; margin-bottom: 30px; }
+            .player-card { max-width: 100%; }
+            .add-slot-card { max-width: 100%; }
             
             .player-card-header { padding: 15px; padding-right: 40px; gap: 12px;}
             .player-avatar { width: 50px; height: 50px; font-size: 20px; }
@@ -235,19 +237,19 @@
         </div>
 
         <div class="lock-alert" id="lockAlert" style="display: none;">
-            <i class="fas fa-lock"></i>
-            <div>
-                <strong>KADRO KİLİTLİ!</strong><br>
-                Aktif bir turnuvada veya başvuru sürecinde olduğunuz için takım ayarları ve kadro değişikliği yapılamaz.
             </div>
-        </div>
 
         <div class="roster-title-container">
             <h3 class="roster-title">TAKIM KADROSU</h3>
             <span class="roster-count" id="memberCounter">0 / 7</span>
         </div>
         
-        <div class="roster-grid" id="rosterList"></div>
+        <div class="roster-grid" id="rosterList">
+            <div style="width: 100%; text-align: center; color: var(--gri-yazi); padding: 30px;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                Oyuncular Yükleniyor...
+            </div>
+        </div>
 
         <div id="memberActionArea" style="display:none; text-align: center; margin-top:40px;">
             <button class="action-btn btn-disband" onclick="leaveTeam()"><i class="fas fa-sign-out-alt"></i> Takımdan Ayrıl</button>
@@ -358,6 +360,51 @@
             }
         }
 
+        async function fetchMyTeam() {
+            try {
+                let { data: teamAsCaptain } = await window.supabaseClient.from('teams').select('*').eq('captain_id', currentUser.id).maybeSingle();
+                if (teamAsCaptain) { 
+                    myTeamData = teamAsCaptain; 
+                    isCaptain = true; 
+                } 
+                else {
+                    const { data: membership } = await window.supabaseClient.from('team_members').select('team_id').eq('user_id', currentUser.id).eq('status', 'accepted').maybeSingle();
+                    if (membership) {
+                        const { data: teamData } = await window.supabaseClient.from('teams').select('*').eq('id', membership.team_id).single();
+                        myTeamData = teamData; 
+                        isCaptain = false;
+                    }
+                }
+                
+                if (!myTeamData) { 
+                    document.getElementById('createTeamSection').style.display = 'block'; 
+                    document.getElementById('myTeamSection').style.display = 'none';
+                    await fetchPendingInvites(); 
+                    return; 
+                }
+
+                // AKTİF TURNUVA DURUMUNU ÇEK (ROSTER LOCK KONTROLÜ)
+                const { data: appData } = await window.supabaseClient.from('tournament_applications')
+                    .select('status, tournaments!inner(name, status)')
+                    .eq('team_id', myTeamData.id)
+                    .eq('tournaments.status', 'upcoming')
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                if (appData) {
+                    currentApp = appData;
+                    // ÖNEMLİ: Eğer başvuru "pending" (bekliyor) veya "approved" (onaylı) ise ROSTER LOCK aktiftir!
+                    if (appData.status === 'approved' || appData.status === 'pending') {
+                        isRosterLocked = true;
+                    }
+                }
+
+                renderTeamUI();
+                await fetchRoster();
+            } catch (err) { showNotification("Sistem hatası.", "error"); }
+        }
+
         async function fetchPendingInvites() {
             try {
                 const { data: invites } = await window.supabaseClient.from('team_members')
@@ -403,53 +450,9 @@
                 } else {
                     await window.supabaseClient.from('team_members').delete().eq('id', memberId);
                     showNotification("Davet reddedildi.", "info");
-                    fetchPendingInvites();
+                    location.reload();
                 }
             } catch(e) { showNotification("İşlem başarısız.", "error"); }
-        }
-
-        async function fetchMyTeam() {
-            try {
-                let { data: teamAsCaptain } = await window.supabaseClient.from('teams').select('*').eq('captain_id', currentUser.id).maybeSingle();
-                if (teamAsCaptain) { 
-                    myTeamData = teamAsCaptain; 
-                    isCaptain = true; 
-                } 
-                else {
-                    const { data: membership } = await window.supabaseClient.from('team_members').select('team_id').eq('user_id', currentUser.id).eq('status', 'accepted').maybeSingle();
-                    if (membership) {
-                        const { data: teamData } = await window.supabaseClient.from('teams').select('*').eq('id', membership.team_id).single();
-                        myTeamData = teamData; 
-                        isCaptain = false;
-                    }
-                }
-                
-                if (!myTeamData) { 
-                    document.getElementById('createTeamSection').style.display = 'block'; 
-                    document.getElementById('myTeamSection').style.display = 'none';
-                    await fetchPendingInvites(); 
-                    return; 
-                }
-
-                const { data: appData } = await window.supabaseClient.from('tournament_applications')
-                    .select('status, tournaments!inner(name, status)')
-                    .eq('team_id', myTeamData.id)
-                    .eq('tournaments.status', 'upcoming')
-                    .order('created_at', { ascending: false })
-                    .limit(1)
-                    .maybeSingle();
-
-                if (appData) {
-                    currentApp = appData;
-                    // KADRO KİLİDİ BURADA DEVREYE GİRİYOR (Hem onaylı hem de bekleyen başvurular kilitlenir)
-                    if (appData.status === 'approved' || appData.status === 'pending') {
-                        isRosterLocked = true;
-                    }
-                }
-
-                renderTeamUI();
-                await fetchRoster();
-            } catch (err) { showNotification("Sistem hatası.", "error"); }
         }
 
         function renderTeamUI() {
@@ -476,7 +479,25 @@
             document.getElementById('tTourneyBadgeContainer').innerHTML = badgeHTML;
 
             if (isRosterLocked) {
-                document.getElementById('lockAlert').style.display = 'flex';
+                const lockAlert = document.getElementById('lockAlert');
+                if(currentApp && currentApp.status === 'pending') {
+                    lockAlert.innerHTML = `
+                        <i class="fas fa-lock"></i>
+                        <div>
+                            <strong>KADRO KİLİTLİ!</strong><br>
+                            Başvurunuz değerlendiriliyor. Kadro veya takım ayarlarında değişiklik yapmak için "Turnuva Başvurusu" sayfasından başvurunuzu geri çekmelisiniz.
+                        </div>
+                    `;
+                } else {
+                    lockAlert.innerHTML = `
+                        <i class="fas fa-lock"></i>
+                        <div>
+                            <strong>KADRO KİLİTLİ!</strong><br>
+                            Aktif bir turnuvada olduğunuz için takım ayarları ve kadro değişikliği yapılamaz.
+                        </div>
+                    `;
+                }
+                lockAlert.style.display = 'flex';
             }
 
             document.getElementById('captainActionArea').style.display = 'none';
@@ -574,11 +595,22 @@
                     const acs = matches > 0 ? Math.round(pStat.acsTotal / matches) : 0;
                     const assists = pStat.assists || 0;
 
-                    grid.innerHTML += createPlayerCard(m.user_id, m.id, prof?.username, prof?.ign, m.status, prof?.avatar_url, matches, kd, acs, assists, isCap, isMe);
+                    grid.innerHTML += createPlayerCard(
+                        m.user_id, m.id, prof?.username, prof?.ign, m.status, prof?.avatar_url, 
+                        matches, kd, acs, assists, isCap, isMe
+                    );
                 });
 
                 if (isCaptain && !isRosterLocked && acceptedCount < 7) {
-                    grid.innerHTML += `<div class="add-slot-card" onclick="focusSearch()"><i class="fas fa-user-plus add-icon"></i><div style="width:100%; position:relative;"><input type="text" id="dynamicSearch" class="player-search" autocomplete="off" placeholder="Oyuncu Ara..." style="width:100%; padding:10px; background:rgba(0,0,0,0.5); border:1px solid #333; border-radius:8px; color:white; text-align:center; outline:none;"><div id="dynamicSearch-list" class="autocomplete-items"></div></div><span style="font-size:12px; color:var(--gri-yazi); margin-top:10px;"><i class="fas fa-plus"></i> Oyuncu Ekle</span></div>`;
+                    grid.innerHTML += `
+                        <div class="add-slot-card" onclick="focusSearch()">
+                            <i class="fas fa-user-plus add-icon"></i>
+                            <div style="width:100%; position:relative;">
+                                <input type="text" id="dynamicSearch" class="player-search" autocomplete="off" placeholder="Oyuncu Ara..." style="width:100%; padding:10px; background:rgba(0,0,0,0.5); border:1px solid #333; border-radius:8px; color:white; text-align:center; outline:none;">
+                                <div id="dynamicSearch-list" class="autocomplete-items"></div>
+                            </div>
+                            <span style="font-size:12px; color:var(--gri-yazi); margin-top:10px;"><i class="fas fa-plus"></i> Oyuncu Ekle</span>
+                        </div>`;
                     attachDynamicSearchEvent();
                 }
             } catch (err) { console.error(err); }
@@ -589,7 +621,7 @@
             const subName = (ign && ign !== 'Belirlenmedi') ? `@${username}` : '';
             const avatar = avatarUrl ? `<img src="${avatarUrl}" class="player-avatar" onerror="this.src='img/unknown.webp'">` : `<div class="player-avatar"><i class="fas fa-user"></i></div>`;
             
-            // ROSTER LOCK KONTROLÜ: Eğer takım onay bekliyor veya onaylıysa oyuncu atma butonu HTML'e hiç eklenmez!
+            // ROSTER LOCK VARSA KİCK BUTONU EKRANA ÇİZİLMEZ!
             let kickBtn = (isCaptain && !isRosterLocked && userId !== currentUser.id) ? `<button class="btn-kick" onclick="kickPlayer('${memberId}', '${username.replace(/'/g, "\\'")}')"><i class="fas fa-times"></i></button>` : '';
             
             let roleLabel = 'ÜYE';
@@ -624,7 +656,7 @@
 
         async function updateTeamSettings() {
             if(isRosterLocked) {
-                showNotification("Takımınız onay sürecinde olduğu veya turnuvaya katıldığı için ayarlar kilitli.", "error");
+                showNotification("Başvurunuz olduğu için ayarlar kilitli.", "error");
                 return;
             }
             const newName = document.getElementById('editTeamName').value.trim();
