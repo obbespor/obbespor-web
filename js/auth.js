@@ -37,7 +37,6 @@ function renderCachedHeader() {
                     ${adminLinkHTML}
                     <a href="profil.html"><i class="fas fa-user-circle"></i> Profil</a>
                     <a href="takimim.html"><i class="fas fa-users"></i> Takımım</a>
-                    <a href="my-tournaments.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
                     <a href="#" onclick="handleLogoutGlobal(); return false;" class="logout-link"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
                 </div>
             </div>`;
@@ -96,7 +95,6 @@ async function updateNavbarWithUser(user) {
                 ${adminLinkHTML}
                 <a href="profil.html"><i class="fas fa-user-circle"></i> Profil</a>
                 <a href="takimim.html"><i class="fas fa-users"></i> Takımım</a>
-                <a href="my-tournaments.html"><i class="fas fa-trophy"></i> Turnuvalarım</a>
                 <a href="#" onclick="handleLogoutGlobal(); return false;" class="logout-link"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
             </div>
         </div>`;
