@@ -338,7 +338,6 @@
             document.getElementById('editTeamModal').classList.remove('active');
         }
 
-        // HIZLANDIRILMIŞ PARALEL INIT FONKSİYONU
         async function initTeamPage() {
             try {
                 // 1. AŞAMA: Kullanıcı Oturumu (Zorunlu ve Sıralı)
@@ -347,7 +346,6 @@
                 currentUser = user;
                 
                 // 2. AŞAMA: PARALEL (Eşzamanlı) Veritabanı Sorguları
-                // Profil + Kaptan Olduğu Takım + Üye Olduğu Takımlar/Davetler aynı anda çekilir
                 const [profileRes, myTeamsRes, membershipsRes] = await Promise.all([
                     window.supabaseClient.from('profiles').select('username, ign').eq('id', currentUser.id).single(),
                     window.supabaseClient.from('teams').select('*').eq('captain_id', currentUser.id).maybeSingle(),
@@ -381,7 +379,7 @@
 
                 myTeamData = teamData;
 
-                // EKRAN GÖSTERİMİ VE YÜKLEME KARTINI KAPATMA (Çok hızlı!)
+                // EKRAN GÖSTERİMİ VE YÜKLEME KARTINI KAPATMA
                 document.getElementById('loadingScreen').style.display = 'none';
 
                 if (!myTeamData) {
@@ -389,13 +387,13 @@
                     if (pendingInvites.length > 0) renderPendingInvitesFast(pendingInvites);
                 } else {
                     document.getElementById('myTeamSection').style.display = 'block';
-                    renderTeamUIFast(); // İskeleti çizer
+                    renderTeamUIFast(); 
                     
-                    // 3. AŞAMA: Roster (Kadro) ve Turnuva Durumunu Çekme (Arka Planda Paralel)
-                    Promise.all([
-                        fetchAppStatusFast(),
-                        fetchRosterFast()
-                    ]);
+                    // Önce Durumu Bekle (Roster Lock Güvenliği İçin)
+                    await fetchAppStatusFast(); 
+                    
+                    // Sonra Kadroyu Getir
+                    fetchRosterFast(); 
                 }
                 
             } catch (err) { 
@@ -404,7 +402,6 @@
             } 
         }
 
-        // Hızlı Davet Render
         function renderPendingInvitesFast(invites) {
             document.getElementById('pendingInvitesSection').style.display = 'block';
             let html = '';
@@ -760,11 +757,19 @@
             });
         }
 
+        // === ÖNEMLİ DÜZELTME: Roster Lock İçi Fonksiyon Güvenlikleri ===
+        
         async function kickPlayer(mId, name, role) { 
+            // KİLİT KONTROLÜ
+            if (isRosterLocked || (currentApp && currentApp.status === 'approved')) {
+                showNotification("ROSTER KİLİDİ: Aktif bir turnuvaya onaylı olduğunuz için takımdan oyuncu çıkaramazsınız!", "error");
+                return;
+            }
             if (currentApp && currentApp.status === 'pending' && (role === 'main' || role === 'captain')) {
                 showNotification("Başvuru incelemedeyken kadroyu değiştiremezsiniz!", "error");
                 return;
             }
+            
             openConfirmModal(`<b>${name}</b> takımdan çıkarılsın mı?`, async () => { 
                 try { 
                     await window.supabaseClient.from('team_members').delete().eq('id', mId); 
@@ -775,6 +780,12 @@
         }
 
         async function disbandTeam() { 
+            // KİLİT KONTROLÜ
+            if (isRosterLocked || (currentApp && currentApp.status === 'approved')) {
+                showNotification("ROSTER KİLİDİ: Aktif turnuvadaki onaylı takım dağıtılamaz!", "error");
+                return;
+            }
+
             openConfirmModal("Takım dağıtılsın mı? Bu işlem geri alınamaz!", async () => { 
                 try {
                     if (currentApp && currentApp.status === 'pending') {
@@ -788,6 +799,12 @@
         }
 
         async function leaveTeam() { 
+            // KİLİT KONTROLÜ
+            if (isRosterLocked || (currentApp && currentApp.status === 'approved')) {
+                showNotification("ROSTER KİLİDİ: Onaylı bir takımdan turnuva bitene kadar ayrılamazsınız!", "error");
+                return;
+            }
+
             openConfirmModal("Takımdan ayrılmak istediğine emin misin?", async () => { 
                 try {
                     await window.supabaseClient.from('team_members').delete().eq('team_id', myTeamData.id).eq('user_id', currentUser.id); 
