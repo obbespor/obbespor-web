@@ -44,7 +44,20 @@
         /* Eski banner+.jpg silindi, varsayılan olarak banner1001.webp ayarlandı */
         .profile-banner { height: 250px; background: url('img/banner1001.webp') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
         
-        .edit-banner-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 15px; border-radius: 5px; border: 1px solid var(--neon-mor); cursor: pointer; font-size: 12px; transition: 0.3s; z-index: 1000;}
+      .edit-banner-btn { 
+    position: absolute; 
+    top: 20px; 
+    right: 20px; 
+    background: rgba(0,0,0,0.7); 
+    color: white; 
+    padding: 8px 15px; 
+    border-radius: 5px; 
+    border: 1px solid var(--neon-mor); 
+    cursor: pointer; 
+    font-size: 12px; 
+    transition: 0.3s; 
+    z-index: 10;
+}
         .edit-banner-btn:hover { background: var(--neon-mor); }
 
         .profile-card { background: var(--card-bg); border: 1px solid #222; border-top: none; border-radius: 0 0 20px 20px; padding: 0 40px 40px; position: relative; text-align: center; margin-bottom: 30px; border-top: 2px solid var(--neon-mor); border-top-left-radius: 20px; border-top-right-radius: 20px; }
