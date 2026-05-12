@@ -235,12 +235,7 @@
         </div>
 
         <div class="lock-alert" id="lockAlert" style="display: none;">
-            <i class="fas fa-lock"></i>
-            <div>
-                <strong>KADRO KİLİTLİ!</strong><br>
-                Aktif bir turnuvada olduğunuz için takım ayarları ve kadro değişikliği yapılamaz.
             </div>
-        </div>
 
         <div class="roster-title-container">
             <h3 class="roster-title">TAKIM KADROSU</h3>
@@ -329,7 +324,10 @@
         });
 
         function openEditTeamModal() {
-            if(isRosterLocked) return;
+            if(isRosterLocked) {
+                showNotification("Başvurunuz olduğu için ayarlar kilitli.", "error");
+                return;
+            }
             document.getElementById('editTeamName').value = myTeamData.name;
             document.getElementById('editTeamTag').value = myTeamData.tag;
             document.getElementById('editTeamModal').classList.add('active');
@@ -338,14 +336,15 @@
             document.getElementById('editTeamModal').classList.remove('active');
         }
 
+        // HIZLANDIRILMIŞ PARALEL INIT FONKSİYONU
         async function initTeamPage() {
             try {
-                // 1. AŞAMA: Kullanıcı Oturumu (Zorunlu ve Sıralı)
+                // 1. AŞAMA: Kullanıcı Oturumu
                 const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
                 if (authErr || !user) { window.location.href = "kayit.html"; return; }
                 currentUser = user;
                 
-                // 2. AŞAMA: PARALEL (Eşzamanlı) Veritabanı Sorguları
+                // 2. AŞAMA: PARALEL Veritabanı Sorguları
                 const [profileRes, myTeamsRes, membershipsRes] = await Promise.all([
                     window.supabaseClient.from('profiles').select('username, ign').eq('id', currentUser.id).single(),
                     window.supabaseClient.from('teams').select('*').eq('captain_id', currentUser.id).maybeSingle(),
@@ -361,7 +360,6 @@
                 let teamData = null;
                 let pendingInvites = [];
                 
-                // Takım Belirleme Mantığı
                 if (myTeamsRes.data) {
                     teamData = myTeamsRes.data;
                     isCaptain = true;
@@ -379,7 +377,7 @@
 
                 myTeamData = teamData;
 
-                // EKRAN GÖSTERİMİ VE YÜKLEME KARTINI KAPATMA
+                // YÜKLEME KARTINI KAPATMA 
                 document.getElementById('loadingScreen').style.display = 'none';
 
                 if (!myTeamData) {
@@ -389,10 +387,10 @@
                     document.getElementById('myTeamSection').style.display = 'block';
                     renderTeamUIFast(); 
                     
-                    // Önce Durumu Bekle (Roster Lock Güvenliği İçin)
+                    // 3. AŞAMA: Önce Turnuva Başvuru Durumunu Bekle (Kilit Kontrolü İçin Çok Önemli)
                     await fetchAppStatusFast(); 
                     
-                    // Sonra Kadroyu Getir
+                    // Kilit durumunu anladıktan sonra kadroyu getir (Böylece butonlar doğru çizilir)
                     fetchRosterFast(); 
                 }
                 
@@ -402,6 +400,7 @@
             } 
         }
 
+        // Hızlı Davet Render
         function renderPendingInvitesFast(invites) {
             document.getElementById('pendingInvitesSection').style.display = 'block';
             let html = '';
@@ -463,7 +462,10 @@
 
                 if (appData) {
                     currentApp = appData;
-                    if (appData.status === 'approved') isRosterLocked = true;
+                    // YENİ MANTIK: Hem onaylı hem de bekleyen başvurularda ROSTER LOCK devreye girer
+                    if (appData.status === 'approved' || appData.status === 'pending') {
+                        isRosterLocked = true;
+                    }
                     
                     let badgeHTML = '';
                     if (currentApp.status === 'approved') {
@@ -478,7 +480,18 @@
 
                 if (isCaptain && !isRosterLocked) document.getElementById('captainActionArea').style.display = 'flex';
                 else if (!isCaptain && !isRosterLocked) document.getElementById('memberActionArea').style.display = 'block';
-                if (isRosterLocked) document.getElementById('lockAlert').style.display = 'flex';
+                
+                if (isRosterLocked) {
+                    const lockAlert = document.getElementById('lockAlert');
+                    lockAlert.innerHTML = `
+                        <i class="fas fa-lock"></i>
+                        <div>
+                            <strong>KADRO KİLİTLİ!</strong><br>
+                            Turnuva başvurunuz incelemede veya onaylanmış durumda. Kadro veya takım ayarlarında değişiklik yapmak için "Başvuru Yap" sayfasından başvurunuzu geri çekmelisiniz.
+                        </div>
+                    `;
+                    lockAlert.style.display = 'flex';
+                }
 
             } catch(e) { console.error(e); }
         }
@@ -616,6 +629,7 @@
             const subName = (ign && ign !== 'Belirlenmedi') ? `@${username}` : '';
             const avatar = avatarUrl ? `<img src="${avatarUrl}" class="player-avatar" onerror="this.src='img/unknown.webp'">` : `<div class="player-avatar"><i class="fas fa-user"></i></div>`;
             
+            // Eğer isRosterLocked aktifse kick butonu asla çizilmez
             let kickBtn = (isCaptain && !isRosterLocked && userId !== currentUser.id) ? `<button class="btn-kick" onclick="kickPlayer('${memberId}', '${username.replace(/'/g, "\\'")}', '${dbRole}')"><i class="fas fa-times"></i></button>` : '';
             
             let roleLabel = 'ÜYE';
@@ -652,7 +666,10 @@
         function focusSearch() { document.getElementById('dynamicSearch').focus(); }
 
         async function updateTeamSettings() {
-            if(isRosterLocked) return;
+            if(isRosterLocked) {
+                showNotification("Kadro kilitliyken ayarlar değiştirilemez.", "error");
+                return;
+            }
             const newName = document.getElementById('editTeamName').value.trim();
             const newTag = document.getElementById('editTeamTag').value.trim().toUpperCase();
             if (newName && (newName.length < 3 || newName.length > 20)) { showNotification("Takım adı 3-20 karakter olmalı.", "error"); return; }
@@ -761,12 +778,8 @@
         
         async function kickPlayer(mId, name, role) { 
             // KİLİT KONTROLÜ
-            if (isRosterLocked || (currentApp && currentApp.status === 'approved')) {
-                showNotification("ROSTER KİLİDİ: Aktif bir turnuvaya onaylı olduğunuz için takımdan oyuncu çıkaramazsınız!", "error");
-                return;
-            }
-            if (currentApp && currentApp.status === 'pending' && (role === 'main' || role === 'captain')) {
-                showNotification("Başvuru incelemedeyken kadroyu değiştiremezsiniz!", "error");
+            if (isRosterLocked) {
+                showNotification("ROSTER KİLİDİ: Aktif bir turnuva başvurunuz bulunduğu için takımdan oyuncu çıkaramazsınız!", "error");
                 return;
             }
             
@@ -781,8 +794,8 @@
 
         async function disbandTeam() { 
             // KİLİT KONTROLÜ
-            if (isRosterLocked || (currentApp && currentApp.status === 'approved')) {
-                showNotification("ROSTER KİLİDİ: Aktif turnuvadaki onaylı takım dağıtılamaz!", "error");
+            if (isRosterLocked) {
+                showNotification("ROSTER KİLİDİ: Aktif başvuru varken takım dağıtılamaz! Önce başvuruyu geri çekin.", "error");
                 return;
             }
 
@@ -800,8 +813,8 @@
 
         async function leaveTeam() { 
             // KİLİT KONTROLÜ
-            if (isRosterLocked || (currentApp && currentApp.status === 'approved')) {
-                showNotification("ROSTER KİLİDİ: Onaylı bir takımdan turnuva bitene kadar ayrılamazsınız!", "error");
+            if (isRosterLocked) {
+                showNotification("ROSTER KİLİDİ: Aktif başvuru varken takımdan ayrılamazsınız!", "error");
                 return;
             }
 
