@@ -108,7 +108,7 @@
                     <h4><i class="fas fa-users"></i> TAKIM KADROSU</h4>
                     <ul class="player-list-mini" id="modalRosterList" style="margin-bottom: 0; padding: 0;"></ul>
                 </div>
-                <button class="btn-delete-team" id="modalDeleteBtn"><i class="fas fa-trash"></i> BU TAKIMI SİL</button>
+                <button class="btn-delete-team" id="modalDeleteBtn"><i class="fas fa-ban"></i> ONAYI İPTAL ET (REDDET)</button>
             </div>
         </div>
     </div>
@@ -213,21 +213,36 @@
             }
         }
 
-        async function takimiSil(appId, teamName, logoUrl, captainId) {
-            const reason = prompt(`DİKKAT: ${teamName} takımının BAŞVURUSUNU kalıcı olarak silmek üzeresiniz. Sebep yazın:`);
+        // BUG FİX: Silme işlemi yerine durumu "Reddedildi" olarak güncelliyoruz!
+        async function onayiIptalEt(appId, teamName, captainId) {
+            const reason = prompt(`DİKKAT: ${teamName} takımının ONAYINI İPTAL ETMEK üzeresiniz. Lütfen oyunculara iletilecek sebebi yazın:`);
             if (reason === null) return;
             if (reason.trim() === "") return showNotification("Sebep boş bırakılamaz.", "error");
+            
             try {
-                if (captainId) {
-                    await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: captainId, baslik: "Başvurunuz Silindi!", mesaj: `Sebep: ${reason}`, tip: 'red' }]);
-                }
-                const { error: teamError } = await window.supabaseClient.from('tournament_applications').delete().eq('id', appId);
+                // DELETE yerine UPDATE kullanıyoruz.
+                const { error: teamError } = await window.supabaseClient.from('tournament_applications')
+                    .update({ status: 'rejected' })
+                    .eq('id', appId);
+                    
                 if (teamError) throw teamError;
+
+                if (captainId) {
+                    await window.supabaseClient.from('bildirimler').insert([{ 
+                        kullanici_id: captainId, 
+                        baslik: "Turnuva Kaydınız İptal Edildi!", 
+                        mesaj: `Takımınızın onayı kaldırılmıştır. Sebep: ${reason}`, 
+                        tip: 'red' 
+                    }]);
+                }
                 
-                showNotification(`${teamName} başvurusu başarıyla silindi.`, "success");
+                showNotification(`${teamName} takımının onayı kaldırıldı.`, "success");
                 closeModal(); 
                 loadApprovedTeams(); 
-            } catch (err) { showNotification("Silme işlemi sırasında hata oluştu.", "error"); }
+            } catch (err) { 
+                console.error("İptal Hatası:", err);
+                showNotification("İşlem sırasında hata oluştu. Veritabanı yetkilerini kontrol edin.", "error"); 
+            }
         }
 
         function openTeamModal(team) {
@@ -245,8 +260,9 @@
                 if (m.role === 'captain') { roleText = 'Kaptan'; color = 'var(--neon-mor)'; } else if (m.role === 'main') { roleText = 'Asil'; color = 'var(--yazi-beyaz)'; }
                 rl.innerHTML += `<li><span style="color:${color}; font-weight:normal; width:60px; display:inline-block;">${roleText}:</span> <span style="color:var(--neon-mor); flex:1;">${m.username}</span></li>`;
             });
+            
             const deleteBtn = document.getElementById('modalDeleteBtn');
-            deleteBtn.onclick = () => takimiSil(team.id, team.team_name, team.logo_url, team.captain_id);
+            deleteBtn.onclick = () => onayiIptalEt(team.id, team.team_name, team.captain_id);
             document.getElementById('teamModal').classList.add('active');
         }
 
@@ -291,30 +307,22 @@
             });
 
             try {
-                // 1. Yeni bir çalışma kitabı (workbook) oluştur
                 const wb = XLSX.utils.book_new();
-                
-                // 2. JSON verisini bir çalışma sayfasına (worksheet) çevir
                 const ws = XLSX.utils.json_to_sheet(excelData);
 
-                // 3. Sütun genişliklerini ayarla (daha güzel görünmesi için)
                 const wscols = [
-                    {wch: 5},  // No
-                    {wch: 25}, // Takım Adı
-                    {wch: 15}, // Kısaltma (TAG)
-                    {wch: 20}, // Kaptan
-                    {wch: 15}, // Kaptan Telefon
-                    {wch: 40}, // Asil Oyuncular
-                    {wch: 30}  // Yedek Oyuncular
+                    {wch: 5},  
+                    {wch: 25}, 
+                    {wch: 15}, 
+                    {wch: 20}, 
+                    {wch: 15}, 
+                    {wch: 40}, 
+                    {wch: 30}  
                 ];
                 ws['!cols'] = wscols;
 
-                // 4. Sayfayı kitaba ekle
                 XLSX.utils.book_append_sheet(wb, ws, "Onaylı Takımlar");
-
-                // 5. Dosyayı indir
                 XLSX.writeFile(wb, "obb_onayli_takimlar.xlsx");
-                
                 showNotification("Excel dosyası başarıyla indirildi.", "success");
             } catch (error) {
                 console.error("Excel aktarım hatası:", error);
