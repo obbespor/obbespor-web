@@ -43,23 +43,24 @@
         
         .profile-banner { height: 250px; background: url('img/banner1001.webp') center/cover no-repeat; border-radius: 20px 20px 0 0; position: relative; border: 1px solid #222; }
         
-        .edit-banner-btn { 
-            position: absolute; 
-            top: 20px; 
-            right: 20px; 
-            background: rgba(0,0,0,0.7); 
-            color: white; 
-            padding: 8px 15px; 
-            border-radius: 5px; 
-            border: 1px solid var(--neon-mor); 
-            cursor: pointer; 
-            font-size: 12px; 
-            transition: 0.3s; 
-            z-index: 10;
-        }
+      .edit-banner-btn { 
+    position: absolute; 
+    top: 20px; 
+    right: 20px; 
+    background: rgba(0,0,0,0.7); 
+    color: white; 
+    padding: 8px 15px; 
+    border-radius: 5px; 
+    border: 1px solid var(--neon-mor); 
+    cursor: pointer; 
+    font-size: 12px; 
+    transition: 0.3s; 
+    z-index: 10;
+}
         .edit-banner-btn:hover { background: var(--neon-mor); }
 
         .profile-card { background: var(--card-bg); border: 1px solid #222; border-top: none; border-radius: 0 0 20px 20px; padding: 0 40px 40px; position: relative; text-align: center; margin-bottom: 30px; border-top: 2px solid var(--neon-mor); border-top-left-radius: 20px; border-top-right-radius: 20px; }
+        
         .profile-card::before { content: ''; position: absolute; top: -75px; left: 50%; transform: translateX(-50%); width: 170px; height: 170px; background: rgba(96, 29, 194, 0.1); border-radius: 50%; filter: blur(20px); z-index: -1; box-shadow: 0 0 30px var(--neon-mor); }
 
         .avatar-wrapper { position: relative; width: 150px; height: 150px; margin: -75px auto 20px; }
@@ -233,7 +234,7 @@
                 <input type="file" id="avatarUpload" accept="image/png, image/jpeg, image/webp" style="display: none;">
             </div>
 
-            <div class="rank-badge" id="userRank">YENİ</div>
+            <div class="rank-badge" id="userRank">YÜKLENİYOR...</div>
             
             <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 5px; text-transform: none;">
                 <span id="profileNameDisplay">...</span>
@@ -538,14 +539,14 @@
             openCustomModal('docModal');
         }
 
-        // HIZLI VE PARALEL BAŞLATMA
+        // HIZLI VE PARALEL BAŞLATMA DÜZELTİLDİ: SÜRE KISITLAMALARI AKTİF!
         async function initProfile() {
             try {
                 const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
                 if (authErr || !user) { window.location.href = "kayit.html"; return; }
                 currentUser = user;
 
-                // Veritabanı sorgularını AYNI ANDA başlat (Çok Hızlı Yükleme)
+                // Veritabanı sorgularını AYNI ANDA başlat
                 const profilePromise = window.supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
                 const contactsPromise = window.supabaseClient.from('user_contacts').select('phone').eq('user_id', currentUser.id).maybeSingle();
                 const membershipsPromise = window.supabaseClient.from('team_members').select('id, status, role, teams(*)').eq('user_id', currentUser.id);
@@ -570,7 +571,7 @@
                     if (p.ign && p.ign !== "Belirlenmedi") {
                         currentIgn = p.ign;
                         document.getElementById('userIgnDisplay').innerText = p.ign;
-                        document.getElementById('userIgnDisplay').style.color = "white"; // Renk beyaz yapıldı
+                        document.getElementById('userIgnDisplay').style.color = "white"; 
                         document.getElementById('ignReminderBox').style.display = 'none';
                     } else {
                         document.getElementById('userIgnDisplay').innerText = "Belirlenmedi";
@@ -721,11 +722,24 @@
             }
         }
 
-        // PROFİL DÜZENLEME (Modal İçi)
-        function openIgnEditModal() { 
-            const current = document.getElementById('userIgnDisplay').innerText;
-            document.getElementById('ignInputContent').value = current.includes('Belirlenmedi') ? '' : current; 
-            openCustomModal('ignEditModal'); 
+        // --- PROFİL DÜZENLEME KISITLAMALARI (DÜZELTİLDİ) ---
+        
+        async function openIgnEditModal() { 
+            try {
+                const { data, error } = await window.supabaseClient.from('profiles').select('ign, ign_updated_at').eq('id', currentUser.id).single();
+                
+                if (data && data.ign_updated_at) {
+                    const diffDays = Math.ceil(Math.abs(new Date() - new Date(data.ign_updated_at)) / (1000 * 60 * 60 * 24));
+                    if (diffDays < 15) { 
+                        return showNotification(`Oyun İçi Nickinizi 15 günde sadece 1 kez değiştirebilirsiniz. Kalan süre: ${15 - diffDays} gün.`, "error");
+                    }
+                }
+                const currentIgn = data?.ign && data.ign !== "Belirlenmedi" ? data.ign : "";
+                document.getElementById('ignInputContent').value = currentIgn;
+                openCustomModal('ignEditModal');
+            } catch(e) {
+                showNotification("Veritabanı bağlantı hatası.", "error");
+            }
         }
         
         async function confirmIgnUpdate() {
@@ -737,7 +751,7 @@
             document.getElementById('ignReminderBox').style.display = 'none';
             closeCustomModal('ignEditModal');
             
-            await window.supabaseClient.from('profiles').update({ ign: val, ign_updated_at: new Date() }).eq('id', currentUser.id);
+            await window.supabaseClient.from('profiles').update({ ign: val, ign_updated_at: new Date().toISOString() }).eq('id', currentUser.id);
             showNotification("IGN Güncellendi", "success");
             
             // LocalStorage Güncelle
@@ -748,6 +762,41 @@
 
             // Yeni IGN'ye ait istatistikleri çek
             fetchExtraStatsByIgn(val, []);
+        }
+
+        async function openUsernameEditModal() { 
+            try {
+                const { data, error } = await window.supabaseClient.from('profiles').select('username, username_updated_at').eq('id', currentUser.id).single();
+                
+                if (data && data.username_updated_at) {
+                    const diffDays = Math.ceil(Math.abs(new Date() - new Date(data.username_updated_at)) / (1000 * 60 * 60 * 24));
+                    if (diffDays < 30) {
+                        return showNotification(`Kullanıcı adınızı 30 günde sadece 1 kez değiştirebilirsiniz. Kalan süre: ${30 - diffDays} gün.`, "error");
+                    }
+                }
+                document.getElementById('usernameInputContent').value = data?.username || "";
+                openCustomModal('usernameEditModal');
+            } catch(e) {
+                showNotification("Veritabanı bağlantı hatası.", "error");
+            }
+        }
+        
+        async function confirmUsernameUpdate() {
+            const val = document.getElementById('usernameInputContent').value.trim();
+            if(val.length < 3) return showNotification("En az 3 karakter olmalı.", "error");
+            
+            document.getElementById('profileNameDisplay').innerText = val;
+            closeCustomModal('usernameEditModal');
+            
+            await window.supabaseClient.from('profiles').update({ username: val, username_updated_at: new Date().toISOString() }).eq('id', currentUser.id);
+            showNotification("Kullanıcı Adı Güncellendi", "success");
+            
+            const cacheKey = 'obb_profile_cache';
+            const cachedProfile = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+            cachedProfile.username = val;
+            localStorage.setItem(cacheKey, JSON.stringify(cachedProfile));
+            
+            if (typeof updateHeaderProfileUI === 'function') updateHeaderProfileUI(cachedProfile);
         }
 
         function openBioEditModal() { 
@@ -762,22 +811,6 @@
             closeCustomModal('bioEditModal');
             await window.supabaseClient.from('profiles').update({ bio: val }).eq('id', currentUser.id);
             showNotification("Açıklama Güncellendi", "success");
-        }
-
-        function openUsernameEditModal() { 
-            document.getElementById('usernameInputContent').value = document.getElementById('profileNameDisplay').innerText; 
-            openCustomModal('usernameEditModal'); 
-        }
-        
-        async function confirmUsernameUpdate() {
-            const val = document.getElementById('usernameInputContent').value.trim();
-            if(val.length < 3) return showNotification("En az 3 karakter olmalı.", "error");
-            
-            document.getElementById('profileNameDisplay').innerText = val;
-            closeCustomModal('usernameEditModal');
-            
-            await window.supabaseClient.from('profiles').update({ username: val, username_updated_at: new Date() }).eq('id', currentUser.id);
-            showNotification("Kullanıcı Adı Güncellendi", "success");
         }
 
         // BANNER DEĞİŞTİRME
