@@ -29,7 +29,12 @@
         .planla-team-box img { width: 100px; height: 100px; object-fit: contain; background: #111; border: 1px solid #333; border-radius: 15px; margin-bottom: 15px; transition: 0.3s; }
         .planla-team-box input { text-align: center; font-size: 18px; font-weight: 900; background: transparent; border: none; border-bottom: 2px dashed #444; color: white; padding: 10px; width: 100%; outline: none; transition: 0.3s; }
         .planla-team-box input:focus { border-bottom-color: var(--neon-mor); }
+        
+        /* TBD (Boş) Görünüm Stili */
+        .planla-team-box input::placeholder { color: #555; font-size: 14px; font-weight: 500;}
+
         .planla-vs { font-size: 30px; font-weight: 900; color: #444; }
+        
         .planla-date-input { background: rgba(0, 210, 255, 0.05); border: 1px solid #00d2ff; color: #00d2ff; padding: 15px; border-radius: 10px; font-size: 18px; font-weight: bold; text-align: center; width: 100%; max-width: 400px; margin: 0 auto 30px; outline: none; transition: 0.3s; }
         .planla-date-input:focus { box-shadow: 0 0 20px rgba(0, 210, 255, 0.3); color: white; }
         
@@ -81,7 +86,7 @@
         </div>
         
         <div class="planla-card">
-            <p style="color:var(--gri-yazi); font-size:13px; margin-bottom: 25px;">Buradan belirlediğiniz maçlar fikstürde "Tarih" ile gösterilir. Maç oynanıp zarf geldiğinde Zarf sekmesinden üzerine işleyebilirsiniz.</p>
+            <p style="color:var(--gri-yazi); font-size:13px; margin-bottom: 25px;">Takım isimleri henüz belli değilse (Kura bekleniyorsa) o kısımları boş bırakabilirsiniz. Fikstürde otomatik olarak <b>"Belirlenmedi"</b> olarak gözükecektir.</p>
             
             <div style="display:flex; gap:15px; margin-bottom: 30px; flex-wrap: wrap;">
                 <select id="takvimTourney" class="form-control" style="flex:2;">
@@ -103,17 +108,17 @@
             <div class="planla-teams-wrapper">
                 <div class="planla-team-box">
                     <img id="takvimLogoA" src="img/unknown.webp">
-                    <input type="text" id="takvimTeamA" placeholder="SOL TAKIM ADI" onblur="resolveTakvimTeam('A')">
+                    <input type="text" id="takvimTeamA" placeholder="Boş = Kura Bekleniyor" onblur="resolveTakvimTeam('A')">
                 </div>
                 <div class="planla-vs">VS</div>
                 <div class="planla-team-box">
                     <img id="takvimLogoB" src="img/unknown.webp">
-                    <input type="text" id="takvimTeamB" placeholder="SAĞ TAKIM ADI" onblur="resolveTakvimTeam('B')">
+                    <input type="text" id="takvimTeamB" placeholder="Boş = Kura Bekleniyor" onblur="resolveTakvimTeam('B')">
                 </div>
             </div>
 
             <div>
-                <input type="text" id="takvimDate" class="planla-date-input" placeholder="Tarih Girin (Örn: Cumartesi 21:00)">
+                <input type="text" id="takvimDate" class="planla-date-input" placeholder="Tarih Girin (Örn: Cmt 21:00)">
             </div>
 
             <div style="display: flex; gap: 15px; justify-content: center;">
@@ -191,7 +196,6 @@
             matchOrder.innerHTML = '';
             let maxMatch = 1;
             
-            // YENİ EKLENEN GRUP MANTIĞI: Gruplarda 3 maç var
             if(stage.includes('GRUP')) maxMatch = 3; 
             if(stage.includes('SON 64')) maxMatch = 32;
             if(stage.includes('SON 32')) maxMatch = 16;
@@ -206,6 +210,7 @@
             const inputVal = document.getElementById(side === 'A' ? 'takvimTeamA' : 'takvimTeamB').value;
             const imgEl = document.getElementById(side === 'A' ? 'takvimLogoA' : 'takvimLogoB');
             
+            // Eğer kutu boşaltıldıysa, null olarak kaydet ve resmi sıfırla (Böylece TBD olur)
             if(!inputVal || inputVal.trim().length < 2) {
                 imgEl.src = 'img/unknown.webp';
                 if(side === 'A') takvimTeamAId = null; else takvimTeamBId = null;
@@ -235,12 +240,12 @@
             if(!tourneyId) return showNotification("Lütfen bir turnuva seçin.", "error");
 
             const sNameRaw = document.getElementById('takvimStage').value;
-            const sName = sNameRaw.split(' (')[0]; // Parantez içindeki BO bilgisini siler, sadece aşama kalır.
+            const sName = sNameRaw.split(' (')[0]; 
             const matchO = document.getElementById('takvimMatchOrder').value;
             const matchDate = document.getElementById('takvimDate').value.trim();
 
-            if(!takvimTeamAId || !takvimTeamBId) return showNotification("Lütfen takım isimlerini tam girin ve logoların belirmesini bekleyin.", "error");
-            if(!matchDate) return showNotification("Lütfen 'Tarih' kutusunu doldurun.", "error");
+            // TAKIM İSİMLERİ ZORUNLU DEĞİL ANCAK TARİH ZORUNLU!
+            if(!matchDate) return showNotification("Lütfen planlama için 'Tarih' bilgisini girin.", "error");
 
             let formatStr = 'BO1';
             if (sNameRaw.includes('BO3')) formatStr = 'BO3';
@@ -269,11 +274,10 @@
                     if (insErr) throw new Error(insErr.message);
                 }
 
-                showNotification("Maç başarıyla planlandı!", "success");
+                showNotification("Maç (veya boş slot) başarıyla planlandı!", "success");
                 
-                // Formu Sıfırla
+                // Formu Sıfırla (Başka planlamalar için kolaylık olsun diye sadece takımları temizleriz)
                 document.getElementById('takvimTeamA').value = ''; document.getElementById('takvimTeamB').value = '';
-                document.getElementById('takvimDate').value = '';
                 document.getElementById('takvimLogoA').src = 'img/unknown.webp'; document.getElementById('takvimLogoB').src = 'img/unknown.webp';
                 takvimTeamAId = null; takvimTeamBId = null;
 
