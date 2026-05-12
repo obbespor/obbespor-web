@@ -28,7 +28,7 @@
             background-attachment: fixed;
         }
 
-        .team-page-container { max-width: 1200px; margin: 40px auto; padding: 20px; flex: 1; animation: fadeInPage 0.6s ease-out; display: none; }
+        .team-page-container { max-width: 1200px; margin: 40px auto; padding: 20px; flex: 1; animation: fadeInPage 0.4s ease-out; display: none; }
         @keyframes fadeInPage { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
         /* TAKIM KURMA KARTI */
@@ -185,7 +185,7 @@
 
     <div id="loadingScreen">
         <div class="loader-spinner"></div>
-        <p>YÜKLENİYOR...</p>
+        <p>TAKIM VERİLERİ ÇEKİLİYOR...</p>
     </div>
 
     <div id="header-alani"></div>
@@ -319,7 +319,11 @@
         });
 
         function openEditTeamModal() {
-            if(isRosterLocked) return;
+            // ROSTER KİLİDİ KONTROLÜ
+            if(isRosterLocked) {
+                showNotification("Aktif başvurunuz olduğu için ayarlar kilitli.", "error");
+                return;
+            }
             document.getElementById('editTeamName').value = myTeamData.name;
             document.getElementById('editTeamTag').value = myTeamData.tag;
             document.getElementById('editTeamModal').classList.add('active');
@@ -328,6 +332,7 @@
             document.getElementById('editTeamModal').classList.remove('active');
         }
 
+        // ESKİ VE STABİL OLAN INIT FONKSİYONU
         async function initTeamPage() {
             try {
                 const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
@@ -348,51 +353,6 @@
             } finally { 
                 document.getElementById('loadingScreen').style.display = 'none'; 
             }
-        }
-
-        async function fetchMyTeam() {
-            try {
-                let { data: teamAsCaptain } = await window.supabaseClient.from('teams').select('*').eq('captain_id', currentUser.id).maybeSingle();
-                if (teamAsCaptain) { 
-                    myTeamData = teamAsCaptain; 
-                    isCaptain = true; 
-                } 
-                else {
-                    const { data: membership } = await window.supabaseClient.from('team_members').select('team_id').eq('user_id', currentUser.id).eq('status', 'accepted').maybeSingle();
-                    if (membership) {
-                        const { data: teamData } = await window.supabaseClient.from('teams').select('*').eq('id', membership.team_id).single();
-                        myTeamData = teamData; 
-                        isCaptain = false;
-                    }
-                }
-                
-                if (!myTeamData) { 
-                    document.getElementById('createTeamSection').style.display = 'block'; 
-                    document.getElementById('myTeamSection').style.display = 'none';
-                    await fetchPendingInvites(); 
-                    return; 
-                }
-
-                // AKTİF TURNUVA DURUMUNU ÇEK (ROSTER LOCK KONTROLÜ)
-                const { data: appData } = await window.supabaseClient.from('tournament_applications')
-                    .select('status, tournaments!inner(name, status)')
-                    .eq('team_id', myTeamData.id)
-                    .eq('tournaments.status', 'upcoming')
-                    .order('created_at', { ascending: false })
-                    .limit(1)
-                    .maybeSingle();
-
-                if (appData) {
-                    currentApp = appData;
-                    // ÖNEMLİ: Eğer başvuru "pending" (bekliyor) veya "approved" (onaylı) ise ROSTER LOCK aktiftir!
-                    if (appData.status === 'approved' || appData.status === 'pending') {
-                        isRosterLocked = true;
-                    }
-                }
-
-                renderTeamUI();
-                await fetchRoster();
-            } catch (err) { showNotification("Sistem hatası.", "error"); }
         }
 
         async function fetchPendingInvites() {
@@ -424,6 +384,8 @@
                         </div>`;
                     });
                     document.getElementById('pendingInvitesList').innerHTML = html;
+                } else {
+                    document.getElementById('pendingInvitesSection').style.display = 'none';
                 }
             } catch (err) {}
         }
@@ -438,15 +400,62 @@
                 } else {
                     await window.supabaseClient.from('team_members').delete().eq('id', memberId);
                     showNotification("Davet reddedildi.", "info");
-                    location.reload();
+                    fetchPendingInvites();
                 }
             } catch(e) { showNotification("İşlem başarısız.", "error"); }
+        }
+
+        // ESKİ VE STABİL OLAN TAKIM ÇEKME FONKSİYONU
+        async function fetchMyTeam() {
+            try {
+                let { data: teamAsCaptain } = await window.supabaseClient.from('teams').select('*').eq('captain_id', currentUser.id).maybeSingle();
+                if (teamAsCaptain) { 
+                    myTeamData = teamAsCaptain; 
+                    isCaptain = true; 
+                } 
+                else {
+                    const { data: membership } = await window.supabaseClient.from('team_members').select('team_id').eq('user_id', currentUser.id).eq('status', 'accepted').maybeSingle();
+                    if (membership) {
+                        const { data: teamData } = await window.supabaseClient.from('teams').select('*').eq('id', membership.team_id).single();
+                        myTeamData = teamData; 
+                        isCaptain = false;
+                    }
+                }
+                
+                if (!myTeamData) { 
+                    document.getElementById('createTeamSection').style.display = 'block'; 
+                    document.getElementById('myTeamSection').style.display = 'none';
+                    await fetchPendingInvites(); 
+                    return; 
+                }
+
+                // AKTİF TURNUVA DURUMUNU ÇEK (ROSTER LOCK BURADA DEVREYE GİRİYOR)
+                const { data: appData } = await window.supabaseClient.from('tournament_applications')
+                    .select('status, tournaments!inner(name, status)')
+                    .eq('team_id', myTeamData.id)
+                    .eq('tournaments.status', 'upcoming')
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                if (appData) {
+                    currentApp = appData;
+                    // YENİ EKLENEN TEK ŞART: Hem onaylı hem de bekleyen başvurularda kilit aktif olur
+                    if (appData.status === 'approved' || appData.status === 'pending') {
+                        isRosterLocked = true;
+                    }
+                }
+
+                renderTeamUI();
+                await fetchRoster();
+            } catch (err) { showNotification("Sistem hatası.", "error"); }
         }
 
         function renderTeamUI() {
             document.getElementById('myTeamSection').style.display = 'block';
             document.getElementById('createTeamSection').style.display = 'none';
 
+            // KENDİ ORİJİNAL HTML MÜDAHALELERİN
             document.getElementById('tName').innerText = myTeamData.name;
             document.getElementById('tTag').innerText = `[${myTeamData.tag}]`;
             const logoEl = document.getElementById('tLogo');
@@ -466,17 +475,32 @@
             }
             document.getElementById('tTourneyBadgeContainer').innerHTML = badgeHTML;
 
-            // Kilit Mesajını Özelleştir
+            // KİLİT UYARISI YAZDIRMA (TASARIMI BOZMADAN SADECE İÇERİĞİ DEĞİŞTİRİR)
             if (isRosterLocked) {
                 const lockAlert = document.getElementById('lockAlert');
                 if(currentApp && currentApp.status === 'pending') {
-                    lockAlert.innerHTML = `<i class="fas fa-lock"></i> <div><strong>KADRO KİLİTLİ!</strong><br>Başvurunuz değerlendiriliyor. Değişiklik yapmak için önce "Başvuru Yap" sayfasından başvurunuzu geri çekmelisiniz.</div>`;
+                    lockAlert.innerHTML = `
+                        <i class="fas fa-lock"></i>
+                        <div>
+                            <strong>KADRO KİLİTLİ!</strong><br>
+                            Başvurunuz değerlendiriliyor. Kadro veya takım ayarlarında değişiklik yapmak için "Turnuva Başvurusu" sayfasından başvurunuzu geri çekmelisiniz.
+                        </div>
+                    `;
                 } else {
-                    lockAlert.innerHTML = `<i class="fas fa-lock"></i> <div><strong>KADRO KİLİTLİ!</strong><br>Aktif bir turnuvada onaylı olduğunuz için kadro ve takım ayarları kilitlenmiştir.</div>`;
+                    lockAlert.innerHTML = `
+                        <i class="fas fa-lock"></i>
+                        <div>
+                            <strong>KADRO KİLİTLİ!</strong><br>
+                            Aktif bir turnuvada olduğunuz için takım ayarları ve kadro değişikliği yapılamaz.
+                        </div>
+                    `;
                 }
                 lockAlert.style.display = 'flex';
             }
 
+            document.getElementById('captainActionArea').style.display = 'none';
+            document.getElementById('memberActionArea').style.display = 'none';
+            
             if (isCaptain && !isRosterLocked) document.getElementById('captainActionArea').style.display = 'flex';
             else if (!isCaptain && !isRosterLocked) document.getElementById('memberActionArea').style.display = 'block';
         }
@@ -485,16 +509,62 @@
             const grid = document.getElementById('rosterList');
             grid.innerHTML = ''; 
             try {
-                const { data: members } = await window.supabaseClient.from('team_members')
+                const { data: members, error: memErr } = await window.supabaseClient.from('team_members')
                     .select('id, user_id, role, status, profiles(username, ign, avatar_url, matches_played)')
                     .eq('team_id', myTeamData.id)
                     .order('created_at', { ascending: true });
-
-                if (members) {
-                    const userIds = members.map(m => m.user_id);
-                    const { data: statsData } = await window.supabaseClient.from('match_player_stats').select('user_id, kills, deaths, assists, acs, map_id').in('user_id', userIds);
                     
-                    let playerStats = {};
+                if (memErr) throw memErr;
+
+                let allMembers = members ? [...members] : [];
+
+                const capIndex = allMembers.findIndex(m => m.user_id === myTeamData.captain_id);
+                if (capIndex === -1) {
+                    await window.supabaseClient.from('team_members').insert([{
+                        team_id: myTeamData.id, user_id: myTeamData.captain_id, role: 'member', status: 'accepted'
+                    }]);
+                    
+                    const { data: capProfile } = await window.supabaseClient.from('profiles').select('username, ign, avatar_url, matches_played').eq('id', myTeamData.captain_id).maybeSingle();
+                    allMembers.push({
+                        user_id: myTeamData.captain_id, role: 'member', status: 'accepted', profiles: capProfile || {}
+                    });
+                } else {
+                    if (allMembers[capIndex].status !== 'accepted') {
+                        await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', allMembers[capIndex].id);
+                        allMembers[capIndex].status = 'accepted';
+                    }
+                }
+
+                const uniqueMap = new Map();
+                allMembers.forEach(m => {
+                    if (uniqueMap.has(m.user_id)) {
+                        if (m.status === 'accepted') uniqueMap.set(m.user_id, m);
+                    } else {
+                        uniqueMap.set(m.user_id, m);
+                    }
+                });
+                allMembers = Array.from(uniqueMap.values());
+
+                const acceptedCount = allMembers.filter(m => m.status === 'accepted').length;
+                document.getElementById('memberCounter').innerText = `${acceptedCount} / 7`;
+
+                allMembers.sort((a, b) => {
+                    if (a.user_id === currentUser.id && b.user_id !== currentUser.id) return -1;
+                    if (b.user_id === currentUser.id && a.user_id !== currentUser.id) return 1;
+                    
+                    if (a.user_id === myTeamData.captain_id && b.user_id !== myTeamData.captain_id) return -1;
+                    if (b.user_id === myTeamData.captain_id && a.user_id !== myTeamData.captain_id) return 1;
+                    
+                    if (a.status === 'accepted' && b.status === 'pending') return -1;
+                    if (b.status === 'accepted' && a.status === 'pending') return 1;
+                    
+                    return 0; 
+                });
+
+                const userIds = allMembers.map(m => m.user_id);
+                let playerStats = {};
+                try {
+                    const { data: statsData } = await window.supabaseClient.from('match_player_stats').select('user_id, kills, deaths, assists, acs, map_id').in('user_id', userIds);
                     if (statsData) {
                         statsData.forEach(stat => {
                             if (!playerStats[stat.user_id]) playerStats[stat.user_id] = { kills: 0, deaths: 0, assists: 0, acsTotal: 0, mapCount: new Set() };
@@ -505,40 +575,42 @@
                             if(stat.map_id) playerStats[stat.user_id].mapCount.add(stat.map_id);
                         });
                     }
+                } catch(e) {}
 
-                    const acceptedCount = members.filter(m => m.status === 'accepted').length;
-                    document.getElementById('memberCounter').innerText = `${acceptedCount} / 7`;
+                allMembers.forEach(m => {
+                    if (m.status === 'pending' && !isCaptain) return; 
 
-                    members.forEach(m => {
-                        if (m.status === 'pending' && !isCaptain) return; 
+                    const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
+                    const isCap = m.user_id === myTeamData.captain_id;
+                    const isMe = m.user_id === currentUser.id;
+                    
+                    const pStat = playerStats[m.user_id] || { kills: 0, deaths: 0, assists: 0, acsTotal: 0, mapCount: new Set() };
+                    const dbMatches = pStat.mapCount instanceof Set ? pStat.mapCount.size : 0;
+                    const matches = dbMatches > 0 ? dbMatches : (prof?.matches_played || 0);
+                    
+                    let kd = "0.00";
+                    if (matches > 0 || pStat.kills > 0) kd = pStat.deaths > 0 ? (pStat.kills / pStat.deaths).toFixed(2) : pStat.kills.toFixed(2);
+                    const acs = matches > 0 ? Math.round(pStat.acsTotal / matches) : 0;
+                    const assists = pStat.assists || 0;
 
-                        const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
-                        const pStat = playerStats[m.user_id] || { kills: 0, deaths: 0, assists: 0, acsTotal: 0, mapCount: new Set() };
-                        const dbMatches = pStat.mapCount instanceof Set ? pStat.mapCount.size : 0;
-                        const matches = dbMatches > 0 ? dbMatches : (prof?.matches_played || 0);
-                        
-                        let kd = "0.00";
-                        if (matches > 0 || pStat.kills > 0) kd = pStat.deaths > 0 ? (pStat.kills / pStat.deaths).toFixed(2) : pStat.kills.toFixed(2);
-                        const acs = matches > 0 ? Math.round(pStat.acsTotal / matches) : 0;
-                        const assists = pStat.assists || 0;
+                    // TAM OLARAK KENDİ YAZDIĞIN KART OLUŞTURMA FONKSİYONUN ÇAĞRILIYOR
+                    grid.innerHTML += createPlayerCard(m.user_id, m.id, prof?.username, prof?.ign, m.status, prof?.avatar_url, matches, kd, acs, assists, isCap, isMe);
+                });
 
-                        grid.innerHTML += createPlayerCard(m.user_id, m.id, prof?.username, prof?.ign, m.status, prof?.avatar_url, matches, kd, acs, assists, m.user_id === myTeamData.captain_id, m.user_id === currentUser.id);
-                    });
-
-                    if (isCaptain && !isRosterLocked && acceptedCount < 7) {
-                        grid.innerHTML += `<div class="add-slot-card" onclick="focusSearch()"><i class="fas fa-user-plus add-icon"></i><div style="width:100%; position:relative;"><input type="text" id="dynamicSearch" class="player-search" autocomplete="off" placeholder="Oyuncu Ara..." style="width:100%; padding:10px; background:rgba(0,0,0,0.5); border:1px solid #333; border-radius:8px; color:white; text-align:center; outline:none;"><div id="dynamicSearch-list" class="autocomplete-items"></div></div><span style="font-size:12px; color:var(--gri-yazi); margin-top:10px;"><i class="fas fa-plus"></i> Oyuncu Ekle</span></div>`;
-                        attachDynamicSearchEvent();
-                    }
+                if (isCaptain && !isRosterLocked && acceptedCount < 7) {
+                    grid.innerHTML += `<div class="add-slot-card" onclick="focusSearch()"><i class="fas fa-user-plus add-icon"></i><div style="width:100%; position:relative;"><input type="text" id="dynamicSearch" class="player-search" autocomplete="off" placeholder="Oyuncu Ara..." style="width:100%; padding:10px; background:rgba(0,0,0,0.5); border:1px solid #333; border-radius:8px; color:white; text-align:center; outline:none;"><div id="dynamicSearch-list" class="autocomplete-items"></div></div><span style="font-size:12px; color:var(--gri-yazi); margin-top:10px;"><i class="fas fa-plus"></i> Oyuncu Ekle</span></div>`;
+                    attachDynamicSearchEvent();
                 }
             } catch (err) { console.error(err); }
         }
 
+        // ORİJİNAL KART OLUŞTURMA FONKSİYONU (HİÇBİR ŞEYİ BOZMADAN)
         function createPlayerCard(userId, memberId, username, ign, status, avatarUrl, matches, kd, acs, assists, isCap, isMe) {
             const displayName = (ign && ign !== 'Belirlenmedi') ? ign : (username || 'İsimsiz');
             const subName = (ign && ign !== 'Belirlenmedi') ? `@${username}` : '';
             const avatar = avatarUrl ? `<img src="${avatarUrl}" class="player-avatar" onerror="this.src='img/unknown.webp'">` : `<div class="player-avatar"><i class="fas fa-user"></i></div>`;
             
-            // ROSTER LOCK VARSA KİCK BUTONU ASLA ÇİZİLMEZ!
+            // ROSTER LOCK VARSA KİCK BUTONU EKRANA ÇİZİLMEZ!
             let kickBtn = (isCaptain && !isRosterLocked && userId !== currentUser.id) ? `<button class="btn-kick" onclick="kickPlayer('${memberId}', '${username.replace(/'/g, "\\'")}')"><i class="fas fa-times"></i></button>` : '';
             
             let roleLabel = 'ÜYE';
@@ -551,11 +623,13 @@
             const displayAssists = isPending ? '?' : assists;
             const kdClass = (!isPending && parseFloat(kd) >= 1.2) ? 'kd-high' : '';
 
+            const roleClassBadge = isPending ? 'role-pending' : 'role-standard';
+
             return `
                 <div class="player-card ${isPending ? 'pending' : ''} ${isMe ? 'current-user-card' : ''}">
                     <div class="player-card-header">
                         <div class="avatar-container">${avatar}</div>
-                        <div class="player-names"><div class="player-ign">${displayName}</div><span class="player-username">${subName}</span><div class="role-badges-area"><span class="player-role ${isPending ? 'role-pending' : 'role-standard'}">${roleLabel}</span>${isCap ? '<span class="captain-crown"><i class="fas fa-crown"></i> KAPTAN</span>' : ''}</div></div>
+                        <div class="player-names"><div class="player-ign">${displayName}</div><span class="player-username">${subName}</span><div class="role-badges-area"><span class="player-role ${roleClassBadge}">${roleLabel}</span>${isCap ? '<span class="captain-crown"><i class="fas fa-crown"></i> KAPTAN</span>' : ''}</div></div>
                         ${kickBtn}
                     </div>
                     <div class="player-stats-row">
@@ -571,31 +645,116 @@
 
         async function updateTeamSettings() {
             if(isRosterLocked) {
-                showNotification("Aktif başvurunuz olduğu için ayarlar kilitli.", "error");
+                showNotification("Başvurunuz olduğu için ayarlar kilitli.", "error");
                 return;
             }
             const newName = document.getElementById('editTeamName').value.trim();
             const newTag = document.getElementById('editTeamTag').value.trim().toUpperCase();
+            if (newName && (newName.length < 3 || newName.length > 20)) { showNotification("Takım adı 3-20 karakter olmalı.", "error"); return; }
+            if (newTag && (newTag.length < 2 || newTag.length > 4)) { showNotification("Tag 2-4 karakter olmalı.", "error"); return; }
+
             const btn = document.getElementById('btnSaveSettings');
-            btn.disabled = true;
+            const originalText = btn.innerHTML;
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
             try {
                 const logoFile = document.getElementById('editTeamLogo').files[0];
                 let logoUrl = myTeamData.logo_url;
                 if (logoFile) {
+                    if (logoFile.size > 2 * 1024 * 1024) throw new Error("Logo 2MB'dan büyük olamaz.");
                     const fileName = `logo_${myTeamData.id}`; 
                     await window.supabaseClient.storage.from('team-logos').upload(fileName, logoFile, { upsert: true });
                     const { data } = window.supabaseClient.storage.from('team-logos').getPublicUrl(fileName);
                     logoUrl = `${data.publicUrl}?t=${Date.now()}`; 
                 }
-                await window.supabaseClient.from('teams').update({ name: newName, tag: newTag, logo_url: logoUrl }).eq('id', myTeamData.id);
-                showNotification("Güncellendi!", "success");
+                const updates = { logo_url: logoUrl };
+                if(newName) updates.name = newName;
+                if(newTag) updates.tag = newTag;
+                const { error } = await window.supabaseClient.from('teams').update(updates).eq('id', myTeamData.id);
+                if (error) throw error;
+                showNotification("Değişiklikler kaydedildi!", "success");
                 setTimeout(() => location.reload(), 1200);
-            } catch (err) { showNotification("Hata oluştu.", "error"); btn.disabled = false; }
+            } catch (err) { showNotification(err.message, "error"); btn.disabled = false; btn.innerHTML = originalText; }
         }
 
+        document.getElementById('teamForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('newTeamName').value.trim();
+            const tag = document.getElementById('newTeamTag').value.trim().toUpperCase();
+            const logoFile = document.getElementById('newTeamLogo').files[0]; 
+            const btn = document.getElementById('btnCreateTeam');
+            
+            btn.disabled = true; 
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
+            try {
+                const { data: newTeam, error } = await window.supabaseClient.from('teams').insert([{ captain_id: currentUser.id, name, tag }]).select().single();
+                if (error) throw error;
+                
+                if (logoFile) {
+                    if (logoFile.size > 2 * 1024 * 1024) {
+                        showNotification("Logo 2MB'dan büyük olamaz. Takım logosuz kuruldu.", "info");
+                    } else {
+                        const fileName = `logo_${newTeam.id}`; 
+                        await window.supabaseClient.storage.from('team-logos').upload(fileName, logoFile, { upsert: true });
+                        const { data: urlData } = window.supabaseClient.storage.from('team-logos').getPublicUrl(fileName);
+                        const logoUrl = `${urlData.publicUrl}?t=${Date.now()}`; 
+                        await window.supabaseClient.from('teams').update({ logo_url: logoUrl }).eq('id', newTeam.id);
+                    }
+                }
+
+                const { data: newMem } = await window.supabaseClient.from('team_members')
+                    .insert([{ team_id: newTeam.id, user_id: currentUser.id, role: 'member', status: 'accepted' }])
+                    .select().single();
+
+                if (newMem && newMem.status === 'pending') {
+                    await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', newMem.id);
+                }
+
+                showNotification("Takım başarıyla kuruldu!", "success");
+                setTimeout(() => location.reload(), 1500);
+            } catch (err) { 
+                showNotification(err.message, "error"); 
+                btn.disabled = false; 
+                btn.innerHTML = 'TAKIMI OLUŞTUR'; 
+            }
+        });
+
+        function attachDynamicSearchEvent() {
+            const input = document.getElementById('dynamicSearch');
+            if (!input) return;
+            input.addEventListener('input', async function() {
+                const query = this.value;
+                const list = document.getElementById('dynamicSearch-list');
+                list.innerHTML = ''; if (query.length < 2) return;
+                try {
+                    const { data: profiles } = await window.supabaseClient.from('profiles').select('id, username, ign').or(`ign.ilike.%${query}%,username.ilike.%${query}%`).limit(8);
+                    if (!profiles) return;
+                    const { data: bMem } = await window.supabaseClient.from('team_members').select('user_id').eq('status', 'accepted');
+                    const busyIds = new Set(bMem?.map(m => m.user_id) || []);
+                    const { data: bCap } = await window.supabaseClient.from('teams').select('captain_id');
+                    bCap?.forEach(c => busyIds.add(c.captain_id));
+
+                    profiles.filter(p => !busyIds.has(p.id)).forEach(u => {
+                        const div = document.createElement('div');
+                        const ignDisplay = (u.ign && u.ign !== 'Belirlenmedi') ? `<span style="color:var(--neon-mor); font-size:11px; margin-left:5px;">(${u.ign})</span>` : '';
+                        div.innerHTML = `<i class="fas fa-user-plus"></i> <b>${u.username}</b> ${ignDisplay}`;
+                        div.onclick = async () => {
+                            try {
+                                await window.supabaseClient.rpc('send_team_invite', { p_team_id: myTeamData.id, p_user_id: u.id, p_role: 'member' });
+                                showNotification("Davet gönderildi!", "success"); 
+                                fetchRoster();
+                            } catch(e) { showNotification("Hata oluştu.", "error"); }
+                        };
+                        list.appendChild(div);
+                    });
+                } catch(e) {}
+            });
+        }
+
+        // === ARKA PLAN GÜVENLİĞİ ===
+        
         async function kickPlayer(mId, name) { 
-            // GÜVENLİK KONTROLÜ
             if (isRosterLocked) {
                 showNotification("ROSTER KİLİDİ: Aktif bir başvuru/turnuva sürecinde olduğunuz için oyuncu çıkaramazsınız!", "error");
                 return;
@@ -634,29 +793,6 @@
                     location.reload(); 
                 } catch (e) { showNotification("Hata oluştu.", "error"); }
             }); 
-        }
-
-        function attachDynamicSearchEvent() {
-            const input = document.getElementById('dynamicSearch');
-            input.addEventListener('input', async function() {
-                const query = this.value;
-                const list = document.getElementById('dynamicSearch-list');
-                list.innerHTML = ''; if (query.length < 2) return;
-                try {
-                    const { data: profiles } = await window.supabaseClient.from('profiles').select('id, username, ign').or(`ign.ilike.%${query}%,username.ilike.%${query}%`).limit(8);
-                    if (profiles) {
-                        profiles.forEach(u => {
-                            const div = document.createElement('div');
-                            div.innerHTML = `<b>${u.username}</b> (${u.ign || 'Nick Yok'})`;
-                            div.onclick = async () => {
-                                await window.supabaseClient.rpc('send_team_invite', { p_team_id: myTeamData.id, p_user_id: u.id, p_role: 'member' });
-                                showNotification("Davet gönderildi!", "success"); fetchRoster();
-                            };
-                            list.appendChild(div);
-                        });
-                    }
-                } catch(e) {}
-            });
         }
 
         document.addEventListener('DOMContentLoaded', initTeamPage);
