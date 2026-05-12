@@ -63,7 +63,6 @@
         .player-stat-row { display: grid; grid-template-columns: 80px 1.2fr 1.2fr 40px 40px 40px 50px; gap: 5px; margin-bottom: 8px; align-items: center; background: #0d0d0d; padding: 8px; border-radius: 8px; border: 1px solid #222; transition: 0.3s; }
         .player-stat-row:hover { border-color: #444; background: #111; }
         
-        /* OCR Doldurulduğunda yanacak efekt */
         .input-highlight { animation: flashGreen 1.5s ease-out; }
         @keyframes flashGreen { 0% { background-color: rgba(0, 255, 136, 0.4); border-color: #00ff88; } 100% { background-color: #000; border-color: #333; } }
 
@@ -108,7 +107,8 @@
                 <li><a href="onay.html">ONAY</a></li>
                 <li><a href="onayli.html">ONAYLI</a></li>
                 <li><a href="takvim.html">TAKVİM <i style="font-size: 10px; margin-left: 3px;"></i></a></li>
-                <li><a href="admin.html"  class="active-admin-tab">FİKSTÜR <i style="font-size: 10px; margin-left: 5px;"></i></a></li>
+                <li><a href="admin.html" class="active-admin-tab">FİKSTÜR <i style="font-size: 10px; margin-left: 5px;"></i></a></li>
+                <li><a href="mac-yonetim.html">DÜZENLE <i  style="font-size: 10px; margin-left: 3px;"></i></a></li>
                 <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
             </ul>
         </nav>
@@ -422,15 +422,16 @@
             let maxMatch = 1;
             
             if(stage.includes('A Grubu') || stage.includes('B Grubu')) maxMatch = 3; 
-            if(stage.includes('Yarı Final')) maxMatch = 2; 
-            if(stage.includes('Final')) maxMatch = 1; 
+            if(stage === 'Yarı Final' || stage === 'YARI FİNAL') maxMatch = 2; 
+            if(stage === 'Final' || stage === 'BÜYÜK FİNAL') maxMatch = 1; 
 
             for(let i=1; i<=maxMatch; i++) matchOrder.innerHTML += `<option value="${i}">${i}. MAÇ</option>`;
 
+            // HATA BURADAYDI! Tam eşleşme (strict equality) ile çözüldü
             mapOrder.innerHTML = '';
             let maxMap = 1;
-            if (stage.includes('Yarı Final')) maxMap = 3;
-            if (stage.includes('Final')) maxMap = 5;
+            if (stage === 'Yarı Final' || stage === 'YARI FİNAL') maxMap = 3;
+            else if (stage === 'Final' || stage === 'BÜYÜK FİNAL') maxMap = 5;
 
             for(let i=1; i<=maxMap; i++) mapOrder.innerHTML += `<option value="${i}">${i}. HARİTA</option>`;
         }
@@ -447,7 +448,6 @@
 
                 const mData = zarf.match_data || {};
                 
-                // REFERANS KUTUSUNU AKTİF ET
                 document.getElementById('envelopeReference').style.display = 'block';
                 document.getElementById('envRefTeamA').innerText = mData.teamA || "Belirtilmemiş";
                 document.getElementById('envRefTeamB').innerText = mData.teamB || "Belirtilmemiş";
@@ -469,7 +469,6 @@
             } catch(e) { console.error(e); }
         }
 
-        // YAPAY ZEKA VERİLERİNİ KUTULARA YERLEŞTİRİR
         function fillOCRData(containerId, playersData) {
             if (!playersData || !Array.isArray(playersData)) return;
             const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
@@ -538,8 +537,6 @@
                 } else {
                     document.getElementById('mapNameInput').value = "";
                 }
-
-                if (match.tournament_id) document.getElementById('tourneySelect').value = match.tournament_id;
 
             } catch(e) { console.error(e); showNotification("Maç verisi çekilemedi.", "error"); }
         }
@@ -615,7 +612,6 @@
             } catch (e) { console.error(e); }
         }
 
-        // --- YAPAY ZEKA (GEMINI) OKUMA FONKSİYONU ---
         async function scanImageWithAI() {
             if (!currentProofImageUrl) return showNotification("Taranacak görsel bulunamadı!", "error");
             const btn = document.getElementById('btnAiScan'); const originalText = btn.innerHTML;
@@ -660,7 +656,6 @@ SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA Bİ
 
                 let aiText = data.candidates[0].content.parts[0].text; 
 
-                // Katı JSON Cımbızlayıcı
                 const firstBrace = aiText.indexOf('{');
                 const lastBrace = aiText.lastIndexOf('}');
                 if (firstBrace !== -1 && lastBrace !== -1) {
@@ -673,7 +668,6 @@ SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA Bİ
                 
                 if (!extractedData.playersA || extractedData.playersA.length === 0) throw new Error("Yapay Zeka oyuncuları bulamadı.");
 
-                // Verileri Kutulara Çiz
                 fillOCRData('teamAPlayersInputs', extractedData.playersA);
                 fillOCRData('teamBPlayersInputs', extractedData.playersB);
 
@@ -720,8 +714,6 @@ SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA Bİ
 
         async function saveToBracket() {
             const tourneyId = document.getElementById('tourneySelect').value;
-            const tourneySelectEl = document.getElementById('tourneySelect');
-            const tourneyName = tourneySelectEl.options[tourneySelectEl.selectedIndex].text;
             
             if(!tourneyId) return showNotification("Lütfen bir turnuva seçin.", "error");
 
@@ -732,9 +724,10 @@ SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA Bİ
             const scoreB = document.getElementById('scoreB').value;
             const mapName = document.getElementById('mapNameInput').value;
 
+            // HATA BURADAYDI! Tam eşleşme ile çözüldü
             let formatStr = 'BO1';
-            if (sNameRaw.includes('Yarı Final')) formatStr = 'BO3';
-            if (sNameRaw.includes('Final')) formatStr = 'BO5';
+            if (sNameRaw === 'Yarı Final' || sNameRaw === 'YARI FİNAL') formatStr = 'BO3';
+            else if (sNameRaw === 'Final' || sNameRaw === 'BÜYÜK FİNAL') formatStr = 'BO5';
 
             const teamAId = document.getElementById('teamASelect').value;
             const teamBId = document.getElementById('teamBSelect').value;
@@ -764,7 +757,8 @@ SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA Bİ
                                 team_b_id: teamBId, 
                                 status: calculatedStatus, 
                                 series_score_a: scoreA, 
-                                series_score_b: scoreB
+                                series_score_b: scoreB,
+                                match_format: formatStr // Sinyal Güvenliği
                             }).eq('id', matchId);
                         if(updErr) throw updErr;
                     } else {
@@ -833,7 +827,8 @@ SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA Bİ
                             team_b_id: teamBId, 
                             status: calculatedStatus, 
                             series_score_a: scoreA, 
-                            series_score_b: scoreB
+                            series_score_b: scoreB,
+                            match_format: formatStr
                         }).eq('id', activeRecordId.matchId);
 
                         if (activeRecordId.mapId) {
