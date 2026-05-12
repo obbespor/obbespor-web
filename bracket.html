@@ -40,14 +40,11 @@
         .page-title { text-align: center; color: white; font-size: 36px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
         .page-title span { color: var(--neon-mor); }
         
-        /* İNCE TURNUVA ALT BAŞLIĞI */
         .tourney-subtitle { text-align: center; color: #888; font-size: 16px; font-weight: 300; text-transform: uppercase; letter-spacing: 2px; margin-top: 0; margin-bottom: 40px; }
 
-        /* GRUP KONTEYNERLARI */
         .groups-wrapper { display: flex; gap: 30px; margin-bottom: 60px; }
         .group-col { flex: 1; display: flex; flex-direction: column; gap: 30px; min-width: 0; }
 
-        /* PUAN DURUMU TABLOSU */
         .standings-card { background: rgba(15,15,15,0.8); border: 1px solid #222; border-radius: 12px; overflow-x: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
         .group-a .standings-card { border-top: 3px solid var(--grup-a-renk); }
         .group-b .standings-card { border-top: 3px solid var(--grup-b-renk); }
@@ -68,7 +65,6 @@
         .team-cell img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #444; flex-shrink: 0;}
         .pts-col { font-weight: 900; color: white; font-size: 15px; }
 
-        /* MAÇ KARTLARI */
         .matches-list { display: flex; flex-direction: column; gap: 15px; }
         .match-card { background: #0a0a0a; border: 1px solid #333; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; transition: 0.2s; position: relative; z-index: 2;}
         
@@ -98,7 +94,6 @@
 
         .empty-bracket-card { background: #050505; border: 1px dashed #333; border-radius: 8px; padding: 25px; text-align: center; color: #444; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; position: relative; z-index: 2;}
 
-        /* --- TURNUVA AĞACI --- */
         .playoff-wrapper { margin-top: 60px; padding-top: 40px; border-top: 1px solid #222; }
         .playoff-title { text-align: center; color: white; font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; }
         
@@ -123,7 +118,6 @@
         .round-final .match-card.clickable-card:hover { transform: scale(1.03); border-color: #fff; box-shadow: 0 0 25px rgba(157, 78, 221, 0.3);}
         .round-final .m-score-box { background: rgba(157, 78, 221, 0.1); border-color: rgba(157, 78, 221, 0.3); }
 
-        /* --- SKORBORD MODAL --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); z-index: 99999;
@@ -147,7 +141,6 @@
         .modal-close-btn { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: #555; font-size: 20px; cursor: pointer; transition: 0.2s; }
         .modal-close-btn:hover { color: #fff; transform: scale(1.1); }
 
-        /* SEKMELER MERKEZE HİZALANDI */
         .map-tabs { background: #0d0d0d; border-bottom: 1px solid #222; display: flex; padding: 10px; gap: 8px; overflow-x: auto; justify-content: center; -webkit-overflow-scrolling: touch;}
         .map-tab-btn { background: #111; border: 1px solid #333; color: var(--gri-yazi); padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.3s; white-space: nowrap; flex-shrink: 0;}
         .map-tab-btn:hover { border-color: #555; color: #fff; }
@@ -156,6 +149,11 @@
         
         .modal-body { flex: 1; overflow-y: auto; padding: 25px; -webkit-overflow-scrolling: touch;}
         
+        .map-score-header { text-align: center; color: #fff; font-size: 16px; font-weight: 900; text-transform: uppercase; margin-bottom: 25px; width: 100%;}
+        .map-score-header span { color: var(--gri-yazi); }
+        .map-score-header .score-a { color: var(--grup-a-renk); }
+        .map-score-header .score-b { color: var(--grup-b-renk); }
+
         .teams-scoreboard-container { display: flex; gap: 20px; }
         .team-a-col, .team-b-col { flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.4); border: 1px solid #222; border-radius: 12px; padding: 15px; overflow-x: auto;}
 
@@ -198,9 +196,9 @@
             .scoreboard-table .td-name { max-width: 80px; }
             .modal-header .series-score { font-size: 20px; }
             
-            /* Mobilde sekmeler ortalanınca taşarsa scroll için */
             .map-tabs { justify-content: flex-start; } 
         }
+
         #loadingScreen { position: fixed; top:0; left:0; width:100%; height:100%; background: #050505; display:flex; justify-content:center; align-items:center; z-index: 9999; color: var(--neon-mor); flex-direction: column; }
     </style>
 </head>
@@ -312,7 +310,6 @@
                 }
                 activeTournamentId = tourney.id;
                 
-                // İNCE FONT ALT BAŞLIĞI DOLDUR (OBB 1. TOPLULUK TURNUVASI GİBİ)
                 document.getElementById('tourneySubtitle').innerText = tourney.name;
 
                 const { data: allTeams } = await window.supabaseClient.from('teams').select('id, name, logo_url');
@@ -487,7 +484,15 @@
         }
 
         function createMatchCardHtml(m) {
-            const dateStr = m.match_date ? new Date(m.match_date).toLocaleString('tr-TR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
+            let dateStr = '';
+            if (m.match_date) {
+                const parsedDate = new Date(m.match_date);
+                if (!isNaN(parsedDate.getTime())) {
+                    dateStr = parsedDate.toLocaleString('tr-TR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+                } else {
+                    dateStr = m.match_date; 
+                }
+            }
             
             const teamAInfo = globalTeamMap[m.team_a_id] || {};
             const teamBInfo = globalTeamMap[m.team_b_id] || {};
@@ -555,14 +560,22 @@
             statsTableArea.innerHTML = ''; 
 
             try {
-                const { data: rawMatch } = await window.supabaseClient.from('bracket_matches').select('id, match_format, team_a_id, team_b_id, series_score_a, series_score_b').eq('id', matchId).single();
+                const { data: rawMatch } = await window.supabaseClient.from('bracket_matches').select('id, round_name, match_format, team_a_id, team_b_id, series_score_a, series_score_b').eq('id', matchId).single();
                 if(!rawMatch) throw new Error("Maç verisi bulunamadı.");
                 globalCurrentDetailedMatch = rawMatch;
 
+                // BUG FIX: Veritabanında hatalı kalmış Yarı Final maçlarının harita formatını düzeltir
+                let correctFormat = globalCurrentDetailedMatch.match_format;
+                if (globalCurrentDetailedMatch.round_name === 'Yarı Final' || globalCurrentDetailedMatch.round_name === 'YARI FİNAL') {
+                    correctFormat = 'BO3';
+                } else if (globalCurrentDetailedMatch.round_name === 'Final' || globalCurrentDetailedMatch.round_name === 'BÜYÜK FİNAL') {
+                    correctFormat = 'BO5';
+                }
+
                 const { data: maps } = await window.supabaseClient.from('match_maps').select('id, map_order, map_name, score_a, score_b').eq('match_id', matchId).order('map_order', { ascending: true });
                 
-                renderModalHeader(globalCurrentDetailedMatch);
-                renderModalMapTabs(globalCurrentDetailedMatch.match_format, maps);
+                renderModalHeader(globalCurrentDetailedMatch, correctFormat);
+                renderModalMapTabs(correctFormat, maps);
 
                 if (maps && maps.length > 0) {
                     const firstMapBtn = mapTabs.querySelector('.map-tab-btn[data-played="true"]');
@@ -582,17 +595,18 @@
         }
 
         function closeScoreboardModal() {
-            document.getElementById('scoreboardModal').classList.remove('open');
+            const md = document.getElementById('scoreboardModal');
+            if(md) md.classList.remove('open');
             globalCurrentDetailedMatch = null; 
         }
 
-        function renderModalHeader(match) {
+        function renderModalHeader(match, correctFormat) {
             const headerContainer = document.getElementById('modalSeriesHeader');
             const teamAInfo = globalTeamMap[match.team_a_id] || {};
             const teamBInfo = globalTeamMap[match.team_b_id] || {};
 
             headerContainer.innerHTML = `
-                <div class="series-title">${match.match_format || 'BO1'} - GENEL SERİ SKORU</div>
+                <div class="series-title">${correctFormat || 'BO1'} - GENEL SERİ SKORU</div>
                 <div class="series-score">
                     <span style="color:var(--grup-a-renk)">${teamAInfo.name || 'SOL TAKIM'}</span>&nbsp;&nbsp;
                     ${match.series_score_a} - ${match.series_score_b}&nbsp;&nbsp;
@@ -647,7 +661,7 @@
                 const teamAId = globalCurrentDetailedMatch.team_a_id;
                 const teamBId = globalCurrentDetailedMatch.team_b_id;
 
-                // HARİTADAKİ ÇİFT SKOR BİLGİSİNİ TAMAMEN SİLDİK, SADECE TABLOLAR GELECEK
+                const { data: mapData } = await window.supabaseClient.from('match_maps').select('score_a, score_b, map_name').eq('id', mapId).single();
                 const { data: allStats, error: statsError } = await window.supabaseClient.from('match_player_stats').select('user_id, team_id, agent_name, in_game_name, kills, deaths, assists, acs').eq('map_id', mapId);
 
                 if (statsError) throw statsError;
@@ -655,7 +669,7 @@
                 const teamAStats = (allStats || []).filter(s => s.team_id === teamAId).sort((a, b) => (b.acs || 0) - (a.acs || 0));
                 const teamBStats = (allStats || []).filter(s => s.team_id === teamBId).sort((a, b) => (b.acs || 0) - (a.acs || 0));
 
-                renderScoreboardMapStats(teamAStats, teamBStats);
+                renderScoreboardMapStats(mapData, teamAStats, teamBStats);
 
             } catch (err) {
                 console.error("Detaylı veri çekme hatası:", err);
@@ -663,28 +677,34 @@
             }
         }
 
-        // MAÇ SKORU KALDIRILDI, SADECE TAKIM TABLOLARI GÖSTERİLİYOR
-        function renderScoreboardMapStats(teamAStats, teamBStats) {
+        function renderScoreboardMapStats(map, teamAStats, teamBStats) {
             const tableArea = document.getElementById('modalStatsTableContainer');
             const teamAInfo = globalTeamMap[globalCurrentDetailedMatch.team_a_id] || {};
             const teamBInfo = globalTeamMap[globalCurrentDetailedMatch.team_b_id] || {};
+            
+            const safeMapName = map.map_name ? map.map_name.toUpperCase() : 'BELİRSİZ HARİTA';
 
             tableArea.innerHTML = `
+                <div class="map-score-header">
+                    ${safeMapName} <span>-</span>&nbsp;
+                    <span class="score-a">${map.score_a}</span> - <span class="score-b">${map.score_b}</span>
+                </div>
+
                 <div class="teams-scoreboard-container">
                     <div class="team-a-col">
                         <div class="team-title-row team-a">${teamAInfo.name || 'SOL TAKIM'}</div>
-                        ${createStatsTableHtml(teamAStats, 'a')}
+                        ${createStatsTableHtml(teamAStats)}
                     </div>
 
                     <div class="team-b-col">
                         <div class="team-title-row team-b">${teamBInfo.name || 'SAĞ TAKIM'}</div>
-                        ${createStatsTableHtml(teamBStats, 'b')}
+                        ${createStatsTableHtml(teamBStats)}
                     </div>
                 </div>
             `;
         }
 
-        function createStatsTableHtml(statsArray, teamType) {
+        function createStatsTableHtml(statsArray) {
             let html = `
                 <table class="scoreboard-table">
                     <thead>
