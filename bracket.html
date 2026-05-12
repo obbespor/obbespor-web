@@ -59,7 +59,7 @@
         .matches-list { display: flex; flex-direction: column; gap: 15px; }
         .match-card { background: #0a0a0a; border: 1px solid #333; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; transition: 0.2s; position: relative; z-index: 2;}
         
-        /* Oynanmış Maç Kartı İçin Efekt (Skor Alanı Menü Gibi Davranır) */
+        /* Oynanmış Maç Kartı İçin Efekt */
         .match-card.clickable-card { cursor: pointer; }
         .match-card.clickable-card:hover { border-color: #666; background: #0d0d0d;}
         .match-card.clickable-card .m-score-box { border-color: var(--neon-mor); background: rgba(157, 78, 221, 0.1); transition: 0.3s; }
@@ -83,201 +83,122 @@
         .match-pending .m-score-box { background: transparent; border: none; font-size: 12px; color: #666; }
         .match-pending .m-team { color: #888; }
 
-        /* BOŞ SLOT TASARIMI */
         .empty-bracket-card { background: #050505; border: 1px dashed #333; border-radius: 8px; padding: 25px; text-align: center; color: #444; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; position: relative; z-index: 2;}
 
-        /* --- STANDART VE CİDDİ TURNUVA AĞACI (BRACKET) TASARIMI --- */
+        /* --- TURNUVA AĞACI (BRACKET) TASARIMI --- */
         .playoff-wrapper { margin-top: 60px; padding-top: 40px; border-top: 1px solid #222; }
         .playoff-title { text-align: center; color: white; font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; }
         
-        /* MOBİL İÇİN YATAY KAYDIRMA ALANI Kilittir */
-        .bracket-scroll-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            padding: 20px 0;
-        }
-
-        /* Kaydırma Çubuğu Güzelleştirme */
+        .bracket-scroll-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 20px 0; }
         .bracket-scroll-wrapper::-webkit-scrollbar { height: 8px; }
         .bracket-scroll-wrapper::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
         .bracket-scroll-wrapper::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
         .bracket-scroll-wrapper::-webkit-scrollbar-thumb:hover { background: var(--neon-mor); }
 
-        .tournament-bracket {
-            display: flex;
-            align-items: center;
-            gap: 60px;
-            width: max-content; /* Sağa kaydırma (scroll) için kilittir */
-            margin: 0 auto; /* Masaüstünde ortalar */
-            padding: 0 20px;
-        }
-
-        .bracket-round {
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-            position: relative;
-        }
-
+        .tournament-bracket { display: flex; align-items: center; gap: 60px; width: max-content; margin: 0 auto; padding: 0 20px; }
+        .bracket-round { display: flex; flex-direction: column; gap: 40px; position: relative; }
         .round-semis .bracket-match { width: 320px; position: relative; }
         .round-final .bracket-match { width: 380px; position: relative; }
 
-        /* AĞAÇ ÇİZGİLERİ (Milimetrik Hesaplandı - Mobilde de görünür) */
-        .round-semis .bracket-match::after {
-            content: "";
-            position: absolute;
-            right: -30px;
-            top: 50%;
-            width: 30px;
-            border-top: 2px solid #444;
-            z-index: 1;
-        }
-        .round-semis .bracket-match:first-child::before {
-            content: "";
-            position: absolute;
-            right: -30px;
-            top: 50%;
-            height: calc(50% + 20px); 
-            border-right: 2px solid #444;
-            z-index: 1;
-        }
-        .round-semis .bracket-match:last-child::before {
-            content: "";
-            position: absolute;
-            right: -30px;
-            bottom: 50%;
-            height: calc(50% + 20px);
-            border-right: 2px solid #444;
-            z-index: 1;
-        }
-        .round-final .bracket-match::before {
-            content: "";
-            position: absolute;
-            left: -30px;
-            top: 50%;
-            width: 30px;
-            border-top: 2px solid #444;
-            z-index: 1;
+        @media (min-width: 993px) {
+            .round-semis .bracket-match::after { content: ""; position: absolute; right: -30px; top: 50%; width: 30px; border-top: 2px solid #333; z-index: 1; }
+            .round-semis::after { content: ""; position: absolute; right: -30px; top: calc(25% + 15px); bottom: calc(25% + 15px); border-right: 2px solid #333; z-index: 1; }
+            .round-final .bracket-match::before { content: ""; position: absolute; left: -30px; top: 50%; width: 30px; border-top: 2px solid #333; z-index: 1; }
         }
 
         .bracket-round-title { text-align: center; color: #666; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
 
-        /* FİNAL KARTI (Ciddi Vurgu) */
         .round-final .match-card { border-color: var(--playoff-renk); background: #0a0a0a; box-shadow: 0 0 15px rgba(157, 78, 221, 0.1); padding: 20px;}
         .round-final .match-card.clickable-card:hover { transform: scale(1.03); border-color: #fff; box-shadow: 0 0 25px rgba(157, 78, 221, 0.3);}
         .round-final .m-score-box { background: rgba(157, 78, 221, 0.1); border-color: rgba(157, 78, 221, 0.3); }
+
+        /* --- SKORBORD MODAL (AÇILIR PENCERE) CSS --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); z-index: 99999;
+            display: none; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.open { display: flex; opacity: 1; }
+        
+        .modal-content {
+            background: #0a0a0a; border: 1px solid #333;
+            width: 95%; max-width: 1200px; /* Yan yana sığması için genişletildi */
+            height: auto; max-height: 90vh;
+            border-radius: 12px; box-shadow: 0 15px 50px rgba(0,0,0,0.8);
+            display: flex; flex-direction: column; overflow: hidden;
+            animation: modalSlideIn 0.4s ease forwards;
+        }
+        @keyframes modalSlideIn { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .modal-header { padding: 20px; background: #111; border-bottom: 1px solid #333; display: flex; justify-content: center; align-items: center; position: relative; }
+        .modal-header .series-score-wrapper { text-align: center; color: white; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-header .series-title { font-size: 12px; color: var(--gri-yazi); margin-bottom: 5px;}
+        .modal-header .series-score { font-size: 28px; }
+        
+        .modal-close-btn { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: #555; font-size: 20px; cursor: pointer; transition: 0.2s; }
+        .modal-close-btn:hover { color: #fff; transform: scale(1.1); }
+
+        .map-tabs { background: #0d0d0d; border-bottom: 1px solid #222; display: flex; padding: 10px 20px; gap: 10px; overflow-x: auto; }
+        .map-tab-btn { background: #111; border: 1px solid #333; color: var(--gri-yazi); padding: 8px 15px; border-radius: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.3s; white-space: nowrap; }
+        .map-tab-btn:hover { border-color: #555; color: #fff; }
+        .map-tab-btn.active { background: var(--neon-mor); border-color: var(--neon-mor); color: white; box-shadow: 0 0 10px rgba(157, 78, 221, 0.3); }
+        .map-tab-btn.disabled { opacity: 0.3; cursor: default; border-style: dashed; }
+        .map-tab-btn.disabled:hover { color: var(--gri-yazi); border-color: #333; background: #111; }
+
+        .modal-body { flex: 1; overflow-y: auto; padding: 25px; }
+        
+        .map-score-header { text-align: center; color: #fff; font-size: 16px; font-weight: 900; text-transform: uppercase; margin-bottom: 25px;}
+        .map-score-header span { color: var(--gri-yazi); }
+        .map-score-header .score-a { color: var(--grup-a-renk); }
+        .map-score-header .score-b { color: var(--grup-b-renk); }
+
+        /* YENİ: YAN YANA GÖSTERİM KUTUSU */
+        .teams-scoreboard-container {
+            display: flex;
+            gap: 30px;
+        }
+
+        .team-a-col, .team-b-col {
+            flex: 1;
+            min-width: 0;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .team-title-row { font-size: 14px; font-weight: 900; text-transform: uppercase; padding: 5px 0 15px; border-bottom: 1px dashed #333; margin-bottom: 15px; text-align: center;}
+        .team-title-row.team-a { color: var(--grup-a-renk); border-bottom-color: rgba(0, 142, 180, 0.3);}
+        .team-title-row.team-b { color: var(--grup-b-renk); border-bottom-color: rgba(180, 62, 62, 0.3);}
+
+        .scoreboard-table { width: 100%; border-collapse: collapse; text-align: right; color: white; font-size: 12px; font-weight: 500;}
+        .scoreboard-table th { padding: 10px 8px; color: var(--gri-yazi); font-weight: bold; font-size: 10px; background: transparent; border-bottom: none; }
+        .scoreboard-table td { padding: 10px 8px; border-bottom: 1px solid #1a1a1a; }
+        .scoreboard-table tr:last-child td { border-bottom: none; }
+        
+        .scoreboard-table .td-agent { width: 40px; text-align: center; }
+        .scoreboard-table .td-name { text-align: left; padding-left: 0; font-weight: 700; color: #fff;}
+        .scoreboard-table th.td-name { color: var(--gri-yazi); font-weight: bold; }
+        
+        .scoreboard-table .acs-cell { width: 50px; font-weight: 900; color: #fff;}
+        .scoreboard-table .k-cell { width: 35px; color: #00ff88; font-weight: 900;}
+        .scoreboard-table .d-cell { width: 35px; color: #b43e3e; opacity: 0.8; font-weight: 900;}
+        .scoreboard-table .a-cell { width: 35px; color: var(--gri-yazi); font-weight: 900;}
+
+        .agent-score-icon { width: 26px; height: 26px; border-radius: 4px; object-fit: cover; border: 1px solid #333; background: #222; }
 
         /* MOBİL UYUM */
         @media (max-width: 992px) {
             .groups-wrapper { flex-direction: column; }
             .m-team span { display: none; }
             .m-team.m-mobile-name span { display: block; font-size: 12px;}
+            
+            /* Mobilde Takımlar Alt Alta İner */
+            .teams-scoreboard-container { flex-direction: column; gap: 20px;}
         }
 
         #loadingScreen { position: fixed; top:0; left:0; width:100%; height:100%; background: #050505; display:flex; justify-content:center; align-items:center; z-index: 9999; color: var(--neon-mor); flex-direction: column; }
-
-        /* --- SKORBORD MODAL (AÇILIR PENCERE) CSS YAPISI --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(8px);
-            z-index: 99999;
-            display: none; 
-            justify-content: center; align-items: center;
-            opacity: 0; transition: opacity 0.3s ease;
-        }
-        .modal-overlay.open { display: flex; opacity: 1; }
-        
-        .modal-content {
-            background: #0a0a0a;
-            border: 1px solid #333;
-            width: 95%; max-width: 1000px;
-            height: auto; max-height: 90vh;
-            border-radius: 12px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.8);
-            display: flex; flex-direction: column;
-            overflow: hidden;
-            animation: modalSlideIn 0.4s ease forwards;
-        }
-        @keyframes modalSlideIn { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        /* Modal Header (Series Score) */
-        .modal-header {
-            padding: 20px;
-            background: #111;
-            border-bottom: 1px solid #333;
-            display: flex; justify-content: center; align-items: center;
-            position: relative;
-        }
-        .modal-header .series-score-wrapper { text-align: center; color: white; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
-        .modal-header .series-title { font-size: 12px; color: var(--gri-yazi); margin-bottom: 5px;}
-        .modal-header .series-score { font-size: 28px; }
-        
-        .modal-close-btn {
-            position: absolute; top: 15px; right: 15px;
-            background: transparent; border: none; color: #555;
-            font-size: 20px; cursor: pointer; transition: 0.2s;
-        }
-        .modal-close-btn:hover { color: #fff; transform: scale(1.1); }
-
-        /* Harita Sekme Seçici (Map Tabs) */
-        .map-tabs {
-            background: #0d0d0d;
-            border-bottom: 1px solid #222;
-            display: flex;
-            padding: 10px 20px; gap: 10px;
-            overflow-x: auto;
-        }
-        .map-tab-btn {
-            background: #111; border: 1px solid #333; color: var(--gri-yazi);
-            padding: 8px 15px; border-radius: 6px;
-            font-size: 11px; font-weight: bold; text-transform: uppercase; cursor: pointer;
-            transition: 0.3s; white-space: nowrap;
-        }
-        .map-tab-btn:hover { border-color: #555; color: #fff; }
-        .map-tab-btn.active { background: var(--neon-mor); border-color: var(--neon-mor); color: white; box-shadow: 0 0 10px rgba(157, 78, 221, 0.3); }
-        .map-tab-btn.disabled { opacity: 0.3; cursor: default; border-style: dashed; }
-        .map-tab-btn.disabled:hover { color: var(--gri-yazi); border-color: #333; background: #111; }
-
-        /* Skorbord Body (Table Area) */
-        .modal-body { flex: 1; overflow-y: auto; padding: 20px; }
-        .scoreboard-table-area { display: flex; flex-direction: column; gap: 20px; }
-        
-        .map-score-header { text-align: center; color: #fff; font-size: 16px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px;}
-        .map-score-header span { color: var(--gri-yazi); }
-        .map-score-header .score-a { color: var(--grup-a-renk); }
-        .map-score-header .score-b { color: var(--grup-b-renk); }
-
-        .team-title-row { font-size: 12px; font-weight: 900; text-transform: uppercase; padding: 10px 0; border-bottom: 1px solid #222; margin-bottom: 10px;}
-        .team-title-row.team-a { color: var(--grup-a-renk); }
-        .team-title-row.team-b { color: var(--grup-b-renk); }
-
-        .scoreboard-table { width: 100%; border-collapse: collapse; text-align: right; color: white; font-size: 12px; font-weight: 500;}
-        .scoreboard-table th { padding: 8px; color: var(--gri-yazi); font-weight: bold; font-size: 10px; background: transparent; border-bottom: none; }
-        .scoreboard-table td { padding: 8px; border-bottom: 1px solid #1a1a1a; }
-        .scoreboard-table tr:last-child td { border-bottom: none; }
-        
-        .scoreboard-table .td-agent { width: 40px; text-align: center; }
-        .scoreboard-table .td-name { width: 200px; text-align: left; padding-left: 0; font-weight: 700; color: #fff;}
-        .scoreboard-table th.td-name { color: var(--gri-yazi); font-weight: bold; }
-        
-        .scoreboard-table .stat-icon { font-size: 8px; margin-right: 3px; color: #444; }
-        .scoreboard-table .hs-cell, .scoreboard-table .adr-cell { width: 50px; font-weight: 900; color: #888;}
-        .scoreboard-table .acs-cell { width: 50px; font-weight: 900; color: #fff;}
-
-        /* Renk Kodlaması */
-        .scoreboard-table .k-cell { width: 35px; color: #00ff88; font-weight: 900;}
-        .scoreboard-table .d-cell { width: 35px; color: var(--grup-b-renk); opacity: 0.7; font-weight: 900;}
-        .scoreboard-table .a-cell { width: 35px; color: var(--gri-yazi); font-weight: 900;}
-
-        .team-a .scoreboard-table .td-name { color: var(--grup-a-renk); }
-        .team-b .scoreboard-table .td-name { color: var(--grup-b-renk); }
-        .team-a .agent-score-icon { border-color: var(--grup-a-renk); }
-        .team-b .agent-score-icon { border-color: var(--grup-b-renk); }
-
-        .agent-score-icon { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #333; background: #222; }
-
     </style>
 </head>
 <body>
@@ -304,13 +225,13 @@
                             </tr>
                         </thead>
                         <tbody id="groupA-table">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
                 
                 <div class="matches-list" id="groupA-matches">
                     <h3 style="color:white; font-size:14px; margin: 10px 0 5px; border-left: 3px solid var(--grup-a-renk); padding-left: 10px; text-transform: uppercase;">A Grubu Eşleşmeleri</h3>
-                    </div>
+                </div>
             </div>
 
             <div class="group-col group-b">
@@ -324,13 +245,13 @@
                             </tr>
                         </thead>
                         <tbody id="groupB-table">
-                             </tbody>
+                        </tbody>
                     </table>
                 </div>
                 
                 <div class="matches-list" id="groupB-matches">
                     <h3 style="color:white; font-size:14px; margin: 10px 0 5px; border-left: 3px solid var(--grup-b-renk); padding-left: 10px; text-transform: uppercase;">B Grubu Eşleşmeleri</h3>
-                    </div>
+                </div>
             </div>
         </div>
 
@@ -342,14 +263,12 @@
                     
                     <div class="bracket-round round-semis">
                         <div class="bracket-round-title">Yarı Final</div>
-                        <div id="semi-finals-list" style="display: flex; flex-direction: column; gap: 40px;">
-                            </div>
+                        <div id="semi-finals-list" style="display: flex; flex-direction: column; gap: 40px;"></div>
                     </div>
 
                     <div class="bracket-round round-final">
                         <div class="bracket-round-title">Büyük Final</div>
-                        <div id="final-match">
-                            </div>
+                        <div id="final-match"></div>
                     </div>
 
                 </div>
@@ -361,15 +280,12 @@
     <div id="scoreboardModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="series-score-wrapper" id="modalSeriesHeader">
-                    </div>
+                <div class="series-score-wrapper" id="modalSeriesHeader"></div>
                 <button class="modal-close-btn" id="modalCloseBtn"><i class="fas fa-times"></i></button>
             </div>
-            <div class="map-tabs" id="modalMapTabs">
-                </div>
+            <div class="map-tabs" id="modalMapTabs"></div>
             <div class="modal-body" id="modalBody">
-                <div class="scoreboard-table-area" id="modalStatsTableContainer">
-                    </div>
+                <div class="scoreboard-table-area" id="modalStatsTableContainer"></div>
             </div>
         </div>
     </div>
@@ -447,9 +363,7 @@
                     
                     if (grp === 'A' || grp === 'B') {
                         standings[grp][tId] = {
-                            id: tId, 
-                            name: teamInfo.name || 'Bilinmiyor', 
-                            logo: teamInfo.logo_url || 'img/unknown.webp',
+                            id: tId, name: teamInfo.name || 'Bilinmiyor', logo: teamInfo.logo_url || 'img/unknown.webp',
                             played: 0, wins: 0, losses: 0, average: 0, points: 0
                         };
                     }
@@ -475,17 +389,13 @@
             if (matches) {
                 matches.forEach(m => {
                     const grp = getMatchGroup(m.round_name);
-                    
                     if ((grp === 'A' || grp === 'B') && m.status === 'completed') {
                         const tA = standings[grp][m.team_a_id];
                         const tB = standings[grp][m.team_b_id];
-                        
                         if (tA && tB) {
                             tA.played++; tB.played++;
-                            
                             tA.average += (m.series_score_a - m.series_score_b);
                             tB.average += (m.series_score_b - m.series_score_a);
-
                             if (m.series_score_a > m.series_score_b) {
                                 tA.wins++; tA.points += 3; tB.losses++;
                             } else if (m.series_score_b > m.series_score_a) {
@@ -631,7 +541,7 @@
             `;
         }
 
-        // --- SKORBORD MODAL (AÇILIR PENCERE) MANTIĞI ---
+        // --- SKORBORD MODAL MANTIĞI ---
 
         async function openScoreboardModal(matchId) {
             const modal = document.getElementById('scoreboardModal');
@@ -682,9 +592,9 @@
             headerContainer.innerHTML = `
                 <div class="series-title">${match.match_format || 'BO1'} - GENEL SERİ SKORU</div>
                 <div class="series-score">
-                    <span style="color:var(--grup-a-renk)">${teamAInfo.name || 'SOL'}</span>&nbsp;
-                    ${match.series_score_a} - ${match.series_score_b}&nbsp;
-                    <span style="color:var(--grup-b-renk)">${teamBInfo.name || 'SAĞ'}</span>
+                    <span style="color:var(--grup-a-renk)">${teamAInfo.name || 'SOL TAKIM'}</span>&nbsp;&nbsp;
+                    ${match.series_score_a} - ${match.series_score_b}&nbsp;&nbsp;
+                    <span style="color:var(--grup-b-renk)">${teamBInfo.name || 'SAĞ TAKIM'}</span>
                 </div>
             `;
         }
@@ -735,8 +645,7 @@
                 const teamBId = globalCurrentDetailedMatch.team_b_id;
 
                 const { data: mapData } = await window.supabaseClient.from('match_maps').select('score_a, score_b, map_name').eq('id', mapId).single();
-
-                const { data: allStats, error: statsError } = await window.supabaseClient.from('match_player_stats').select('*').eq('map_id', mapId);
+                const { data: allStats, error: statsError } = await window.supabaseClient.from('match_player_stats').select('user_id, team_id, agent_name, in_game_name, kills, deaths, assists, acs').eq('map_id', mapId);
 
                 if (statsError) throw statsError;
 
@@ -762,19 +671,21 @@
                     <span class="score-a">${map.score_a}</span> - <span class="score-b">${map.score_b}</span>
                 </div>
 
-                <div class="team-a">
-                    <div class="team-title-row team-a">${teamAInfo.name || 'SOL TAKIM'} (MAVİ)</div>
-                    ${createStatsTableHtml(teamAStats)}
-                </div>
+                <div class="teams-scoreboard-container">
+                    <div class="team-a-col">
+                        <div class="team-title-row team-a">${teamAInfo.name || 'SOL TAKIM'} (MAVİ)</div>
+                        ${createStatsTableHtml(teamAStats, 'a')}
+                    </div>
 
-                <div class="team-b">
-                    <div class="team-title-row team-b">${teamBInfo.name || 'SAĞ TAKIM'} (KIRMIZI)</div>
-                    ${createStatsTableHtml(teamBStats)}
+                    <div class="team-b-col">
+                        <div class="team-title-row team-b">${teamBInfo.name || 'SAĞ TAKIM'} (KIRMIZI)</div>
+                        ${createStatsTableHtml(teamBStats, 'b')}
+                    </div>
                 </div>
             `;
         }
 
-        function createStatsTableHtml(statsArray) {
+        function createStatsTableHtml(statsArray, teamType) {
             let html = `
                 <table class="scoreboard-table">
                     <thead>
@@ -784,8 +695,6 @@
                             <th class="k-cell">K</th>
                             <th class="d-cell">D</th>
                             <th class="a-cell">A</th>
-                            <th class="hs-cell">HS%</th>
-                            <th class="adr-cell">ADR</th>
                             <th class="acs-cell">ACS</th>
                         </tr>
                     </thead>
@@ -793,14 +702,11 @@
             `;
 
             if (!statsArray || statsArray.length === 0) {
-                html += '<tr><td colspan="8" style="text-align:center; color:#555;">Bu harita için oyuncu verisi girilmemiş.</td></tr>';
+                html += '<tr><td colspan="6" style="text-align:center; color:#555;">Bu harita için oyuncu verisi girilmemiş.</td></tr>';
             } else {
                 statsArray.forEach(p => {
                     let agentName = (p.agent_name || 'unknown').charAt(0).toUpperCase() + (p.agent_name || 'unknown').slice(1).toLowerCase();
                     if(agentName.toLowerCase() === 'kayo') agentName = 'Kayo';
-
-                    const hsDisplay = p.headshot_pct ? `${p.headshot_pct}%` : '??%';
-                    const adrDisplay = p.adr ? p.adr : '???';
 
                     html += `
                         <tr>
@@ -811,8 +717,6 @@
                             <td class="k-cell">${p.kills || 0}</td>
                             <td class="d-cell">${p.deaths || 0}</td>
                             <td class="a-cell">${p.assists || 0}</td>
-                            <td class="hs-cell"><i class="fas fa-crosshairs stat-icon"></i>${hsDisplay}</td>
-                            <td class="adr-cell"><i class="fas fa-bolt stat-icon"></i>${adrDisplay}</td>
                             <td class="acs-cell">${p.acs || 0}</td>
                         </tr>
                     `;
