@@ -28,7 +28,7 @@
             background-attachment: fixed;
         }
 
-        .team-page-container { max-width: 1200px; margin: 40px auto; padding: 20px; flex: 1; animation: fadeInPage 0.6s ease-out; display: none; }
+        .team-page-container { max-width: 1200px; margin: 40px auto; padding: 20px; flex: 1; animation: fadeInPage 0.6s ease-out; }
         @keyframes fadeInPage { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
         /* TAKIM KURMA KARTI */
@@ -192,9 +192,10 @@
     <div id="header-alani"></div>
     <div id="toast-container"></div>
 
-    <main class="team-page-container" id="createTeamSection">
+    <main class="team-page-container" id="createTeamSection" style="display: none;">
         <div class="auth-card">
-            <h2 class="section-title" style="text-align: center; border:none; margin-bottom:10px;">TAKIMINI <span>KUR</span></h2>
+            <h2 class="section-title" style="text-align: center; border:none; margin-bottom:10px; font-size: 28px; font-weight: 900; color: white;">TAKIMINI <span>KUR</span></h2>
+            
             <form id="teamForm">
                 <div class="input-group">
                     <label>Takım Adı *</label>
@@ -221,7 +222,7 @@
         </div>
     </main>
 
-    <main class="team-page-container" id="myTeamSection">
+    <main class="team-page-container" id="myTeamSection" style="display: none;">
         <div class="team-profile-header">
             <div class="team-hero-bg" id="teamHeroBg"></div>
             <div class="team-hero-overlay"></div>
@@ -345,8 +346,14 @@
                     setTimeout(() => window.location.href = 'profil.html', 2000);
                     return;
                 }
+                
                 await fetchMyTeam();
-            } catch (err) { console.error(err); } finally { document.getElementById('loadingScreen').style.display = 'none'; }
+                
+            } catch (err) { 
+                console.error(err); 
+            } finally { 
+                document.getElementById('loadingScreen').style.display = 'none'; 
+            }
         }
 
         async function fetchPendingInvites() {
@@ -360,7 +367,7 @@
                     document.getElementById('pendingInvitesSection').style.display = 'block';
                     let html = '';
                     invites.forEach(inv => {
-                        const t = inv.teams;
+                        const t = Array.isArray(inv.teams) ? inv.teams[0] : inv.teams;
                         const tLogo = t.logo_url || 'img/unknown.webp';
                         html += `
                         <div class="invite-card">
@@ -402,12 +409,16 @@
         async function fetchMyTeam() {
             try {
                 let { data: teamAsCaptain } = await window.supabaseClient.from('teams').select('*').eq('captain_id', currentUser.id).maybeSingle();
-                if (teamAsCaptain) { myTeamData = teamAsCaptain; isCaptain = true; } 
+                if (teamAsCaptain) { 
+                    myTeamData = teamAsCaptain; 
+                    isCaptain = true; 
+                } 
                 else {
                     const { data: membership } = await window.supabaseClient.from('team_members').select('team_id').eq('user_id', currentUser.id).eq('status', 'accepted').maybeSingle();
                     if (membership) {
                         const { data: teamData } = await window.supabaseClient.from('teams').select('*').eq('id', membership.team_id).single();
-                        myTeamData = teamData; isCaptain = false;
+                        myTeamData = teamData; 
+                        isCaptain = false;
                     }
                 }
                 
@@ -473,7 +484,6 @@
             const grid = document.getElementById('rosterList');
             grid.innerHTML = ''; 
             try {
-                // Burada "role" sütununu da güvenliğe almak için ekliyoruz ki undefined hatası atmasın
                 const { data: members, error: memErr } = await window.supabaseClient.from('team_members')
                     .select('id, user_id, role, status, profiles(username, ign, avatar_url, matches_played)')
                     .eq('team_id', myTeamData.id)
@@ -483,37 +493,26 @@
 
                 let allMembers = members ? [...members] : [];
 
-                // 1. KAPTAN KONTROLÜ VE EKSİKSE OTOMATİK EKLEME
                 const capIndex = allMembers.findIndex(m => m.user_id === myTeamData.captain_id);
                 if (capIndex === -1) {
-                    // Kaptan DB'de eksikse hemen arka planda tamamla (Eski veriler için hayat kurtarıcı)
                     await window.supabaseClient.from('team_members').insert([{
-                        team_id: myTeamData.id,
-                        user_id: myTeamData.captain_id,
-                        role: 'member',
-                        status: 'accepted'
+                        team_id: myTeamData.id, user_id: myTeamData.captain_id, role: 'member', status: 'accepted'
                     }]);
                     
                     const { data: capProfile } = await window.supabaseClient.from('profiles').select('username, ign, avatar_url, matches_played').eq('id', myTeamData.captain_id).maybeSingle();
                     allMembers.push({
-                        user_id: myTeamData.captain_id,
-                        role: 'member',
-                        status: 'accepted',
-                        profiles: capProfile || {}
+                        user_id: myTeamData.captain_id, role: 'member', status: 'accepted', profiles: capProfile || {}
                     });
                 } else {
-                    // Eğer kaptan var ama status'u pending kalmışsa zorla kabul yap (Güvenlik)
                     if (allMembers[capIndex].status !== 'accepted') {
                         await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', allMembers[capIndex].id);
                         allMembers[capIndex].status = 'accepted';
                     }
                 }
 
-                // 2. DEDUPLICATION (Mükerrer Üyeleri Sil - Pending vs Accepted çakışmaları için)
                 const uniqueMap = new Map();
                 allMembers.forEach(m => {
                     if (uniqueMap.has(m.user_id)) {
-                        // Accepted her zaman Pending'i ezer
                         if (m.status === 'accepted') uniqueMap.set(m.user_id, m);
                     } else {
                         uniqueMap.set(m.user_id, m);
@@ -521,12 +520,9 @@
                 });
                 allMembers = Array.from(uniqueMap.values());
 
-                // 3. ONAYLI ÜYE SAYACI
                 const acceptedCount = allMembers.filter(m => m.status === 'accepted').length;
                 document.getElementById('memberCounter').innerText = `${acceptedCount} / 7`;
 
-                // 4. SIRALAMA MANTIĞI:
-                // Kendisi > Kaptan > Kabul Edilmişler > Bekleyenler
                 allMembers.sort((a, b) => {
                     if (a.user_id === currentUser.id && b.user_id !== currentUser.id) return -1;
                     if (b.user_id === currentUser.id && a.user_id !== currentUser.id) return 1;
@@ -540,7 +536,6 @@
                     return 0; 
                 });
 
-                // 5. İSTATİSTİKLERİ ÇEK
                 const userIds = allMembers.map(m => m.user_id);
                 let playerStats = {};
                 try {
@@ -557,9 +552,7 @@
                     }
                 } catch(e) {}
 
-                // 6. EKRANA YAZDIR
                 allMembers.forEach(m => {
-                    // Normal üye pending olanları göremez
                     if (m.status === 'pending' && !isCaptain) return; 
 
                     const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
@@ -581,7 +574,6 @@
                     );
                 });
 
-                // LİMİT 7 OYUNCU (Eğer 7'den azsa ekleme slotunu göster)
                 if (isCaptain && !isRosterLocked && acceptedCount < 7) {
                     grid.innerHTML += `
                         <div class="add-slot-card dynamic-slot" onclick="focusSearch()">
@@ -621,8 +613,6 @@
 
             const roleClassBadge = isPending ? 'role-pending' : 'role-standard';
 
-            // DİKKAT: ÇİFT BİLDİRİM - ÇİFT LOG ENGELİ!
-            // Kendi takımımı ararken davet gitmesini engelleyen ve arama sorununu çözen kod.
             return `
                 <div class="player-card ${isPending ? 'pending' : ''} ${isMe ? 'current-user-card' : ''}">
                     <div class="player-card-header">
@@ -660,7 +650,6 @@
             btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
             try {
-                // LOGO YÜKLEMESİ ARTIK AŞAĞIDA DA ÇALIŞIYOR (Oluşturma kısmına taşındı)
                 const logoFile = document.getElementById('editTeamLogo').files[0];
                 let logoUrl = myTeamData.logo_url;
                 if (logoFile) {
@@ -680,23 +669,20 @@
             } catch (err) { showNotification(err.message, "error"); btn.disabled = false; btn.innerHTML = originalText; }
         }
 
-        // İŞTE BURASI DÜZELTİLDİ: İLK OLUŞTURURKEN LOGOYU (PP) KAYDETME
         document.getElementById('teamForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('newTeamName').value.trim();
             const tag = document.getElementById('newTeamTag').value.trim().toUpperCase();
-            const logoFile = document.getElementById('newTeamLogo').files[0]; // Dosyayı yakala
+            const logoFile = document.getElementById('newTeamLogo').files[0]; 
             const btn = document.getElementById('btnCreateTeam');
             
             btn.disabled = true; 
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             
             try {
-                // 1. Önce takımı ismen oluştur ve ID'sini al
                 const { data: newTeam, error } = await window.supabaseClient.from('teams').insert([{ captain_id: currentUser.id, name, tag }]).select().single();
                 if (error) throw error;
                 
-                // 2. Eğer logo seçilmişse, şimdi takımın ID'si ile logoyu yükle ve URL'i takıma yaz
                 if (logoFile) {
                     if (logoFile.size > 2 * 1024 * 1024) {
                         showNotification("Logo 2MB'dan büyük olamaz. Takım logosuz kuruldu.", "info");
@@ -705,19 +691,16 @@
                         await window.supabaseClient.storage.from('team-logos').upload(fileName, logoFile, { upsert: true });
                         const { data: urlData } = window.supabaseClient.storage.from('team-logos').getPublicUrl(fileName);
                         const logoUrl = `${urlData.publicUrl}?t=${Date.now()}`; 
-                        // Takımı logoyla güncelle
                         await window.supabaseClient.from('teams').update({ logo_url: logoUrl }).eq('id', newTeam.id);
                     }
                 }
 
-                // 3. Kaptanı listeye ekle ve (varsa) sahte bildirim bugunu temizle
                 const { data: newMem } = await window.supabaseClient.from('team_members')
                     .insert([{ team_id: newTeam.id, user_id: currentUser.id, role: 'member', status: 'accepted' }])
                     .select().single();
 
                 if (newMem && newMem.status === 'pending') {
                     await window.supabaseClient.from('team_members').update({ status: 'accepted' }).eq('id', newMem.id);
-                    await window.supabaseClient.from('bildirimler').delete().eq('kullanici_id', currentUser.id).ilike('mesaj', '%çağırıyor%');
                 }
 
                 showNotification("Takım başarıyla kuruldu!", "success");
@@ -750,7 +733,6 @@
                         div.innerHTML = `<i class="fas fa-user-plus"></i> <b>${u.username}</b> ${ignDisplay}`;
                         div.onclick = async () => {
                             try {
-                                // SADECE RPC İLE DAVET AT - "BİLDİRİMLER" TABLOSUNA MANUEL YAZDIRMA KISMI SİLİNDİ
                                 await window.supabaseClient.rpc('send_team_invite', { p_team_id: myTeamData.id, p_user_id: u.id, p_role: 'member' });
                                 showNotification("Davet gönderildi!", "success"); 
                                 fetchRoster();
