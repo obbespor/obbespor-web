@@ -27,10 +27,15 @@
     </style>
 </head>
 <body>
-                <ul>
+
+    <header class="main-nav">
+        <a href="index.html" class="logo">OBB <span>E-SPORTS</span></a>
+        <nav>
+            <ul>
                 <li><a href="index.html">ANA SAYFA</a></li>
-                <li id="authAction"><a href="kayit.html" class="nav-btn">YÜKLENİYOR...</a></li>
             </ul>
+        </nav>
+    </header>
 
     <div class="auth-wrapper">
         <div class="auth-card" id="authCardContainer">
@@ -61,6 +66,59 @@
     <script src="js/app.js"></script>
 
     <script>
+        let isRecoveryReady = false;
+
+        // 1. URL'de PKCE Kodu var mı kontrol et ve zorla oturum aç
+        async function handleRecoveryToken() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code'); 
+            
+            if (code) {
+                console.log("Kurtarma kodu algılandı, oturum kuruluyor...");
+                const { error } = await window.supabaseClient.auth.exchangeCodeForSession(code);
+                if (!error) {
+                    isRecoveryReady = true;
+                    return;
+                }
+            }
+            
+            // Eski usül Hash kontrolü
+            const hash = window.location.hash;
+            if (hash && hash.includes('access_token')) {
+                isRecoveryReady = true;
+            }
+        }
+
+        // 2. Supabase Oturum Durumu Dinleyicisi
+        window.supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'PASSWORD_RECOVERY' || session) {
+                isRecoveryReady = true;
+            }
+        });
+
+        // Sayfa yüklendiğinde güvenlik kontrolü
+        document.addEventListener('DOMContentLoaded', async () => {
+            await handleRecoveryToken();
+
+            setTimeout(async () => {
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                
+                // Eğer oturum kurulamadıysa (Link gerçekten ölmüşse)
+                if (!session && !isRecoveryReady) {
+                    document.getElementById('newPass').disabled = true;
+                    document.getElementById('confirmPass').disabled = true;
+                    
+                    const btn = document.getElementById('updateBtn');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-lock"></i> LİNK GEÇERSİZ VEYA KULLANILMIŞ';
+                    btn.style.background = "#333";
+                    btn.style.color = "#888";
+                    
+                    showNotification("Bu bağlantı geçersiz veya daha önce kullanılmış. Lütfen yeni bir şifre sıfırlama isteği gönderin.", "error");
+                }
+            }, 1500); 
+        });
+
         // --- FORM GÖNDERİMİ VE SUPABASE GÜVENLİĞİ ---
         document.getElementById('resetForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -69,7 +127,6 @@
             const confirmPass = document.getElementById('confirmPass').value;
             const btn = document.getElementById('updateBtn');
 
-            // 1. Basit Şifre Kontrolü
             if (newPass !== confirmPass) {
                 showNotification("Şifreler uyuşmuyor. Lütfen kontrol edin.", "error");
                 return;
@@ -78,21 +135,18 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GÜNCELLENİYOR...';
 
-            // 2. Supabase ile Şifreyi Güncelle (Gerçek Güvenlik Burada Çalışır)
-            // Kullanıcının linkinde geçerli bir gizli token (şifre sıfırlama kodu) yoksa, Supabase hata fırlatır!
+            // Şifreyi Güncelle
             const { error } = await window.supabaseClient.auth.updateUser({
                 password: newPass
             });
 
-            // 3. Sonuçları İşle
             if (error) {
-                showNotification("Yetkisiz işlem veya linkin süresi dolmuş! Lütfen tekrar şifre sıfırlama isteği gönderin.", "error");
+                console.error("Güncelleme Hatası:", error);
+                showNotification("İşlem başarısız oldu. Güvenlik süresi dolmuş olabilir.", "error");
                 btn.disabled = false;
                 btn.innerHTML = "ŞİFREMİ GÜNCELLE";
             } else {
-                showNotification("Şifreniz başarıyla güncellendi! Giriş yapabilirsiniz.", "success");
-                
-                // Şifre yenilendikten sonra kullanıcıyı giriş ekranına yönlendir
+                showNotification("Şifreniz başarıyla güncellendi! Ana sayfaya yönlendiriliyorsunuz.", "success");
                 setTimeout(() => {
                     window.location.href = "index.html"; 
                 }, 2000);
