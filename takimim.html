@@ -509,7 +509,7 @@
             else if (!isCaptain && !isRosterLocked) document.getElementById('memberActionArea').style.display = 'block';
         }
 
-        async function fetchRoster() {
+       async function fetchRoster() {
             const grid = document.getElementById('rosterList');
             grid.innerHTML = ''; 
             try {
@@ -549,8 +549,11 @@
                 });
                 allMembers = Array.from(uniqueMap.values());
 
-                const acceptedCount = allMembers.filter(m => m.status === 'accepted').length;
-                document.getElementById('memberCounter').innerText = `${acceptedCount} / 7`;
+                // YENİ MANTIK: Hem onaylı üyeleri hem de bekleyen davetleri kapsayan toplam sayı
+                const totalCount = allMembers.length; 
+                
+                // Kaptanın kafa karışıklığını önlemek için sayaç, bekleyen davetleri de dolu slot olarak gösterir
+                document.getElementById('memberCounter').innerText = `${totalCount} / 7`;
 
                 allMembers.sort((a, b) => {
                     if (a.user_id === currentUser.id && b.user_id !== currentUser.id) return -1;
@@ -603,9 +606,10 @@
                     );
                 });
 
-                if (isCaptain && !isRosterLocked && acceptedCount < 7) {
+                // YENİ MANTIK: "Oyuncu Ekle" slotu, onaylılar ve bekleyenlerin toplamı (totalCount) 7'den küçükse çıkar
+                if (isCaptain && !isRosterLocked && totalCount < 7) {
                     grid.innerHTML += `
-                        <div class="add-slot-card" onclick="focusSearch()">
+                        <div class="add-slot-card dynamic-slot" onclick="focusSearch()">
                             <i class="fas fa-user-plus add-icon"></i>
                             <div style="width:100%; position:relative;">
                                 <input type="text" id="dynamicSearch" class="player-search" autocomplete="off" placeholder="Oyuncu Ara..." style="width:100%; padding:10px; background:rgba(0,0,0,0.5); border:1px solid #333; border-radius:8px; color:white; text-align:center; outline:none;">
