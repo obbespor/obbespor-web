@@ -1,4 +1,3 @@
-// js/app.js
 async function loadComponent(id, url) {
     try {
         const response = await fetch(url);
@@ -15,6 +14,9 @@ async function initCore() {
         loadComponent("header-alani", "components/header.html"),
         loadComponent("footer-alani", "components/footer.html")
     ]);
+
+    // *** YENİ: Header yüklendiği için duyuruyu anında tetikliyoruz ***
+    initAnnouncement();
 
     // 2. Scroll Efektini Başlat
     let lastScrollTop = 0;
@@ -42,9 +44,13 @@ async function initCore() {
     });
 }
 
+// Tüm çekirdek sistemi başlat
 document.addEventListener('DOMContentLoaded', initCore);
 
+
+// ==========================================
 // --- GLOBAL DUYURU ÇUBUĞU KONTROLÜ ---
+// ==========================================
 window.closeAnnouncement = function() {
     const banner = document.getElementById('global-announcement');
     if (banner) {
@@ -55,18 +61,9 @@ window.closeAnnouncement = function() {
 };
 
 function initAnnouncement() {
-    // Header dışarıdan JS ile yüklendiği için, elementin sayfaya düşmesini bekliyoruz
-    const checkExist = setInterval(function() {
-        const banner = document.getElementById('global-announcement');
-        if (banner) {
-            clearInterval(checkExist); // Bulunca aramayı durdur
-            // Eğer daha önce kapatılmadıysa göster
-            if (!sessionStorage.getItem('obb_announcement_closed')) {
-                banner.style.display = 'flex';
-            }
-        }
-    }, 200); // Saniyede 5 kez kontrol eder, header gelince anında duyuruyu açar
+    const banner = document.getElementById('global-announcement');
+    // Eğer element HTML'de varsa ve kullanıcı daha önce kapatmadıysa göster
+    if (banner && !sessionStorage.getItem('obb_announcement_closed')) {
+        banner.style.display = 'flex';
+    }
 }
-
-// Sayfa yüklendiğinde kontrolü başlat
-document.addEventListener('DOMContentLoaded', initAnnouncement);
