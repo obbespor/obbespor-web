@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Takım ve Oyuncu Listesi | OBB E-SPORTS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- OBB E-SPORTS KARANLIK TEMA --- */
+        :root {
+            --bg-color: #050505;
+            --card-bg: #111111;
+            --border-color: #222;
+            --neon-mor: #601dc2;
+            --acik-mor: #9d4edd;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Başlık ve Arama Alanı */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-section h1 {
+            margin: 0;
+            font-size: 24px;
+            border-left: 4px solid var(--neon-mor);
+            padding-left: 15px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: var(--neon-mor);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* Takım Kartları Grid Sistemi */
+        .teams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .team-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .team-card:hover {
+            border-color: var(--neon-mor);
+            box-shadow: 0 5px 20px rgba(96, 29, 194, 0.2);
+        }
+
+        .team-header {
+            background: linear-gradient(90deg, rgba(17,17,17,1) 0%, rgba(96,29,194,0.1) 100%);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .team-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .team-tag {
+            font-size: 12px;
+            background: var(--neon-mor);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .member-count {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Oyuncu Listesi */
+        .player-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .player-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-item:last-child {
+            border-bottom: none;
+        }
+
+        .player-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .player-ign {
+            font-weight: 600;
+            color: var(--acik-mor);
+            font-size: 14px;
+        }
+
+        .player-username {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .player-role {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            background: #222;
+        }
+
+        .role-captain {
+            background: rgba(255, 215, 0, 0.1);
+            color: gold;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .status-pending {
+            color: #ff9800;
+            font-style: italic;
+            font-size: 10px;
+            margin-left: 5px;
+        }
+
+        .loading-text {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 50px;
+            font-size: 18px;
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <div class="header-section">
+            <h1><i class="fas fa-shield-alt"></i> Takım & Oyuncu Yönetimi</h1>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Takım veya IGN Ara..." onkeyup="filterTeams()">
+            </div>
+        </div>
+
+        <div id="teamsGrid" class="teams-grid">
+            <div class="loading-text"><i class="fas fa-spinner fa-spin"></i> Veritabanından veriler çekiliyor...</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // KENDİ SUPABASE BİLGİLERİNİ BURAYA GİR YA DA app.js'DEN ÇEK
+        // const supabaseUrl = 'SENIN_URL';
+        // const supabaseKey = 'SENIN_ANON_KEY';
+        // const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Eğer app.js zaten yüklüyse doğrudan window.supabaseClient kullanabilirsin:
+        const supabase = window.supabaseClient;
+
+        let allTeamsData = [];
+
+        async function fetchAllRosters() {
+            try {
+                // SUPABASE İLİŞKİSEL SORGUSU (En sihirli kısım burası!)
+                // Takımları, o takıma bağlı üyeleri ve o üyelerin profil bilgilerini (IGN) TEK SEFERDE çeker.
+                const { data: teams, error } = await supabase
+                    .from('teams')
+                    .select(`
+                        id,
+                        name,
+                        tag,
+                        team_members (
+                            role,
+                            status,
+                            profiles (
+                                username,
+                                ign
+                            )
+                        )
+                    `)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                
+                allTeamsData = teams || [];
+                renderTeams(allTeamsData);
+
+            } catch (err) {
+                console.error("Veri çekme hatası:", err);
+                document.getElementById('teamsGrid').innerHTML = `<div class="loading-text" style="color:red;">Veriler yüklenirken bir hata oluştu! Konsolu kontrol edin.</div>`;
+            }
+        }
+
+        function renderTeams(teamsToRender) {
+            const grid = document.getElementById('teamsGrid');
+            grid.innerHTML = '';
+
+            if (teamsToRender.length === 0) {
+                grid.innerHTML = '<div class="loading-text">Kayıtlı takım bulunamadı.</div>';
+                return;
+            }
+
+            teamsToRender.forEach(team => {
+                // Sadece kabul edilmiş (accepted) üyeleri veya hepsini sayabiliriz
+                const members = team.team_members || [];
+                const activeMembersCount = members.filter(m => m.status === 'accepted').length;
+
+                let playersHTML = '';
+                
+                members.forEach(member => {
+                    const profile = Array.isArray(member.profiles) ? member.profiles[0] : member.profiles;
+                    const ign = profile?.ign || 'Bilinmiyor';
+                    const username = profile?.username || 'Bilinmiyor';
+                    const roleClass = member.role === 'captain' ? 'role-captain' : '';
+                    const roleText = member.role === 'captain' ? '<i class="fas fa-crown"></i> Kaptan' : 'Üye';
+                    const pendingText = member.status === 'pending' ? '<span class="status-pending">(Bekliyor)</span>' : '';
+
+                    playersHTML += `
+                        <li class="player-item">
+                            <div class="player-info">
+                                <span class="player-ign">${ign} ${pendingText}</span>
+                                <span class="player-username">@${username}</span>
+                            </div>
+                            <span class="player-role ${roleClass}">${roleText}</span>
+                        </li>
+                    `;
+                });
+
+                if (playersHTML === '') {
+                    playersHTML = '<li class="player-item"><span style="color:#666; font-size:12px;">Henüz oyuncu yok</span></li>';
+                }
+
+                grid.innerHTML += `
+                    <div class="team-card">
+                        <div class="team-header">
+                            <h3 class="team-name">
+                                ${team.name}
+                                ${team.tag ? `<span class="team-tag">[${team.tag}]</span>` : ''}
+                            </h3>
+                            <span class="member-count"><i class="fas fa-users"></i> ${activeMembersCount}/7</span>
+                        </div>
+                        <ul class="player-list">
+                            ${playersHTML}
+                        </ul>
+                    </div>
+                `;
+            });
+        }
+
+        // Canlı Arama Fonksiyonu (Takım adına veya Oyuncu IGN'sine göre anında filtreler)
+        function filterTeams() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filteredTeams = allTeamsData.filter(team => {
+                // Takım adı veya tag'i uyuyor mu?
+                const matchTeam = team.name.toLowerCase().includes(searchTerm) || (team.tag && team.tag.toLowerCase().includes(searchTerm));
+                
+                // Oyuncuların IGN'si uyuyor mu?
+                const matchPlayer = team.team_members.some(m => {
+                    const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
+                    return prof && prof.ign && prof.ign.toLowerCase().includes(searchTerm);
+                });
+
+                return matchTeam || matchPlayer;
+            });
+
+            renderTeams(filteredTeams);
+        }
+
+        // Sayfa yüklendiğinde verileri çek
+        document.addEventListener('DOMContentLoaded', () => {
+            // Admin kontrolü kodunu buraya ekleyebilirsin (örn: checkAdminStatus())
+            fetchAllRosters();
+        });
+    </script>
+</body>
+</html>
