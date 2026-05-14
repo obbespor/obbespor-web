@@ -83,25 +83,7 @@
     <button class="close-announcement" onclick="closeAnnouncement()"><i class="fas fa-times"></i></button>
 </div>
 
-<script>
-    function closeAnnouncement() {
-        const banner = document.getElementById('global-announcement');
-        if (banner) {
-            banner.style.display = 'none';
-            sessionStorage.setItem('obb_announcement_closed', 'true');
-        }
-    }
 
-    // Kod yüklendiği an kontrol et (Header import edildiği için anında çalışır)
-    (function() {
-        if (!sessionStorage.getItem('obb_announcement_closed')) {
-            const banner = document.getElementById('global-announcement');
-            if (banner) {
-                banner.style.display = 'flex';
-            }
-        }
-    })();
-</script>
 <header class="main-nav" id="mainHeader">
     <a href="index.html" class="logo">
         <img src="img/obblogo.png" alt="OBB E-SPORTS Logo" class="header-logo">
