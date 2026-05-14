@@ -3,197 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Takım ve Oyuncu Listesi | OBB E-SPORTS</title>
+    <title>Yönetim Paneli | OBB E-SPORTS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/header.css">
-    
     <style>
-        /* --- OBB E-SPORTS KARANLIK TEMA --- */
-        body {
-            background-color: #050505;
-            color: #ffffff;
-            font-family: 'Poppins', sans-serif;
-            margin: 0; padding: 0;
+        /* --- BAĞIMSIZ ADMİN TEMASI --- */
+        body { background-color: #050505; color: #ffffff; font-family: 'Poppins', sans-serif; margin: 0; padding: 40px 20px; }
+        .admin-container { max-width: 1200px; margin: 0 auto; }
+        .header-section { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 30px; background: #111; padding: 20px; 
+            border-radius: 12px; border: 1px solid #222; flex-wrap: wrap; gap: 15px;
         }
-
-        .admin-container {
-            max-width: 1200px;
-            margin: 120px auto 40px auto; /* Header'ın altında kalmasın diye üstten boşluk verdik */
-            padding: 0 20px;
-            min-height: 70vh;
+        .header-section h1 { margin: 0; font-size: 24px; border-left: 4px solid #601dc2; padding-left: 15px; }
+        .search-box { position: relative; width: 100%; max-width: 300px; }
+        .search-box input { 
+            width: 100%; padding: 12px 15px 12px 40px; background: #050505; 
+            border: 1px solid #333; border-radius: 8px; color: white; outline: none; 
         }
-
-        /* Başlık ve Arama Alanı */
-        .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
+        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888888; }
+        .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        .team-card { background: #111; border: 1px solid #222; border-radius: 12px; overflow: hidden; transition: 0.3s; }
+        .team-card:hover { border-color: #601dc2; box-shadow: 0 5px 20px rgba(96, 29, 194, 0.2); }
+        .team-header { 
+            background: linear-gradient(90deg, #111 0%, rgba(96,29,194,0.1) 100%); 
+            padding: 15px 20px; border-bottom: 1px solid #222; 
+            display: flex; align-items: center; justify-content: space-between; 
         }
-
-        .header-section h1 {
-            margin: 0;
-            font-size: 24px;
-            border-left: 4px solid #601dc2;
-            padding-left: 15px;
+        .team-tag { font-size: 12px; background: #601dc2; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+        .player-item { 
+            padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); 
+            display: flex; justify-content: space-between; align-items: center; 
         }
-
-        .search-box {
-            position: relative;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 12px 15px 12px 40px;
-            background: #111111;
-            border: 1px solid #222;
-            border-radius: 8px;
-            color: white;
-            font-family: 'Poppins', sans-serif;
-            outline: none;
-        }
-
-        .search-box input:focus {
-            border-color: #601dc2;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #888888;
-        }
-
-        /* Takım Kartları Grid Sistemi */
-        .teams-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
-        }
-
-        .team-card {
-            background: #111111;
-            border: 1px solid #222;
-            border-radius: 12px;
-            overflow: hidden;
-            transition: 0.3s;
-        }
-
-        .team-card:hover {
-            border-color: #601dc2;
-            box-shadow: 0 5px 20px rgba(96, 29, 194, 0.2);
-        }
-
-        .team-header {
-            background: linear-gradient(90deg, rgba(17,17,17,1) 0%, rgba(96,29,194,0.1) 100%);
-            padding: 15px 20px;
-            border-bottom: 1px solid #222;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .team-name {
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .team-tag {
-            font-size: 12px;
-            background: #601dc2;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-
-        .member-count {
-            font-size: 12px;
-            color: #888888;
-        }
-
-        /* Oyuncu Listesi */
-        .player-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .player-item {
-            padding: 12px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .player-item:last-child {
-            border-bottom: none;
-        }
-
-        .player-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .player-ign {
-            font-weight: 600;
-            color: #9d4edd;
-            font-size: 14px;
-        }
-
-        .player-username {
-            font-size: 11px;
-            color: #888888;
-        }
-
-        .player-role {
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 20px;
-            background: #222;
-        }
-
-        .role-captain {
-            background: rgba(255, 215, 0, 0.1);
-            color: gold;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .status-pending {
-            color: #ff9800;
-            font-style: italic;
-            font-size: 10px;
-            margin-left: 5px;
-        }
-
-        .loading-text {
-            text-align: center;
-            color: #888888;
-            padding: 50px;
-            font-size: 18px;
-            grid-column: 1 / -1;
-        }
+        .player-ign { font-weight: 600; color: #9d4edd; font-size: 14px; }
+        .player-username { font-size: 11px; color: #888888; }
+        .player-role { font-size: 11px; padding: 3px 8px; border-radius: 20px; background: #222; }
+        .role-captain { background: rgba(255, 215, 0, 0.1); color: gold; border: 1px solid rgba(255, 215, 0, 0.3); }
+        .loading-text { text-align: center; color: #888888; padding: 50px; font-size: 18px; grid-column: 1 / -1; }
     </style>
 </head>
 <body>
 
-    <div id="header-alani"></div>
-
     <div class="admin-container">
         <div class="header-section">
-            <h1><i class="fas fa-shield-alt"></i> Takım & Oyuncu Yönetimi</h1>
+            <h1><i class="fas fa-user-shield"></i> Takım Yönetim Paneli</h1>
             <div class="search-box">
                 <i class="fas fa-search"></i>
                 <input type="text" id="searchInput" placeholder="Takım veya IGN Ara..." onkeyup="filterTeams()">
@@ -201,176 +55,99 @@
         </div>
 
         <div id="teamsGrid" class="teams-grid">
-            <div id="statusMessage" class="loading-text"><i class="fas fa-spinner fa-spin"></i> Güvenlik Kontrolü Yapılıyor...</div>
+            <div id="statusMessage" class="loading-text"><i class="fas fa-spinner fa-spin"></i> Güvenlik Kontrolü...</div>
         </div>
     </div>
 
-    <div id="footer-alani"></div>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <script src="js/app.js"></script>
+    <script src="js/config.js"></script>
 
     <script>
         let allTeamsData = [];
 
-        // --- ADIM 1: SİSTEM BAŞLATICI VE GÜVENLİK ---
         async function initAdminPage() {
             const statusMsg = document.getElementById('statusMessage');
             
-            // app.js'in yüklenmesini ve window.supabaseClient'ın tanımlanmasını bekle
+            // window.supabaseClient'ın config.js tarafından oluşturulmasını bekle
             let retries = 0;
-            while (!window.supabaseClient && retries < 20) {
-                await new Promise(resolve => setTimeout(resolve, 100)); // 100ms bekle
+            while (!window.supabaseClient && retries < 30) {
+                await new Promise(res => setTimeout(res, 100)); 
                 retries++;
             }
 
             if (!window.supabaseClient) {
-                statusMsg.innerHTML = '<span style="color:#ff4444;"><i class="fas fa-exclamation-triangle"></i> Veritabanı bağlantısı kurulamadı. (app.js yüklenmemiş olabilir)</span>';
+                statusMsg.innerHTML = '<span style="color:#ff4444;">Hata: Veritabanı istemcisi başlatılamadı.</span>';
                 return;
             }
 
-            // Supabase hazır, şimdi kullanıcının admin olup olmadığını kontrol et
             await checkAdminAccess();
         }
 
-        // --- ADIM 2: YETKİ KONTROLÜ ---
         async function checkAdminAccess() {
-            const statusMsg = document.getElementById('statusMessage');
             try {
-                // Kullanıcı giriş yapmış mı?
                 const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
-                
-                if (authErr || !user) throw new Error("Giriş yapılmamış");
+                if (authErr || !user) throw new Error();
 
-                // Kullanıcının rolü admin mi?
                 const { data: profile, error: profErr } = await window.supabaseClient
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', user.id)
-                    .single();
+                    .from('profiles').select('role').eq('id', user.id).single();
 
-                if (profErr || !profile || profile.role !== 'admin') {
-                    throw new Error("Yetkisiz erişim");
-                }
+                if (profErr || !profile || profile.role !== 'admin') throw new Error();
 
-                // Admin olduğu doğrulandı! Verileri çekmeye başla...
-                statusMsg.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Takım verileri indiriliyor...';
                 fetchAllRosters();
-
             } catch (err) {
-                console.warn("Erişim Reddedildi:", err.message);
-                // Yetkisiz kişiyi saniyesinde ana sayfaya postala
                 window.location.replace("index.html"); 
             }
         }
 
-        // --- ADIM 3: VERİLERİ ÇEKME ---
         async function fetchAllRosters() {
             try {
                 const { data: teams, error } = await window.supabaseClient
                     .from('teams')
-                    .select(`
-                        id,
-                        name,
-                        tag,
-                        team_members (
-                            role,
-                            status,
-                            profiles (
-                                username,
-                                ign
-                            )
-                        )
-                    `)
+                    .select(`name, tag, team_members(role, status, profiles(username, ign))`)
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
-                
                 allTeamsData = teams || [];
                 renderTeams(allTeamsData);
-
             } catch (err) {
-                console.error("Veri çekme hatası:", err);
-                document.getElementById('teamsGrid').innerHTML = `<div class="loading-text" style="color:#ff4444;"><i class="fas fa-exclamation-triangle"></i> Veriler yüklenirken bir hata oluştu! Konsolu kontrol edin.</div>`;
+                document.getElementById('teamsGrid').innerHTML = `<div class="loading-text">Veri çekme hatası!</div>`;
             }
         }
 
-        // --- ADIM 4: VERİLERİ EKRANA BASTIRMA ---
-        function renderTeams(teamsToRender) {
+        function renderTeams(teams) {
             const grid = document.getElementById('teamsGrid');
-            grid.innerHTML = '';
-
-            if (teamsToRender.length === 0) {
-                grid.innerHTML = '<div class="loading-text">Kayıtlı takım bulunamadı.</div>';
-                return;
-            }
-
-            teamsToRender.forEach(team => {
-                const members = team.team_members || [];
-                const activeMembersCount = members.filter(m => m.status === 'accepted').length;
-
-                let playersHTML = '';
-                
-                members.forEach(member => {
-                    const profile = Array.isArray(member.profiles) ? member.profiles[0] : member.profiles;
-                    const ign = profile?.ign || 'Bilinmiyor';
-                    const username = profile?.username || 'Bilinmiyor';
-                    const roleClass = member.role === 'captain' ? 'role-captain' : '';
-                    const roleText = member.role === 'captain' ? '<i class="fas fa-crown"></i> Kaptan' : 'Üye';
-                    const pendingText = member.status === 'pending' ? '<span class="status-pending">(Bekliyor)</span>' : '';
-
-                    playersHTML += `
-                        <li class="player-item">
-                            <div class="player-info">
-                                <span class="player-ign">${ign} ${pendingText}</span>
-                                <span class="player-username">@${username}</span>
-                            </div>
-                            <span class="player-role ${roleClass}">${roleText}</span>
-                        </li>
-                    `;
-                });
-
-                if (playersHTML === '') {
-                    playersHTML = '<li class="player-item"><span style="color:#666; font-size:12px;">Henüz oyuncu yok</span></li>';
-                }
-
-                grid.innerHTML += `
-                    <div class="team-card">
-                        <div class="team-header">
-                            <h3 class="team-name">
-                                ${team.name}
-                                ${team.tag ? `<span class="team-tag">[${team.tag}]</span>` : ''}
-                            </h3>
-                            <span class="member-count"><i class="fas fa-users"></i> ${activeMembersCount}/7</span>
-                        </div>
-                        <ul class="player-list">
-                            ${playersHTML}
-                        </ul>
+            grid.innerHTML = teams.map(team => `
+                <div class="team-card">
+                    <div class="team-header">
+                        <h3 style="margin:0; font-size:16px;">${team.name} ${team.tag ? `<span class="team-tag">[${team.tag}]</span>` : ''}</h3>
                     </div>
-                `;
-            });
+                    <div style="padding:10px 0;">
+                        ${team.team_members.map(m => {
+                            const p = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
+                            return `
+                                <div class="player-item">
+                                    <div style="display:flex; flex-direction:column;">
+                                        <span class="player-ign">${p?.ign || 'Sızmış'}</span>
+                                        <span class="player-username">@${p?.username || 'yok'}</span>
+                                    </div>
+                                    <span class="player-role ${m.role === 'captain' ? 'role-captain' : ''}">${m.role === 'captain' ? 'Kaptan' : 'Üye'}</span>
+                                </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // --- ADIM 5: ARAMA FİLTRESİ ---
         function filterTeams() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
-            const filteredTeams = allTeamsData.filter(team => {
-                const matchTeam = team.name.toLowerCase().includes(searchTerm) || (team.tag && team.tag.toLowerCase().includes(searchTerm));
-                
-                const matchPlayer = team.team_members.some(m => {
-                    const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
-                    return prof && prof.ign && prof.ign.toLowerCase().includes(searchTerm);
-                });
-
-                return matchTeam || matchPlayer;
-            });
-
-            renderTeams(filteredTeams);
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allTeamsData.filter(t => 
+                t.name.toLowerCase().includes(term) || 
+                t.team_members.some(m => (Array.isArray(m.profiles) ? m.profiles[0] : m.profiles)?.ign?.toLowerCase().includes(term))
+            );
+            renderTeams(filtered);
         }
 
-        // Sayfa DOM'u hazır olduğunda işlemleri başlat
         document.addEventListener('DOMContentLoaded', initAdminPage);
     </script>
 </body>
