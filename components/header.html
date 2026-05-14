@@ -7,9 +7,9 @@
         justify-content: space-between;
         align-items: center;
         font-size: 13px;
-        z-index: 99999;
+        z-index: 990; /* 99999'dan 990'a düşürüldü ki yükleme ekranının altında uslu uslu dursun */
         position: relative;
-        box-shadow: 0 2px 15px rgba(0,0,0,0.6);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.4);
         font-family: 'Poppins', sans-serif;
     }
     .announcement-content {
@@ -75,15 +75,6 @@
     }
 </style>
 
-<div id="global-announcement" class="global-announcement" style="display: none;">
-    <div class="announcement-content">
-        <i class="fas fa-bullhorn"></i>
-        <p><strong>ÖNEMLİ DUYURU:</strong> İlk turnuvamız için son kayıtlar <strong>15 MAYIS CUMA 15:00</strong>'te sona erecektir. Turnuvalar sekmesinden başvurunu göndermeyi unutma!</p>
-    </div>
-    <button class="close-announcement" onclick="closeAnnouncement()"><i class="fas fa-times"></i></button>
-</div>
-
-
 <header class="main-nav" id="mainHeader">
     <a href="index.html" class="logo">
         <img src="img/obblogo.png" alt="OBB E-SPORTS Logo" class="header-logo">
@@ -114,6 +105,15 @@
         </ul>
     </nav>
 </header>
+
+<div id="global-announcement" class="global-announcement" style="display: none;">
+    <div class="announcement-content">
+        <i class="fas fa-bullhorn"></i>
+        <p><strong>ÖNEMLİ DUYURU:</strong> İlk turnuvamız için son kayıtlar <strong>15 MAYIS CUMA 15:00</strong>'te sona erecektir. Turnuvalar sekmesinden başvurunu göndermeyi unutma!</p>
+    </div>
+    <button class="close-announcement" onclick="closeAnnouncement()"><i class="fas fa-times"></i></button>
+</div>
+
 
 <div class="floating-bell mobile-only" onclick="toggleNotifPanel('mobilePanel', event)">
     <i class="fas fa-bell"></i>
