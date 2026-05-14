@@ -1,3 +1,107 @@
+<style>
+    .global-announcement {
+        background: linear-gradient(90deg, #b81525 0%, #601dc2 100%);
+        color: white;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        z-index: 99999;
+        position: relative;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.6);
+        font-family: 'Poppins', sans-serif;
+    }
+    .announcement-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        justify-content: center;
+    }
+    .announcement-content p {
+        margin: 0;
+        line-height: 1.4;
+        letter-spacing: 0.5px;
+    }
+    .announcement-content strong {
+        color: #fff;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    }
+    .announcement-content i {
+        font-size: 16px;
+        color: #fff;
+        animation: ring 2.5s infinite;
+    }
+    .close-announcement {
+        background: transparent;
+        border: none;
+        color: rgba(255,255,255,0.7);
+        cursor: pointer;
+        font-size: 16px;
+        padding: 5px;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .close-announcement:hover {
+        color: white;
+        transform: scale(1.2);
+    }
+    @keyframes ring {
+        0%, 100% { transform: rotate(0deg); }
+        10% { transform: rotate(15deg); }
+        20% { transform: rotate(-15deg); }
+        30% { transform: rotate(10deg); }
+        40% { transform: rotate(-10deg); }
+        50% { transform: rotate(0deg); }
+    }
+    @media (max-width: 768px) {
+        .global-announcement { 
+            flex-direction: column; 
+            text-align: center; 
+            padding: 12px 30px 12px 10px; 
+            font-size: 11px;
+        }
+        .announcement-content { gap: 8px; }
+        .close-announcement { 
+            position: absolute; 
+            right: 5px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+        .close-announcement:hover { transform: translateY(-50%) scale(1.2); }
+    }
+</style>
+
+<div id="global-announcement" class="global-announcement" style="display: none;">
+    <div class="announcement-content">
+        <i class="fas fa-bullhorn"></i>
+        <p><strong>ÖNEMLİ DUYURU:</strong> İlk turnuvamız için son kayıtlar <strong>15 MAYIS CUMA 15:00</strong>'te sona erecektir. Turnuvalar sekmesinden başvurunu göndermeyi unutma!</p>
+    </div>
+    <button class="close-announcement" onclick="closeAnnouncement()"><i class="fas fa-times"></i></button>
+</div>
+
+<script>
+    function closeAnnouncement() {
+        const banner = document.getElementById('global-announcement');
+        if (banner) {
+            banner.style.display = 'none';
+            sessionStorage.setItem('obb_announcement_closed', 'true');
+        }
+    }
+
+    // Kod yüklendiği an kontrol et (Header import edildiği için anında çalışır)
+    (function() {
+        if (!sessionStorage.getItem('obb_announcement_closed')) {
+            const banner = document.getElementById('global-announcement');
+            if (banner) {
+                banner.style.display = 'flex';
+            }
+        }
+    })();
+</script>
 <header class="main-nav" id="mainHeader">
     <a href="index.html" class="logo">
         <img src="img/obblogo.png" alt="OBB E-SPORTS Logo" class="header-logo">
