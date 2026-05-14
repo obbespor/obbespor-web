@@ -43,3 +43,30 @@ async function initCore() {
 }
 
 document.addEventListener('DOMContentLoaded', initCore);
+
+// --- GLOBAL DUYURU ÇUBUĞU KONTROLÜ ---
+window.closeAnnouncement = function() {
+    const banner = document.getElementById('global-announcement');
+    if (banner) {
+        banner.style.display = 'none';
+        // Kullanıcı kapattı, oturum boyunca bir daha gösterme
+        sessionStorage.setItem('obb_announcement_closed', 'true');
+    }
+};
+
+function initAnnouncement() {
+    // Header dışarıdan JS ile yüklendiği için, elementin sayfaya düşmesini bekliyoruz
+    const checkExist = setInterval(function() {
+        const banner = document.getElementById('global-announcement');
+        if (banner) {
+            clearInterval(checkExist); // Bulunca aramayı durdur
+            // Eğer daha önce kapatılmadıysa göster
+            if (!sessionStorage.getItem('obb_announcement_closed')) {
+                banner.style.display = 'flex';
+            }
+        }
+    }, 200); // Saniyede 5 kez kontrol eder, header gelince anında duyuruyu açar
+}
+
+// Sayfa yüklendiğinde kontrolü başlat
+document.addEventListener('DOMContentLoaded', initAnnouncement);
