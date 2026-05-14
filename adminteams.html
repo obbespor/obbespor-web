@@ -216,16 +216,15 @@
         // const supabaseKey = 'SENIN_ANON_KEY';
         // const supabase = supabase.createClient(supabaseUrl, supabaseKey);
         
-        // Eğer app.js zaten yüklüyse doğrudan window.supabaseClient kullanabilirsin:
-        const supabase = window.supabaseClient;
+
 
         let allTeamsData = [];
 
         async function fetchAllRosters() {
             try {
-                // SUPABASE İLİŞKİSEL SORGUSU (En sihirli kısım burası!)
-                // Takımları, o takıma bağlı üyeleri ve o üyelerin profil bilgilerini (IGN) TEK SEFERDE çeker.
-                const { data: teams, error } = await supabase
+                // SUPABASE İLİŞKİSEL SORGUSU
+                // 'supabase' değişkeni yerine doğrudan sitenin ana client'ını çağırıyoruz
+                const { data: teams, error } = await window.supabaseClient
                     .from('teams')
                     .select(`
                         id,
@@ -252,7 +251,6 @@
                 document.getElementById('teamsGrid').innerHTML = `<div class="loading-text" style="color:red;">Veriler yüklenirken bir hata oluştu! Konsolu kontrol edin.</div>`;
             }
         }
-
         function renderTeams(teamsToRender) {
             const grid = document.getElementById('teamsGrid');
             grid.innerHTML = '';
@@ -309,12 +307,10 @@
             });
         }
 
-        // Canlı Arama Fonksiyonu (Takım adına veya Oyuncu IGN'sine göre anında filtreler)
         function filterTeams() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             
             const filteredTeams = allTeamsData.filter(team => {
-                // Takım adı veya tag'i uyuyor mu?
                 const matchTeam = team.name.toLowerCase().includes(searchTerm) || (team.tag && team.tag.toLowerCase().includes(searchTerm));
                 
                 // Oyuncuların IGN'si uyuyor mu?
@@ -329,9 +325,7 @@
             renderTeams(filteredTeams);
         }
 
-        // Sayfa yüklendiğinde verileri çek
         document.addEventListener('DOMContentLoaded', () => {
-            // Admin kontrolü kodunu buraya ekleyebilirsin (örn: checkAdminStatus())
             fetchAllRosters();
         });
     </script>
