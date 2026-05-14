@@ -205,26 +205,75 @@
         </div>
 
         <div id="teamsGrid" class="teams-grid">
-            <div class="loading-text"><i class="fas fa-spinner fa-spin"></i> Veritabanından veriler çekiliyor...</div>
+            <div id="statusMessage" class="loading-text"><i class="fas fa-spinner fa-spin"></i> Güvenlik Kontrolü Yapılıyor...</div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="js/app.js"></script>
+
     <script>
-        // KENDİ SUPABASE BİLGİLERİNİ BURAYA GİR YA DA app.js'DEN ÇEK
-        // const supabaseUrl = 'SENIN_URL';
-        // const supabaseKey = 'SENIN_ANON_KEY';
-        // const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-        
-
-
         let allTeamsData = [];
+        let supabase = null;
 
+        // --- ADIM 1: SİSTEM BAŞLATICI VE GÜVENLİK ---
+        async function initAdminPage() {
+            const statusMsg = document.getElementById('statusMessage');
+            
+            // app.js'in yüklenmesini ve window.supabaseClient'ın tanımlanmasını bekle
+            let retries = 0;
+            while (!window.supabaseClient && retries < 20) {
+                await new Promise(resolve => setTimeout(resolve, 100)); // 100ms bekle
+                retries++;
+            }
+
+            if (!window.supabaseClient) {
+                statusMsg.innerHTML = '<span style="color:#ff4444;"><i class="fas fa-exclamation-triangle"></i> Veritabanı bağlantısı kurulamadı. (app.js yüklenmemiş olabilir)</span>';
+                return;
+            }
+
+            supabase = window.supabaseClient;
+
+            // Supabase hazır, şimdi kullanıcının admin olup olmadığını kontrol et
+            await checkAdminAccess();
+        }
+
+        // --- ADIM 2: YETKİ KONTROLÜ ---
+        async function checkAdminAccess() {
+            const statusMsg = document.getElementById('statusMessage');
+            try {
+                // Kullanıcı giriş yapmış mı?
+                const { data: { user }, error: authErr } = await supabase.auth.getUser();
+                
+                if (authErr || !user) throw new Error("Giriş yapılmamış");
+
+                // Kullanıcının rolü admin mi?
+                const { data: profile, error: profErr } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profErr || !profile || profile.role !== 'admin') {
+                    throw new Error("Yetkisiz erişim");
+                }
+
+                // Admin olduğu doğrulandı! Verileri çekmeye başla...
+                statusMsg.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Takım verileri indiriliyor...';
+                fetchAllRosters();
+
+            } catch (err) {
+                console.warn("Erişim Reddedildi:", err.message);
+                // Yetkisiz kişiyi saniyesinde ana sayfaya postala
+                window.location.replace("index.html"); 
+            }
+        }
+
+        // --- ADIM 3: VERİLERİ ÇEKME ---
         async function fetchAllRosters() {
             try {
-                // SUPABASE İLİŞKİSEL SORGUSU
-                // 'supabase' değişkeni yerine doğrudan sitenin ana client'ını çağırıyoruz
-                const { data: teams, error } = await window.supabaseClient
+                const { data: teams, error } = await supabase
                     .from('teams')
                     .select(`
                         id,
@@ -248,9 +297,11 @@
 
             } catch (err) {
                 console.error("Veri çekme hatası:", err);
-                document.getElementById('teamsGrid').innerHTML = `<div class="loading-text" style="color:red;">Veriler yüklenirken bir hata oluştu! Konsolu kontrol edin.</div>`;
+                document.getElementById('teamsGrid').innerHTML = `<div class="loading-text" style="color:#ff4444;"><i class="fas fa-exclamation-triangle"></i> Veriler yüklenirken bir hata oluştu! Konsolu kontrol edin.</div>`;
             }
         }
+
+        // --- ADIM 4: VERİLERİ EKRANA BASTIRMA ---
         function renderTeams(teamsToRender) {
             const grid = document.getElementById('teamsGrid');
             grid.innerHTML = '';
@@ -261,7 +312,6 @@
             }
 
             teamsToRender.forEach(team => {
-                // Sadece kabul edilmiş (accepted) üyeleri veya hepsini sayabiliriz
                 const members = team.team_members || [];
                 const activeMembersCount = members.filter(m => m.status === 'accepted').length;
 
@@ -307,13 +357,13 @@
             });
         }
 
+        // --- ADIM 5: ARAMA FİLTRESİ ---
         function filterTeams() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             
             const filteredTeams = allTeamsData.filter(team => {
                 const matchTeam = team.name.toLowerCase().includes(searchTerm) || (team.tag && team.tag.toLowerCase().includes(searchTerm));
                 
-                // Oyuncuların IGN'si uyuyor mu?
                 const matchPlayer = team.team_members.some(m => {
                     const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
                     return prof && prof.ign && prof.ign.toLowerCase().includes(searchTerm);
@@ -325,9 +375,8 @@
             renderTeams(filteredTeams);
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchAllRosters();
-        });
+        // Sayfa DOM'u hazır olduğunda işlemleri başlat
+        document.addEventListener('DOMContentLoaded', initAdminPage);
     </script>
 </body>
 </html>
