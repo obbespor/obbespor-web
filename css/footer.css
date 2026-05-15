@@ -158,23 +158,4 @@ footer {
     .footer-brand p { max-width: 100%; margin: 0 auto 25px; }
     .social-icons { justify-content: center; }
     footer { padding: 50px 8% 30px; }
-}
-.social-icons {
-    display: flex;
-    align-items: center;
-    gap: 15px; /* İkonlar arası boşluk */
-    flex-wrap: wrap; /* Mobilde sığmazsa taşmak yerine alt satıra geçer */
-}
 
-.social-icons a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 50%;
-    color: white;
-    font-size: 18px;
-    transition: 0.3s ease;
-}
