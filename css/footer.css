@@ -1,193 +1,183 @@
 footer {
-    background-color: var(--nav-bg); 
-    border-top: 2px solid var(--neon-mor);
-    padding: 40px 10% 40px; 
-    margin-top: auto;
-    color: white;
+    background-color: var(--nav-bg); 
+    border-top: 2px solid var(--neon-mor);
+    padding: 40px 10% 40px; 
+    margin-top: auto;
+    color: white;
 }
 
 .sponsor-ticker {
-    width: 100%;
-    padding-bottom: 50px;
-    overflow: hidden;
+    width: 100%;
+    padding-bottom: 50px;
+    overflow: hidden;
 }
 
 .ticker-title {
-    text-align: center;
-    font-size: 12px;
-    color: var(--gri-yazi);
-    letter-spacing: 5px;
-    margin-bottom: 30px;
-    text-transform: uppercase;
-    opacity: 0.9;
-    font-weight: bold;
+    text-align: center;
+    font-size: 12px;
+    color: var(--gri-yazi);
+    letter-spacing: 5px;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    opacity: 0.9;
+    font-weight: bold;
 }
 
 .ticker-wrapper {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
 }
 
 .ticker-wrapper::before, .ticker-wrapper::after {
-    content: "";
-    position: absolute;
-    top: 0; width: 15%; height: 100%;
-    z-index: 2;
-    pointer-events: none;
+    content: "";
+    position: absolute;
+    top: 0; width: 15%; height: 100%;
+    z-index: 2;
+    pointer-events: none;
 }
 .ticker-wrapper::before { left: 0; background: linear-gradient(to right, var(--nav-bg), transparent); }
 .ticker-wrapper::after { right: 0; background: linear-gradient(to left, var(--nav-bg), transparent); }
 
 .ticker-scroll {
-    display: flex;
-    width: max-content;
-    animation: scroll-loop 40s linear infinite;
-    align-items: center; 
+    display: flex;
+    width: max-content;
+    animation: scroll-loop 40s linear infinite;
+    align-items: center; 
 }
 
 .ticker-scroll img {
-    height: 70px; 
-    width: auto;
-    margin: 0 60px;
-    filter: none !important; 
-    opacity: 1; 
-    transition: transform 0.3s ease;
-    image-rendering: -webkit-optimize-contrast; 
+    height: 70px; 
+    width: auto;
+    margin: 0 60px;
+    filter: none !important; 
+    opacity: 1; 
+    transition: transform 0.3s ease;
+    image-rendering: -webkit-optimize-contrast; 
 }
 
 .ticker-wrapper:hover .ticker-scroll {
-    animation-play-state: paused;
+    animation-play-state: paused;
 }
 
 .ticker-scroll img:hover {
-    transform: scale(1.1); 
+    transform: scale(1.1); 
 }
 
 @keyframes scroll-loop {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
 }
 
-.footer-grid { 
-    display: grid; 
-    grid-template-columns: 1.5fr 1fr 1fr; 
-    gap: 50px; 
-    margin-bottom: 50px; 
+.footer-grid { 
+    display: grid; 
+    grid-template-columns: 1.5fr 1fr 1fr; 
+    gap: 50px; 
+    margin-bottom: 50px; 
 }
 
-.footer-brand h2 { 
-    font-size: 28px; 
-    font-weight: 900; 
-    margin-bottom: 20px; 
-    border-bottom: 2px solid var(--neon-mor); 
-    display: inline-block; 
-    text-transform: uppercase; 
+.footer-brand h2 { 
+    font-size: 28px; 
+    font-weight: 900; 
+    margin-bottom: 20px; 
+    border-bottom: 2px solid var(--neon-mor); 
+    display: inline-block; 
+    text-transform: uppercase; 
 }
 
-.footer-brand p { 
-    color: var(--gri-yazi); 
-    font-size: 15px; 
-    max-width: 350px; 
-    margin-bottom: 25px; 
-    line-height: 1.6;
+.footer-brand p { 
+    color: var(--gri-yazi); 
+    font-size: 15px; 
+    max-width: 350px; 
+    margin-bottom: 25px; 
+    line-height: 1.6;
 }
 
-/* --- SOSYAL MEDYA İKONLARI --- */
-.social-icons { 
-    display: flex; 
-    gap: 15px; 
-    align-items: center; 
+.social-icons { display: flex; gap: 15px; }
+.social-icons a { 
+    width: 45px; height: 45px; 
+    background: #111; border: 1px solid #222; 
+    border-radius: 50%; display: flex; 
+    align-items: center; justify-content: center; 
+    color: white; text-decoration: none; 
+    transition: 0.3s; 
 }
 
-.social-icons a { 
-    width: 45px; 
-    height: 45px; 
-    background: #111; 
-    border: 1px solid #222; 
-    border-radius: 50%; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    color: white; 
-    text-decoration: none; 
-    font-size: 18px;
-    transition: 0.3s; 
+.social-icons a:hover { 
+    background: var(--neon-mor); 
+    transform: translateY(-3px); 
+    box-shadow: 0 0 15px var(--neon-mor); 
 }
 
-/* GENEL NEON MOR EFEKT (Instagram, X, Kick, YouTube için) */
-.social-icons a:hover { 
-    background: var(--neon-mor); 
-    transform: translateY(-3px); 
-    box-shadow: 0 0 15px var(--neon-mor); 
-}
-
-/* SADECE TIKTOK İÇİN ÖZEL NEON EFEKT (Mavi/Kırmızı) */
-.social-icons a[title="TikTok"]:hover {
-    background: #000;
-    border-color: #25F4EE;
-    color: white;
-    box-shadow: -5px 5px 15px rgba(37, 244, 238, 0.4), 5px 5px 15px rgba(254, 44, 85, 0.4);
-}
-
-.footer-column h3 { 
-    font-size: 18px; 
-    font-weight: 700; 
-    color: var(--neon-mor); 
-    margin-bottom: 25px; 
-    text-transform: uppercase; 
+.footer-column h3 { 
+    font-size: 18px; 
+    font-weight: 700; 
+    color: var(--neon-mor); 
+    margin-bottom: 25px; 
+    text-transform: uppercase; 
 }
 
 .footer-column ul { list-style: none; padding: 0; }
 .footer-column ul li { margin-bottom: 12px; }
-.footer-column ul li a { 
-    color: white; 
-    text-decoration: none; 
-    font-size: 15px; 
-    transition: 0.3s; 
+.footer-column ul li a { 
+    color: white; 
+    text-decoration: none; 
+    font-size: 15px; 
+    transition: 0.3s; 
 }
 
 .footer-column ul li a:hover { color: var(--neon-mor); padding-left: 5px; }
 
-.contact-item { 
-    display: flex; 
-    align-items: center; 
-    gap: 12px; 
-    color: var(--gri-yazi); 
-    font-size: 15px; 
-    margin-bottom: 15px; 
+.contact-item { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    color: var(--gri-yazi); 
+    font-size: 15px; 
+    margin-bottom: 15px; 
 }
 
 .contact-item i { color: var(--neon-mor); width: 20px; text-align: center; }
 
-.footer-bottom { 
-    text-align: center; 
-    border-top: 1px solid rgba(255,255,255,0.05); 
-    padding-top: 30px; 
-    color: #555; 
-    font-size: 13px; 
+.footer-bottom { 
+    text-align: center; 
+    border-top: 1px solid rgba(255,255,255,0.05); 
+    padding-top: 30px; 
+    color: #555; 
+    font-size: 13px; 
 }
 
-/* --- RESPONSIVE / MOBİL AYARLARI --- */
 @media (max-width: 768px) {
-    .sponsor-ticker { padding-bottom: 40px; }
-    .ticker-scroll img { 
-        height: 45px; 
-        margin: 0 35px; 
-    }
-    .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
-    .footer-brand { grid-column: span 2; text-align: center; padding-bottom: 30px; }
-    .footer-brand p { max-width: 100%; margin: 0 auto 25px; }
-    footer { padding: 50px 8% 30px; }
-    
-    /* İkonlar mobilde ortaya hizalanır, yan yana kalmak için sadece hafif küçülür */
-    .social-icons { 
-        justify-content: center; 
-        gap: 10px; 
-    }
-    .social-icons a {
-        width: 40px; 
-        height: 40px;
-        font-size: 16px;
-    }
+    .sponsor-ticker { padding-bottom: 40px; }
+    .ticker-scroll img { 
+        height: 45px; 
+        margin: 0 35px; 
+    }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+    .footer-brand { grid-column: span 2; text-align: center; padding-bottom: 30px; }
+    .footer-brand p { max-width: 100%; margin: 0 auto 25px; }
+    .social-icons { justify-content: center; }
+    footer { padding: 50px 8% 30px; }
 }
+.social-icons {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* İkonlar arası boşluk */
+    flex-wrap: wrap; /* Mobilde sığmazsa taşmak yerine alt satıra geçer */
+}
+
+.social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
+    transition: 0.3s ease;
+}
+
+
+hayır alt alta olsun istemiyorum tüm footer yapısı bozuldu acilen düzelt. güzelce yan yana olsun 
