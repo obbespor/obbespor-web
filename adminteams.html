@@ -23,6 +23,7 @@
             border: 1px solid #333; border-radius: 8px; color: white; outline: none; 
         }
         .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888888; }
+        
         .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
         .team-card { background: #111; border: 1px solid #222; border-radius: 12px; overflow: hidden; transition: 0.3s; }
         .team-card:hover { border-color: #601dc2; box-shadow: 0 5px 20px rgba(96, 29, 194, 0.2); }
@@ -32,14 +33,34 @@
             display: flex; align-items: center; justify-content: space-between; 
         }
         .team-tag { font-size: 12px; background: #601dc2; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+        .member-count { font-size: 12px; color: #888; }
+        
         .player-item { 
-            padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); 
-            display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); 
+            display: flex; flex-direction: column; gap: 12px;
         }
-        .player-ign { font-weight: 600; color: #9d4edd; font-size: 14px; }
-        .player-username { font-size: 11px; color: #888888; }
+        .player-item:last-child { border-bottom: none; }
+        
+        .player-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .player-ident { display: flex; align-items: center; }
+        .player-username { font-weight: 600; color: #fff; font-size: 14px; }
+        .player-ign { color: #888; font-size: 12px; margin-left: 8px; font-weight: normal; }
+        
         .player-role { font-size: 11px; padding: 3px 8px; border-radius: 20px; background: #222; }
         .role-captain { background: rgba(255, 215, 0, 0.1); color: gold; border: 1px solid rgba(255, 215, 0, 0.3); }
+        .status-pending { color: #ff9800; font-style: italic; font-size: 10px; margin-left: 10px; }
+        
+        /* İletişim Kutusu Tasarımı */
+        .contact-box {
+            display: flex; flex-direction: column; gap: 6px;
+            font-size: 11px; color: #aaa;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px 12px; border-radius: 6px;
+            border-left: 2px solid #333;
+        }
+        .contact-box span { display: flex; align-items: center; }
+        .contact-box i { color: #9d4edd; width: 18px; }
+
         .loading-text { text-align: center; color: #888888; padding: 50px; font-size: 18px; grid-column: 1 / -1; }
     </style>
 </head>
@@ -50,7 +71,7 @@
             <h1><i class="fas fa-user-shield"></i> Takım Yönetim Paneli</h1>
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Takım veya IGN Ara..." onkeyup="filterTeams()">
+                <input type="text" id="searchInput" placeholder="Takım veya Username Ara..." onkeyup="filterTeams()">
             </div>
         </div>
 
@@ -65,6 +86,7 @@
 
     <script>
         let allTeamsData = [];
+        let allContactsMap = {}; // İletişim bilgilerini user_id'ye göre tutacağımız obje
 
         async function initAdminPage() {
             const statusMsg = document.getElementById('statusMessage');
@@ -81,57 +103,105 @@
                 return;
             }
 
+            // ÖNCE ADMIN Mİ DİYE KONTROL EDİYORUZ
             await checkAdminAccess();
         }
 
         async function checkAdminAccess() {
             try {
+                // Giriş yapan kişiyi al
                 const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
                 if (authErr || !user) throw new Error();
 
+                // Yetkisini kontrol et (role === 'admin' olmalı)
                 const { data: profile, error: profErr } = await window.supabaseClient
                     .from('profiles').select('role').eq('id', user.id).single();
 
                 if (profErr || !profile || profile.role !== 'admin') throw new Error();
 
+                // Eğer adminse, verileri güvenle çek
                 fetchAllRosters();
             } catch (err) {
+                // ADMİN DEĞİLSE VEYA GİRİŞ YAPMAMIŞSA ANASAYFAYA AT (GÜVENLİK)
                 window.location.replace("index.html"); 
             }
         }
 
         async function fetchAllRosters() {
             try {
-                const { data: teams, error } = await window.supabaseClient
+                // 1. Takımları ve Profilleri Çek
+                const { data: teams, error: teamsErr } = await window.supabaseClient
                     .from('teams')
-                    .select(`name, tag, team_members(role, status, profiles(username, ign))`)
+                    .select(`name, tag, team_members(user_id, role, status, profiles(username, ign))`)
                     .order('created_at', { ascending: false });
 
-                if (error) throw error;
+                if (teamsErr) throw teamsErr;
+
+                // 2. İletişim Bilgilerini (user_contacts) Çek
+                // (Olası veritabanı ilişki hatalarını önlemek için arka planda ayrı çekiyoruz)
+                const { data: contacts, error: contactsErr } = await window.supabaseClient
+                    .from('user_contacts')
+                    .select('user_id, email, phone');
+                
+                // 3. İletişim bilgilerini ID'ye göre haritalandır (Kolay erişim için)
+                if (!contactsErr && contacts) {
+                    contacts.forEach(c => {
+                        allContactsMap[c.user_id] = c;
+                    });
+                }
+
                 allTeamsData = teams || [];
                 renderTeams(allTeamsData);
             } catch (err) {
-                document.getElementById('teamsGrid').innerHTML = `<div class="loading-text">Veri çekme hatası!</div>`;
+                document.getElementById('teamsGrid').innerHTML = `<div class="loading-text">Veri çekme hatası! Konsolu kontrol edin.</div>`;
+                console.error("Admin Paneli Hatası:", err);
             }
         }
 
         function renderTeams(teams) {
             const grid = document.getElementById('teamsGrid');
+            
+            if(teams.length === 0) {
+                grid.innerHTML = '<div class="loading-text">Hiç takım bulunamadı.</div>';
+                return;
+            }
+
             grid.innerHTML = teams.map(team => `
                 <div class="team-card">
                     <div class="team-header">
                         <h3 style="margin:0; font-size:16px;">${team.name} ${team.tag ? `<span class="team-tag">[${team.tag}]</span>` : ''}</h3>
+                        <span class="member-count"><i class="fas fa-users"></i> ${team.team_members.filter(m => m.status === 'accepted').length}/7</span>
                     </div>
-                    <div style="padding:10px 0;">
+                    <div style="padding:5px 0;">
                         ${team.team_members.map(m => {
+                            // Profil Bilgileri
                             const p = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
+                            const username = p?.username ? `@${p.username}` : 'Bilinmeyen Kullanıcı';
+                            const ignDisplay = p?.ign ? `<span class="player-ign">(${p.ign})</span>` : '';
+                            const statusBadge = m.status === 'pending' ? '<span class="status-pending">(Bekliyor)</span>' : '';
+                            
+                            // İletişim Bilgileri (Map'ten user_id'ye göre çekilir)
+                            const contact = allContactsMap[m.user_id] || {};
+                            const email = contact.email || 'Email belirtilmemiş';
+                            const phone = contact.phone || 'Telefon belirtilmemiş';
+
                             return `
                                 <div class="player-item">
-                                    <div style="display:flex; flex-direction:column;">
-                                        <span class="player-ign">${p?.ign || 'Sızmış'}</span>
-                                        <span class="player-username">@${p?.username || 'yok'}</span>
+                                    <div class="player-top-row">
+                                        <div class="player-ident">
+                                            <span class="player-username">${username}</span>
+                                            ${ignDisplay}
+                                            ${statusBadge}
+                                        </div>
+                                        <span class="player-role ${m.role === 'captain' ? 'role-captain' : ''}">
+                                            ${m.role === 'captain' ? '<i class="fas fa-crown"></i> Kaptan' : 'Üye'}
+                                        </span>
                                     </div>
-                                    <span class="player-role ${m.role === 'captain' ? 'role-captain' : ''}">${m.role === 'captain' ? 'Kaptan' : 'Üye'}</span>
+                                    
+                                    <div class="contact-box">
+                                        <span><i class="fas fa-envelope"></i> ${email}</span>
+                                        <span><i class="fas fa-phone"></i> ${phone}</span>
+                                    </div>
                                 </div>`;
                         }).join('')}
                     </div>
@@ -143,7 +213,10 @@
             const term = document.getElementById('searchInput').value.toLowerCase();
             const filtered = allTeamsData.filter(t => 
                 t.name.toLowerCase().includes(term) || 
-                t.team_members.some(m => (Array.isArray(m.profiles) ? m.profiles[0] : m.profiles)?.ign?.toLowerCase().includes(term))
+                t.team_members.some(m => {
+                    const p = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
+                    return p?.username?.toLowerCase().includes(term) || p?.ign?.toLowerCase().includes(term);
+                })
             );
             renderTeams(filtered);
         }
