@@ -159,3 +159,41 @@ footer {
     .social-icons { justify-content: center; }
     footer { padding: 50px 8% 30px; }
 }
+.social-icons {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* İkonlar arası boşluk */
+    flex-wrap: wrap; /* Mobilde sığmazsa taşmak yerine alt satıra geçer */
+}
+
+.social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
+    transition: 0.3s ease;
+}
+
+/* TikTok Özel Hover Rengi */
+.social-icons a[title="TikTok"]:hover {
+    color: #25F4EE;
+    box-shadow: 0 0 10px rgba(37, 244, 238, 0.5);
+    background: rgba(37, 244, 238, 0.1);
+}
+
+@media (max-width: 480px) {
+    .social-icons {
+        gap: 10px; /* Çok küçük ekranlarda boşluğu biraz daraltır */
+        justify-content: center; /* Mobilde ortalar */
+    }
+    
+    .social-icons a {
+        width: 35px; /* Mobilde ikon boyutunu hafif küçültür */
+        height: 35px;
+    }
+}
