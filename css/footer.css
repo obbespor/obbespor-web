@@ -93,20 +93,41 @@ footer {
     line-height: 1.6;
 }
 
-.social-icons { display: flex; gap: 15px; }
+/* --- SOSYAL MEDYA İKONLARI --- */
+.social-icons { 
+    display: flex; 
+    gap: 15px; 
+    align-items: center; 
+}
+
 .social-icons a { 
-    width: 45px; height: 45px; 
-    background: #111; border: 1px solid #222; 
-    border-radius: 50%; display: flex; 
-    align-items: center; justify-content: center; 
-    color: white; text-decoration: none; 
+    width: 45px; 
+    height: 45px; 
+    background: #111; 
+    border: 1px solid #222; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: white; 
+    text-decoration: none; 
+    font-size: 18px;
     transition: 0.3s; 
 }
 
+/* GENEL NEON MOR EFEKT (Instagram, X, Kick, YouTube için) */
 .social-icons a:hover { 
     background: var(--neon-mor); 
     transform: translateY(-3px); 
     box-shadow: 0 0 15px var(--neon-mor); 
+}
+
+/* SADECE TIKTOK İÇİN ÖZEL NEON EFEKT (Mavi/Kırmızı) */
+.social-icons a[title="TikTok"]:hover {
+    background: #000;
+    border-color: #25F4EE;
+    color: white;
+    box-shadow: -5px 5px 15px rgba(37, 244, 238, 0.4), 5px 5px 15px rgba(254, 44, 85, 0.4);
 }
 
 .footer-column h3 { 
@@ -147,6 +168,7 @@ footer {
     font-size: 13px; 
 }
 
+/* --- RESPONSIVE / MOBİL AYARLARI --- */
 @media (max-width: 768px) {
     .sponsor-ticker { padding-bottom: 40px; }
     .ticker-scroll img { 
@@ -156,44 +178,16 @@ footer {
     .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
     .footer-brand { grid-column: span 2; text-align: center; padding-bottom: 30px; }
     .footer-brand p { max-width: 100%; margin: 0 auto 25px; }
-    .social-icons { justify-content: center; }
     footer { padding: 50px 8% 30px; }
-}
-.social-icons {
-    display: flex;
-    align-items: center;
-    gap: 15px; /* İkonlar arası boşluk */
-    flex-wrap: wrap; /* Mobilde sığmazsa taşmak yerine alt satıra geçer */
-}
-
-.social-icons a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 50%;
-    color: white;
-    font-size: 18px;
-    transition: 0.3s ease;
-}
-
-/* TikTok Özel Hover Rengi */
-.social-icons a[title="TikTok"]:hover {
-    color: #25F4EE;
-    box-shadow: 0 0 10px rgba(37, 244, 238, 0.5);
-    background: rgba(37, 244, 238, 0.1);
-}
-
-@media (max-width: 480px) {
-    .social-icons {
-        gap: 10px; /* Çok küçük ekranlarda boşluğu biraz daraltır */
-        justify-content: center; /* Mobilde ortalar */
-    }
     
+    /* İkonlar mobilde ortaya hizalanır, yan yana kalmak için sadece hafif küçülür */
+    .social-icons { 
+        justify-content: center; 
+        gap: 10px; 
+    }
     .social-icons a {
-        width: 35px; /* Mobilde ikon boyutunu hafif küçültür */
-        height: 35px;
+        width: 40px; 
+        height: 40px;
+        font-size: 16px;
     }
 }
