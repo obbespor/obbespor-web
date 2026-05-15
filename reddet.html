@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Takım Onay Paneli | OBB E-SPORTS</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    
+    <style>
+        :root {
+            --kirmizi-iptal: #ff4b4b;
+            --yesil-guven: #00e676;
+            --neon-mor: #601dc2;
+            --card-bg: #111;
+            --gri-yazi: #aaa;
+        }
+
+        .admin-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            min-height: 60vh;
+        }
+
+        .page-header {
+            border-bottom: 2px solid var(--neon-mor);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 900;
+            color: white;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .team-card {
+            background: var(--card-bg);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-card:hover {
+            border-color: var(--kirmizi-iptal);
+            box-shadow: 0 5px 15px rgba(255, 75, 75, 0.1);
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--kirmizi-iptal);
+        }
+
+        .team-tag {
+            display: inline-block;
+            background: rgba(255, 75, 75, 0.2);
+            color: var(--kirmizi-iptal);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .team-name {
+            font-size: 20px;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .btn-approve {
+            background: rgba(0, 230, 118, 0.1);
+            color: var(--yesil-guven);
+            border: 1px solid var(--yesil-guven);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-approve:hover {
+            background: var(--yesil-guven);
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            border: 1px dashed #444;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            color: var(--gri-yazi);
+            margin-bottom: 15px;
+        }
+
+        .warning-box {
+            background: rgba(255, 165, 0, 0.1);
+            border-left: 3px solid orange;
+            padding: 12px;
+            font-size: 13px;
+            color: orange;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header-alani"></div>
+
+    <main class="admin-container">
+        <div class="page-header">
+            <h1><i class="fas fa-ban"></i> Reddedilen Takımlar</h1>
+            <span id="totalRejected" style="color: var(--gri-yazi); font-weight: bold;">Yükleniyor...</span>
+        </div>
+
+        <div class="warning-box">
+            <i class="fas fa-exclamation-triangle"></i> <b>Sistem Notu:</b> Eğer bir takımı onayladığınızda eski haline dönüyorsa, manuel olarak silmeniz gereken veritabanı Trigger'ları (Tetikleyicileri) devrede olabilir.
+        </div>
+
+        <div class="team-grid" id="rejectedTeamsGrid">
+            </div>
+    </main>
+
+    <div id="footer-alani"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/bildirimler.js"></script> <script src="js/app.js"></script> <script>
+        async function loadRejectedTeams() {
+            const grid = document.getElementById('rejectedTeamsGrid');
+            const countLabel = document.getElementById('totalRejected');
+            grid.innerHTML = '<div style="color: white; text-align: center; width: 100%;">Takımlar aranıyor...</div>';
+
+            try {
+                // Sadece 'rejected' olan başvuruları ve o başvurunun ait olduğu takım bilgilerini çek
+                const { data, error } = await window.supabaseClient
+                    .from('tournament_applications')
+                    .select('id, team_id, status, teams(name, tag)')
+                    .eq('status', 'rejected');
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    countLabel.innerText = "0 Takım";
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-check-circle" style="color: var(--yesil-guven);"></i>
+                            <h3 style="color: white;">Harika!</h3>
+                            <p style="color: var(--gri-yazi);">Şu an reddedilmiş ve bekleyen hiçbir takım yok.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                countLabel.innerText = `${data.length} Takım`;
+                let htmlContent = "";
+
+                data.forEach(app => {
+                    const teamInfo = Array.isArray(app.teams) ? app.teams[0] : app.teams;
+                    const teamName = teamInfo ? teamInfo.name : "İSİMSİZ TAKIM";
+                    const teamTag = teamInfo ? teamInfo.tag : "TAG";
+
+                    htmlContent += `
+                        <div class="team-card" id="card-${app.team_id}">
+                            <span class="team-tag">[${teamTag}]</span>
+                            <div class="team-name">${teamName}</div>
+                            <button class="btn-approve" onclick="approveTeam('${app.team_id}', '${teamName}')">
+                                <i class="fas fa-check"></i> Onayla ve Kabul Et
+                            </button>
+                        </div>
+                    `;
+                });
+
+                grid.innerHTML = htmlContent;
+
+            } catch (err) {
+                console.error("Takım çekme hatası:", err);
+                grid.innerHTML = '<div style="color: var(--kirmizi-iptal); text-align: center;">Veriler alınırken hata oluştu. Lütfen sayfayı yenileyin.</div>';
+            }
+        }
+
+        async function approveTeam(teamId, teamName) {
+            // Güvenlik onayı
+            if (!confirm(`"${teamName}" takımını onaylamak istediğinize emin misiniz?`)) return;
+
+            try {
+                const { error } = await window.supabaseClient
+                    .from('tournament_applications')
+                    .update({ status: 'approved' })
+                    .eq('team_id', teamId);
+
+                if (error) throw error;
+
+                // Başarılıysa kartı ekrandan kaldır
+                const card = document.getElementById(`card-${teamId}`);
+                if (card) {
+                    card.style.opacity = '0';
+                    setTimeout(() => card.remove(), 300);
+                }
+
+                if(typeof showNotification === 'function') {
+                    showNotification(`${teamName} başarıyla onaylandı!`, "success");
+                } else {
+                    alert(`${teamName} başarıyla onaylandı!`);
+                }
+
+                // Sayacı güncelle
+                const countLabel = document.getElementById('totalRejected');
+                const currentCount = parseInt(countLabel.innerText);
+                if (!isNaN(currentCount) && currentCount > 0) {
+                    countLabel.innerText = `${currentCount - 1} Takım`;
+                }
+
+            } catch (err) {
+                console.error("Onaylama hatası:", err);
+                if(typeof showNotification === 'function') {
+                    showNotification("Onaylanamadı! Triggerları kontrol edin.", "error");
+                } else {
+                    alert("Onaylanamadı! Manuel silinmesi gereken triggerlar olabilir.");
+                }
+            }
+        }
+
+        // Sayfa yüklendiğinde verileri çek
+        document.addEventListener('DOMContentLoaded', loadRejectedTeams);
+    </script>
+</body>
+</html>
