@@ -2,673 +2,160 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turnuva Başvurusu | OBB E-SPORTS</title>
-    <link rel="icon" type="image/png" href="img/obblogo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Başvurular Sona Erdi | OBB E-SPORTS</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
     
     <style>
-        :root {
-            --anadolu-kirmizi: #b81525;
-            --anadolu-rgb: 184, 21, 37;
+        /* --- BAŞVURU KAPANDI ÖZEL SAYFA TASARIMI --- */
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
-        .apply-container { max-width: 850px; margin: 60px auto; padding: 20px; flex: 1; animation: fadeIn 0.4s ease; display: none; }
-        
-        .section-title { text-align: center; font-size: 32px; font-weight: 900; color: white; text-transform: uppercase; margin-bottom: 30px; letter-spacing: 1px; }
-        .section-title span { color: var(--neon-mor); }
+        .main-content {
+            flex: 1; /* Header ve Footer arasını doldurur */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            background-image: radial-gradient(circle at center, rgba(96, 29, 194, 0.1) 0%, transparent 70%);
+        }
 
-        .status-card { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 50px 30px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        .status-card h3 { color: white; font-size: 24px; font-weight: 900; margin-bottom: 15px; text-transform: uppercase; }
-        .status-card p { color: var(--gri-yazi); font-size: 14px; margin-bottom: 30px; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .closed-box {
+            background: #111111;
+            border: 1px solid #222;
+            border-top: 4px solid var(--neon-mor, #601dc2);
+            border-radius: 15px;
+            padding: 50px 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: fadeIn 0.5s ease forwards;
+        }
 
-        .no-team-card { border-top: 4px solid #f39c12; }
-        .no-team-card i.main-icon { font-size: 60px; color: #f39c12; margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(243, 156, 18, 0.4)); }
+        .closed-box i.main-icon {
+            font-size: 60px;
+            color: var(--neon-mor, #601dc2);
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 15px rgba(96, 29, 194, 0.4));
+        }
 
-        .not-captain-card { border-top: 4px solid var(--kirmizi-iptal); }
-        .not-captain-card i.main-icon { font-size: 60px; color: var(--kirmizi-iptal); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(255, 75, 75, 0.4)); }
-        
-        .pending-card { border-top: 4px solid var(--anadolu-kirmizi); }
-        .pending-card i.main-icon { font-size: 60px; color: var(--anadolu-kirmizi); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(var(--anadolu-rgb), 0.4)); }
-        
-        .approved-card { border-top: 4px solid var(--yesil-guven); padding: 40px 20px; }
-        .approved-card i.main-icon { font-size: 60px; color: var(--yesil-guven); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(40, 167, 69, 0.4)); }
+        .closed-box h1 {
+            font-size: 32px;
+            font-weight: 900;
+            margin: 0 0 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: white;
+        }
 
-        .btn-back { background: var(--neon-mor); color: white; padding: 12px 30px; border-radius: 8px; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .btn-back:hover { box-shadow: 0 0 15px var(--neon-mor); transform: translateY(-2px); }
-        
-        .btn-withdraw { background: transparent; border: 1px solid var(--kirmizi-iptal); color: var(--kirmizi-iptal); padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-withdraw:hover { background: var(--kirmizi-iptal); color: white; box-shadow: 0 0 15px rgba(255, 75, 75, 0.4); }
+        .closed-box p {
+            color: #888888;
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
 
-        .apply-card { background: rgba(10, 10, 10, 0.95); border: 1px solid #222; border-radius: 20px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        
-        .req-box { background: rgba(96, 29, 194, 0.05); border: 1px dashed var(--neon-mor); border-radius: 12px; padding: 20px; margin-bottom: 30px; }
-        .req-title { color: var(--neon-mor); font-weight: 900; margin-bottom: 15px; font-size: 16px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
-        .req-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
-        .req-list li { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: bold; color: var(--gri-yazi); }
-        .req-list li i.fa-check-circle { color: var(--yesil-guven); font-size: 16px; filter: drop-shadow(0 0 5px var(--yesil-guven)); }
-        .req-list li i.fa-times-circle { color: var(--kirmizi-iptal); font-size: 16px; filter: drop-shadow(0 0 5px var(--kirmizi-iptal)); }
-        .req-list li.success { color: white; }
+        .btn-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 
-        .input-group { margin-bottom: 25px; }
-        .input-group label { display: block; margin-bottom: 10px; font-size: 14px; color: white; font-weight: bold; }
-        .form-control { width: 100%; padding: 15px; background: #000; border: 1px solid #333; border-radius: 10px; color: white; outline: none; font-family: 'Poppins', sans-serif; font-size: 14px; transition: 0.3s; appearance: none;}
-        .form-control:focus { border-color: var(--neon-mor); }
-        
-        /* ROSTER SELECTION BOX STYLES */
-        .roster-selection-box { background: rgba(0,0,0,0.5); border: 1px solid #333; border-radius: 12px; padding: 25px; margin-bottom: 30px; }
-        .roster-selection-box h4 { color: white; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; font-size: 16px; text-transform: uppercase; }
-        .slot-row { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-        .slot-label { width: 120px; font-weight: bold; font-size: 13px; color: var(--gri-yazi); flex-shrink: 0; }
-        .slot-label.main-label { color: var(--anadolu-kirmizi); }
-        .slot-select { flex: 1; padding: 12px; background: #111; border: 1px solid #333; border-radius: 8px; color: white; outline: none; font-family: 'Poppins', sans-serif; font-size: 14px; transition: 0.3s; }
-        .slot-select:focus { border-color: var(--neon-mor); }
-        .slot-select option:disabled { color: #555; font-style: italic; }
+        .action-btn {
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
 
-        /* ZENGİN KURALLAR KUTUSU (Scrollable Rich Text) */
-        .rules-box { background: #050505; border: 1px solid #333; border-radius: 10px; padding: 20px; height: 250px; overflow-y: auto; color: #ddd; font-size: 12px; line-height: 1.6; margin-bottom: 15px; }
-        .rules-box::-webkit-scrollbar { width: 6px; }
-        .rules-box::-webkit-scrollbar-track { background: #111; border-radius: 10px; }
-        .rules-box::-webkit-scrollbar-thumb { background: var(--neon-mor); border-radius: 10px; }
-        .rules-box h1 { font-size: 16px; color: white; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase;}
-        .rules-box h2 { font-size: 13px; color: #00d2ff; margin-top: 20px; margin-bottom: 10px; border-left: 3px solid var(--neon-mor); padding-left: 10px; text-transform: uppercase;}
-        .rules-box ul { padding-left: 20px; margin: 0; }
-        .rules-box li { margin-bottom: 8px; }
-        .rules-box li strong { color: white; font-weight: 700;}
+        /* Yayın Butonu Tasarımı */
+        .btn-live {
+            background: #ff0000;
+            color: white;
+            border: 1px solid transparent;
+        }
 
-        .checkbox-container { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; cursor: pointer; user-select: none; }
-        .checkbox-container input { display: none; }
-        .checkmark { width: 22px; height: 22px; background: #000; border: 2px solid #555; border-radius: 6px; display: flex; justify-content: center; align-items: center; transition: 0.3s; }
-        .checkbox-container input:checked ~ .checkmark { background: var(--neon-mor); border-color: var(--neon-mor); box-shadow: 0 0 10px rgba(96,29,194,0.5); }
-        .checkmark i { color: white; font-size: 12px; opacity: 0; transition: 0.2s; }
-        .checkbox-container input:checked ~ .checkmark i { opacity: 1; }
-        .checkbox-text { color: white; font-size: 13px; font-weight: bold; }
+        .btn-live:hover {
+            background: #cc0000;
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.5);
+            transform: translateY(-3px);
+        }
 
-        .btn-submit { width: 100%; padding: 18px; background: linear-gradient(45deg, #601dc2, #9d4edd); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-submit:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(96, 29, 194, 0.4); }
-        .btn-submit:disabled { background: #333; color: #777; cursor: not-allowed; box-shadow: none; transform: none; }
+        /* Fikstür Butonu Tasarımı */
+        .btn-bracket {
+            background: var(--neon-mor, #601dc2);
+            color: white;
+            border: 1px solid transparent;
+        }
 
-        /* ONAYLI ROSTER GÖRÜNÜMÜ */
-        .roster-display { margin-top: 30px; text-align: left; }
-        .roster-display-title { color: white; font-size: 18px; font-weight: 900; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
-        .roster-card { background: #050505; border: 1px solid #222; border-radius: 10px; padding: 15px; display: flex; align-items: center; gap: 15px; }
-        .roster-card img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #444; }
-        
-        .roster-card.main-card { border-left: 3px solid var(--anadolu-kirmizi); }
-        .roster-card.sub-card { border-left: 3px solid #aaa; }
-        .roster-card.cap-card { border-left: 3px solid gold; }
-        .rc-ign { color: white; font-weight: 900; font-size: 15px; margin-bottom: 2px; }
-        .rc-role { font-size: 10px; font-weight: bold; color: var(--gri-yazi); text-transform: uppercase; }
+        .btn-bracket:hover {
+            background: #4a1596;
+            box-shadow: 0 5px 20px rgba(96, 29, 194, 0.5);
+            transform: translateY(-3px);
+            color: white;
+        }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
-        .modal-content { background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--kirmizi-iptal); border-radius: 15px; width: 90%; max-width: 400px; padding: 40px 20px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ana-siyah); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: var(--neon-mor); }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-
-        @media (max-width: 768px) {
-            .apply-container { margin: 30px auto; padding: 15px; }
-            .apply-card, .status-card { padding: 30px 20px; }
-            .section-title { font-size: 26px; }
-            .slot-row { flex-direction: column; align-items: flex-start; gap: 5px; }
-            .slot-label { width: 100%; font-size: 12px; margin-bottom: 5px;}
-            .slot-select { width: 100%; }
+        @media (max-width: 600px) {
+            .closed-box { padding: 40px 20px; }
+            .closed-box h1 { font-size: 24px; }
+            .action-btn { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-    <div id="loadingScreen">
-        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 20px;"></i>
-        <h2>Kontroller Sağlanıyor...</h2>
-    </div>
-
     <div id="header-alani"></div>
-    <div id="toast-container"></div>
 
-    <main class="apply-container" id="noTeamSection">
-        <div class="status-card no-team-card">
-            <i class="fas fa-users-slash main-icon"></i>
-            <h3 style="color: #f39c12;">HENÜZ BİR TAKIMINIZ YOK</h3>
-            <p>Turnuvalara başvurabilmek için bir e-spor takımının parçası olmalısınız. Kendi takımınızı oluşturabilir veya arkadaşlarınızdan sizi takımlarına davet etmelerini isteyebilirsiniz.</p>
-            <a href="takimim.html" class="btn-back" style="background: #f39c12; color: #000; box-shadow: none;"><i class="fas fa-plus-circle"></i> Takım Sayfasına Git</a>
-        </div>
-    </main>
-
-    <main class="apply-container" id="notCaptainSection">
-        <div class="status-card not-captain-card">
-            <i class="fas fa-user-shield main-icon"></i>
-            <h3>KAPTAN YETKİSİ GEREKLİ</h3>
-            <p>Turnuvalara yalnızca takım kaptanları başvuru yapabilir. Eğer takımınızın turnuvaya katılmasını istiyorsanız, lütfen kaptanınızla iletişime geçin.</p>
-            <a href="takimim.html" class="btn-back"><i class="fas fa-arrow-left"></i> Takımıma Dön</a>
-        </div>
-    </main>
-
-    <main class="apply-container" id="pendingSection">
-        <div class="status-card pending-card">
-            <i class="fas fa-hourglass-half main-icon fa-spin-pulse"></i>
-            <h3 style="color: var(--anadolu-kirmizi);">BAŞVURUNUZ DEĞERLENDİRİLİYOR</h3>
-            <p>Takımınızın turnuva başvurusu turnuva yöneticilerine ulaştı. Onay süreci tamamlandığında takım kadronuz kilitlenecek ve fikstüre dahil edileceksiniz.</p>
-            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                <a href="takimim.html" class="btn-back"><i class="fas fa-users"></i> Takımına Dön</a>
-                <button class="btn-withdraw" onclick="confirmWithdraw()"><i class="fas fa-times-circle"></i> Başvuruyu Geri Çek</button>
-            </div>
-            <p style="font-size: 11px; color: #555; margin-top: 15px; margin-bottom: 0;">* Başvuruyu geri çekerseniz takım ayarlarınızı tekrar değiştirebilirsiniz.</p>
-        </div>
-    </main>
-
-    <main class="apply-container" id="approvedSection">
-        <div class="status-card approved-card">
-            <i class="fas fa-check-circle main-icon"></i>
-            <h3 style="color: var(--yesil-guven);">BAŞVURUNUZ ONAYLANDI!</h3>
-            <p>Tebrikler! Takımınız turnuvaya başarıyla kabul edildi. Kadronuz (Roster Lock) turnuva sonuna kadar kilitlenmiştir. Sahada görüşmek üzere!</p>
+    <main class="main-content">
+        <div class="closed-box">
+            <i class="fas fa-lock main-icon"></i>
+            <h1>Başvurular Sona Erdi</h1>
+            <p>İlk turnuvamız için başvuru süresi dolmuştur. Gösterdiğiniz yoğun ilgi için teşekkür ederiz. Heyecana ortak olmak, eşleşmeleri görmek ve turnuvayı canlı izlemek için aşağıdaki bağlantıları kullanabilirsiniz.</p>
             
-            <div class="roster-display">
-                <div class="roster-display-title">ONAYLANAN KADRO <span id="appTourneyName" style="color:var(--neon-mor); font-size:12px; float:right; margin-top:5px;"></span></div>
-                <div class="roster-grid" id="approvedRosterList">
-                    </div>
-            </div>
-
-            <div style="margin-top: 30px;">
-                <a href="fikstur.html" class="btn-back"><i class="fas fa-sitemap"></i> Fikstüre Git</a>
+            <div class="btn-group">
+                <a href="canli.html" class="action-btn btn-live">
+                    <i class="fas fa-broadcast-tower"></i> YAYIN
+                </a>
+                <a href="bracket.html" class="action-btn btn-bracket">
+                    <i class="fas fa-sitemap"></i> FİKSTÜR
+                </a>
             </div>
         </div>
     </main>
-
-    <main class="apply-container" id="applySection">
-        <h2 class="section-title">TURNUVA <span>BAŞVURUSU</span></h2>
-        
-        <div class="apply-card">
-            <div class="req-box">
-                <div class="req-title"><i class="fas fa-clipboard-list"></i> BAŞVURU ŞARTLARI</div>
-                <ul class="req-list" id="reqList">
-                    <li id="reqName"><i class="fas fa-times-circle"></i> Takım Adı ve Kısaltması Belirlenmiş Olmalı</li>
-                    <li id="reqLogo"><i class="fas fa-times-circle"></i> Takım Logosu Yüklenmiş Olmalı</li>
-                    <li id="reqRoster"><i class="fas fa-times-circle"></i> Takımda En Az 5 Onaylı Oyuncu Bulunmalı</li>
-                </ul>
-            </div>
-
-            <div style="background: rgba(var(--anadolu-rgb), 0.1); border-left: 4px solid var(--anadolu-kirmizi); padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; display: flex; align-items: flex-start; gap: 15px;">
-                <i class="fas fa-info-circle" style="color: var(--anadolu-kirmizi); font-size: 24px; margin-top: 2px; filter: drop-shadow(0 0 5px rgba(var(--anadolu-rgb), 0.5));"></i>
-                <div>
-                    <strong style="color: var(--anadolu-kirmizi); font-size: 14px; display: block; margin-bottom: 5px;">ÖNEMLİ HATIRLATMA</strong>
-                    <p style="color: var(--gri-yazi); font-size: 12px; margin: 0; line-height: 1.5;">
-                        Lütfen tüm takım oyuncularınızın profil ayarlarından <b>Oyun İçi Nick (IGN)</b> alanlarını doğru ve eksiksiz doldurduğundan emin olunuz. Aksi halde başvurunuz onaylansa dahi eksik bilgiler nedeniyle oyuncularınız maç lobilerine alınmayabilir.
-                    </p>
-                </div>
-            </div>
-            
-            <form id="applyForm">
-                
-                <div class="input-group">
-                    <label>Katılmak İstediğiniz Turnuva</label>
-                    <select id="tourneySelect" class="form-control" required>
-                        <option value="">Yükleniyor...</option>
-                    </select>
-                </div>
-
-                <div class="roster-selection-box">
-                    <h4><i class="fas fa-users"></i> Turnuva Kadrosunu Belirle</h4>
-                    <p style="font-size: 12px; color: var(--gri-yazi); margin-bottom: 20px;">Sadece takımınızda üyeliği onaylanmış oyuncular listelenir. Kaptan dahil tüm oyuncuları ilgili slotlara yerleştiriniz.</p>
-                    
-                    <div class="slot-row">
-                        <div class="slot-label main-label"><i class="fas fa-star"></i> 1. Asil Oyuncu</div>
-                        <select class="slot-select roster-select main-select" required></select>
-                    </div>
-                    <div class="slot-row">
-                        <div class="slot-label main-label"><i class="fas fa-star"></i> 2. Asil Oyuncu</div>
-                        <select class="slot-select roster-select main-select" required></select>
-                    </div>
-                    <div class="slot-row">
-                        <div class="slot-label main-label"><i class="fas fa-star"></i> 3. Asil Oyuncu</div>
-                        <select class="slot-select roster-select main-select" required></select>
-                    </div>
-                    <div class="slot-row">
-                        <div class="slot-label main-label"><i class="fas fa-star"></i> 4. Asil Oyuncu</div>
-                        <select class="slot-select roster-select main-select" required></select>
-                    </div>
-                    <div class="slot-row">
-                        <div class="slot-label main-label"><i class="fas fa-star"></i> 5. Asil Oyuncu</div>
-                        <select class="slot-select roster-select main-select" required></select>
-                    </div>
-                    
-                    <hr style="border: 0; border-top: 1px dashed #333; margin: 20px 0;">
-                    
-                    <div class="slot-row">
-                        <div class="slot-label"><i class="fas fa-user-plus"></i> 1. Yedek Oyuncu</div>
-                        <select class="slot-select roster-select sub-select"></select>
-                    </div>
-                    <div class="slot-row">
-                        <div class="slot-label"><i class="fas fa-user-plus"></i> 2. Yedek Oyuncu</div>
-                        <select class="slot-select roster-select sub-select"></select>
-                    </div>
-                </div>
-
-                <label style="display: block; margin-bottom: 10px; font-size: 14px; color: white; font-weight: bold;">Turnuva Katılım Kuralları</label>
-                
-                <div class="rules-box">
-                    <h1>OBB E-SPOR TURNUVA KURAL KİTAPÇIĞI</h1>
-
-                    <h2>1. KATILIM ŞARTLARI VE KİMLİK DOĞRULAMA</h2>
-                    <ul>
-                        <li><strong>Yaş Sınırı ve Onay:</strong> Turnuvaya katılım yaşı 15’tir. 15-18 yaş arası oyuncuların ödül kazanabilmesi için yasal velilerinden ıslak imzalı onay belgesi getirmeleri zorunludur.</li>
-                        <li><strong>Fiziksel Kimlik Kontrolü:</strong> Tüm oyuncular turnuva alanında resmi kimlik belgelerini yanlarında bulundurmalıdır. Kayıtlı oyuncu ile alandaki oyuncunun uyuşmaması durumunda takım diskalifiye edilir.</li>
-                        <li><strong>Hesap Gereksinimleri:</strong> Oyuncular sadece kendi orijinal hesaplarıyla yarışabilirler; smurfing veya hesap paylaşımı yasaktır. Ayrıca oyuncu profillerindeki IGN (Oyun İçi İsim) alanının eksiksiz doldurulmuş olması şarttır.</li>
-                    </ul>
-
-                    <h2>2. KADRO YAPISI VE ROSTER LOCK (KADRO KİLİDİ)</h2>
-                    <ul>
-                        <li><strong>Kadro Kurulumu:</strong> Takımlar 5 asil ve maksimum 2 yedek oyuncu ile başvuru yapabilirler. Başvuru esnasında 5 asil oyuncunun bildirilmesi zorunludur.</li>
-                        <li><strong>Kilitleme Süreci:</strong> Başvuru onaylandığı ve fikstür açıklandığı an kadrolar kilitlenir; bu aşamadan sonra kesinlikle dışarıdan yeni oyuncu dâhil edilemez.</li>
-                        <li><strong>Değişiklik ve Onay:</strong> Onaylanmış takımlar başvurularını geri çekemez veya kadro değişikliği yapamaz. Aktif bir turnuva sırasında 5 asil oyuncu (veya atanan yedekler) maç bitene kadar kadroda kalmalıdır; aksi halde takım hükmen mağlup sayılır.</li>
-                        <li><strong>Çoklu Takım Yasağı:</strong> Bir oyuncu aynı turnuva içerisinde birden fazla takımda görev alamaz.</li>
-                    </ul>
-
-                    <h2>3. MÜSABAKA AKIŞI VE TURNUVA FORMATI</h2>
-                    <ul>
-                        <li><strong>1. Aşama: Grup Karşılaşmaları</strong><br>Takımlarımız kura sonucunda A Grubu ve B Grubu olmak üzere iki farklı gruba ayrılacaktır.
-                            <ul>
-                                <li><strong>Format:</strong> Gruptaki tüm karşılaşmalar BO1 (Best of 1 - Tek Harita) üzerinden oynanacaktır.</li>
-                                <li><strong>Puanlama Sistemi:</strong> Galibiyet 3 Puan, Mağlubiyet 0 Puan kazandırır.</li>
-                                <li><strong>Averaj ve Eşitlik:</strong> Puan eşitliği durumunda takımların Averajlarına (Kazanılan Raunt - Kaybedilen Raunt farkı) bakılacaktır.</li>
-                                <li><strong>Tura Atlama:</strong> Kıyasıya geçen mücadeleler sonucunda gruplarını ilk 2 sırada (1. ve 2.) bitiren takımlar, Playoff aşamasına yükselmeye hak kazanacaktır.</li>
-                            </ul>
-                        </li>
-                        <li><strong>2. Aşama: Playoff (Yarı Finaller)</strong><br>Gruptan çıkmayı başaran 4 takım, çapraz eşleşme kuralına göre Yarı Finalde karşı karşıya gelecektir:
-                            <ul>
-                                <li><strong>Eşleşme 1:</strong> A Grubu 1.'si vs B Grubu 2.'si</li>
-                                <li><strong>Eşleşme 2:</strong> B Grubu 1.'si vs A Grubu 2.'si</li>
-                                <li><strong>Format:</strong> Yarı final heyecanı, takımların harita havuzunu ve taktiklerini tam olarak sergileyebilmesi için BO3 (Best of 3 - Üç harita üzerinden oynanır, 2 harita kazanan tur atlar) formatında oynanacaktır.</li>
-                            </ul>
-                        </li>
-                        <li><strong>3. Aşama: BÜYÜK FİNAL</strong><br>Yarı finaldeki rakiplerini elemeyi başaran en güçlü 2 takım, şampiyonluk unvanı için Büyük Finalde sahne alacaktır!
-                            <ul>
-                                <li><strong>Format:</strong> Turnuvanın zirvesi olan Büyük Final maçı, şampiyona yakışır şekilde BO5 (Best of 5 - Beş harita üzerinden oynanır, 3 harita kazanan şampiyon olur) formatında gerçekleşecektir. Şampiyon, gerçek bir dayanıklılık ve strateji savaşının ardından belli olacaktır!</li>
-                            </ul>
-                        </li>
-                    </ul>
-
-                    <h2>4. VALORANT TEKNİK AYARLARI VE MOLALAR</h2>
-                    <ul>
-                        <li><strong>Lobi Kurulumu:</strong> Maçlar "Özel Oyun" modunda, İstanbul sunucusunda, Turnuva Modu "Açık" ve Uzatma (İki farkla kazanma) "Açık" olarak kurulur.</li>
-                        <li><strong>Hile Engelleme:</strong> Lobide "Hilelere İzin Ver" seçeneği mutlaka Kapalı tutulmalıdır; açık kalması durumunda maç iptal edilir.</li>
-                        <li><strong>Molalar:</strong>
-                            <ul>
-                                <li><strong>Taktiksel Mola:</strong> Harita başına iki adet 60 saniyelik mola hakkı mevcuttur. Uzatmalarda her takıma ek bir mola verilir.</li>
-                                <li><strong>Teknik Mola:</strong> Donanım veya çevre birimi arızalarında takımların toplam 10 dakika bekleme hakkı vardır. Teknik mola esnasında strateji konuşmak yasaktır.</li>
-                            </ul>
-                        </li>
-                        <li><strong>Remake (Yeniden Kurma):</strong> Sadece 0-0 skorunda ve ilk kan dökülmeden önce yaşanan kopmalarda hakem kararıyla maç baştan başlatılabilir.</li>
-                    </ul>
-
-                    <h2>5. ADİL OYUN, DİSİPLİN VE ETİK</h2>
-                    <ul>
-                        <li><strong>İletişim Kuralları:</strong> Rakip takımla oyun içi "All Chat" üzerinden iletişim kurmak yasaktır; 3 uyarı alan takım diskalifiye edilir. Koçlar sadece ajan seçimi, devre arası ve taktiksel molalarda oyuncularla konuşabilir.</li>
-                        <li><strong>Taraftar ve İzleyici Sorumluluğu:</strong> Alan içerisindeki taraftar veya arkadaş gruplarının sergileyeceği her türlü taşkınlık, küfür veya fiziksel eylem doğrudan destekledikleri takımın sorumluluğundadır ve takımın koşulsuz ihracına yol açar.</li>
-                        <li><strong>Yasaklı Eylemler:</strong> Toksik davranışlar (küfür, nefret söylemi), oyun açıklarını (bug) kullanmak ve her türlü hile/şike kesinlikle yasaktır. Hile yapan oyuncuların cihazlarına HWID ban uygulanır.</li>
-                        <li><strong>Yayın:</strong> POV yayını yapacak oyuncular, haksız avantajı önlemek adına yayınlarına en az 3 dakika gecikme eklemelidir.</li>
-                    </ul>
-                </div>
-
-                <label class="checkbox-container">
-                    <input type="checkbox" id="rulesCheck">
-                    <div class="checkmark"><i class="fas fa-check"></i></div>
-                    <span class="checkbox-text">Turnuva kurallarını okudum ve kabul ediyorum.</span>
-                </label>
-
-                <button type="submit" class="btn-submit" id="btnSubmitApp" disabled>
-                    <i class="fas fa-trophy"></i> TURNUVAYA KATIL
-                </button>
-            </form>
-        </div>
-    </main>
-
-    <div class="modal-overlay" id="customConfirmModal">
-        <div class="modal-content">
-            <i class="fas fa-exclamation-triangle" style="font-size: 50px; color: var(--kirmizi-iptal); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(255,75,75,0.4));"></i>
-            <h3 style="color: white; font-weight: 900; font-size: 22px; margin-bottom: 10px; text-transform: uppercase;">Emin Misiniz?</h3>
-            <p style="color: var(--gri-yazi); font-size: 14px; margin-bottom: 30px;">Başvuruyu geri çekerseniz takımınız inceleme sırasından çıkarılacaktır. İşleme devam edilsin mi?</p>
-            <div style="display: flex; gap: 15px; justify-content: center;">
-                <button onclick="closeConfirmModal()" style="flex: 1; background: transparent; border: 1px solid #555; color: #aaa; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">İptal</button>
-                <button onclick="executeWithdraw()" style="flex: 1; background: var(--kirmizi-iptal); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px rgba(255,75,75,0.3);">Evet, Geri Çek</button>
-            </div>
-        </div>
-    </div>
 
     <div id="footer-alani"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
-    <script src="js/bildirimler.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
 
-    <script>
-        let currentUser = null;
-        let myTeamData = null;
-        let isEligible = false;
-        let currentAppId = null;
-
-        function closeConfirmModal() { document.getElementById('customConfirmModal').classList.remove('active'); }
-        function confirmWithdraw() { document.getElementById('customConfirmModal').classList.add('active'); }
-
-        async function initPage() {
-            try {
-                // 1. OTURUM KONTROLÜ
-                const { data: { user }, error: authErr } = await window.supabaseClient.auth.getUser();
-                if (authErr || !user) {
-                    window.location.href = "kayit.html";
-                    return;
-                }
-                currentUser = user;
-
-                // 2. TAKIM VE KAPTANLIK KONTROLÜ
-                let { data: teamAsCaptain } = await window.supabaseClient.from('teams')
-                    .select('*, team_members(id, user_id, role, status, profiles(username, ign, avatar_url))')
-                    .eq('captain_id', currentUser.id).maybeSingle();
-                
-                if (teamAsCaptain) {
-                    myTeamData = teamAsCaptain;
-                    await checkApplicationStatus();
-                } else {
-                    const { data: membership } = await window.supabaseClient.from('team_members').select('team_id').eq('user_id', currentUser.id).eq('status', 'accepted').maybeSingle();
-                    if (membership) {
-                        // Takımı var ama KAPTAN DEĞİL
-                        document.getElementById('notCaptainSection').style.display = 'block';
-                    } else {
-                        // TAKIMI YOK - Yönlendirmek yerine uyarı kartını göster
-                        document.getElementById('noTeamSection').style.display = 'block';
-                    }
-                }
-            } catch (err) {
-                console.error(err);
-            } finally {
-                document.getElementById('loadingScreen').style.display = 'none';
-            }
-        }
-
-        async function checkApplicationStatus() {
-            const { data: appData } = await window.supabaseClient.from('tournament_applications')
-                .select('id, status, tournaments(name)')
-                .eq('team_id', myTeamData.id)
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .maybeSingle();
-
-            if (appData) {
-                currentAppId = appData.id;
-
-                if (appData.status === 'pending') {
-                    document.getElementById('pendingSection').style.display = 'block';
-                    return;
-                } else if (appData.status === 'approved') {
-                    document.getElementById('approvedSection').style.display = 'block';
-                    document.getElementById('appTourneyName').innerText = `(${appData.tournaments.name})`;
-                    await fetchAndRenderLockedRoster();
-                    return;
-                } else if (appData.status === 'rejected') {
-                    showNotification("Önceki başvurunuz reddedilmiş. Lütfen eksiklikleri giderip tekrar başvurun.", "error");
-                }
-            }
-
-            await setupApplicationForm();
-        }
-
-        async function fetchAndRenderLockedRoster() {
-            const grid = document.getElementById('approvedRosterList');
-            grid.innerHTML = '<span style="color:var(--gri-yazi);">Kadro Yükleniyor...</span>';
-
-            const { data: captainProfile } = await window.supabaseClient.from('profiles').select('username, ign, avatar_url').eq('id', myTeamData.captain_id).single();
-            const { data: members } = await window.supabaseClient.from('team_members').select('user_id, role, profiles(username, ign, avatar_url)').eq('team_id', myTeamData.id).eq('status', 'accepted');
-
-            if (!members) return;
-
-            grid.innerHTML = '';
-            
-            let capRole = 'sub';
-            const capMemRecord = members?.find(m => m.user_id === myTeamData.captain_id);
-            if (capMemRecord) capRole = capMemRecord.role;
-            
-            grid.innerHTML += createMiniCard(captainProfile, capRole, true);
-
-            members.forEach(m => {
-                if (m.user_id !== myTeamData.captain_id) {
-                    const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
-                    grid.innerHTML += createMiniCard(prof, m.role, false);
-                }
-            });
-        }
-
-        function createMiniCard(prof, role, isCap) {
-            const ign = prof?.ign && prof.ign !== 'Belirlenmedi' ? prof.ign : (prof?.username || 'İsimsiz');
-            const avatar = prof?.avatar_url ? `<img src="${prof.avatar_url}">` : `<img src="img/unknown.webp">`;
-            
-            let cardClass = role === 'main' ? 'main-card' : 'sub-card';
-            let roleText = role === 'main' ? 'ASİL' : 'YEDEK';
-            
-            if (isCap) {
-                cardClass = 'cap-card';
-                roleText += ' / KAPTAN';
-            }
-
-            return `
-                <div class="roster-card ${cardClass}">
-                    ${avatar}
-                    <div>
-                        <div class="rc-ign">${ign}</div>
-                        <div class="rc-role">${roleText}</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        async function setupApplicationForm() {
-            document.getElementById('applySection').style.display = 'block';
-
-            const hasNameAndTag = myTeamData.name && myTeamData.tag;
-            const hasLogo = myTeamData.logo_url && myTeamData.logo_url.trim() !== '';
-            
-            // Onaylı tüm üyeleri al (Kaptan listeye eksikse onu da ekle)
-            let acceptedMembers = myTeamData.team_members ? myTeamData.team_members.filter(m => m.status === 'accepted') : [];
-            
-            // Kaptan team_members tablosunda yoksa zorla listeye ekle
-            const isCapInMembers = acceptedMembers.some(m => m.user_id === myTeamData.captain_id);
-            if (!isCapInMembers) {
-                const { data: capProfile } = await window.supabaseClient.from('profiles').select('username, ign, avatar_url').eq('id', myTeamData.captain_id).single();
-                acceptedMembers.unshift({
-                    user_id: myTeamData.captain_id,
-                    role: 'captain',
-                    status: 'accepted',
-                    profiles: capProfile
-                });
-            }
-
-            const has5Members = acceptedMembers.length >= 5;
-
-            updateReqUI('reqName', hasNameAndTag);
-            updateReqUI('reqLogo', hasLogo);
-            updateReqUI('reqRoster', has5Members, `Takımda En Az 5 Onaylı Oyuncu Bulunmalı (${acceptedMembers.length}/5)`);
-
-            isEligible = hasNameAndTag && hasLogo && has5Members;
-
-            // KADRO SEÇİM KUTULARINI DOLDUR
-            populateRosterSelects(acceptedMembers);
-
-            const { data: tournaments } = await window.supabaseClient.from('tournaments')
-                .select('id, name')
-                .eq('status', 'upcoming')
-                .order('created_at', { ascending: false });
-
-            const selectEl = document.getElementById('tourneySelect');
-            selectEl.innerHTML = '';
-            
-            if (tournaments && tournaments.length > 0) {
-                selectEl.innerHTML = '<option value="" disabled selected>Lütfen bir turnuva seçin...</option>';
-                tournaments.forEach(t => {
-                    selectEl.innerHTML += `<option value="${t.id}">${t.name}</option>`;
-                });
-            } else {
-                selectEl.innerHTML = '<option value="" disabled selected>Şu an aktif başvuruya açık turnuva yok.</option>';
-                isEligible = false; 
-            }
-
-            checkFormStatus();
-        }
-
-        function populateRosterSelects(members) {
-            const selects = document.querySelectorAll('.roster-select');
-            
-            let optionsHTML = '<option value="">Oyuncu Seçiniz...</option>';
-            members.forEach(m => {
-                const prof = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
-                const name = (prof?.ign && prof.ign !== 'Belirlenmedi') ? `${prof.username} (${prof.ign})` : (prof?.username || 'İsimsiz');
-                optionsHTML += `<option value="${m.user_id}">${name}</option>`;
-            });
-
-            selects.forEach(select => {
-                select.innerHTML = optionsHTML;
-                select.addEventListener('change', updateSelectOptions);
-            });
-        }
-
-        function updateSelectOptions() {
-            const selects = document.querySelectorAll('.roster-select');
-            const selectedValues = Array.from(selects).map(s => s.value).filter(v => v !== "");
-            
-            selects.forEach(select => {
-                const currentValue = select.value;
-                Array.from(select.options).forEach(option => {
-                    if (option.value === "") return;
-                    
-                    if (selectedValues.includes(option.value) && option.value !== currentValue) {
-                        option.disabled = true;
-                    } else {
-                        option.disabled = false;
-                    }
-                });
-            });
-        }
-
-        function updateReqUI(elementId, isMet, customText = null) {
-            const el = document.getElementById(elementId);
-            if (!el) return;
-            
-            if (isMet) {
-                el.className = 'success';
-                el.innerHTML = `<i class="fas fa-check-circle"></i> ${customText || el.innerText}`;
-            } else {
-                el.className = '';
-                el.innerHTML = `<i class="fas fa-times-circle"></i> ${customText || el.innerText}`;
-            }
-        }
-
-        document.getElementById('rulesCheck').addEventListener('change', checkFormStatus);
-
-        function checkFormStatus() {
-            const btn = document.getElementById('btnSubmitApp');
-            const isChecked = document.getElementById('rulesCheck').checked;
-            
-            if (isEligible && isChecked) {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-trophy"></i> TURNUVAYA KATIL';
-            } else {
-                btn.disabled = true;
-                if (!isEligible) {
-                    btn.innerHTML = '<i class="fas fa-lock"></i> ŞARTLARI SAĞLAYIN';
-                } else {
-                    btn.innerHTML = '<i class="fas fa-check-square"></i> KURALLARI ONAYLAYIN';
-                }
-            }
-        }
-
-        // BAŞVURU GÖNDERME VE OYUNCU ROLLERİNİ GÜNCELLEME
-        document.getElementById('applyForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitApp');
-            const tourneyId = document.getElementById('tourneySelect').value;
-
-            if (!tourneyId) { showNotification("Lütfen bir turnuva seçin.", "error"); return; }
-
-            const mainSelects = document.querySelectorAll('.main-select');
-            const subSelects = document.querySelectorAll('.sub-select');
-            
-            let selectedMains = [];
-            let selectedSubs = [];
-            
-            mainSelects.forEach(s => { if(s.value) selectedMains.push(s.value); });
-            subSelects.forEach(s => { if(s.value) selectedSubs.push(s.value); });
-            
-            if (new Set(selectedMains).size !== 5) {
-                showNotification("Lütfen 5 farklı Asil Oyuncu seçtiğinizden emin olun.", "error");
-                return;
-            }
-
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İŞLENİYOR...';
-
-            try {
-                // 1. Önce takımdaki herkesin rolünü 'sub' (yedek) yap (Temizlik)
-                await window.supabaseClient.from('team_members')
-                    .update({ role: 'sub' })
-                    .eq('team_id', myTeamData.id)
-                    .eq('status', 'accepted');
-                
-                // 2. Asil Seçilenleri Main yap (DB'de yoksalar Insert yap)
-                for(let uId of selectedMains) {
-                    const { data: exist } = await window.supabaseClient.from('team_members').select('id').eq('user_id', uId).eq('team_id', myTeamData.id).maybeSingle();
-                    if (exist) {
-                        await window.supabaseClient.from('team_members').update({ role: 'main' }).eq('id', exist.id);
-                    } else {
-                        await window.supabaseClient.from('team_members').insert([{ team_id: myTeamData.id, user_id: uId, role: 'main', status: 'accepted' }]);
-                    }
-                }
-                
-                // 3. Yedek Seçilenleri DB'de yoksa Insert yap (Varsa zaten sub oldular)
-                for(let uId of selectedSubs) {
-                    const { data: exist } = await window.supabaseClient.from('team_members').select('id').eq('user_id', uId).eq('team_id', myTeamData.id).maybeSingle();
-                    if (!exist) {
-                        await window.supabaseClient.from('team_members').insert([{ team_id: myTeamData.id, user_id: uId, role: 'sub', status: 'accepted' }]);
-                    }
-                }
-
-                await window.supabaseClient.from('tournament_applications').delete().eq('team_id', myTeamData.id).eq('tournament_id', tourneyId);
-
-                const { error } = await window.supabaseClient.from('tournament_applications').insert([{
-                    team_id: myTeamData.id, tournament_id: tourneyId, status: 'pending'
-                }]);
-
-                if (error) throw error;
-
-                showNotification("Kadro ayarlandı ve başvuru başarıyla iletildi!", "success");
-                setTimeout(() => location.reload(), 1500);
-            } catch (err) {
-                showNotification(err.message, "error");
-                btn.disabled = false; checkFormStatus();
-            }
-        });
-
-        async function executeWithdraw() {
-            closeConfirmModal();
-            if (!currentAppId) return;
-
-            try {
-                const { error } = await window.supabaseClient.from('tournament_applications').delete().eq('id', currentAppId);
-                if (error) throw error;
-                
-                showNotification("Başvurunuz başarıyla geri çekildi.", "success");
-                setTimeout(() => location.reload(), 1500);
-            } catch (err) {
-                showNotification("İşlem başarısız oldu.", "error");
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', initPage);
-    </script>
 </body>
 </html>
