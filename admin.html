@@ -652,7 +652,8 @@ Her satır için şu bilgileri çıkar:
   ]
 }`;
 
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${API_KEY}`, {
+                // HATA BURADAYDI: Model adını kesin çalışan 'gemini-1.5-flash' olarak düzelttik.
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [ { text: promptText }, { inlineData: { mimeType: mimeType, data: base64Data } } ] }] })
                 });
@@ -686,14 +687,12 @@ Her satır için şu bilgileri çıkar:
             } catch (err) { 
                 console.error("Yapay Zeka Detaylı Hata:", err); 
                 showNotification("Hata oluştu, lütfen ekrana çıkan uyarıyı oku.", "error"); 
-                // EĞER HATA VERİRSE SANA EKRANDA SEBEBİNİ SÖYLEYECEK:
                 alert("Teknik Hata Detayı: \n\n" + err.message);
             } finally { 
                 btn.innerHTML = originalText; 
                 btn.disabled = false; 
             }
         }
-
         async function saveToBracket() {
             const tourneyId = document.getElementById('tourneySelect').value;
             
