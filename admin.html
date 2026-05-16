@@ -624,35 +624,26 @@
                 let mimeType = imageBlob.type; if (!mimeType || !mimeType.startsWith('image/')) mimeType = 'image/jpeg'; 
                 const base64Data = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(imageBlob); });
 
-                const promptText = `Sen profesyonel bir veri analiz uzmanısın. Görevin, ekteki Valorant maç sonu skor tablosundan 10 oyuncunun istatistiklerini kusursuz bir şekilde çıkarmaktır.
+                const promptText = `Aşağıdaki Valorant maç sonu tablosunu analiz et ve 10 oyuncunun verilerini çıkar.
 
-ÇOK ÖNEMLİ KURAL: OYUNCULARI KESİNLİKLE EN ÇOK VURANDAN (KILLS) EN AZ VURANA DOĞRU GENEL BİR SIRALAMAYA SOKMA! KENDİ KAFANA GÖRE SIRALAMA YAPMAYACAKSIN!
+DİKKAT! TAKIMLARI AYIRIRKEN SADECE VE SADECE SATIRLARIN ARKA PLAN RENKLERİNE BAKACAKSIN. SKORLARA VEYA YUKARIDAN AŞAĞIYA DÜZ SIRALAMAYA GÖRE KAFANDAN GRUPLAMA YAPMA!
 
-Görseldeki tablo açıkça iki renk bloğuna ayrılmıştır. İki takım arasında yatay bir boşluk vardır. Oyuncuları sadece bu arka plan renklerine göre ayıracaksın:
+Görseldeki oyuncu satırlarının renklerini incele:
+1. "playersA": Satır arka plan rengi MAVİ, CAMGÖBEĞİ veya YEŞİL tonlarında olan oyunculardır (1. Takım).
+2. "playersB": Satır arka plan rengi KIRMIZI veya BORDO tonlarında olan oyunculardır (2. Takım).
 
-1. "playersA" (Sol/Mavi Takım): Tablonun ÜST kısmında yer alan, arka planı MAVİ, CAMGÖBEĞİ veya YEŞİL tonda olan bloktaki 5 oyuncudur.
-2. "playersB" (Sağ/Kırmızı Takım): Tablonun ALT kısmında yer alan, arka planı KIRMIZI veya BORDO tonda olan bloktaki 5 oyuncudur.
+Çıkarılacak Veriler:
+- agent: Ajan adı (İkonlardan tanı, baş harfi büyük yaz. Örn: Jett, Reyna, Omen. Çıkaramazsan "unknown" yaz).
+- ign: Oyun İçi Nick.
+- k: Kills (Sadece sayı).
+- d: Deaths (Sadece sayı).
+- a: Assists (Sadece sayı).
+- acs: Ortalama Çatışma Skoru (KDA'dan önceki sütunda yer alan puan, genelde 3 hanelidir).
 
-Sadece görseldeki yukarıdan aşağıya okuma sırasını takip et.
-
-İstenen Değerler:
-- agent: Ajanın İngilizce adı (İkonlardan tanı, baş harfi büyük yaz. Örn: Reyna, Jett. Çıkaramazsan "unknown" yaz).
-- ign: Oyun İçi Nick
-- k: Kills (Öldürme) - Sadece rakam.
-- d: Deaths (Ölme) - Sadece rakam.
-- a: Assists (Asist) - Sadece rakam.
-- acs: Ortalama Çatışma Skoru.
-
-KESİN KURAL: Asla markdown kullanma. Asla açıklama yazma. SADECE VE SADECE aşağıdaki yapıda, işlenebilir, temiz bir JSON çıktısı ver:
+Çıktı formatı şablonu (SADECE JSON):
 {
-  "playersA": [
-    {"agent": "Jett", "ign": "Oyuncu1", "k": 15, "d": 10, "a": 5, "acs": 250},
-    ... (Mavi/Yeşil takımdaki 5 kişi)
-  ],
-  "playersB": [
-    {"agent": "Raze", "ign": "Oyuncu6", "k": 18, "d": 15, "a": 3, "acs": 280},
-    ... (Kırmızı/Bordo takımdaki 5 kişi)
-  ]
+  "playersA": [ {"agent":"Jett", "ign":"Nick1", "k":10, "d":5, "a":2, "acs":200} ],
+  "playersB": [ {"agent":"Omen", "ign":"Nick2", "k":10, "d":5, "a":2, "acs":200} ]
 }`;
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
