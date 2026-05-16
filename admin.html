@@ -625,28 +625,29 @@ async function scanImageWithAI() {
                 const base64Data = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(imageBlob); });
 
                 // --- SÜTUN SIRASINA (SOLDAN SAĞA) GÖRE KUSURSUZ OKUMA TALİMATI ---
-                const promptText = `Sen bir OCR ve veri çıkarma uzmanısın. Ekteki Valorant maç sonu tablosunu SATIR SATIR ve KESİNLİKLE SOLDAN SAĞA doğru okuyacaksın.
+                const promptText = `Ekteki e-spor maç sonu ekranını incele. SADECE oyuncuların "Ajan" (Karakter) ve "Nick" (Kullanıcı Adı) bilgilerini çıkar. Başka hiçbir istatistik (sayı, skor vb.) İSTEMİYORUM! Hepsine 0 (sıfır) yaz.
 
-Tablo Yapısı (Görselde Soldan Sağa Karşına Çıkacak Sıra):
-1. Sütun (Ajan ve İsim): Ajan ikonu (İngilizce adını yaz) ve hemen yanındaki Oyun İçi Nick (ign).
-2. Sütun (ACS): "ORT. ÇATIŞMA SKORU" altındaki 2 veya 3 haneli sayı.
-3. Sütun (KDA): Aralarında eğik çizgi (/) olan üç sayı (Örn: 31 / 12 / 7). İlk sayı K (Kills), ikinci sayı D (Deaths), üçüncü sayı A (Assists).
-* Sağdaki diğer sütunları (Ekonomi vb.) tamamen görmezden gel.
+KURALLAR:
+1. Ekranı YUKARIDAN AŞAĞIYA doğru tara. Gördüğün fiziksel sırayı ASLA değiştirme.
+2. ÜSTTEKİ Mavi/Yeşil arka planlı 5 satır -> "playersA" listesine yazılacak.
+3. ALTTAKİ Kırmızı/Bordo arka planlı 5 satır -> "playersB" listesine yazılacak.
+4. Çıktı SADECE geçerli bir JSON olmalıdır.
 
-Takım ve Renk Ayrımı:
-- "playersA": Tablonun ÜST kısmında yer alan, arka planı CAMGÖBEĞİ/YEŞİL/MAVİ tonlarında olan ardışık 5 satırdır.
-- "playersB": Tablonun ALT kısmında yer alan, arka planı KIRMIZI/BORDO tonlarında olan ardışık 5 satırdır.
-(Skor sıralamasına göre değil, SADECE bu renklere göre grupla!)
-
-Çıktı Formatı Şablonu (SADECE JSON):
+JSON FORMATI ŞU ŞEKİLDE OLMALIDIR:
 {
   "playersA": [
-    {"agent": "Jett", "ign": "tanrım küs müyüz", "k": 31, "d": 12, "a": 7, "acs": 504},
-    ... (Mavi/Yeşil takımdaki diğer 4 kişi)
+    {"agent": "KarakterAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "KarakterAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "KarakterAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "KarakterAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "KarakterAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0}
   ],
   "playersB": [
-    {"agent": "Chamber", "ign": "anilthegreatest", "k": 11, "d": 16, "a": 4, "acs": 197},
-    ... (Kırmızı takımdaki diğer 4 kişi)
+    {"agent": "KarakterAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "KarakterAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "KarakterAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "KarakterAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "KarakterAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0}
   ]
 }`;
 
