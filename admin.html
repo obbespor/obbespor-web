@@ -624,33 +624,94 @@
                 let mimeType = imageBlob.type; if (!mimeType || !mimeType.startsWith('image/')) mimeType = 'image/jpeg'; 
                 const base64Data = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(imageBlob); });
 
-                const promptText = `Aşağıdaki Valorant maç sonu tablosunu incele ve 10 oyuncunun istatistiklerini çıkar.
+                const promptText = async function scanImageWithAI() {
+            if (!currentProofImageUrl) return showNotification("Taranacak görsel bulunamadı!", "error");
+            const btn = document.getElementById('btnAiScan'); const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Zeka Zorla Düzeltiliyor... (10-15 sn)'; btn.disabled = true;
 
-ÇOK ÖNEMLİ KURALLAR:
-1. Gözlerini tablonun EN ÜSTÜNDEN EN ALTINA doğru satır satır kaydır.
-2. Skorlara (Kills) göre KESİNLİKLE sıralama yapma. Fiziksel sırayı koru.
-3. En üstteki İLK 5 SATIR "playersA" (Mavi/Dost Takım) listesine aittir. (Not: En üstteki ilk oyuncunun rengi diğerlerinden biraz daha parlak veya farklı olabilir, bunu umursama ve onu KESİNLİKLE A takımının ilk sırasına ekle).
-4. Aradaki boşluktan sonraki ALT 5 SATIR "playersB" (Kırmızı/Düşman Takım) listesine aittir.
+            try {
+                const part1 = "AIzaSyBLJuNxex"; const part2 = "BRRekbMzEzLRo6i3_caGmS-7c"; const API_KEY = part1 + part2;
+                const imageRes = await fetch(currentProofImageUrl); if (!imageRes.ok) throw new Error("Resim çekilemedi.");
+                const imageBlob = await imageRes.blob();
+                let mimeType = imageBlob.type; if (!mimeType || !mimeType.startsWith('image/')) mimeType = 'image/jpeg'; 
+                const base64Data = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(imageBlob); });
 
-Okunacak Sütunlar (Soldan Sağa):
-- agent: Ajan adı (İkonlardan tanı, baş harfi büyük yaz. Örn: Jett, Chamber).
-- ign: Oyun İçi Nick.
-- acs: ORT. ÇATIŞMA SKORU (3 haneli sayı).
-- k: KDA kısmındaki ilk sayı (Kills).
-- d: KDA kısmındaki ikinci sayı (Deaths).
-- a: KDA kısmındaki üçüncü sayı (Assists).
+                // --- YAPAY ZEKAYI ROBOTA BAĞLAYAN KESİN SATIR TALİMATI ---
+                const promptText = `Görevin ekteki görseldeki metinleri fiziksel sırasıyla çıkarmaktır. KESİNLİKLE sayılara bakıp büyükten küçüğe sıralama yapma. Sadece yukarıdan aşağıya satır satır gördüğünü yaz.
 
-SADECE AŞAĞIDAKİ JSON FORMATINDA ÇIKTI VER:
+Görselde alt alta dizilmiş 10 oyuncu satırı var. Şu sırayı HARFİYEN takip et:
+
+**Mavi/Yeşil Takım (playersA):**
+- 1. SATIR (En üstteki): Bunu playersA'nın 1. elemanı yap. (Jett olan satır)
+- 2. SATIR: Bunu playersA'nın 2. elemanı yap.
+- 3. SATIR: Bunu playersA'nın 3. elemanı yap.
+- 4. SATIR: Bunu playersA'nın 4. elemanı yap.
+- 5. SATIR: Bunu playersA'nın 5. elemanı yap.
+
+**Kırmızı Takım (playersB):**
+- 6. SATIR (Boşluktan sonraki ilk): Bunu playersB'nin 1. elemanı yap.
+- 7. SATIR: Bunu playersB'nin 2. elemanı yap.
+- 8. SATIR: Bunu playersB'nin 3. elemanı yap.
+- 9. SATIR: Bunu playersB'nin 4. elemanı yap.
+- 10. SATIR (En alttaki): Bunu playersB'nin 5. elemanı yap.
+
+Her satırdan sadece şunları çıkar (Soldan sağa):
+- agent: Ajan adı (İkonlardan tanı. Örn: Raze, Sova, Breach)
+- ign: Oyun İçi Nick
+- acs: "ORT. ÇATIŞMA SKORU" sütunu (3 haneli sayı)
+- k: KDA'daki Kills sayısı
+- d: KDA'daki Deaths sayısı
+- a: KDA'daki Assists sayısı
+
+SADECE ŞU JSON FORMATINDA ÇIKTI VER:
 {
   "playersA": [
     {"agent": "Jett", "ign": "tanrım küs müyüz", "k": 31, "d": 12, "a": 7, "acs": 504},
-    ... (A takımındaki diğer 4 kişi)
+    ... (2., 3., 4. ve 5. satırlar sırasıyla)
   ],
   "playersB": [
     {"agent": "Chamber", "ign": "anilthegreatest", "k": 11, "d": 16, "a": 4, "acs": 197},
-    ... (B takımındaki diğer 4 kişi)
+    ... (7., 8., 9. ve 10. satırlar sırasıyla)
   ]
 }`;
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${API_KEY}`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        contents: [{ parts: [ { text: promptText }, { inlineData: { mimeType: mimeType, data: base64Data } } ] }],
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
+                });
+
+                if (!response.ok) throw new Error("Yapay Zeka API reddetti.");
+                const data = await response.json(); if (!data.candidates || data.candidates.length === 0) throw new Error("Yanıt üretemedi.");
+
+                let aiText = data.candidates[0].content.parts[0].text; 
+                
+                const firstBrace = aiText.indexOf('{');
+                const lastBrace = aiText.lastIndexOf('}');
+                if (firstBrace !== -1 && lastBrace !== -1) {
+                    aiText = aiText.substring(firstBrace, lastBrace + 1);
+                } else {
+                    aiText = aiText.replace(/```json/gi, '').replace(/```/g, '').trim();
+                }
+
+                const extractedData = JSON.parse(aiText);
+                
+                if (!extractedData.playersA || extractedData.playersA.length === 0) throw new Error("Yapay Zeka oyuncuları bulamadı.");
+
+                fillOCRData('teamAPlayersInputs', extractedData.playersA);
+                fillOCRData('teamBPlayersInputs', extractedData.playersB);
+
+                showNotification("Sihir gerçekleşti! Satırlar mekanik bir sırayla okundu.", "success");
+            } catch (err) { 
+                console.error("Yapay Zeka Hatası: ", err); 
+                showNotification("AI Okuma Hatası: Görsel anlaşılamadı.", "error"); 
+            } finally { 
+                btn.innerHTML = originalText; 
+                btn.disabled = false; 
+            }
+        }
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
