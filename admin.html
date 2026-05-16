@@ -624,7 +624,7 @@
                 let mimeType = imageBlob.type; if (!mimeType || !mimeType.startsWith('image/')) mimeType = 'image/jpeg'; 
                 const base64Data = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(imageBlob); });
 
-                const promptText = `Sen profesyonel bir veri analiz uzmanısın. Görevin, ekteki Valorant maç sonu skor tablosundan (scoreboard) 10 oyuncunun istatistiklerini kusursuz bir şekilde çıkarmaktır.
+                const promptText = const promptText = `Sen profesyonel bir veri analiz uzmanısın. Görevin, ekteki Valorant maç sonu skor tablosundan (scoreboard) 10 oyuncunun istatistiklerini kusursuz bir şekilde çıkarmaktır.
 
 DİKKAT! TAKIMLARI AYIRIRKEN ŞU KESİN KURALLARA UYACAKSIN:
 Tabloda toplam 10 oyuncu vardır. Bunlar 5'li iki gruba ayrılmıştır.
@@ -639,15 +639,21 @@ Tabloda toplam 10 oyuncu vardır. Bunlar 5'li iki gruba ayrılmıştır.
 - a: Assists (Asist) - Sadece rakam.
 - acs: Ortalama Çatışma Skoru (Genellikle tablonun KDA'dan önceki kısmında yer alan 3 haneli sayıdır).
 
-KESİN KURAL: Asla markdown (```json vb.) kullanma. Asla açıklama yazma. SADECE VE SADECE aşağıdaki yapıda, işlenebilir, temiz bir JSON çıktısı ver:
+KESİN KURAL: Asla markdown kullanma. Asla açıklama yazma. SADECE VE SADECE aşağıdaki yapıda, işlenebilir, temiz bir JSON çıktısı ver:
 {
   "playersA": [
     {"agent": "Jett", "ign": "Oyuncu1", "k": 15, "d": 10, "a": 5, "acs": 250},
-    ... (Toplam 5 kişi)
+    {"agent": "Omen", "ign": "Oyuncu2", "k": 10, "d": 12, "a": 7, "acs": 210},
+    {"agent": "Reyna", "ign": "Oyuncu3", "k": 20, "d": 8, "a": 4, "acs": 300},
+    {"agent": "Killjoy", "ign": "Oyuncu4", "k": 12, "d": 14, "a": 10, "acs": 180},
+    {"agent": "Sova", "ign": "Oyuncu5", "k": 9, "d": 11, "a": 8, "acs": 160}
   ],
   "playersB": [
-    {"agent": "Omen", "ign": "Oyuncu2", "k": 8, "d": 15, "a": 2, "acs": 150},
-    ... (Toplam 5 kişi)
+    {"agent": "Raze", "ign": "Oyuncu6", "k": 18, "d": 15, "a": 3, "acs": 280},
+    {"agent": "Viper", "ign": "Oyuncu7", "k": 11, "d": 10, "a": 6, "acs": 190},
+    {"agent": "Cypher", "ign": "Oyuncu8", "k": 14, "d": 13, "a": 5, "acs": 220},
+    {"agent": "Fade", "ign": "Oyuncu9", "k": 7, "d": 16, "a": 9, "acs": 140},
+    {"agent": "Breach", "ign": "Oyuncu10", "k": 13, "d": 12, "a": 11, "acs": 200}
   ]
 }`;
 
