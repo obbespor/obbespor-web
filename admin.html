@@ -612,7 +612,7 @@
             } catch (e) { console.error(e); }
         }
 
-        async function scanImageWithAI() {
+    async function scanImageWithAI() {
             if (!currentProofImageUrl) return showNotification("Taranacak görsel bulunamadı!", "error");
             const btn = document.getElementById('btnAiScan'); const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yapay Zeka Analiz Ediyor... (10-15 sn)'; btn.disabled = true;
@@ -624,7 +624,7 @@
                 let mimeType = imageBlob.type; if (!mimeType || !mimeType.startsWith('image/')) mimeType = 'image/jpeg'; 
                 const base64Data = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(imageBlob); });
 
-                const promptText = const promptText = `Sen profesyonel bir veri analiz uzmanısın. Görevin, ekteki Valorant maç sonu skor tablosundan (scoreboard) 10 oyuncunun istatistiklerini kusursuz bir şekilde çıkarmaktır.
+                const promptText = `Sen profesyonel bir veri analiz uzmanısın. Görevin, ekteki Valorant maç sonu skor tablosundan (scoreboard) 10 oyuncunun istatistiklerini kusursuz bir şekilde çıkarmaktır.
 
 DİKKAT! TAKIMLARI AYIRIRKEN ŞU KESİN KURALLARA UYACAKSIN:
 Tabloda toplam 10 oyuncu vardır. Bunlar 5'li iki gruba ayrılmıştır.
