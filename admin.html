@@ -615,7 +615,7 @@
  async function scanImageWithAI() {
             if (!currentProofImageUrl) return showNotification("Taranacak görsel bulunamadı!", "error");
             const btn = document.getElementById('btnAiScan'); const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Zeka Analiz Ediyor... (15 sn)'; btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İsimler Sırayla Çekiliyor...'; btn.disabled = true;
 
             try {
                 const part1 = "AIzaSyBLJuNxex"; const part2 = "BRRekbMzEzLRo6i3_caGmS-7c"; const API_KEY = part1 + part2;
@@ -626,33 +626,31 @@
                 let mimeType = imageBlob.type; if (!mimeType || !mimeType.startsWith('image/')) mimeType = 'image/jpeg'; 
                 const base64Data = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(imageBlob); });
 
-                const promptText = `Sen bir veri çıkarma robotusun. Ekteki Valorant maç sonu tablosunu EN ÜSTTEN EN ALTA doğru, SATIR SATIR oku.
-                
-KESİNLİKLE sayılara veya skorlara göre büyükten küçüğe sıralama yapma. Ekranda yukarıdan aşağıya hangi sırayla duruyorlarsa o fiziksel sırayı koru!
+                // --- SKORLARI GİZLEYEREK YAPAY ZEKANIN SIRALAMA YAPMASINI ENGELLEYEN TALİMAT ---
+                const promptText = `GÖREVİN: Ekteki Valorant maç tablosundan SADECE oyuncuların "Ajan" ve "Oyun İçi Nick" (ign) bilgilerini FİZİKSEL SIRASINA (Yukarıdan aşağıya) göre çıkarmaktır.
 
-Toplam 10 oyuncu satırı var:
-- EN ÜSTTEKİ 5 satır "playersA" listesine yazılacak (Mavi/Yeşil takım).
-- Aradaki boşluktan sonraki ALTTAKİ 5 satır "playersB" listesine yazılacak (Kırmızı takım).
+ÖNEMLİ: Daha önce skorlara göre yanlış sıralamalar yaptığın için senden skor, kill, ölüm veya asist sayılarını İSTEMİYORUM! Skorlara hiç bakma bile. Sadece yukarıdan aşağıya doğru satırları oku.
 
-Her satır için şu bilgileri çıkar:
-- agent: Ajan adı (Örn: Jett, Chamber)
-- ign: Oyun İçi Nick
-- acs: ORT. ÇATIŞMA SKORU (3 haneli sayı)
-- k: Kills (Öldürme)
-- d: Deaths (Ölme)
-- a: Assists (Asist)
+TAKIM AYRIMI (ARKA PLAN RENGİNE GÖRE):
+1. "playersA": Tablonun ÜST kısmında yer alan, arka planı MAVİ, CAMGÖBEĞİ veya YEŞİL tonda olan 5 satır. Yukarıdan aşağıya gördüğün sırayla ekle.
+2. "playersB": Aradaki boşluktan sonra tablonun ALT kısmında yer alan, arka planı KIRMIZI veya BORDO tonda olan 5 satır. Yukarıdan aşağıya sırayla ekle.
 
-Çıktı SADECE ve SADECE JSON formatında olmalıdır. JSON harici tek bir harf veya açıklama kullanma! Şablon:
+ÇIKTI FORMATI:
+SADECE AŞAĞIDAKİ JSON FORMATINDA ÇIKTI VER. k, d, a ve acs değerlerini her zaman 0 (SIFIR) olarak bırak. Başka hiçbir kelime veya işaret kullanma:
 {
   "playersA": [
-    {"agent": "Jett", "ign": "Nick1", "k": 31, "d": 12, "a": 7, "acs": 504}
+    {"agent": "Jett", "ign": "tanrım küs müyüz", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "Breach", "ign": "AURA", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "Raze", "ign": "Iris", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "Sova", "ign": "burka17", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "Phoenix", "ign": "SubZeroSwitch", "k": 0, "d": 0, "a": 0, "acs": 0}
   ],
   "playersB": [
-    {"agent": "Chamber", "ign": "Nick6", "k": 11, "d": 16, "a": 4, "acs": 197}
+    {"agent": "Chamber", "ign": "anilthegreatest", "k": 0, "d": 0, "a": 0, "acs": 0},
+    ... (Diğer 4 kişiyi kırmızı takımdan yukarıdan aşağı sırayla yaz)
   ]
 }`;
 
-                // HATA BURADAYDI: Model adını kesin çalışan 'gemini-1.5-flash' olarak düzelttik.
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [ { text: promptText }, { inlineData: { mimeType: mimeType, data: base64Data } } ] }] })
@@ -674,7 +672,7 @@ Her satır için şu bilgileri çıkar:
                 if (firstBrace !== -1 && lastBrace !== -1) {
                     aiText = aiText.substring(firstBrace, lastBrace + 1);
                 } else {
-                    throw new Error("Dönen yanıt geçerli bir JSON formatında değil. AI Şunu dedi: " + aiText.substring(0, 100));
+                    throw new Error("Dönen yanıt geçerli bir JSON formatında değil.");
                 }
 
                 const extractedData = JSON.parse(aiText);
@@ -683,10 +681,10 @@ Her satır için şu bilgileri çıkar:
                 fillOCRData('teamAPlayersInputs', extractedData.playersA);
                 fillOCRData('teamBPlayersInputs', extractedData.playersB);
 
-                showNotification("Sihir gerçekleşti! Sıralama hatasız.", "success");
+                showNotification("Sihir gerçekleşti! İsimler sırayla eklendi.", "success");
             } catch (err) { 
                 console.error("Yapay Zeka Detaylı Hata:", err); 
-                showNotification("Hata oluştu, lütfen ekrana çıkan uyarıyı oku.", "error"); 
+                showNotification("Hata oluştu, lütfen konsolu kontrol edin.", "error"); 
                 alert("Teknik Hata Detayı: \n\n" + err.message);
             } finally { 
                 btn.innerHTML = originalText; 
