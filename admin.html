@@ -624,25 +624,30 @@
                 let mimeType = imageBlob.type; if (!mimeType || !mimeType.startsWith('image/')) mimeType = 'image/jpeg'; 
                 const base64Data = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(imageBlob); });
 
-                const promptText = `Aşağıdaki Valorant maç sonu tablosunu incele.
-Görev: Tablodaki 10 oyuncunun istatistiklerini JSON formatında çıkar.
-Üst taraftaki veya Mavi/Yeşil takımdaki 5 oyuncuyu "playersA" listesine, alt taraftaki veya Kırmızı takımdaki 5 oyuncuyu "playersB" listesine koy.
+                const promptText = `Sen profesyonel bir veri analiz uzmanısın. Görevin, ekteki Valorant maç sonu skor tablosundan (scoreboard) 10 oyuncunun istatistiklerini kusursuz bir şekilde çıkarmaktır.
+
+DİKKAT! TAKIMLARI AYIRIRKEN ŞU KESİN KURALLARA UYACAKSIN:
+Tabloda toplam 10 oyuncu vardır. Bunlar 5'li iki gruba ayrılmıştır.
+1. "playersA" (Sol/Mavi/Dost Takım): Tablonun ÜST kısmında sıralanan İLK 5 OYUNCUDUR. Bu takımın arka planı genellikle Mavi, Camgöbeği veya Yeşil tonlarındadır.
+2. "playersB" (Sağ/Kırmızı/Düşman Takım): Tablonun ALT kısmında sıralanan SON 5 OYUNCUDUR. Bu takımın arka planı genellikle Kırmızı veya Bordo tonlarındadır.
 
 İstenen Değerler:
-- agent: Ajanın İngilizce adı (İkondan anla, anlamazsan boş bırak)
-- ign: Oyun İçi Nick
-- k: Öldürme (Kills) sayısı
-- d: Ölme (Deaths) sayısı
-- a: Asist (Assists) sayısı
-- acs: Ortalama Çatışma Skoru (ACS veya Skor)
+- agent: Ajanın İngilizce adı (İkonlardan tanı, baş harfi büyük yaz. Örn: Reyna, Jett, Omen. Çıkaramazsan "unknown" yaz).
+- ign: Oyun İçi Nick (Oyuncunun adı, clan tagı vb. varsa temizle sadece nicki yaz).
+- k: Kills (Öldürme) - Sadece rakam.
+- d: Deaths (Ölme) - Sadece rakam.
+- a: Assists (Asist) - Sadece rakam.
+- acs: Ortalama Çatışma Skoru (Genellikle tablonun KDA'dan önceki kısmında yer alan 3 haneli sayıdır).
 
-SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA BİR YAZI, AÇIKLAMA VEYA İŞARET KULLANMA:
+KESİN KURAL: Asla markdown (```json vb.) kullanma. Asla açıklama yazma. SADECE VE SADECE aşağıdaki yapıda, işlenebilir, temiz bir JSON çıktısı ver:
 {
   "playersA": [
-    {"agent": "Jett", "ign": "Oyuncu1", "k": 15, "d": 10, "a": 5, "acs": 250}
+    {"agent": "Jett", "ign": "Oyuncu1", "k": 15, "d": 10, "a": 5, "acs": 250},
+    ... (Toplam 5 kişi)
   ],
   "playersB": [
-    {"agent": "Omen", "ign": "Oyuncu2", "k": 8, "d": 15, "a": 2, "acs": 150}
+    {"agent": "Omen", "ign": "Oyuncu2", "k": 8, "d": 15, "a": 2, "acs": 150},
+    ... (Toplam 5 kişi)
   ]
 }`;
 
