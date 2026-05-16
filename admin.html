@@ -615,7 +615,7 @@
   async function scanImageWithAI() {
             if (!currentProofImageUrl) return showNotification("Taranacak görsel bulunamadı!", "error");
             const btn = document.getElementById('btnAiScan'); const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yapay Zeka Analiz Ediyor... (10-15 sn)'; btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Zekanın Sıralaması Kırılıyor... (10 sn)'; btn.disabled = true;
 
             try {
                 const part1 = "AIzaSyBLJuNxex"; const part2 = "BRRekbMzEzLRo6i3_caGmS-7c"; const API_KEY = part1 + part2;
@@ -624,54 +624,33 @@
                 let mimeType = imageBlob.type; if (!mimeType || !mimeType.startsWith('image/')) mimeType = 'image/jpeg'; 
                 const base64Data = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(imageBlob); });
 
-                const promptText = async function scanImageWithAI() {
-            if (!currentProofImageUrl) return showNotification("Taranacak görsel bulunamadı!", "error");
-            const btn = document.getElementById('btnAiScan'); const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Zeka Zorla Düzeltiliyor... (10-15 sn)'; btn.disabled = true;
+                // --- YAPAY ZEKANIN "KILL'E GÖRE SIRALAMA" HUYUNU KIRAN KESİN TALİMAT ---
+                const promptText = `GÖREVİN: Ekteki Valorant maç sonu skor tablosunu (scoreboard) KESİNLİKLE FİZİKSEL SIRASINA (Yukarıdan aşağıya) göre okumaktır.
 
-            try {
-                const part1 = "AIzaSyBLJuNxex"; const part2 = "BRRekbMzEzLRo6i3_caGmS-7c"; const API_KEY = part1 + part2;
-                const imageRes = await fetch(currentProofImageUrl); if (!imageRes.ok) throw new Error("Resim çekilemedi.");
-                const imageBlob = await imageRes.blob();
-                let mimeType = imageBlob.type; if (!mimeType || !mimeType.startsWith('image/')) mimeType = 'image/jpeg'; 
-                const base64Data = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(imageBlob); });
+YAPTIĞIN BÜYÜK HATA: Daha önceki denemelerde oyuncuları 'k' (Kills/Öldürme) değerine göre büyükten küçüğe sıraladın. BUNU KESİNLİKLE YAPMAYACAKSIN! Tabloda kim fiziksel olarak üstteyse JSON çıktısında da o üstte olmalıdır.
+Örneğin, Raze'in 18 kill'i, Sova'nın 20 kill'i olabilir ama görselde Raze Sova'nın ÜSTÜNDEYSE, listeye de ÖNCE RAZE, SONRA SOVA yazılmalıdır. SKORLARI (SAYILARI) SIRALAMA İÇİN KULLANMAYACAKSIN!
 
-                // --- YAPAY ZEKAYI ROBOTA BAĞLAYAN KESİN SATIR TALİMATI ---
-                const promptText = `Görevin ekteki görseldeki metinleri fiziksel sırasıyla çıkarmaktır. KESİNLİKLE sayılara bakıp büyükten küçüğe sıralama yapma. Sadece yukarıdan aşağıya satır satır gördüğünü yaz.
+TAKIM AYRIMI (ARKA PLAN RENGİNE GÖRE):
+1. "playersA": Üstteki MAVİ/CAMGÖBEĞİ/YEŞİL arka planlı 5 satır. Yukarıdan aşağıya gördüğün İLK SATIR 1. sıraya, İKİNCİ SATIR 2. sıraya yazılacak.
+2. "playersB": Alttaki KIRMIZI/BORDO arka planlı 5 satır. Yukarıdan aşağıya doğru yine fiziksel sırayla yazılacak.
 
-Görselde alt alta dizilmiş 10 oyuncu satırı var. Şu sırayı HARFİYEN takip et:
-
-**Mavi/Yeşil Takım (playersA):**
-- 1. SATIR (En üstteki): Bunu playersA'nın 1. elemanı yap. (Jett olan satır)
-- 2. SATIR: Bunu playersA'nın 2. elemanı yap.
-- 3. SATIR: Bunu playersA'nın 3. elemanı yap.
-- 4. SATIR: Bunu playersA'nın 4. elemanı yap.
-- 5. SATIR: Bunu playersA'nın 5. elemanı yap.
-
-**Kırmızı Takım (playersB):**
-- 6. SATIR (Boşluktan sonraki ilk): Bunu playersB'nin 1. elemanı yap.
-- 7. SATIR: Bunu playersB'nin 2. elemanı yap.
-- 8. SATIR: Bunu playersB'nin 3. elemanı yap.
-- 9. SATIR: Bunu playersB'nin 4. elemanı yap.
-- 10. SATIR (En alttaki): Bunu playersB'nin 5. elemanı yap.
-
-Her satırdan sadece şunları çıkar (Soldan sağa):
-- agent: Ajan adı (İkonlardan tanı. Örn: Raze, Sova, Breach)
+Okunacak Değerler (Soldan Sağa):
+- agent: Ajan adı (Örn: Raze, Sova, Breach)
 - ign: Oyun İçi Nick
-- acs: "ORT. ÇATIŞMA SKORU" sütunu (3 haneli sayı)
-- k: KDA'daki Kills sayısı
-- d: KDA'daki Deaths sayısı
-- a: KDA'daki Assists sayısı
+- acs: "ORT. ÇATIŞMA SKORU" (3 haneli)
+- k: Kills (KDA'daki ilk sayı)
+- d: Deaths (KDA'daki ikinci sayı)
+- a: Assists (KDA'daki üçüncü sayı)
 
-SADECE ŞU JSON FORMATINDA ÇIKTI VER:
+SADECE AŞAĞIDAKİ JSON FORMATINDA ÇIKTI VER:
 {
   "playersA": [
     {"agent": "Jett", "ign": "tanrım küs müyüz", "k": 31, "d": 12, "a": 7, "acs": 504},
-    ... (2., 3., 4. ve 5. satırlar sırasıyla)
+    ... (GÖRSELDEKİ FİZİKSEL SIRAYI ASLA BOZMA)
   ],
   "playersB": [
     {"agent": "Chamber", "ign": "anilthegreatest", "k": 11, "d": 16, "a": 4, "acs": 197},
-    ... (7., 8., 9. ve 10. satırlar sırasıyla)
+    ... (GÖRSELDEKİ FİZİKSEL SIRAYI ASLA BOZMA)
   ]
 }`;
 
@@ -703,43 +682,7 @@ SADECE ŞU JSON FORMATINDA ÇIKTI VER:
                 fillOCRData('teamAPlayersInputs', extractedData.playersA);
                 fillOCRData('teamBPlayersInputs', extractedData.playersB);
 
-                showNotification("Sihir gerçekleşti! Satırlar mekanik bir sırayla okundu.", "success");
-            } catch (err) { 
-                console.error("Yapay Zeka Hatası: ", err); 
-                showNotification("AI Okuma Hatası: Görsel anlaşılamadı.", "error"); 
-            } finally { 
-                btn.innerHTML = originalText; 
-                btn.disabled = false; 
-            }
-        }
-
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [ { text: promptText }, { inlineData: { mimeType: mimeType, data: base64Data } } ] }] })
-                });
-
-                if (!response.ok) throw new Error("Yapay Zeka API reddetti.");
-                const data = await response.json(); if (!data.candidates || data.candidates.length === 0) throw new Error("Yanıt üretemedi.");
-
-                let aiText = data.candidates[0].content.parts[0].text; 
-
-                // Hata önleyici temizleme kodumuz (Geri getirildi)
-                const firstBrace = aiText.indexOf('{');
-                const lastBrace = aiText.lastIndexOf('}');
-                if (firstBrace !== -1 && lastBrace !== -1) {
-                    aiText = aiText.substring(firstBrace, lastBrace + 1);
-                } else {
-                    aiText = aiText.replace(/```json/gi, '').replace(/```/g, '').trim();
-                }
-
-                const extractedData = JSON.parse(aiText);
-                
-                if (!extractedData.playersA || extractedData.playersA.length === 0) throw new Error("Yapay Zeka oyuncuları bulamadı.");
-
-                fillOCRData('teamAPlayersInputs', extractedData.playersA);
-                fillOCRData('teamBPlayersInputs', extractedData.playersB);
-
-                showNotification("Sihir gerçekleşti! Tüm oyuncular sırasıyla eklendi.", "success");
+                showNotification("Sihir gerçekleşti! Satırlar görseldeki sırayla okundu.", "success");
             } catch (err) { 
                 console.error("Yapay Zeka Hatası: ", err); 
                 showNotification("AI Okuma Hatası: Görsel anlaşılamadı.", "error"); 
