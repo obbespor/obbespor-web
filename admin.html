@@ -612,7 +612,7 @@
             } catch (e) { console.error(e); }
         }
 
-        async function scanImageWithAI() {
+async function scanImageWithAI() {
             if (!currentProofImageUrl) return showNotification("Taranacak görsel bulunamadı!", "error");
             const btn = document.getElementById('btnAiScan'); const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yapay Zeka Analiz Ediyor... (10-15 sn)'; btn.disabled = true;
@@ -624,46 +624,52 @@
                 let mimeType = imageBlob.type; if (!mimeType || !mimeType.startsWith('image/')) mimeType = 'image/jpeg'; 
                 const base64Data = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(imageBlob); });
 
-                const promptText = `Aşağıdaki Valorant maç sonu tablosunu incele.
-Görev: Tablodaki 10 oyuncunun istatistiklerini JSON formatında çıkar.
-Üst taraftaki veya Mavi/Yeşil takımdaki 5 oyuncuyu "playersA" listesine, alt taraftaki veya Kırmızı takımdaki 5 oyuncuyu "playersB" listesine koy.
+                // --- SÜTUN SIRASINA (SOLDAN SAĞA) GÖRE KUSURSUZ OKUMA TALİMATI ---
+                const promptText = `Sen bir OCR ve veri çıkarma uzmanısın. Ekteki Valorant maç sonu tablosunu SATIR SATIR ve KESİNLİKLE SOLDAN SAĞA doğru okuyacaksın.
 
-İstenen Değerler:
-- agent: Ajanın İngilizce adı (İkondan anla, anlamazsan boş bırak)
-- ign: Oyun İçi Nick
-- k: Öldürme (Kills) sayısı
-- d: Ölme (Deaths) sayısı
-- a: Asist (Assists) sayısı
-- acs: Ortalama Çatışma Skoru (ACS veya Skor)
+Tablo Yapısı (Görselde Soldan Sağa Karşına Çıkacak Sıra):
+1. Sütun (Ajan ve İsim): Ajan ikonu (İngilizce adını yaz) ve hemen yanındaki Oyun İçi Nick (ign).
+2. Sütun (ACS): "ORT. ÇATIŞMA SKORU" altındaki 2 veya 3 haneli sayı.
+3. Sütun (KDA): Aralarında eğik çizgi (/) olan üç sayı (Örn: 31 / 12 / 7). İlk sayı K (Kills), ikinci sayı D (Deaths), üçüncü sayı A (Assists).
+* Sağdaki diğer sütunları (Ekonomi vb.) tamamen görmezden gel.
 
-SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA BİR YAZI, AÇIKLAMA VEYA İŞARET KULLANMA:
+Takım ve Renk Ayrımı:
+- "playersA": Tablonun ÜST kısmında yer alan, arka planı CAMGÖBEĞİ/YEŞİL/MAVİ tonlarında olan ardışık 5 satırdır.
+- "playersB": Tablonun ALT kısmında yer alan, arka planı KIRMIZI/BORDO tonlarında olan ardışık 5 satırdır.
+(Skor sıralamasına göre değil, SADECE bu renklere göre grupla!)
+
+Çıktı Formatı Şablonu (SADECE JSON):
 {
   "playersA": [
-    {"agent": "Jett", "ign": "Oyuncu1", "k": 15, "d": 10, "a": 5, "acs": 250}
+    {"agent": "Jett", "ign": "tanrım küs müyüz", "k": 31, "d": 12, "a": 7, "acs": 504},
+    ... (Mavi/Yeşil takımdaki diğer 4 kişi)
   ],
   "playersB": [
-    {"agent": "Omen", "ign": "Oyuncu2", "k": 8, "d": 15, "a": 2, "acs": 150}
+    {"agent": "Chamber", "ign": "anilthegreatest", "k": 11, "d": 16, "a": 4, "acs": 197},
+    ... (Kırmızı takımdaki diğer 4 kişi)
   ]
 }`;
 
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [ { text: promptText }, { inlineData: { mimeType: mimeType, data: base64Data } } ] }] })
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${API_KEY}`, {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        contents: [{ 
+                            parts: [ 
+                                { text: promptText }, 
+                                { inlineData: { mimeType: mimeType, data: base64Data } } 
+                            ] 
+                        }],
+                        generationConfig: {
+                            responseMimeType: "application/json"
+                        }
+                    })
                 });
 
                 if (!response.ok) throw new Error("Yapay Zeka API reddetti.");
                 const data = await response.json(); if (!data.candidates || data.candidates.length === 0) throw new Error("Yanıt üretemedi.");
 
-                let aiText = data.candidates[0].content.parts[0].text; 
-
-                const firstBrace = aiText.indexOf('{');
-                const lastBrace = aiText.lastIndexOf('}');
-                if (firstBrace !== -1 && lastBrace !== -1) {
-                    aiText = aiText.substring(firstBrace, lastBrace + 1);
-                } else {
-                    aiText = aiText.replace(/```json/gi, '').replace(/```/g, '').trim();
-                }
-
+                const aiText = data.candidates[0].content.parts[0].text; 
                 const extractedData = JSON.parse(aiText);
                 
                 if (!extractedData.playersA || extractedData.playersA.length === 0) throw new Error("Yapay Zeka oyuncuları bulamadı.");
@@ -671,46 +677,15 @@ SADECE VE SADECE AŞAĞIDAKİ JSON FORMATINDA CEVAP VER, KESİNLİKLE BAŞKA Bİ
                 fillOCRData('teamAPlayersInputs', extractedData.playersA);
                 fillOCRData('teamBPlayersInputs', extractedData.playersB);
 
-                showNotification("Sihir gerçekleşti! Veriler kutulara yazıldı.", "success");
+                showNotification("Sihir gerçekleşti! Satırlar kusursuz okundu.", "success");
             } catch (err) { 
                 console.error("Yapay Zeka Hatası: ", err); 
-                showNotification("AI Okuma Hatası: Format tespit edilemedi.", "error"); 
+                showNotification("AI Okuma Hatası: Görsel anlaşılamadı.", "error"); 
             } finally { 
                 btn.innerHTML = originalText; 
                 btn.disabled = false; 
             }
         }
-
-        const collectDataAndUpdateIGN = async (containerId, teamId, mapDataId) => {
-            const rows = document.getElementById(containerId).querySelectorAll('.player-stat-row');
-            const stats = [];
-            for(let i=1; i<rows.length; i++) {
-                const row = rows[i];
-                const hiddenInput = row.querySelector('.hidden-user-id');
-                const select = row.querySelector('.user-matcher-select');
-                
-                const userId = (hiddenInput && hiddenInput.value) ? hiddenInput.value : (select ? select.value : null);
-                const inGameName = row.querySelector('.ign-input').value || 'Bilinmiyor';
-
-                if (select && userId && inGameName && inGameName !== 'Bilinmiyor') {
-                    const selectedOption = select.options[select.selectedIndex];
-                    const existingIgn = selectedOption.getAttribute('data-ign');
-                    if (!existingIgn || existingIgn.trim() === '') {
-                        await window.supabaseClient.from('profiles').update({ ign: inGameName }).eq('id', userId);
-                        selectedOption.setAttribute('data-ign', inGameName); 
-                        await window.supabaseClient.from('bildirimler').insert([{ kullanici_id: userId, baslik: "Nick Güncellendi", mesaj: `Profilinize '${inGameName}' nicki tanımlandı.`, tip: 'sistem' }]);
-                    }
-                }
-
-                stats.push({
-                    map_id: mapDataId, team_id: teamId, user_id: userId, in_game_name: inGameName,
-                    agent_name: row.querySelector('.agent-name-input').value || 'unknown',
-                    kills: parseInt(row.querySelector('.k-input').value) || 0, deaths: parseInt(row.querySelector('.d-input').value) || 0,
-                    assists: parseInt(row.querySelector('.a-input').value) || 0, acs: parseInt(row.querySelector('.acs-input').value) || 0
-                });
-            }
-            return stats;
-        };
 
         async function saveToBracket() {
             const tourneyId = document.getElementById('tourneySelect').value;
