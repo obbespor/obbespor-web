@@ -615,71 +615,83 @@
 async function scanImageWithAI() {
             if (!currentProofImageUrl) return showNotification("Taranacak görsel bulunamadı!", "error");
             const btn = document.getElementById('btnAiScan'); const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yapay Zeka Analiz Ediyor... (10-15 sn)'; btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Zeka Analiz Ediyor... Lütfen Bekleyin...'; btn.disabled = true;
 
             try {
                 const part1 = "AIzaSyBLJuNxex"; const part2 = "BRRekbMzEzLRo6i3_caGmS-7c"; const API_KEY = part1 + part2;
-                const imageRes = await fetch(currentProofImageUrl); if (!imageRes.ok) throw new Error("Resim çekilemedi.");
+                const imageRes = await fetch(currentProofImageUrl); 
+                if (!imageRes.ok) throw new Error("Resim dosyası sunucudan çekilemedi.");
+                
                 const imageBlob = await imageRes.blob();
                 let mimeType = imageBlob.type; if (!mimeType || !mimeType.startsWith('image/')) mimeType = 'image/jpeg'; 
                 const base64Data = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(imageBlob); });
 
-                // --- SÜTUN SIRASINA (SOLDAN SAĞA) GÖRE KUSURSUZ OKUMA TALİMATI ---
-                const promptText = `Sen bir OCR ve veri çıkarma uzmanısın. Ekteki Valorant maç sonu tablosunu SATIR SATIR ve KESİNLİKLE SOLDAN SAĞA doğru okuyacaksın.
+                const promptText = `Lütfen bu Valorant maç sonu tablosundaki oyuncu isimlerini ve ajanlarını çıkar.
+                    
+ÖNEMLİ KURALLAR:
+1. SADECE YUKARIDAN AŞAĞIYA doğru fiziksel okuma yap. Skorlara göre ASLA sıralama!
+2. Tablonun ÜST kısmındaki 5 satır (Mavi/Yeşil arka planlı) -> "playersA"
+3. Tablonun ALT kısmındaki 5 satır (Kırmızı/Bordo arka planlı) -> "playersB"
+4. Skorları (Kills, Deaths, vb.) okuma. Hepsine 0 (sıfır) yaz.
 
-Tablo Yapısı (Görselde Soldan Sağa Karşına Çıkacak Sıra):
-1. Sütun (Ajan ve İsim): Ajan ikonu (İngilizce adını yaz) ve hemen yanındaki Oyun İçi Nick (ign).
-2. Sütun (ACS): "ORT. ÇATIŞMA SKORU" altındaki 2 veya 3 haneli sayı.
-3. Sütun (KDA): Aralarında eğik çizgi (/) olan üç sayı (Örn: 31 / 12 / 7). İlk sayı K (Kills), ikinci sayı D (Deaths), üçüncü sayı A (Assists).
-* Sağdaki diğer sütunları (Ekonomi vb.) tamamen görmezden gel.
-
-Takım ve Renk Ayrımı:
-- "playersA": Tablonun ÜST kısmında yer alan, arka planı CAMGÖBEĞİ/YEŞİL/MAVİ tonlarında olan 5 satırdır.
-- "playersB": Tablonun ALT kısmında yer alan, arka planı KIRMIZI/BORDO tonlarında olan 5 satırdır.
-( SADECE bu renklere göre grupla. TAKIM B  KIRMIZI/BORDO tonlarında olan 5 satırdır. GRUP B CAMGÖBEĞİ/YEŞİL/MAVİ 5 SATIRDIR! ve grupların içini skora göre sırala.)
-
-Çıktı Formatı Şablonu (SADECE JSON):
+JSON FORMATI ŞU ŞEKİLDE OLMALIDIR (Sadece bu JSON'ı ver, başka metin yazma):
 {
   "playersA": [
-    {"agent": "Jett", "ign": "KRALtr", "k": 31, "d": 12, "a": 7, "acs": 504},
-    ... (A takımdaki CAMGÖBEĞİ/YEŞİL/MAVİ tonlarında olan diğer 4 kişi)
+    {"agent": "AjanAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "AjanAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "AjanAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "AjanAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "AjanAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0}
   ],
   "playersB": [
-    {"agent": "Chamber", "ign": "Patron", "k": 11, "d": 16, "a": 4, "acs": 197},
-    ... (B takımındaki KIRMIZI/BORDO tonlarında olan diğer 4 kişi)
+    {"agent": "AjanAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "AjanAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "AjanAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "AjanAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0},
+    {"agent": "AjanAdı", "ign": "OyuncuNicki", "k": 0, "d": 0, "a": 0, "acs": 0}
   ]
 }`;
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${API_KEY}`, {
+
+                // HATA BURADAYDI! 'pro' sürümü sende çalışmıyor, kesin çalışan 'flash' sürümüne sabitledik.
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        contents: [{ 
-                            parts: [ 
-                                { text: promptText }, 
-                                { inlineData: { mimeType: mimeType, data: base64Data } } 
-                            ] 
-                        }],
+                        contents: [{ parts: [ { text: promptText }, { inlineData: { mimeType: mimeType, data: base64Data } } ] }],
+                        safetySettings: [
+                            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
+                            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" }
+                        ],
                         generationConfig: {
                             responseMimeType: "application/json"
                         }
                     })
                 });
 
-                if (!response.ok) throw new Error("Yapay Zeka API reddetti.");
-                const data = await response.json(); if (!data.candidates || data.candidates.length === 0) throw new Error("Yanıt üretemedi.");
-
-                const aiText = data.candidates[0].content.parts[0].text; 
-                const extractedData = JSON.parse(aiText);
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error("API Hatası: " + errText);
+                }
                 
-                if (!extractedData.playersA || extractedData.playersA.length === 0) throw new Error("Yapay Zeka oyuncuları bulamadı.");
+                const data = await response.json(); 
+                if (!data.candidates || data.candidates.length === 0) throw new Error("Yapay zeka boş yanıt döndürdü.");
+
+                let aiText = data.candidates[0].content.parts[0].text; 
+                
+                const extractedData = JSON.parse(aiText);
+                if (!extractedData.playersA || extractedData.playersA.length === 0) throw new Error("JSON içinde oyuncu bulunamadı.");
 
                 fillOCRData('teamAPlayersInputs', extractedData.playersA);
                 fillOCRData('teamBPlayersInputs', extractedData.playersB);
 
-                showNotification("Sihir gerçekleşti! Satırlar kusursuz okundu.", "success");
+                showNotification("Sihir gerçekleşti! İsimler sırayla eklendi.", "success");
             } catch (err) { 
-                console.error("Yapay Zeka Hatası: ", err); 
-                showNotification("AI Okuma Hatası: Görsel anlaşılamadı.", "error"); 
+                console.error("Yapay Zeka Hatası:", err); 
+                showNotification("Hata oluştu, lütfen ekrandaki uyarıyı oku.", "error"); 
+                // Eğer yine çalışmazsa, hatanın tam sebebini sana mesaj kutusuyla gösterecek:
+                alert("Teknik Hata Detayı: \n\n" + err.message);
             } finally { 
                 btn.innerHTML = originalText; 
                 btn.disabled = false; 
