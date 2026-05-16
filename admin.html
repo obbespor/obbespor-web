@@ -615,7 +615,7 @@
     async function scanImageWithAI() {
             if (!currentProofImageUrl) return showNotification("Taranacak görsel bulunamadı!", "error");
             const btn = document.getElementById('btnAiScan'); const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yapay Zeka Analiz Ediyor... (10-15 sn)'; btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yapay Zeka Analiz Ediyor... (Biraz sürebilir)'; btn.disabled = true;
 
             try {
                 const part1 = "AIzaSyBLJuNxex"; const part2 = "BRRekbMzEzLRo6i3_caGmS-7c"; const API_KEY = part1 + part2;
@@ -624,46 +624,56 @@
                 let mimeType = imageBlob.type; if (!mimeType || !mimeType.startsWith('image/')) mimeType = 'image/jpeg'; 
                 const base64Data = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(imageBlob); });
 
-                const promptText = `Aşağıdaki Valorant maç sonu tablosunu analiz et ve 10 oyuncunun verilerini çıkar.
+                // --- SÜTUN SIRASINA (SOLDAN SAĞA) VE ARKA PLAN RENGİNE GÖRE KUSURSUZ OKUMA TALİMATI ---
+                const promptText = `Sen bir OCR ve veri çıkarma uzmanısın. Ekteki Valorant maç sonu tablosunu analyzes et ve 10 oyuncunun verilerini KESİNLİKLE fiziksel olarak en üstten en aşağıya doğru satır satır oku.
 
-DİKKAT! TAKIMLARI AYIRIRKEN SADECE VE SADECE SATIRLARIN ARKA PLAN RENKLERİNE BAKACAKSIN. SKORLARA VEYA YUKARIDAN AŞAĞIYA DÜZ SIRALAMAYA GÖRE KAFANDAN GRUPLAMA YAPMA!
+ÇOK ÖNEMLİ KURAL: OYUNCULARI SKOR SIRALAMASINA GÖRE DEĞİL, SADECE GÖRSELDEKİ SATIR ARKA PLAN RENKLERİNE GÖRE AYIRACAKSIN. KAFANDAN GRUPLAMA YAPMAYACAKSIN!
 
-Görseldeki oyuncu satırlarının renklerini incele:
-1. "playersA": Satır arka plan rengi MAVİ, CAMGÖBEĞİ veya YEŞİL tonlarında olan oyunculardır (1. Takım).
-2. "playersB": Satır arka plan rengi KIRMIZI veya BORDO tonlarında olan oyunculardır (2. Takım).
+Verileri her satırda KESİNLİKLE SOLDAN SAĞA şu sırayla oku:
+1. Sütun: Ajan ikonu (write English name) ve Oyun İçi Nick (ign).
+2. Sütun: ACS ("ORT. ÇATIŞMA SKORU" 2 veya 3 haneli puan).
+3. Sütun: KDA (üç sayı aralarında eğik çizgi (/) ile, Örn: 31 / 12 / 7). İlk sayı K (Kills), ikinci D (Deaths), üçüncü A (Assists).
+* Sağdaki diğer Ekonomi vb. sütunları görmezden gel.
 
-Çıkarılacak Veriler:
-- agent: Ajan adı (İkonlardan tanı, baş harfi büyük yaz. Örn: Jett, Reyna, Omen. Çıkaramazsan "unknown" yaz).
-- ign: Oyun İçi Nick.
-- k: Kills (Sadece sayı).
-- d: Deaths (Sadece sayı).
-- a: Assists (Sadece sayı).
-- acs: Ortalama Çatışma Skoru (KDA'dan önceki sütunda yer alan puan, genelde 3 hanelidir).
+Takım ve Renk Ayrımı Kuralları:
+- "playersA": Tablonun ÜST kısmında yer alan, arka planı CAMGÖBEĞİ/YEŞİL/MAVİ tonlarında olan SATIRLARIN HEPSİDİR. Karşılaştığın İLK SATIRDAN itibaren bu renkteki ardışık 5 satırın tamamını oku. Ekran görüntüsünü alan Jett ajanını (nick: 'tanrım küs müyüz') MUTLAKA ilk sıraya ekle. Toplam 5 kişi olmalı. Listeyi satır sırasına göre fiziksel olarak en üstten okuduğun sırayla doldur.
+- "playersB": Aradaki boşluktan sonra tablonun ALT kısmında yer alan, arka planı KIRMIZI/BORDO tonlarında olan SATIRLARIN HEPSİDİR. Karşılaştığın ardışık 5 satırın tamamını oku. Toplam 5 kişi olmalı. Listeyi satır sırasına göre fiziksel okuduğun sırayla doldur.
 
-Çıktı formatı şablonu (SADECE JSON):
+KESİN KURAL: Asla markdown kullanma. Asla açıklama yazma. SADECE JSON formatında çıktı ver.
+
+Örnek Veri ve Çıktı Şablonu (SADECE JSON):
 {
-  "playersA": [ {"agent":"Jett", "ign":"Nick1", "k":10, "d":5, "a":2, "acs":200} ],
-  "playersB": [ {"agent":"Omen", "ign":"Nick2", "k":10, "d":5, "a":2, "acs":200} ]
+  "playersA": [
+    {"agent":"Jett", "ign":"tanrım küs müyüz", "k":31, "d":12, "a":7, "acs":504},
+    ... (Mavi/Yeşil takımdaki diğer 4 kişi)
+  ],
+  "playersB": [
+    {"agent":"Chamber", "ign":"anilthegreatest", "k":11, "d":16, "a":4, "acs":197},
+    ... (Kırmızı takımdaki diğer 4 kişi)
+  ]
 }`;
 
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [ { text: promptText }, { inlineData: { mimeType: mimeType, data: base64Data } } ] }] })
+                // Tablo ve renk okumada en iyi olan gemini-1.5-pro modeli
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${API_KEY}`, {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        contents: [{ 
+                            parts: [ 
+                                { text: promptText }, 
+                                { inlineData: { mimeType: mimeType, data: base64Data } } 
+                            ] 
+                        }],
+                        generationConfig: {
+                            responseMimeType: "application/json"
+                        }
+                    })
                 });
 
                 if (!response.ok) throw new Error("Yapay Zeka API reddetti.");
                 const data = await response.json(); if (!data.candidates || data.candidates.length === 0) throw new Error("Yanıt üretemedi.");
 
-                let aiText = data.candidates[0].content.parts[0].text; 
-
-                const firstBrace = aiText.indexOf('{');
-                const lastBrace = aiText.lastIndexOf('}');
-                if (firstBrace !== -1 && lastBrace !== -1) {
-                    aiText = aiText.substring(firstBrace, lastBrace + 1);
-                } else {
-                    aiText = aiText.replace(/```json/gi, '').replace(/```/g, '').trim();
-                }
-
+                const aiText = data.candidates[0].content.parts[0].text; 
                 const extractedData = JSON.parse(aiText);
                 
                 if (!extractedData.playersA || extractedData.playersA.length === 0) throw new Error("Yapay Zeka oyuncuları bulamadı.");
@@ -671,7 +681,7 @@ Görseldeki oyuncu satırlarının renklerini incele:
                 fillOCRData('teamAPlayersInputs', extractedData.playersA);
                 fillOCRData('teamBPlayersInputs', extractedData.playersB);
 
-                showNotification("Yapay Zeka başarıyla okudu!", "success");
+                showNotification("Sihir gerçekleşti! Tüm oyuncular fiziksel sırayla okundu.", "success");
             } catch (err) { 
                 console.error("Yapay Zeka Hatası: ", err); 
                 showNotification("AI Okuma Hatası: Görsel anlaşılamadı.", "error"); 
