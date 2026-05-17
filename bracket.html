@@ -303,6 +303,13 @@
 
         async function initFixture() {
             try {
+                const response = await fetch("components/footer.html");
+                if (response.ok) document.getElementById("footer-alani").innerHTML = await response.text();
+            } catch(e) {}
+
+            if (typeof checkUserStatus === "function") await checkUserStatus();
+
+            try {
                 const { data: tourney } = await window.supabaseClient.from('tournaments')
                     .select('id, name').in('status', ['upcoming', 'ongoing']).order('created_at', { ascending: false }).limit(1).maybeSingle();
                 
@@ -352,6 +359,9 @@
                 return;
             }
 
+            // DİKKAT: SERİ SKORUNU OTOMATİK BULMAK İÇİN TÜM HARİTALARI ÇEKİYORUZ
+            const { data: allMaps } = await window.supabaseClient.from('match_maps').select('match_id, score_a, score_b');
+
             let standings = { 'A': {}, 'B': {} };
             
             if (applications) {
@@ -384,6 +394,24 @@
                             standings[grp][m.team_b_id] = { id: m.team_b_id, name: teamBInfo.name || 'Bilinmiyor', logo: teamBInfo.logo_url || 'img/unknown.webp', played: 0, wins: 0, losses: 0, average: 0, points: 0 };
                         }
                     }
+
+                    // --- OYNANAN HARİTALARA GÖRE 1-0, 2-1 GİBİ SERİ SKORLARINI HESAPLAMA MANTIĞI ---
+                    let winsA = 0;
+                    let winsB = 0;
+                    const mMaps = allMaps ? allMaps.filter(map => map.match_id === m.id) : [];
+                    
+                    if (mMaps.length > 0) {
+                        mMaps.forEach(map => {
+                            if (map.score_a > map.score_b) winsA++;
+                            else if (map.score_b > map.score_a) winsB++;
+                        });
+                        m.display_score_a = winsA;
+                        m.display_score_b = winsB;
+                    } else {
+                        // Eğer maç oynanmış ama harita detayı girilmemişse, 13-5 gibi skorları 1-0'a çevir
+                        m.display_score_a = m.series_score_a > 5 ? 1 : (m.series_score_a || 0);
+                        m.display_score_b = m.series_score_b > 5 ? 1 : (m.series_score_b || 0);
+                    }
                 });
             }
 
@@ -395,11 +423,15 @@
                         const tB = standings[grp][m.team_b_id];
                         if (tA && tB) {
                             tA.played++; tB.played++;
+                            
+                            // Averaj hesabı için ROUND skorları (Örn 13 - 5) kullanılmaya devam eder
                             tA.average += (m.series_score_a - m.series_score_b);
                             tB.average += (m.series_score_b - m.series_score_a);
-                            if (m.series_score_a > m.series_score_b) {
+                            
+                            // Puan tablosu galibiyeti ve puanı için SERİ skorları (1-0) kullanılır
+                            if (m.display_score_a > m.display_score_b) {
                                 tA.wins++; tA.points += 3; tB.losses++;
-                            } else if (m.series_score_b > m.series_score_a) {
+                            } else if (m.display_score_b > m.display_score_a) {
                                 tB.wins++; tB.points += 3; tA.losses++;
                             }
                         }
@@ -510,13 +542,14 @@
             let clickIcon = '';
 
             if (m.status === 'completed') {
-                const classA = m.series_score_a > m.series_score_b ? 'winner' : 'loser';
-                const classB = m.series_score_b > m.series_score_a ? 'winner' : 'loser';
+                // Ekranda 13-5 yerine display_score (1-0) yansıtılıyor
+                const classA = m.display_score_a > m.display_score_b ? 'winner' : 'loser';
+                const classB = m.display_score_b > m.display_score_a ? 'winner' : 'loser';
                 scoreArea = `
                     <div class="m-score-box">
-                        <span class="${classA}">${m.series_score_a}</span>
+                        <span class="${classA}">${m.display_score_a}</span>
                         <span class="m-vs">-</span>
-                        <span class="${classB}">${m.series_score_b}</span>
+                        <span class="${classB}">${m.display_score_b}</span>
                     </div>
                 `;
                 statusClass = 'clickable-card';
@@ -564,17 +597,31 @@
             try {
                 const { data: rawMatch } = await window.supabaseClient.from('bracket_matches').select('id, round_name, match_format, team_a_id, team_b_id, series_score_a, series_score_b').eq('id', matchId).single();
                 if(!rawMatch) throw new Error("Maç verisi bulunamadı.");
-                globalCurrentDetailedMatch = rawMatch;
 
-                // BUG FIX: Veritabanında hatalı kalmış Yarı Final maçlarının harita formatını düzeltir
-                let correctFormat = globalCurrentDetailedMatch.match_format;
-                if (globalCurrentDetailedMatch.round_name === 'Yarı Final' || globalCurrentDetailedMatch.round_name === 'YARI FİNAL') {
+                let correctFormat = rawMatch.match_format;
+                if (rawMatch.round_name === 'Yarı Final' || rawMatch.round_name === 'YARI FİNAL') {
                     correctFormat = 'BO3';
-                } else if (globalCurrentDetailedMatch.round_name === 'Final' || globalCurrentDetailedMatch.round_name === 'BÜYÜK FİNAL') {
+                } else if (rawMatch.round_name === 'Final' || rawMatch.round_name === 'BÜYÜK FİNAL') {
                     correctFormat = 'BO5';
                 }
 
                 const { data: maps } = await window.supabaseClient.from('match_maps').select('id, map_order, map_name, score_a, score_b').eq('match_id', matchId).order('map_order', { ascending: true });
+                
+                // Modal içinde de seri skorunu 1-0 gösterebilmek için ufak hesaplama
+                let winsA = 0; let winsB = 0;
+                if(maps && maps.length > 0) {
+                    maps.forEach(map => {
+                        if (map.score_a > map.score_b) winsA++;
+                        else if (map.score_b > map.score_a) winsB++;
+                    });
+                } else {
+                    winsA = rawMatch.series_score_a > 5 ? 1 : (rawMatch.series_score_a || 0);
+                    winsB = rawMatch.series_score_b > 5 ? 1 : (rawMatch.series_score_b || 0);
+                }
+                rawMatch.display_score_a = winsA;
+                rawMatch.display_score_b = winsB;
+
+                globalCurrentDetailedMatch = rawMatch;
                 
                 renderModalHeader(globalCurrentDetailedMatch, correctFormat);
                 renderModalMapTabs(correctFormat, maps);
@@ -611,7 +658,7 @@
                 <div class="series-title">${correctFormat || 'BO1'} - GENEL SERİ SKORU</div>
                 <div class="series-score">
                     <span style="color:var(--grup-a-renk)">${teamAInfo.name || 'SOL TAKIM'}</span>&nbsp;&nbsp;
-                    ${match.series_score_a} - ${match.series_score_b}&nbsp;&nbsp;
+                    ${match.display_score_a} - ${match.display_score_b}&nbsp;&nbsp;
                     <span style="color:var(--grup-b-renk)">${teamBInfo.name || 'SAĞ TAKIM'}</span>
                 </div>
             `;
@@ -663,7 +710,6 @@
                 const teamAId = globalCurrentDetailedMatch.team_a_id;
                 const teamBId = globalCurrentDetailedMatch.team_b_id;
 
-                const { data: mapData } = await window.supabaseClient.from('match_maps').select('score_a, score_b, map_name').eq('id', mapId).single();
                 const { data: allStats, error: statsError } = await window.supabaseClient.from('match_player_stats').select('user_id, team_id, agent_name, in_game_name, kills, deaths, assists, acs').eq('map_id', mapId);
 
                 if (statsError) throw statsError;
@@ -671,7 +717,7 @@
                 const teamAStats = (allStats || []).filter(s => s.team_id === teamAId).sort((a, b) => (b.acs || 0) - (a.acs || 0));
                 const teamBStats = (allStats || []).filter(s => s.team_id === teamBId).sort((a, b) => (b.acs || 0) - (a.acs || 0));
 
-                renderScoreboardMapStats(mapData, teamAStats, teamBStats);
+                renderScoreboardMapStats(teamAStats, teamBStats);
 
             } catch (err) {
                 console.error("Detaylı veri çekme hatası:", err);
@@ -679,19 +725,13 @@
             }
         }
 
-        function renderScoreboardMapStats(map, teamAStats, teamBStats) {
+        function renderScoreboardMapStats(teamAStats, teamBStats) {
             const tableArea = document.getElementById('modalStatsTableContainer');
             const teamAInfo = globalTeamMap[globalCurrentDetailedMatch.team_a_id] || {};
             const teamBInfo = globalTeamMap[globalCurrentDetailedMatch.team_b_id] || {};
             
-            const safeMapName = map.map_name ? map.map_name.toUpperCase() : 'BELİRSİZ HARİTA';
-
+            // DİKKAT: İsteğin üzerine ortadaki harita adı ve skor yazan gereksiz başlık (map-score-header) tamamen silindi
             tableArea.innerHTML = `
-                <div class="map-score-header">
-                    ${safeMapName} <span>-</span>&nbsp;
-                    <span class="score-a">${map.score_a}</span> - <span class="score-b">${map.score_b}</span>
-                </div>
-
                 <div class="teams-scoreboard-container">
                     <div class="team-a-col">
                         <div class="team-title-row team-a">${teamAInfo.name || 'SOL TAKIM'}</div>
@@ -749,6 +789,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', initFixture);
+
     </script>
 </body>
 </html>
